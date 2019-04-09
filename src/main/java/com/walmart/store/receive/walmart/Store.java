@@ -38,6 +38,5 @@ public class Store {
         private Integer vendorNumber;
         private Date loadTimestamp;
         private char mdseQuantityUnitOfMeasureCode;
-
 }
 

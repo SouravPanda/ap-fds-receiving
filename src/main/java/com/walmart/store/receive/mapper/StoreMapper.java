@@ -31,7 +31,6 @@
                 store.setVendorNumber(vendorNumber);
                 Date loadTimestamp=store.getLoadTimestamp();
                 store.setLoadTimestamp(loadTimestamp);
-
             }
             return store;
         }

@@ -5,8 +5,6 @@ import com.walmart.store.receive.walmart.Store;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import java.util.Arrays;
 
 
@@ -19,7 +17,6 @@ private StoreRepository storeRepository;
     private String claimCollectionName;
 
     public Object findByVendorNumber(Integer poId) {
-     //   Query query = new Query(Criteria.where("purchaseOrderId").is(poId));
         return storeRepository.findAll();
     }
 

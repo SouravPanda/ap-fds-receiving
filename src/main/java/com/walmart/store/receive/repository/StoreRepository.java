@@ -7,5 +7,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 public interface StoreRepository extends MongoRepository<Store, String> {
+
     List<Store> findByVendorNumber(Integer vendorNumber);
 }

@@ -31,7 +31,6 @@
 
 
         @RequestMapping(method = { RequestMethod.POST },path = {"/store"})
-
         /**
          * Method calls Service class to fetch stores by the given vendorNumber
          * @param store

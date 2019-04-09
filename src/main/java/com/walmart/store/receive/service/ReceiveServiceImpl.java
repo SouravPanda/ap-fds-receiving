@@ -13,7 +13,6 @@
         import org.springframework.web.client.RestTemplate;
 
         import java.util.List;
-
         import static com.walmart.store.receive.common.ReceiveConstants.WALMART_ITEM_JSON_ACCEPT;
         import static org.springframework.http.HttpHeaders.ACCEPT;
 

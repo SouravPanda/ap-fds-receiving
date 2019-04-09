@@ -27,7 +27,7 @@ public class ReceiveData {
         return mongoTemplate.find(query,Object.class,claimCollectionName);
     }
 
-    public Object addClaimLine(Store store) {
+     public Object addClaimLine(Store store) {
         Query query = new Query(Criteria.where("Store").is(store));
         return mongoTemplate.save(Object.class,claimCollectionName);
     }

@@ -11,6 +11,7 @@ public class MongoConfig {
     @Value("${spring.data.mongodb.uri}")
     private String mongoURI;
 
+
     @Value("${spring.data.mongodb.database}")
     private String databaseName;
 
