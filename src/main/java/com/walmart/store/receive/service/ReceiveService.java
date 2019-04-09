@@ -1,4 +1,4 @@
-package com.walmart.store.receive;
+package com.walmart.store.receive.service;
 
 import com.walmart.store.receive.walmart.Store;
 
