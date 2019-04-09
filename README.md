@@ -1,2 +1,1 @@
-# ProjectDemo
-ProjectDemo
+Foundation Receiving Service
