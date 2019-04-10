@@ -22,12 +22,12 @@ public class ReceiveData {
     @Value("${spring.data.mongodb.claim.collection.name}")
     private String claimCollectionName;
 
-    public Collection<Object> getClaimLine(Integer po) {
+    public Collection<Object> getStore(Integer po) {
         Query query = new Query(Criteria.where("Purchase Order Id").is(po));
         return mongoTemplate.find(query,Object.class,claimCollectionName);
     }
 
-     public Object addClaimLine(Store store) {
+     public Object addStores(Store store) {
         Query query = new Query(Criteria.where("Store").is(store));
         return mongoTemplate.save(Object.class,claimCollectionName);
     }

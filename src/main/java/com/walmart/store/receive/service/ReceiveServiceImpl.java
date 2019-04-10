@@ -5,15 +5,11 @@
         import com.walmart.store.receive.walmart.Store;
         import org.springframework.beans.factory.annotation.Autowired;
         import org.springframework.context.annotation.ComponentScan;
-        import org.springframework.http.HttpHeaders;
-        import org.springframework.http.MediaType;
         import org.springframework.stereotype.Component;
         import org.springframework.util.CollectionUtils;
         import org.springframework.web.client.RestTemplate;
 
         import java.util.List;
-        import static com.walmart.store.receive.common.ReceiveConstants.WALMART_ITEM_JSON_ACCEPT;
-        import static org.springframework.http.HttpHeaders.ACCEPT;
 
         @ComponentScan(basePackages = "com.walmart.store.receive.service,com.walmart.store.receive.repository")
         @Component
@@ -25,10 +21,6 @@
             private RestTemplate restTemplate = new RestTemplate();
 
             public Store updateStores(Store store) {
-
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_JSON);
-                headers.set(ACCEPT, WALMART_ITEM_JSON_ACCEPT);
 
                 Integer vendorId = store.getVendorNumber();
                 Store storeAt1 = new Store();
@@ -42,10 +34,6 @@
             }
 
                 public Store addNewStores(Store store) {
-
-                    HttpHeaders headers = new HttpHeaders();
-                    headers.setContentType(MediaType.APPLICATION_JSON);
-                    headers.set(ACCEPT, WALMART_ITEM_JSON_ACCEPT);
 
                     StoreMapper storeMapper = new StoreMapper();
                     Store storeAt1 = storeMapper.getStores(store);

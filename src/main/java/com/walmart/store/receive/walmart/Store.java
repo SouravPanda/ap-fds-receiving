@@ -17,8 +17,9 @@ import java.util.Date;
 @NoArgsConstructor
 @Document(collection = "receive-summary")
 public class Store {
-        @Id
+
        // private ObjectId _id;
+        @Id
         private String _id;
         private Integer poReceiveId;
         private Integer purchaseOrderId;
