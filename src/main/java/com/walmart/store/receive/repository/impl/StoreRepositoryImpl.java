@@ -4,11 +4,9 @@ import com.walmart.store.receive.repository.StoreRepository;
 import com.walmart.store.receive.pojo.Store;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.ComponentScan;
 import java.util.Arrays;
 
 
-@ComponentScan(basePackages = "com.pojo.store.receive.repository")
 public class StoreRepositoryImpl {
 
 @Autowired

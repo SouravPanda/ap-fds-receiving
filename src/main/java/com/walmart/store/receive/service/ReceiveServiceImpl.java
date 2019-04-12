@@ -11,7 +11,6 @@
 
         import java.util.List;
 
-        @ComponentScan(basePackages = "com.pojo.store.receive.service,com.pojo.store.receive.repository")
         @Component
         public class ReceiveServiceImpl implements ReceiveService {
 
