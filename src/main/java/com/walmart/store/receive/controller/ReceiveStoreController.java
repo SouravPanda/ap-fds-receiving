@@ -2,7 +2,7 @@
 
 
     import com.walmart.store.receive.service.ReceiveServiceImpl;
-    import com.walmart.store.receive.walmart.Store;
+    import com.walmart.store.receive.pojo.Store;
     import io.swagger.annotations.Api;
     import io.swagger.annotations.ApiOperation;
     import io.swagger.annotations.ApiResponse;

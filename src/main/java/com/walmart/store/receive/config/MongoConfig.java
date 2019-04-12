@@ -8,11 +8,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class MongoConfig {
-    @Value("${spring.data.mongodb.uri}")
+    @Value("${mongodb.uri}")
     private String mongoURI;
 
 
-    @Value("${spring.data.mongodb.database}")
+    @Value("${mongodb.database}")
     private String databaseName;
 
     @Bean

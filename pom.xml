@@ -8,10 +8,10 @@
 			<version>2.1.3.RELEASE</version>
 			<relativePath/> <!-- lookup parent from repository -->
 		</parent>
-		<groupId>com.walmart.store.ap.fds.mdm</groupId>
-		<artifactId>ap-fds-mdm-foundation-receive</artifactId>
+		<groupId>com.walmart.store.receive</groupId>
+		<artifactId>ap-fds-receive</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<name>ap-fds-mdm-foundation-receive</name>
+		<name>ap-fds-receive</name>
 		<description>Demo project for Spring Boot</description>
 
 		<properties>

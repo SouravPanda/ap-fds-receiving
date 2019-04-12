@@ -1,8 +1,7 @@
 package com.walmart.store.receive.repository;
 
-import com.walmart.store.receive.walmart.Store;
+import com.walmart.store.receive.pojo.Store;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 

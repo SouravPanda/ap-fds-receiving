@@ -2,7 +2,7 @@
 
         import com.walmart.store.receive.mapper.StoreMapper;
         import com.walmart.store.receive.repository.StoreRepository;
-        import com.walmart.store.receive.walmart.Store;
+        import com.walmart.store.receive.pojo.Store;
         import org.springframework.beans.factory.annotation.Autowired;
         import org.springframework.context.annotation.ComponentScan;
         import org.springframework.stereotype.Component;
@@ -11,7 +11,7 @@
 
         import java.util.List;
 
-        @ComponentScan(basePackages = "com.walmart.store.receive.service,com.walmart.store.receive.repository")
+        @ComponentScan(basePackages = "com.pojo.store.receive.service,com.pojo.store.receive.repository")
         @Component
         public class ReceiveServiceImpl implements ReceiveService {
 

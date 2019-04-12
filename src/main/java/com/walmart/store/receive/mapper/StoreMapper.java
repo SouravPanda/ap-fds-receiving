@@ -1,6 +1,6 @@
         package com.walmart.store.receive.mapper;
 
-        import com.walmart.store.receive.walmart.Store;
+        import com.walmart.store.receive.pojo.Store;
         import org.springframework.stereotype.Component;
 
         import java.sql.Time;

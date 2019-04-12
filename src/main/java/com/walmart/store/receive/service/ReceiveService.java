@@ -1,6 +1,6 @@
 package com.walmart.store.receive.service;
 
-import com.walmart.store.receive.walmart.Store;
+import com.walmart.store.receive.pojo.Store;
 
 
 public interface ReceiveService {

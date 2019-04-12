@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Configuration
-@Profile(value = {"local", "dev", "qa"})
+//@Profile(value = {"local", "dev", "qa"})
 @EnableSwagger2
 public class SwaggerConfig {
 

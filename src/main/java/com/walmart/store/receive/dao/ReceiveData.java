@@ -1,6 +1,6 @@
 package com.walmart.store.receive.dao;
 
-import com.walmart.store.receive.walmart.Store;
+import com.walmart.store.receive.pojo.Store;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -19,7 +19,7 @@ public class ReceiveData {
         this.mongoTemplate=mongoTemplate;
     }
 
-    @Value("${spring.data.mongodb.claim.collection.name}")
+    @Value("${mongodb.claim.collection.name}")
     private String claimCollectionName;
 
     public Collection<Object> getStore(Integer po) {
