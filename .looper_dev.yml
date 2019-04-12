@@ -20,7 +20,6 @@ flows:
     - call: readpom
     - mvn clean install
     - call: build_push_latest_img_dev
-    - call: runsonar
   pr:
     - mvn clean package
     - call: runsonar
@@ -90,6 +89,10 @@ flows:
           - call: build_push_latest_img_release
     finally:
       - call: hygieiaPublish
+  runsonar:
+    - sonar("Sonar"):
+        - (name sonar) sonar-scanner -Dproject.settings=sonar-project.properties
+        - hygieia.publishSonar()
   hygieiaPublish:
     - hygieia.publishBuild()
   readpom:
