@@ -15,7 +15,7 @@
         RestTemplate restTemplate;
         private org.springframework.http.HttpEntity<?> HttpEntity;
 
-        public boolean validateStore(Store store){
+        public void validateStore(Store store){
                 URL url = null;
                 ReceiveMDS receiveMDS= new ReceiveMDS();
                 ResponseEntity response = null;
@@ -47,7 +47,6 @@
 
                   }
                 }
-                    return true;
             }
 
         }

@@ -55,7 +55,6 @@ import org.springframework.web.bind.annotation.RestController;
             public ResponseEntity addNewStore(@RequestBody Store store) {
 
                 Store saveStore = receiveServiceImpl.addNewStores(store);
-               // Object saveStore = receiveServiceImpl.addNewStores(store);
                 if (saveStore != null) {
                     return ResponseEntity.ok(HttpStatus.OK);
                 }

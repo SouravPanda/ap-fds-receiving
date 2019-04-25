@@ -27,7 +27,6 @@ import static com.walmart.store.receive.common.ReceiveConstants.*;
         private String claimCollectionName;
 
         public Store addStores(Store store) {
-           // store=mongoTemplate.insert(store,claimCollectionName);
             store= mongoTemplate.save(store,claimCollectionName);
             return store;
 

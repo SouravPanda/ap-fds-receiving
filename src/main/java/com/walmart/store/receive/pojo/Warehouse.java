@@ -16,7 +16,6 @@ import java.util.List;
 @NoArgsConstructor
 @Document(collection = "receive-summary")
 public class Warehouse {
-        //To be checked
         @Id
         private String _id;
         private char receivingControlNumber;
