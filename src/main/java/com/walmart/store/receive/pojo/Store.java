@@ -16,7 +16,7 @@ import java.util.List;
 @Setter
 @ToString
 @NoArgsConstructor
-@Document(collection = "col2")
+@Document(collection = "receive-summary")
 public class Store {
 
         @Id
