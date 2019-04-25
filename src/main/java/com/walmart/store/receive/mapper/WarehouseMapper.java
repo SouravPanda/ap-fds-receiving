@@ -11,7 +11,7 @@
         import java.util.List;
 
         @Component
-        public class StoreMapper {
+        public class WarehouseMapper {
 
             public Store getStores(Store store) {
                 int vendorNumber=store.getVendorNumber();
@@ -38,9 +38,17 @@
                 if(totalRetailAmount!=null){
                     store.setTotalRetailAmount(totalRetailAmount);
                 }
+                Integer freightBillId=store.getFreightBillId();
+                if(freightBillId!=null){
+                    store.setFreightBillId(freightBillId);
+                }
                 Integer poReceiveId=store.getPoReceiveId();
                 if(poReceiveId!=null){
                     store.setPoReceiveId(poReceiveId);
+                }
+                Integer poId=store.getPoId();
+                if(poId!=null){
+                    store.setPoId(poId);
                 }
                 Integer controlType=store.getControlType();
                 if(controlType!=null){
@@ -66,22 +74,22 @@
                 if(null!=receiveSequenceNumber) {
                     store.setReceiveSequenceNumber(receiveSequenceNumber);
                 }
-        /*        Date loadTimestamp=store.getLoadTimestamp();
+                Date loadTimestamp=store.getLoadTimestamp();
                 if(null!=loadTimestamp){
                     store.setLoadTimestamp(loadTimestamp);
-                }*/
-            /*    char claimPendingIndicator=store.getClaimPendingIndicator();
+                }
+                char claimPendingIndicator=store.getClaimPendingIndicator();
                 if(claimPendingIndicator!=0){
                     store.setClaimPendingIndicator(claimPendingIndicator);
-                }*/
-      /*          char freeAstrayIndicator=store.getFreeAstrayIndicator();
+                }
+                char freeAstrayIndicator=store.getFreeAstrayIndicator();
                 if(freeAstrayIndicator!=0){
                     store.setFreeAstrayIndicator(freeAstrayIndicator);
                 }
                 char freightConslIndicator=store.getFreightConslIndicator();
                 if(freightConslIndicator!=0){
                     store.setFreightConslIndicator(freightConslIndicator);
-                }*/
+                }
                 char createChannelOrSource=store.getCreateChannelOrSource();
                 if(createChannelOrSource!=0){
                     store.setCreateChannelOrSource(createChannelOrSource);
@@ -98,10 +106,10 @@
                 if(sequenceNumber!=0){
                     store.setSequenceNumber(sequenceNumber);
                 }
-       /*         char mdseQuantityUnitOfMeasureCode=store.getMdseQuantityUnitOfMeasureCode();
+                char mdseQuantityUnitOfMeasureCode=store.getMdseQuantityUnitOfMeasureCode();
                 if(mdseQuantityUnitOfMeasureCode!=0){
                     store.setMdseQuantityUnitOfMeasureCode(mdseQuantityUnitOfMeasureCode);
-                }*/
+                }
                 List<ReceiveMDS> receiveMDS=store.getReceiveMDS();
                 if(!receiveMDS.isEmpty()){
                     store.setReceiveMDS(receiveMDS);
