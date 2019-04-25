@@ -23,7 +23,7 @@ public class Store {
         private String _id;
         @NotEmpty
         @JsonProperty("Receiving Control Number")
-        private char receivingControlNumber;
+        private Integer receivingControlNumber;
         @NotEmpty
         @JsonProperty("Store Number")
         private int storeNumber;
