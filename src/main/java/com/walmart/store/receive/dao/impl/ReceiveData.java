@@ -1,6 +1,6 @@
-    package com.walmart.store.receive.dao.impl;
+package com.walmart.store.receive.dao.impl;
 
-    import com.walmart.store.receive.pojo.Store;
+import com.walmart.store.receive.pojo.ReceiveSummary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -14,25 +14,25 @@ import java.util.Date;
 
 import static com.walmart.store.receive.common.ReceiveConstants.*;
 
-    @Repository
-    public class ReceiveData {
+@Repository
+public class ReceiveData {
 
-        @Autowired
+       @Autowired
         private MongoTemplate mongoTemplate;
         public ReceiveData(MongoTemplate mongoTemplate){
             this.mongoTemplate=mongoTemplate;
         }
 
-        @Value("${mongodb.claim.collection.name}")
+        @Value("${spring.data.mongodb.claim.collection.name}")
         private String claimCollectionName;
 
-        public Store addStores(Store store) {
+        public ReceiveSummary addStores(ReceiveSummary store) {
             store= mongoTemplate.save(store,claimCollectionName);
             return store;
 
         }
 
-        public Long updateStoreData(Store store){
+        public Long updateStoreData(ReceiveSummary store){
             Update update = new Update();
             Query query = new Query();
             query.addCriteria(Criteria.where(RECEIVING_CONTROL_NUMBER).is(store.getReceivingControlNumber()).and(PO_RECEIVE_ID).is(store.getPoReceiveId())
@@ -40,8 +40,8 @@ import static com.walmart.store.receive.common.ReceiveConstants.*;
             Date date= new Date();
             Timestamp timestamp = new Timestamp(date.getTime());
             update.set("Initial Receive Timestamp", timestamp);
-           return mongoTemplate.updateMulti(query,update,Store.class).getModifiedCount();
+           return mongoTemplate.updateMulti(query,update, ReceiveSummary.class).getModifiedCount();
         }
 
-    }
+}
 

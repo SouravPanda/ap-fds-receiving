@@ -1,26 +1,29 @@
+/*
     package com.walmart.store.receive.validator;
 
     import com.walmart.store.receive.pojo.ReceiveMDS;
-    import com.walmart.store.receive.pojo.Store;
+    import com.walmart.store.receive.pojo.ReceiveSummary;
     import org.springframework.beans.factory.annotation.Autowired;
-    import org.springframework.http.HttpEntity;
-    import org.springframework.http.HttpMethod;
-    import org.springframework.http.ResponseEntity;
+    import org.springframework.http.*;
     import org.springframework.web.client.RestTemplate;
 
     import java.net.URL;
+    import java.util.Arrays;
 
     public class ServiceValidator {
         @Autowired
         RestTemplate restTemplate;
         private org.springframework.http.HttpEntity<?> HttpEntity;
 
-        public void validateStore(Store store){
+        public void validateStore(ReceiveSummary store){
                 URL url = null;
-                ReceiveMDS receiveMDS= new ReceiveMDS();
-                ResponseEntity response = null;
-                HttpEntity<String> entity=new HttpEntity<>();
-                response = restTemplate.exchange("https://api.dev.wal-mart.com/bofap/dev/bofap/api/supplier/v1/supplierNumber/122663/countryCode/US", HttpMethod.GET,entity,Store.class);
+            ReceiveMDS receiveMDS= new ReceiveMDS();
+            ResponseEntity response = null;
+            HttpHeaders headers = new HttpHeaders();
+            headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> httpEntity = new HttpEntity<>(headers);
+                response = restTemplate.exchange("https://api.dev.wal-mart.com/bofap/dev/bofap/api/supplier/v1/supplierNumber/122663/countryCode/US", HttpMethod.GET,httpEntity, ReceiveSummary.class);
                 Object obj=response.getBody();
               if(store!=null) {
                         if(!(store.getTransactionType().equals(99))||(store.getTransactionType()>=0 && store.getTransactionType()<6)){
@@ -50,3 +53,4 @@
             }
 
         }
+*/
