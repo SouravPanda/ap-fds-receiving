@@ -28,6 +28,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     @Autowired
     ReceivingSummaryReqConverter receivingSummaryReqConverter;
 
+
     /*public List<ReceivingSummaryResponse> updateReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest) {
         List<ReceiveSummary> storeList = receiveDataRepository.findByReceivingControlNumberAndPoReceiveIdAndStoreNumberAndBaseDivisionNumberAndTransactionType(receivingSummaryRequest.getReceivingControlNumber(),
                 receivingSummaryRequest.getPoReceiveId(), receivingSummaryRequest.getStoreNumber(), receivingSummaryRequest.getBaseDivisionNumber(), receivingSummaryRequest.getTransactionType());
