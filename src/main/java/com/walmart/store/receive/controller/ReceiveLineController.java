@@ -38,9 +38,6 @@ public class ReceiveLineController {
                                                    @RequestParam("finalTime") String finalTime,
                                                    @RequestParam("sequenceNumber")String sequenceNumber){
 
-
-        // receivingControlNumber=4665265&poReceiveId=1804823&storeNumber=8264&baseDivisionNumber=18&transactionType=3&finalDate=1995-10-17&finalTime=18:45:21
-
         return receiveLineService.getLineSummary( receivingControlNumber,  poReceiveId,  storeNumber,  baseDivisionNumber,  transactionType,  finalDate, finalTime, sequenceNumber);
 
     }
