@@ -45,6 +45,9 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
         response.setControlNumber(receivingLine.getReceivingControlNumber());
         response.setLocationNumber(receivingLine.getStoreNumber());
         response.setDivisionNumber(receivingLine.getBaseDivisionNumber());
+        response.setFinalDate(receivingLine.getFinalDate());
+        response.setFinalTimestamp(receivingLine.getFinalTime());
+        response.setSequenceNumber(receivingLine.getSequenceNumber());
         return response;
     }
 }

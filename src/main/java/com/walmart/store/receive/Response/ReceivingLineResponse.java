@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -34,5 +37,8 @@ public class ReceivingLineResponse {
     private Integer controlNumber;
     private Integer locationNumber;
     private Integer divisionNumber;
+    private String finalDate;
+    private String finalTimestamp;
+    private Integer sequenceNumber;
 
 }

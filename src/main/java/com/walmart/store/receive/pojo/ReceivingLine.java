@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -12,6 +13,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Data
 @ToString
+@Document(collection="receive-line")
 public class ReceivingLine {
     private int purchaseOrderReceiveID;
     private Integer lineNumber;
@@ -35,8 +37,8 @@ public class ReceivingLine {
     private char transactionType;
     private Integer storeNumber;
     private Integer baseDivisionNumber;
-    private Date finalDate;
-    private Timestamp finalTime;
+    private String finalDate;
+    private String finalTime;
     private Integer sequenceNumber;
 
 }
