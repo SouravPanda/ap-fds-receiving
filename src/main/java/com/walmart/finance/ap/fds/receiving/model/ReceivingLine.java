@@ -1,0 +1,41 @@
+package com.walmart.finance.ap.fds.receiving.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.springframework.data.mongodb.core.mapping.Document;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@ToString
+@Document(collection="receive-line")
+public class ReceivingLine {
+
+    private static final String separator = "|";
+    private String _id;
+    private Integer purchaseOrderReceiveID;     //BASE_DIV_NBR + RPR_DATE(month) + RPR_SEQ_NBR from BKRM_PROC_XMIT_HDR
+    private Integer lineNumber;     //BKRM_PROC_XMIT_DTL.LINE_NBR
+    private Integer itemNumber;     //BKRM_PROC_XMIT_DTL.ITEM_NBR
+    private Integer vendorNumber;   //BKRM_PROC_XMIT_HDR.ORIG_DEST_ID
+    private Integer receivedQuantity;   //BKRM_PROC_XMIT_DTL.ITEM_QTY
+    private Double costAmount;      //BKRM_PROC_XMIT_DTL.COST_AMT
+    private Double retailAmount;    //BKRM_PROC_XMIT_DTL.STORE_SALE_AMT
+
+    private Integer receivingControlNumber;     //BKRM_PROC_XMIT_HDR.CONTROL_NBR
+    private Integer purchaseReceiptNumber;      //BASE_DIV_NBR + RPR_DATE(month) + RPR_SEQ_NBR
+    private Integer purchasedOrderId;       //CONTROL_NBR for control_nbr_type = 0
+    private Integer upcNumber;      //BKRM_PROC_XMIT_DTL.UPC_NBR
+
+    private Integer transactionType;   //BKRM_PROC_XMIT_DTL.TRANSACTION_TYPE
+    private Integer storeNumber;    //BKRM_PROC_XMIT_DTL.STORE_NBR
+    private Integer baseDivisionNumber;     //BKRM_PROC_XMIT_DTL.BASE_DIV_NBR
+    private LocalDate finalDate;       //BKRM_PROC_XMIT_DTL.FINAL_DATE
+    private LocalDateTime finalTime;       //BKRM_PROC_XMIT_DTL.FINAL_TIME
+    private Integer sequenceNumber; //BKRM_PROC_XMIT_DTL.SEQUENCE_NBR
+    private LocalDateTime creationDate;
+
+}
