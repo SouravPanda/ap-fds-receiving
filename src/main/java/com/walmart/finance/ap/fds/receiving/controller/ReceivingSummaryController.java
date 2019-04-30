@@ -46,7 +46,7 @@ public class ReceivingSummaryController {
      */
     @GetMapping
     @ApiOperation(value = "API to add new Stores based on the payload")
-    @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
+    @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Error")})
 
     public ReceivingSummaryResponse getReceiveSummary(@NotEmpty @NotNull @RequestParam("receivingControlNumber")  String  receivingControlNumber  ,
                                                       @NotEmpty @NotNull @RequestParam("poReceiveId") String poReceiveId,

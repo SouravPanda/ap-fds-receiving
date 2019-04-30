@@ -17,7 +17,11 @@ public class ReceivingSummaryResponseConverter implements Converter<ReceiveSumma
         response.setPurchaseOrderId(receiveSummary.getReceivingControlNumber());
 
         response.setReceiptNumber(receiveSummary.getPoReceiveId());
-        response.setTransactionType(receiveSummary.getTransactionType());
+        if (receiveSummary.getTransactionType() == null) {
+            response.setTransactionType(99);
+        } else {
+            response.setTransactionType(receiveSummary.getTransactionType());
+        }
         response.setControlNumber(receiveSummary.getReceivingControlNumber());
         response.setLocationNumber(receiveSummary.getStoreNumber());
         if(receiveSummary.getBaseDivisionNumber()==null) {
@@ -33,7 +37,11 @@ public class ReceivingSummaryResponseConverter implements Converter<ReceiveSumma
         response.setAssociateName(receiveSummary.getUserId());
         response.setAuthorizedBy(receiveSummary.getUserId());
         response.setAuthorizedDate(receiveSummary.getCreationDate());
-        response.setTotalCostAmount(receiveSummary.getTotalCostAmount());
+        if (receiveSummary.getTotalCostAmount() == null) {
+            response.setTotalCostAmount(0.0);
+        } else {
+            response.setTotalCostAmount(receiveSummary.getTotalCostAmount());
+        }
         response.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());
         response.setParentReceiptId(receiveSummary.getPoReceiveId());
         response.setParentReceiptNumber(receiveSummary.getReceivingControlNumber());

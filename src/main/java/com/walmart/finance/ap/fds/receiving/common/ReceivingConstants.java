@@ -10,6 +10,10 @@ public class ReceivingConstants {
     public static final String BASE_DIVISON_NUMBER="Base Divison Number";
     public static final String TRANSACTION_TYPE="Transaction Type";
     public static final String STORE="ReceiveSummary";
+    public static final int AP_FDS_FILTER_PRIORITY = 2;
+    public static final String AP_FDS_CLIENT_ID = "client_id";
+    public static final int XSS_FILTER_ORDER = 1;
+    public static final String CORRELATION_ID_HEADER_KEY = "X-Correlation-ID" ;
 
     public static final String PIPE_SEPARATOR = "|";
 

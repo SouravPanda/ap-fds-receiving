@@ -17,7 +17,11 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
 
         response.setControlNumber(receivingLine.getReceivingControlNumber());
         response.setDamaged(" ");
-        response.setDivisionNumber(receivingLine.getBaseDivisionNumber());
+        if (receivingLine.getBaseDivisionNumber() == 0) {
+            response.setDivisionNumber(0);
+        } else {
+            response.setDivisionNumber(receivingLine.getBaseDivisionNumber());
+        }
         response.setEachCostAmount(receivingLine.getCostAmount());
         response.setReceiptNumber(receivingLine.getPurchaseOrderReceiveID());
         if(receivingLine.getLineNumber()==null){
@@ -38,7 +42,11 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
         response.setPurchaseOrderNumber(receivingLine.getReceivingControlNumber());
         response.setPurchaseReceiptNumber(receivingLine.getPurchaseOrderReceiveID());
         response.setPurchasedOrderId(receivingLine.getReceivingControlNumber());
-        response.setUpc(receivingLine.getUpcNumber());
+        if (receivingLine.getUpcNumber() == null) {
+            response.setUpc(0);
+        } else {
+            response.setUpc(receivingLine.getUpcNumber());
+        }
         // TODO Need to check Item Desc. From Item Service ?
         response.setItemDescription("NA");
 
