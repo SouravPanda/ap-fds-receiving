@@ -20,11 +20,11 @@ public class ReceiveSummary {
     private String _id;
     @NotEmpty
     // CONTROL_NBR
-    private String receivingControlNumber;
+    private String receivingControlNumber;//purchaseOrderId
 
     @NotEmpty
     //STORE_NBR
-    private Integer storeNumber;
+    private Integer storeNumber;//locationNumber
 
 
     @NotEmpty
@@ -128,7 +128,7 @@ public class ReceiveSummary {
 
     // BASE_DIV_NBR + RPR_DATE(month) + RPR_SEQ_NBR
     @NotEmpty
-    private Integer poReceiveId;
+    private Integer poReceiveId;//  receiptNumber
 
 
     @NotEmpty
@@ -140,12 +140,15 @@ public class ReceiveSummary {
 
     private LocalDateTime creationDate;
 
+    //TODO this value should be hardcoded in data pipeline
+
+    private String countryCode ;
 
 
 
 
 
-
+//TODO, pagination , indexing
 
 
 

@@ -3,15 +3,15 @@ package com.walmart.finance.ap.fds.receiving.service;
 
 
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
+import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineReqConverter;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineResponseConverter;
 import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
-import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
+import com.walmart.finance.ap.fds.receiving.request.ReceivingLineRequest;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
 import com.walmart.finance.ap.fds.receiving.repository.ReceiveLineDataRepository;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 
@@ -27,6 +27,14 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
     @Autowired
     ReceivingLineResponseConverter receivingLineResponseConverter;
 
+    @Autowired
+    ReceivingLineReqConverter receivingLineRequestConverter;
+
+    public ReceivingLine saveReceiveLine(ReceivingLineRequest receivingLineRequest) {
+        ReceivingLine receiveLine = receivingLineRequestConverter.convert(receivingLineRequest);
+        return receiveLineDataRepository.save(receiveLine);
+
+    }
 
     public ReceivingLineResponse getLineSummary(String receivingControlNumber, String poReceiveId, String storeNumber, String baseDivisionNumber, String transactionType, String finalDate, String finalTime, String sequenceNumber) {
         String id = formulateId(receivingControlNumber, poReceiveId, storeNumber, baseDivisionNumber, transactionType, finalDate, finalTime, sequenceNumber);

@@ -1,5 +1,6 @@
 package com.walmart.finance.ap.fds.receiving.common;
 
+
 public class ReceivingConstants {
 
     public static final String ACCEPT ="Accept";

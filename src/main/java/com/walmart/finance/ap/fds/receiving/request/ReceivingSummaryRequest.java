@@ -20,9 +20,13 @@ public class ReceivingSummaryRequest {
     private Integer storeNumber;
     @NotEmpty
     private Integer transactionType;
+/*    @NotEmpty
+    private LocalDateTime receiptDateStart;
+    @NotEmpty
+    private LocalDateTime receiptDateEnd;*/
+
     @NotEmpty
     private LocalDate finalDate;
-
 
     @NotEmpty
     private LocalTime finalTime;

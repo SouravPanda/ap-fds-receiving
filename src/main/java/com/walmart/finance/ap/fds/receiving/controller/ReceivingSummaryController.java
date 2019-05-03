@@ -1,6 +1,7 @@
 package com.walmart.finance.ap.fds.receiving.controller;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
+import com.walmart.finance.ap.fds.receiving.request.ReceivingSummarySearch;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveSummaryService;
 import io.swagger.annotations.Api;
@@ -59,6 +60,18 @@ public class ReceivingSummaryController {
         return receiveSummaryService.getReceiveSummary( receivingControlNumber,  poReceiveId,  storeNumber,  baseDivisionNumber,  transactionType,  finalDate, finalTime);
 
     }
+
+
+    @GetMapping("/search")
+    @ApiOperation(value = "API to add new Stores based on the payload")
+    @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Error")})
+    public ReceivingSummaryResponse getReceiveSummarySearch(@RequestBody ReceivingSummarySearch receivingSummarySearch){
+
+        return receiveSummaryService.getReceiveSummarySearch(receivingSummarySearch);
+
+    }
+
+
 
 }
 

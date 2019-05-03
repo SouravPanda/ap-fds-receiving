@@ -2,8 +2,8 @@
 
 <configuration>
 
-    <property name="LOG_HOME" value="logs/Foundation" />
-    <property name="APP_NAME" value="AP-FDS-FOUNDATION" />
+    <property name="LOG_HOME" value="logs/ReceiveServices" />
+    <property name="APP_NAME" value="AP-FDS-RECEIVING" />
     <property name="PERF_LOG" value="perf-monitoring" />
 
 
