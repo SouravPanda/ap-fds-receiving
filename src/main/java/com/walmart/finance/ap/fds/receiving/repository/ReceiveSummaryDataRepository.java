@@ -13,9 +13,4 @@ public interface ReceiveSummaryDataRepository extends MongoRepository<ReceiveSum
                                                                                                                         // Integer storeNo, Integer baseDivisionNo, Integer transType);
 
 
-    @Query()
-    List<ReceiveSummary> getReceiveSummarySearch(String serach);
-
-
-
 }

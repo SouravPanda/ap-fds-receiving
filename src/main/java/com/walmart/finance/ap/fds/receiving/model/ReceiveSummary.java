@@ -140,9 +140,11 @@ public class ReceiveSummary {
 
     private LocalDateTime creationDate;
 
-    //TODO this value should be hardcoded in data pipeline
 
-    private String countryCode ;
+    // PO_NBR_XREF/P1A_KEY(warehouse) :BKRM_PROC_XMAT_HDR/CONTROL_NBR(store)
+    private String purchaseOrderNumber;
+
+
 
 
 

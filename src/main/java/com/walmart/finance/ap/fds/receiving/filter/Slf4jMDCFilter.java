@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
 @Component
-@Order(ReceivingConstants.AP_FDS_FILTER_PRIORITY)
+@Order(ReceivingConstants.MDC_FILTER_ORDER)
 public class Slf4jMDCFilter extends OncePerRequestFilter {
 
     @Override

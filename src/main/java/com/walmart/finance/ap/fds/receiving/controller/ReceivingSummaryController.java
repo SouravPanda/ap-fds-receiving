@@ -9,6 +9,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotEmpty;
@@ -16,8 +18,8 @@ import javax.validation.constraints.NotNull;
 
 
 @RestController
-@RequestMapping(value = "/receiving-summary")
-@Api(value = "RESTful APIs for receiving-summary ")
+@RequestMapping(value = "/receiving-summary/{countryCode}")
+@Api(value = "REST APIs for receiving-summary ")
 public class ReceivingSummaryController {
 
     @Autowired
@@ -62,12 +64,21 @@ public class ReceivingSummaryController {
     }
 
 
-    @GetMapping("/search")
-    @ApiOperation(value = "API to add new Stores based on the payload")
+    @PostMapping("/search")
+    @ApiOperation(value = "API to search ReceivingSummary for given criteria")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Error")})
-    public ReceivingSummaryResponse getReceiveSummarySearch(@RequestBody ReceivingSummarySearch receivingSummarySearch){
+    public Page<ReceivingSummaryResponse> getReceiveSummarySearch(
 
-        return receiveSummaryService.getReceiveSummarySearch(receivingSummarySearch);
+            @RequestParam(value = "pageNbr", defaultValue = "0" )
+                    Integer pageNbr,
+            @RequestParam(value = "pageSize", defaultValue = "10")
+                    Integer pageSize,
+            @RequestParam(value="orderBy", defaultValue="creationDate")
+                    String orderBy,
+            @RequestParam(value = "order", defaultValue = "DESC")
+                    Sort.Direction order,
+            @RequestBody ReceivingSummarySearch receivingSummarySearch){
+        return receiveSummaryService.getReceiveSummarySearch(receivingSummarySearch,pageNbr,pageSize,orderBy,order);
 
     }
 

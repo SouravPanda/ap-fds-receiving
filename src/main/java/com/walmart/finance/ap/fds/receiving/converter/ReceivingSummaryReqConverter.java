@@ -38,7 +38,7 @@ public class ReceivingSummaryReqConverter implements Converter<ReceivingSummaryR
         receiveSummary.setFreeAstrayIndicator(receivingSummaryRequest.getFreeAstrayIndicator());
         receiveSummary.setFreightConslIndicator(receivingSummaryRequest.getFreightConslIndicator());
         receiveSummary.setInitialReceiveTimestamp(receivingSummaryRequest.getInitialReceiveTimestamp());
-        receiveSummary.setMDSReceiveDate(receivingSummaryRequest.getMDSReceiveDate());
+        receiveSummary.setMDSReceiveDate(receivingSummaryRequest.getMdsReceiveDate());
         receiveSummary.setReceiveProcessDate(receivingSummaryRequest.getReceiveProcessDate());
         receiveSummary.setReceiveWeightQuantity(receivingSummaryRequest.getReceiveWeightQuantity());
         receiveSummary.setSequenceNumber(receivingSummaryRequest.getSequenceNumber());

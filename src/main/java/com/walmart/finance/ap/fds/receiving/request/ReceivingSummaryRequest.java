@@ -76,7 +76,7 @@ public class ReceivingSummaryRequest {
 
     private LocalDateTime initialReceiveTimestamp;
 
-    private LocalDate MDSReceiveDate;
+    private LocalDate mdsReceiveDate;
 
     private LocalDate receiveProcessDate;
 

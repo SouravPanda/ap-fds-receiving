@@ -1,6 +1,8 @@
 package com.walmart.finance.ap.fds.receiving.filter;
+import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -26,6 +28,7 @@ import java.util.stream.Stream;
  */
 
 @Component
+@Order(ReceivingConstants.LOGGING_FILTER_ORDER)
 public class CustomHttpLoggingFilter extends OncePerRequestFilter {
 
     private static Logger log = LoggerFactory.getLogger(CustomHttpLoggingFilter.class);

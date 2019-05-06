@@ -1,10 +1,7 @@
 package com.walmart.finance.ap.fds.receiving.request;
 
-import com.sun.istack.internal.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 
 @Data
@@ -33,13 +30,9 @@ public class ReceivingSummarySearch {
 
     String invoiceNumber;
 
-    @NotNull
-    @NotEmpty
-    Integer countryCode;
+    /*String[] itemNumbers;//to be checked
 
-    String[] itemNumbers;//to be checked
-
-    String[] upcNumbers;//to be checked, y multiple
+    String[] upcNumbers;//to be checked, y multiple*/
 
     LocalDateTime receiptDateStart;
 

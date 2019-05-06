@@ -2,8 +2,8 @@
 
 <configuration>
 
-    <property name="LOG_HOME" value="logs/ReceiveServices" />
-    <property name="APP_NAME" value="AP-FDS-RECEIVING" />
+    <property name="LOG_HOME" value="logs/ap-fds-receiving" />
+    <property name="APP_NAME" value="ap-fds-receiving" />
     <property name="PERF_LOG" value="perf-monitoring" />
 
 
@@ -15,9 +15,10 @@
     </appender>
 
 
-    # Rolling appender for APP logs
+    <!--# Rolling appender for APP logs-->
 
-    <appender name="APP-FILE"  class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender name="APP-FILE"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_HOME}/${APP_NAME}.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>${LOG_HOME}/${APP_NAME}-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
@@ -31,9 +32,10 @@
     </appender>
 
 
-    # Rolling appender for PERF log
+    <!--# Rolling appender for PERF log-->
 
-    <appender name="PERF-FILE"  class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender name="PERF-FILE"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_HOME}/${PERF_LOG}.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>${LOG_HOME}/${PERF_LOG}-%d{yyyy-MM-dd}.%i.log</fileNamePattern>

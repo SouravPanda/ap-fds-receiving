@@ -1,27 +1,32 @@
 package com.walmart.finance.ap.fds.receiving.service;
 
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
+import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryReqConverter;
+import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
 import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
 import com.walmart.finance.ap.fds.receiving.integrations.InvoiceIntegrationService;
-import com.walmart.finance.ap.fds.receiving.request.ReceivingSummarySearch;
-import org.bson.Document;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.walmart.finance.ap.fds.receiving.integrations.InvoiceResponse;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
 import com.walmart.finance.ap.fds.receiving.repository.ReceiveSummaryDataRepository;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
+import com.walmart.finance.ap.fds.receiving.request.ReceivingSummarySearch;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
-import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryReqConverter;
-import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.repository.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 
 @Service
@@ -29,7 +34,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     public static final Logger log = LoggerFactory.getLogger(ReceiveSummaryServiceImpl.class);
 
-    private static final String separator = "|";
 
     @Autowired
     ReceiveSummaryDataRepository receiveDataRepository;
@@ -58,7 +62,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     public ReceivingSummaryResponse getReceiveSummary(String receivingControlNumber, String poReceiveId, String storeNumber, String baseDivisionNumber, String transactionType, String finalDate, String finalTime) {
         String id = formulateId(receivingControlNumber, poReceiveId, storeNumber, baseDivisionNumber, transactionType, finalDate, finalTime);
-        log.info("id is "+id);
+        log.info("id is " + id);
         Optional<ReceiveSummary> receiveSummary = receiveDataRepository.findById(id);
         if (receiveSummary.isPresent()) {
             ReceiveSummary savedReceiveSummary = receiveSummary.get();
@@ -72,122 +76,141 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     }
 
     @Override
-    public ReceivingSummaryResponse getReceiveSummarySearch(ReceivingSummarySearch receivingSummarySearch) {
+    public Page<ReceivingSummaryResponse> getReceiveSummarySearch(ReceivingSummarySearch receivingSummarySearch, int pageNbr, int pageSize, String orderBy, Sort.Direction order) {
 
-        String searchCriteria =null;
+        Query dynamicQuery = new Query();
 
-        if (null != receivingSummarySearch) {
+            /*
 
-            if(receivingSummarySearch.getInvoiceNumber()!=null ||receivingSummarySearch.getInvoiceId()!=null){
+              If invoiceId or invoiceNbr is present in search
 
+             */
 
-                //TODO invoiceIntegrationService implemnation needed
+        Query query;
 
-                //invoiceIntegrationService
+        List<InvoiceResponse> invoiceResponse = new ArrayList<>();
 
+        if (StringUtils.isNotEmpty(receivingSummarySearch.getInvoiceNumber()) || receivingSummarySearch.getInvoiceId() != null) {
 
+            if (receivingSummarySearch.getInvoiceId() != null) {
+                invoiceResponse.add(invoiceIntegrationService.getInvoiceByInvoiceId(receivingSummarySearch.getInvoiceId()));
+            } else {
+                invoiceResponse = invoiceIntegrationService.getInvoiceByinvoiceNbr(receivingSummarySearch.getInvoiceNumber());
             }
+            query = searchCriteriaFromInvoiceResponse(invoiceResponse, dynamicQuery);
+        } else {
 
+            query = searchCriteria(receivingSummarySearch, dynamicQuery);
 
-            /*searchCriteria = receivingSummarySearch.getControlNumber() != null && !receivingSummarySearch.getControlNumber().isEmpty() ? receivingSummarySearch.getControlNumber() : "NA";
-            searchCriteria += receivingSummarySearch.getInvoiceNumber() != null && receivingSummarySearch.getInvoiceNumber().isEmpty() ? receivingSummarySearch.getInvoiceNumber() : "NA";
-            searchCriteria +=receivingSummarySearch.getPurchaseOrderNumber() !=null && receivingSummarySearch.getPurchaseOrderNumber().isEmpty() ? receivingSummarySearch.getPurchaseOrderNumber() : "NA";
-            searchCriteria +=receivingSummarySearch.getCountryCode() !=null && receivingSummarySearch.getCountryCode()==0 ? receivingSummarySearch.getPurchaseOrderNumber() : "NA";
-            searchCriteria +=receivingSummarySearch.getDepartmentNumber()!=null && receivingSummarySearch.getDepartmentNumber()==0 ? receivingSummarySearch.getDepartmentNumber() : "NA";
-            searchCriteria +=receivingSummarySearch.getDivisionNumber()!=null && receivingSummarySearch.getDivisionNumber()==0 ? receivingSummarySearch.getDivisionNumber():"NA";
-            searchCriteria +=receivingSummarySearch.getInvoiceId()!=null && receivingSummarySearch.getInvoiceId()==0 ? receivingSummarySearch.getInvoiceId():"NA";
-            searchCriteria +=receivingSummarySearch.getPurchaseOrderId()!=null && receivingSummarySearch.getPurchaseOrderId()==0 ? receivingSummarySearch.getPurchaseOrderId():"NA";
-            searchCriteria +=receivingSummarySearch.getLocationNumber()!=null && receivingSummarySearch.getLocationNumber()==0 ? receivingSummarySearch.getLocationNumber():"NA";
-            searchCriteria +=receivingSummarySearch.getReceiptDateEnd()!=null && receivingSummarySearch.getReceiptDateEnd().equals(0)? receivingSummarySearch.getReceiptDateEnd():"NA";
-            searchCriteria +=receivingSummarySearch.getReceiptDateStart()!=null && receivingSummarySearch.getReceiptDateStart().equals(0) ? receivingSummarySearch.getReceiptDateStart():"NA";
-            searchCriteria +=receivingSummarySearch.getTransactionType()!=null && receivingSummarySearch.getTransactionType()==0 ?receivingSummarySearch.getTransactionType():"NA";
-            searchCriteria +=receivingSummarySearch.getReceiptNumber()!=null && receivingSummarySearch.getReceiptNumber()==0 ? receivingSummarySearch.getReceiptNumber():"NA";
-*/
         }
 
-        Query dynamicQuery =new Query();
+        Pageable pageable = PageRequest.of(pageNbr, pageSize);
+        dynamicQuery.with(pageable);
+        List<String> orderByproperties = new ArrayList<>();
+        orderByproperties.add(orderBy);
+        Sort sort = new Sort(order, orderByproperties);
+        dynamicQuery.with(sort);
 
-        if(!receivingSummarySearch.getControlNumber().isEmpty()){
+        List<ReceiveSummary> receiveSummaries = mongoTemplate.find(query, ReceiveSummary.class, "receive-summary");
+        Page<ReceiveSummary> receiveSummaryPage = PageableExecutionUtils.getPage(
+                receiveSummaries,
+                pageable,
+                () -> mongoTemplate.count(dynamicQuery, ReceiveSummary.class));
 
-            Criteria criteria =Criteria.where("receivingControlNumber").is(receivingSummarySearch.getControlNumber());
-            dynamicQuery.addCriteria(criteria);
-        }
+        return mapReceivingSummaryToResponse(receiveSummaryPage);
 
-        if(receivingSummarySearch.getPurchaseOrderId()!=0){
+    }
 
-            Criteria criteria =Criteria.where("receivingControlNumber").is(receivingSummarySearch.getPurchaseOrderId());
-            dynamicQuery.addCriteria(criteria);
-        }
 
-        if(receivingSummarySearch.getDivisionNumber()!=0){
-
-            Criteria criteria =Criteria.where("baseDivisonNumber").is(receivingSummarySearch.getDivisionNumber());
-            dynamicQuery.addCriteria(criteria);
-        }
-
-        if(!receivingSummarySearch.getReceiptDateStart().equals(0)){
-
-            Criteria criteria =Criteria.where("mdsReceiveDate").is(receivingSummarySearch.getReceiptDateStart());
-            dynamicQuery.addCriteria(criteria);
-        }
-//TODO need to check Cosmos has only MDSReceiveDate
-        if(!receivingSummarySearch.getReceiptDateEnd().equals(0)){
-
-            Criteria criteria =Criteria.where("mdsReceiveDate").is(receivingSummarySearch.getReceiptDateEnd());
-            dynamicQuery.addCriteria(criteria);
-        }
-
-        if(receivingSummarySearch.getTransactionType()!=0){
-
-            Criteria criteria =Criteria.where("transactionType").is(receivingSummarySearch.getTransactionType());
-            dynamicQuery.addCriteria(criteria);
-        }
-
-        if(receivingSummarySearch.getLocationNumber()!=0){
-
-            Criteria criteria =Criteria.where("storeNumber").is(receivingSummarySearch.getLocationNumber());
-            dynamicQuery.addCriteria(criteria);
-        }
-
-        if(!receivingSummarySearch.getPurchaseOrderNumber().isEmpty()){
-
-            Criteria criteria =Criteria.where("purchaseOrderNumber").is(receivingSummarySearch.getPurchaseOrderNumber());
-            dynamicQuery.addCriteria(criteria);
-        }
-
-        if(receivingSummarySearch.getReceiptNumber()!=0){
-
-            Criteria criteria =Criteria.where("poReceivingId").is(receivingSummarySearch.getReceiptNumber());
-            dynamicQuery.addCriteria(criteria);
-        }
-
-        if(receivingSummarySearch.getDepartmentNumber()!=0){
-
-            Criteria criteria =Criteria.where("departmentNumber").is(receivingSummarySearch.getDepartmentNumber());
-            dynamicQuery.addCriteria(criteria);
-        }
-
-        if(receivingSummarySearch.getVendorNumber()!=0){
-            Criteria criteria =Criteria.where("vendorNumber").is(receivingSummarySearch.getVendorNumber());
-            dynamicQuery.addCriteria(criteria);
-        }
-        List<ReceiveSummary> receiveSummaries  =mongoTemplate.find(dynamicQuery,ReceiveSummary.class);
-
-        ReceivingSummaryResponse receivingSummaryResponse= new ReceivingSummaryResponse();
-
-        return receivingSummaryResponse;
-
+    private Page<ReceivingSummaryResponse> mapReceivingSummaryToResponse(Page<ReceiveSummary> receiveSummaryPage) {
+        Page<ReceivingSummaryResponse> receivingSummaryResponsePage = receiveSummaryPage.map(new Function<ReceiveSummary, ReceivingSummaryResponse>() {
+            @Override
+            public ReceivingSummaryResponse apply(ReceiveSummary receiveSummary) {
+                return receivingSummaryResponseConverter.convert(receiveSummary);
+            }
+        });
+        return receivingSummaryResponsePage;
     }
 
 
     private String formulateId(String receivingControlNumber, String poReceiveId, String storeNumber, String baseDivisionNumber, String transactionType, String finalDate, String finalTime) {
-        return receivingControlNumber + ReceivingConstants.PIPE_SEPARATOR + poReceiveId + ReceivingConstants.PIPE_SEPARATOR + storeNumber + ReceivingConstants.PIPE_SEPARATOR +  baseDivisionNumber + ReceivingConstants.PIPE_SEPARATOR + transactionType + ReceivingConstants.PIPE_SEPARATOR +  finalDate + ReceivingConstants.PIPE_SEPARATOR +  finalTime;
+        return receivingControlNumber + ReceivingConstants.PIPE_SEPARATOR + poReceiveId + ReceivingConstants.PIPE_SEPARATOR + storeNumber + ReceivingConstants.PIPE_SEPARATOR + baseDivisionNumber + ReceivingConstants.PIPE_SEPARATOR + transactionType + ReceivingConstants.PIPE_SEPARATOR + finalDate + ReceivingConstants.PIPE_SEPARATOR + finalTime;
 
 
     }
 
 
+    private Query searchCriteriaFromInvoiceResponse(List<InvoiceResponse> invoiceResponses, Query dynamicQuery) {
 
+        if(CollectionUtils.isNotEmpty(invoiceResponses) && invoiceResponses.size()>1){
+
+
+
+        }
+
+        return dynamicQuery;
+    }
+
+
+    private Query searchCriteria(ReceivingSummarySearch receivingSummarySearch, Query dynamicQuery) {
+
+        if (StringUtils.isNotEmpty(receivingSummarySearch.getControlNumber())) {
+            Criteria controlNumberCriteria = Criteria.where("receivingControlNumber").is(receivingSummarySearch.getControlNumber());
+            dynamicQuery.addCriteria(controlNumberCriteria);
+        }
+
+        if (Optional.ofNullable(receivingSummarySearch.getPurchaseOrderId()).orElse(0L) != 0L) {
+            Criteria purchaseOrderIdCriteria = Criteria.where("receivingControlNumber").is(receivingSummarySearch.getPurchaseOrderId());
+            dynamicQuery.addCriteria(purchaseOrderIdCriteria);
+        }
+
+        if (Optional.ofNullable(receivingSummarySearch.getDivisionNumber()).orElse(0) != 0) {
+            Criteria baseDivisionNumberCriteria = Criteria.where("baseDivisionNumber").is(receivingSummarySearch.getDivisionNumber());
+            dynamicQuery.addCriteria(baseDivisionNumberCriteria);
+        }
+
+        if (receivingSummarySearch.getReceiptDateStart() != null) {
+            Criteria mdsReceiveDateCriteria = Criteria.where("mdsReceiveDate").is(receivingSummarySearch.getReceiptDateStart());
+            dynamicQuery.addCriteria(mdsReceiveDateCriteria);
+        }
+        //TODO need to check Cosmos has only MDSReceiveDate
+        if (receivingSummarySearch.getReceiptDateEnd() != null) {
+            Criteria mdsReceDateCriteria = Criteria.where("mdsReceiveDate").is(receivingSummarySearch.getReceiptDateEnd());
+            dynamicQuery.addCriteria(mdsReceDateCriteria);
+        }
+
+        if (Optional.ofNullable(receivingSummarySearch.getTransactionType()).orElse(0) != 0) {
+            Criteria transactionTypeCriteria = Criteria.where("transactionType").is(receivingSummarySearch.getTransactionType());
+            dynamicQuery.addCriteria(transactionTypeCriteria);
+        }
+
+        if (Optional.ofNullable(receivingSummarySearch.getLocationNumber()).orElse(0) != 0) {
+            Criteria storeNumberCriteria = Criteria.where("storeNumber").is(receivingSummarySearch.getLocationNumber());
+            dynamicQuery.addCriteria(storeNumberCriteria);
+        }
+
+        if (StringUtils.isNotEmpty(receivingSummarySearch.getPurchaseOrderNumber())) {
+            Criteria purchaseOrderNumberCriteria = Criteria.where("purchaseOrderNumber").is(receivingSummarySearch.getPurchaseOrderNumber());
+            dynamicQuery.addCriteria(purchaseOrderNumberCriteria);
+        }
+
+        if (Optional.ofNullable(receivingSummarySearch.getReceiptNumber()).orElse(0L) != 0L) {
+            Criteria poReceiveIdCriteria = Criteria.where("poReceiveId").is(receivingSummarySearch.getReceiptNumber());
+            dynamicQuery.addCriteria(poReceiveIdCriteria);
+        }
+
+        if (Optional.ofNullable(receivingSummarySearch.getDepartmentNumber()).orElse(0) != 0) {
+            Criteria departmentNumberCriteria = Criteria.where("departmentNumber").is(receivingSummarySearch.getDepartmentNumber());
+            dynamicQuery.addCriteria(departmentNumberCriteria);
+        }
+
+        if (Optional.ofNullable(receivingSummarySearch.getVendorNumber()).orElse(0) != 0) {
+            Criteria vendorNumberCriteria = Criteria.where("vendorNumber").is(receivingSummarySearch.getVendorNumber());
+            dynamicQuery.addCriteria(vendorNumberCriteria);
+        }
+
+        return dynamicQuery;
+    }
 
 }
 
