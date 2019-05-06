@@ -21,7 +21,7 @@ import javax.validation.constraints.NotNull;
 
 
 @RestController
-@RequestMapping(value = "/receiving-line")
+@RequestMapping(value = "/receiving/line/countryCode/{countryCode}")
 @Api(value = "RESTful APIs for Receiving Line ")
 public class ReceivingLineController {
 

@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.walmart.store.receive</groupId>
 	<artifactId>ap-fds-receive</artifactId>
-	<version>0.0.9-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<name>ap-fds-receive</name>
 	<description>Demo project for Spring Boot</description>
 
@@ -137,6 +137,31 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>com.microsoft.azure</groupId>
+				<artifactId>azure-webapp-maven-plugin</artifactId>
+				<version>1.4.0</version>
+				<configuration>
+					<deploymentType>jar</deploymentType>
+
+					<!-- configure app to run on port 80, required by App Service -->
+					<appSettings>
+						<property>
+							<name>JAVA_OPTS</name>
+							<value>-Dserver.port=80</value>
+						</property>
+					</appSettings>
+
+					<!-- Web App information -->
+					<resourceGroup>asp33-wmase-dev01-southcentral-rg</resourceGroup>
+					<appName>ap-fds-receiver-dev</appName>
+					<region>southcentralus</region>
+					<appServicePlanName>asp33-wmase-dev01</appServicePlanName>
+
+					<!-- Java Runtime Stack for Web App on Linux-->
+					<!--<linuxRuntime>jre8</linuxRuntime>-->
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

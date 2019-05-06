@@ -30,6 +30,8 @@ public class ReceivingSummarySearch {
 
     String invoiceNumber;
 
+    Integer countryCode;
+
     /*String[] itemNumbers;//to be checked
 
     String[] upcNumbers;//to be checked, y multiple*/

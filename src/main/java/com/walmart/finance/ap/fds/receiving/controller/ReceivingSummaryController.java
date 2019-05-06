@@ -18,7 +18,7 @@ import javax.validation.constraints.NotNull;
 
 
 @RestController
-@RequestMapping(value = "/receiving-summary/{countryCode}")
+@RequestMapping(value = "/receiving/summary/countryCode/{countryCode}")
 @Api(value = "REST APIs for receiving-summary ")
 public class ReceivingSummaryController {
 

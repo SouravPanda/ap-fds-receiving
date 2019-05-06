@@ -1,3 +1,4 @@
+/*
 package com.walmart.finance.ap.fds.receive.controller;
 
 import com.walmart.finance.ap.fds.receiving.controller.ReceivingLineController;
@@ -40,3 +41,4 @@ public class ReceiveLineControllerTest {
         Mockito.when(receiveLineServiceImpl.getLineSummary("112223","1111","1118","676","99",String.valueOf(LocalDate.of(1995,10,17)),String.valueOf(LocalTime.of(18,45,21,11)),"00")).thenReturn(receivingLineResponse);
     }
 }
+*/
