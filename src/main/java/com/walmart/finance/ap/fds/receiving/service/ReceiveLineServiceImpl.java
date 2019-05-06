@@ -6,14 +6,28 @@ import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineReqConverter;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineResponseConverter;
 import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
+import com.walmart.finance.ap.fds.receiving.integrations.InvoiceResponse;
+import com.walmart.finance.ap.fds.receiving.request.ReceiveLineSearch;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingLineRequest;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
 import com.walmart.finance.ap.fds.receiving.repository.ReceiveLineDataRepository;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.repository.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 public class ReceiveLineServiceImpl implements ReceiveLineService {
@@ -29,6 +43,9 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
 
     @Autowired
     ReceivingLineReqConverter receivingLineRequestConverter;
+
+    @Autowired
+    MongoTemplate mongoTemplate;
 
     public ReceivingLine saveReceiveLine(ReceivingLineRequest receivingLineRequest) {
         ReceivingLine receiveLine = receivingLineRequestConverter.convert(receivingLineRequest);
@@ -51,6 +68,98 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
         }
 
 
+    }
+    @Override
+    public Page<ReceivingLineResponse> getReceiveLineSearch(ReceiveLineSearch receivingLineSearch, int pageNbr, int pageSize, String orderBy, Sort.Direction order) {
+
+        Query dynamicQuery = new Query();
+
+            /*
+
+              If invoiceId or invoiceNbr is present in search
+
+             */
+
+        Query query=new Query();
+/*
+       List<InvoiceResponse> invoiceResponse = new ArrayList<>();
+
+        if (StringUtils.isNotEmpty(receivingLineSearch.getInvoiceNumber()) || receivingLineSearch.getInvoiceId() != null) {
+
+            if (receivingLineSearch.getInvoiceId() != null) {
+                invoiceResponse.add(invoiceIntegrationService.getInvoiceByInvoiceId(receivingSummarySearch.getInvoiceId()));
+            } else {
+                invoiceResponse = invoiceIntegrationService.getInvoiceByinvoiceNbr(receivingSummarySearch.getInvoiceNumber());
+            }
+            query = searchCriteriaFromInvoiceResponse(invoiceResponse, dynamicQuery);
+        } else {*/
+
+            query = searchCriteria(receivingLineSearch, dynamicQuery);
+
+        //  }
+
+        Pageable pageable = PageRequest.of(pageNbr, pageSize);
+        dynamicQuery.with(pageable);
+        List<String> orderByproperties = new ArrayList<>();
+        orderByproperties.add(orderBy);
+        Sort sort = new Sort(order, orderByproperties);
+        dynamicQuery.with(sort);
+
+        List<ReceivingLine> receiveLines = mongoTemplate.find(query, ReceivingLine.class, "receive-line");
+        Page<ReceivingLine> receiveLinePage = PageableExecutionUtils.getPage(
+                receiveLines,
+                pageable,
+                () -> mongoTemplate.count(dynamicQuery, ReceivingLine.class));
+
+        return mapReceivingSummaryToResponse(receiveLinePage);
+
+    }
+
+
+    private Page<ReceivingLineResponse> mapReceivingSummaryToResponse(Page<ReceivingLine> receiveLinePage) {
+        Page<ReceivingLineResponse> receivingLineResponsePage = receiveLinePage.map(new Function<ReceivingLine, ReceivingLineResponse>() {
+            @Override
+            public ReceivingLineResponse apply(ReceivingLine receiveLine) {
+                return receivingLineResponseConverter.convert(receiveLine);
+            }
+        });
+        return receivingLineResponsePage;
+    }
+
+    @Override
+    public ReceivingLineResponse getReceiveLine(ReceiveLineSearch receivingLineSearch) {
+        return null;
+    }
+
+    public Query searchCriteria(ReceiveLineSearch receivingLineSearch, Query dynamicQuery){
+        dynamicQuery =new Query();
+
+        if(Optional.ofNullable(receivingLineSearch.getPurchaseOrderId()).orElse(0L)!=0L) {
+            Criteria criteria = Criteria.where("receivingControlNumber").is(receivingLineSearch.getPurchaseOrderId());
+            dynamicQuery.addCriteria(criteria);
+        }
+        if(Optional.ofNullable(receivingLineSearch.getReceiptNumber()).orElse(0L)!=0L) {
+            Criteria criteria = Criteria.where("purchaseOrderReceiveID").is(receivingLineSearch.getReceiptNumber());
+            dynamicQuery.addCriteria(criteria);
+        }
+        if(Optional.ofNullable(receivingLineSearch.getTransactionType()).orElse(0)!= 0){
+            Criteria criteria = Criteria.where("transactionType").is(receivingLineSearch.getTransactionType());
+            dynamicQuery.addCriteria(criteria);
+        }
+        if(StringUtils.isNotEmpty(receivingLineSearch.getControlNumber())||(receivingLineSearch.getControlNumber()!=null)){
+            Criteria criteria = Criteria.where("receivingControlNumber").is(receivingLineSearch.getControlNumber());
+            dynamicQuery.addCriteria(criteria);
+        }
+        if(Optional.ofNullable(receivingLineSearch.getDivisionNumber()).orElse(0)!=0){
+            Criteria criteria = Criteria.where("baseDivisionNumber").is(receivingLineSearch.getDivisionNumber());
+            dynamicQuery.addCriteria(criteria);
+        }
+        if(Optional.ofNullable(receivingLineSearch.getLocationNumber()).orElse(0)!=0){
+            Criteria criteria = Criteria.where("storeNumber").is(receivingLineSearch.getLocationNumber());
+            dynamicQuery.addCriteria(criteria);
+        }
+
+        return dynamicQuery;
     }
 
 
