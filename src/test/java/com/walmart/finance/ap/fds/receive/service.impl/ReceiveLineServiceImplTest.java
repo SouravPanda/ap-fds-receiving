@@ -5,6 +5,7 @@ import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineReqConverter;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineResponseConverter;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.repository.ReceiveLineDataRepository;
+import com.walmart.finance.ap.fds.receiving.request.ReceiveLineSearch;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveLineServiceImpl;
 import org.junit.Assert;
@@ -13,6 +14,8 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,10 +42,9 @@ public class ReceiveLineServiceImplTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    @Test
-    public void getLineSummaryTest() {
         String _id = "112|1804823|8264|18|0|1995-10-17|1995-10-17T18:45:21|122";
         Integer purchaseOrderReceiveID = 4665267;
+        Long purchaseOrderId = 466567L;
         Integer storeNumber = 8264;
         Integer itemNumber = 3777;
         LocalDate finalDate = LocalDate.of(1995, 10, 17);
@@ -80,15 +82,27 @@ public class ReceiveLineServiceImplTest {
         Integer locationNumber = 112;
         Integer divisionNumber = 44;
         Integer receivingControlNumber = 112;
-         ReceivingLine receivingLine =new ReceivingLine(_id, purchaseOrderReceiveID, lineNumber, itemNumber, vendorNumber,receivedQuantity, costAmount, retailAmount, receivingControlNumber, purchaseReceiptNumber, purchasedOrderId, upcNumber, transactionType, storeNumber, baseDivisionNumber, finalDate, finalTime, sequenceNumber, creationDate);
-          Optional<ReceivingLine> receiveLineAt =Optional.of(receivingLine);
-          ReceivingLine savedReceivingLine = receiveLineAt.get();
-         ReceivingLineResponse response= new ReceivingLineResponse(receiptNumber,receiptLineNumber,itemNumber,vendorNumber,quantity,eachCostAmount,eachRetailAmount,packQuantity,numberofCasesReceived,
-               vendorStockNumber,bottleStockNumber,damaged,purchaseOrderNumber,purchaseReceiptNumber,purchasedOrderId,upc,itemDescription,unitOfMeasure,variableWeightInd,receivedWeightQuantity,transactionType,controlNumber,locationNumber,divisionNumber);
-          when(receivingLineResponseConverter.convert(savedReceivingLine)).thenReturn(response);
-        when(receiveLineDataRepository.findById(_id)).thenReturn(receiveLineAt);
-        Assert.assertEquals(response,receiveLineServiceImpl.getLineSummary(receivingControlNumber.toString(),poReceiveId.toString(),storeNumber.toString()
-        ,baseDivisionNumber.toString(),transactionType.toString(),finalDate.toString(),finalTime.toString(),sequenceNumber.toString()));
+        Integer countryCode=0;
+        @Test
+        public void getLineSummaryTest() {
+             ReceivingLine receivingLine =new ReceivingLine(_id, purchaseOrderReceiveID, lineNumber, itemNumber, vendorNumber,receivedQuantity, costAmount, retailAmount, receivingControlNumber, purchaseReceiptNumber, purchasedOrderId, upcNumber, transactionType, storeNumber, baseDivisionNumber, finalDate, finalTime, sequenceNumber, creationDate);
+              Optional<ReceivingLine> receiveLineAt =Optional.of(receivingLine);
+              ReceivingLine savedReceivingLine = receiveLineAt.get();
+             ReceivingLineResponse response= new ReceivingLineResponse(receiptNumber,receiptLineNumber,itemNumber,vendorNumber,quantity,eachCostAmount,eachRetailAmount,packQuantity,numberofCasesReceived,
+                   vendorStockNumber,bottleStockNumber,damaged,purchaseOrderNumber,purchaseReceiptNumber,purchasedOrderId,upc,itemDescription,unitOfMeasure,variableWeightInd,receivedWeightQuantity,transactionType,controlNumber,locationNumber,divisionNumber);
+              when(receivingLineResponseConverter.convert(savedReceivingLine)).thenReturn(response);
+            when(receiveLineDataRepository.findById(_id)).thenReturn(receiveLineAt);
+            Assert.assertEquals(response,receiveLineServiceImpl.getLineSummary(receivingControlNumber.toString(),poReceiveId.toString(),storeNumber.toString()
+            ,baseDivisionNumber.toString(),transactionType.toString(),finalDate.toString(),finalTime.toString(),sequenceNumber.toString()));
 
-    }
+        }
+
+        @Test
+        public void searchCriteriaTest(){
+          Query dynamicQuery =new Query();
+          ReceiveLineSearch receiveLineSearch = new ReceiveLineSearch(purchaseOrderId,receiptNumber.longValue(),transactionType,controlNumber.toString(), locationNumber, divisionNumber,countryCode);
+            Criteria criteria=Criteria.where("receivingControlNumber").is(466567L).and("purchaseOrderReceiveID").is(1L).and("baseDivisionNumber").is(44).and("storeNumber").is(112);
+            dynamicQuery.addCriteria(criteria);
+            Assert.assertEquals(receiveLineServiceImpl.searchCriteria(receiveLineSearch,dynamicQuery).toString(),dynamicQuery.toString());
+        }
 }

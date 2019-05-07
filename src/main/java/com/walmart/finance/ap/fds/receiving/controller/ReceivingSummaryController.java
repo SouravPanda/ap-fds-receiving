@@ -35,7 +35,8 @@ public class ReceivingSummaryController {
     @ApiOperation(value = "API to add new Stores based on the payload")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
 
-    public ReceiveSummary saveReceiveSummary(@RequestBody ReceivingSummaryRequest receivingSummaryRequest) {
+    public ReceiveSummary saveReceiveSummary(@RequestBody ReceivingSummaryRequest receivingSummaryRequest,  @PathVariable("countryCode")
+            String countryCode) {
        return receiveSummaryService.saveReceiveSummary(receivingSummaryRequest);
 
     }
@@ -47,7 +48,7 @@ public class ReceivingSummaryController {
      * @param
      * @return store
      */
-    @GetMapping
+   /* @GetMapping
     @ApiOperation(value = "API to add new Stores based on the payload")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Error")})
 
@@ -61,14 +62,15 @@ public class ReceivingSummaryController {
 
         return receiveSummaryService.getReceiveSummary( receivingControlNumber,  poReceiveId,  storeNumber,  baseDivisionNumber,  transactionType,  finalDate, finalTime);
 
-    }
+    }*/
 
 
     @PostMapping("/search")
     @ApiOperation(value = "API to search ReceivingSummary for given criteria")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Error")})
     public Page<ReceivingSummaryResponse> getReceiveSummarySearch(
-
+            @PathVariable("countryCode")
+                    String countryCode,
             @RequestParam(value = "pageNbr", defaultValue = "0" )
                     Integer pageNbr,
             @RequestParam(value = "pageSize", defaultValue = "10")

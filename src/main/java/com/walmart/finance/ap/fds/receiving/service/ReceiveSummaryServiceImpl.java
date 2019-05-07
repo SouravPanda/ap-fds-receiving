@@ -159,10 +159,10 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             dynamicQuery.addCriteria(controlNumberCriteria);
         }
 
-        if (Optional.ofNullable(receivingSummarySearch.getPurchaseOrderId()).orElse(0L) != 0L) {
+      /*  if (Optional.ofNullable(receivingSummarySearch.getPurchaseOrderId()).orElse(0L) != 0L) {
             Criteria purchaseOrderIdCriteria = Criteria.where("receivingControlNumber").is(receivingSummarySearch.getPurchaseOrderId());
             dynamicQuery.addCriteria(purchaseOrderIdCriteria);
-        }
+        }*/
 
         if (Optional.ofNullable(receivingSummarySearch.getDivisionNumber()).orElse(0) != 0) {
             Criteria baseDivisionNumberCriteria = Criteria.where("baseDivisionNumber").is(receivingSummarySearch.getDivisionNumber());
@@ -174,10 +174,10 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             dynamicQuery.addCriteria(mdsReceiveDateCriteria);
         }
         //TODO need to check Cosmos has only MDSReceiveDate
-        if (receivingSummarySearch.getReceiptDateEnd() != null) {
+      /*  if (receivingSummarySearch.getReceiptDateEnd() != null) {
             Criteria mdsReceDateCriteria = Criteria.where("mdsReceiveDate").is(receivingSummarySearch.getReceiptDateEnd());
             dynamicQuery.addCriteria(mdsReceDateCriteria);
-        }
+        }*/
 
         if (Optional.ofNullable(receivingSummarySearch.getTransactionType()).orElse(0) != 0) {
             Criteria transactionTypeCriteria = Criteria.where("transactionType").is(receivingSummarySearch.getTransactionType());

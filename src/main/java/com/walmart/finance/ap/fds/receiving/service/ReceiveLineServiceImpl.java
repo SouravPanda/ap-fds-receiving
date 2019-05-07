@@ -146,10 +146,10 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
             Criteria criteria = Criteria.where("transactionType").is(receivingLineSearch.getTransactionType());
             dynamicQuery.addCriteria(criteria);
         }
-        if(StringUtils.isNotEmpty(receivingLineSearch.getControlNumber())||(receivingLineSearch.getControlNumber()!=null)){
+    /*    if(StringUtils.isNotEmpty(receivingLineSearch.getControlNumber())||(receivingLineSearch.getControlNumber()!=null)){
             Criteria criteria = Criteria.where("receivingControlNumber").is(receivingLineSearch.getControlNumber());
             dynamicQuery.addCriteria(criteria);
-        }
+        }*/
         if(Optional.ofNullable(receivingLineSearch.getDivisionNumber()).orElse(0)!=0){
             Criteria criteria = Criteria.where("baseDivisionNumber").is(receivingLineSearch.getDivisionNumber());
             dynamicQuery.addCriteria(criteria);

@@ -141,7 +141,7 @@
 			<plugin>
 				<groupId>com.microsoft.azure</groupId>
 				<artifactId>azure-webapp-maven-plugin</artifactId>
-				<version>1.4.0</version>
+				<version>1.5.4</version>
 				<configuration>
 					<deploymentType>jar</deploymentType>
 
@@ -160,7 +160,7 @@
 					<appServicePlanName>asp33-wmase-dev01</appServicePlanName>
 
 					<!-- Java Runtime Stack for Web App on Linux-->
-					<!--<linuxRuntime>jre8</linuxRuntime>-->
+					<linuxRuntime>jre8</linuxRuntime>
 				</configuration>
 			</plugin>
 		</plugins>

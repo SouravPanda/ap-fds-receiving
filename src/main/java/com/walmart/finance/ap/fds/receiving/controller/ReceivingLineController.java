@@ -36,7 +36,7 @@ public class ReceivingLineController {
       @param
       @return store
     */
-
+/*
     @GetMapping
     @ApiOperation(value = "API to get new LineSummary based on the payload")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
@@ -52,7 +52,7 @@ public class ReceivingLineController {
 
         return receiveLineService.getLineSummary(receivingControlNumber, poReceiveId, storeNumber, baseDivisionNumber, transactionType, finalDate, finalTime, sequenceNumber);
 
-    }
+    }*/
 
     /**
      * Method calls Service class to add stores in Db
@@ -64,7 +64,8 @@ public class ReceivingLineController {
     @ApiOperation(value = "API to add new Stores based on the payload")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
 
-    public ReceivingLine saveReceiveLine(@RequestBody ReceivingLineRequest receivingLineRequest) {
+    public ReceivingLine saveReceiveLine(@PathVariable("countryCode")
+                                                     String countryCode,@RequestBody ReceivingLineRequest receivingLineRequest ) {
         return receiveLineServiceImpl.saveReceiveLine(receivingLineRequest);
 
     }
@@ -80,6 +81,8 @@ public class ReceivingLineController {
     @ApiOperation(value = "API to search ReceivingSummary for given criteria")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Error")})
     public Page<ReceivingLineResponse> getReceiveLineSearch(
+            @PathVariable("countryCode")
+            String countryCode,
 
             @RequestParam(value = "pageNbr", defaultValue = "0" )
                     Integer pageNbr,
