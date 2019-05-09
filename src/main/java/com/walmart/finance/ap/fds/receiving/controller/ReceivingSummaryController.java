@@ -80,7 +80,6 @@ public class ReceivingSummaryController {
             @RequestParam(value = "order", defaultValue = "DESC")
                     Sort.Direction order,
             @RequestBody ReceivingSummarySearch receivingSummarySearch){
-        System.out.println("Inside controller summary");
         return receiveSummaryService.getReceiveSummarySearch(receivingSummarySearch,pageNbr,pageSize,orderBy,order);
 
     }

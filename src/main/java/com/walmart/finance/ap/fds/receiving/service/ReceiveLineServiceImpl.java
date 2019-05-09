@@ -6,7 +6,6 @@ import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineReqConverter;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineResponseConverter;
 import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
-import com.walmart.finance.ap.fds.receiving.integrations.InvoiceResponse;
 import com.walmart.finance.ap.fds.receiving.request.ReceiveLineSearch;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingLineRequest;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
@@ -32,9 +31,7 @@ import java.util.function.Function;
 @Service
 public class ReceiveLineServiceImpl implements ReceiveLineService {
 
-
-    private static final String separator = "|";
-
+    
     @Autowired
     ReceiveLineDataRepository receiveLineDataRepository;
 
@@ -69,11 +66,12 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
 
 
     }
+
     @Override
-           public Page<ReceivingLineResponse> getReceiveLineSearch(ReceiveLineSearch receivingLineSearch, int pageNbr, int pageSize, String orderBy, Sort.Direction order) {
+    public Page<ReceivingLineResponse> getReceiveLineSearch(ReceiveLineSearch receivingLineSearch, int pageNbr, int pageSize, String orderBy, Sort.Direction order) {
 
-        Query dynamicQuery = new Query();
 
+        Query query;
             /*
 
               If invoiceId or invoiceNbr is present in search
@@ -94,24 +92,24 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
             query = searchCriteriaFromInvoiceResponse(invoiceResponse, dynamicQuery);
         } else {*/
 
-        Query query = searchCriteria(receivingLineSearch, dynamicQuery);
+        query = searchCriteria(receivingLineSearch);
 
         //  }
 
         Pageable pageable = PageRequest.of(pageNbr, pageSize);
-        dynamicQuery.with(pageable);
+        query.with(pageable);
         List<String> orderByproperties = new ArrayList<>();
         orderByproperties.add(orderBy);
         Sort sort = new Sort(order, orderByproperties);
-        dynamicQuery.with(sort);
+        query.with(sort);
 
-        List<ReceivingLine> receiveLines = mongoTemplate.find(dynamicQuery, ReceivingLine.class, "receive-line");
+        List<ReceivingLine> receiveLines = mongoTemplate.find(query, ReceivingLine.class, "receive-line");
 
 
         Page<ReceivingLine> receiveLinePage = PageableExecutionUtils.getPage(
                 receiveLines,
                 pageable,
-                () -> mongoTemplate.count(dynamicQuery, ReceivingLine.class));
+                () -> mongoTemplate.count(query, ReceivingLine.class));
 
         return mapReceivingLineToResponse(receiveLinePage);
 
@@ -133,44 +131,43 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
         return null;
     }
 
-        private Query searchCriteria(ReceiveLineSearch receivingLineSearch, Query dynamicQuery){
-            dynamicQuery =new Query();
+    private Query searchCriteria(ReceiveLineSearch receivingLineSearch) {
+        Query dynamicQuery = new Query();
 
-            if(Optional.ofNullable(receivingLineSearch.getPurchaseOrderId()).orElse(0L)!=0L||(StringUtils.isNotEmpty(receivingLineSearch.getControlNumber())||(receivingLineSearch.getControlNumber()!=null))) {
-                if(Optional.ofNullable(receivingLineSearch.getPurchaseOrderId()).orElse(0L)!=0L) {
-                    Criteria purchaseOrderIdCriteria = Criteria.where("receivingControlNumber").is(String.valueOf(receivingLineSearch.getPurchaseOrderId()));
-                    dynamicQuery.addCriteria(purchaseOrderIdCriteria);
-                }
-                else {
-                Criteria controlNumberCriteria=Criteria.where("receivingControlNumber").is(receivingLineSearch.getControlNumber());
-                    dynamicQuery.addCriteria(controlNumberCriteria);
-                }
+        if (Optional.ofNullable(receivingLineSearch.getPurchaseOrderId()).orElse(0L) != 0L || (StringUtils.isNotEmpty(receivingLineSearch.getControlNumber()))) {
+            if (Optional.ofNullable(receivingLineSearch.getPurchaseOrderId()).orElse(0L) != 0L) {
+                Criteria purchaseOrderIdCriteria = Criteria.where("receivingControlNumber").is(receivingLineSearch.getPurchaseOrderId().toString());
+                dynamicQuery.addCriteria(purchaseOrderIdCriteria);
+            } else {
+                Criteria controlNumberCriteria = Criteria.where("receivingControlNumber").is(receivingLineSearch.getControlNumber());
+                dynamicQuery.addCriteria(controlNumberCriteria);
             }
-            if(Optional.ofNullable(receivingLineSearch.getReceiptNumber()).orElse(0L)!=0L) {
-                Criteria receiptNumberCriteria = Criteria.where("purchaseOrderReceiveID").is(Integer.parseInt(receivingLineSearch.getReceiptNumber().toString()));
-                dynamicQuery.addCriteria(receiptNumberCriteria);
-            }
-            if(Optional.ofNullable(receivingLineSearch.getTransactionType()).orElse(0)!= 0){
-                Criteria transactionTypeCriteria = Criteria.where("transactionType").is(receivingLineSearch.getTransactionType());
-                dynamicQuery.addCriteria(transactionTypeCriteria);
-            }
-
-            if(Optional.ofNullable(receivingLineSearch.getDivisionNumber()).orElse(0)!=0){
-                Criteria divisionNumberCriteria = Criteria.where("baseDivisionNumber").is(receivingLineSearch.getDivisionNumber());
-                dynamicQuery.addCriteria(divisionNumberCriteria);
-            }
-            if(Optional.ofNullable(receivingLineSearch.getLocationNumber()).orElse(0)!=0){
-                Criteria locationNumberCriteria = Criteria.where("storeNumber").is(receivingLineSearch.getLocationNumber());
-                dynamicQuery.addCriteria(locationNumberCriteria);
-            }
-
-            return dynamicQuery;
         }
+        if (Optional.ofNullable(receivingLineSearch.getReceiptNumber()).orElse(0L) != 0L) {
+            Criteria receiptNumberCriteria = Criteria.where("purchaseOrderReceiveID").is(Integer.parseInt(receivingLineSearch.getReceiptNumber().toString()));
+            dynamicQuery.addCriteria(receiptNumberCriteria);
+        }
+        if (Optional.ofNullable(receivingLineSearch.getTransactionType()).orElse(0) != 0) {
+            Criteria transactionTypeCriteria = Criteria.where("transactionType").is(receivingLineSearch.getTransactionType());
+            dynamicQuery.addCriteria(transactionTypeCriteria);
+        }
+
+        if (Optional.ofNullable(receivingLineSearch.getDivisionNumber()).orElse(0) != 0) {
+            Criteria divisionNumberCriteria = Criteria.where("baseDivisionNumber").is(receivingLineSearch.getDivisionNumber());
+            dynamicQuery.addCriteria(divisionNumberCriteria);
+        }
+        if (Optional.ofNullable(receivingLineSearch.getLocationNumber()).orElse(0) != 0) {
+            Criteria locationNumberCriteria = Criteria.where("storeNumber").is(receivingLineSearch.getLocationNumber());
+            dynamicQuery.addCriteria(locationNumberCriteria);
+        }
+
+        return dynamicQuery;
+    }
 
 
     private String formulateId(String receivingControlNumber, String poReceiveId, String storeNumber, String baseDivisionNumber, String transactionType, String finalDate, String finalTime, String sequenceNumber) {
 
-        return receivingControlNumber + ReceivingConstants.PIPE_SEPARATOR + poReceiveId + ReceivingConstants.PIPE_SEPARATOR + storeNumber + ReceivingConstants.PIPE_SEPARATOR + baseDivisionNumber + ReceivingConstants.PIPE_SEPARATOR +transactionType + ReceivingConstants.PIPE_SEPARATOR + finalDate  + ReceivingConstants.PIPE_SEPARATOR + finalTime + ReceivingConstants.PIPE_SEPARATOR + sequenceNumber;
+        return receivingControlNumber + ReceivingConstants.PIPE_SEPARATOR + poReceiveId + ReceivingConstants.PIPE_SEPARATOR + storeNumber + ReceivingConstants.PIPE_SEPARATOR + baseDivisionNumber + ReceivingConstants.PIPE_SEPARATOR + transactionType + ReceivingConstants.PIPE_SEPARATOR + finalDate + ReceivingConstants.PIPE_SEPARATOR + finalTime + ReceivingConstants.PIPE_SEPARATOR + sequenceNumber;
     }
 }
 
