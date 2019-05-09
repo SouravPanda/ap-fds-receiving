@@ -31,7 +31,7 @@ import java.util.function.Function;
 @Service
 public class ReceiveLineServiceImpl implements ReceiveLineService {
 
-    
+
     @Autowired
     ReceiveLineDataRepository receiveLineDataRepository;
 
@@ -101,7 +101,7 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
         List<String> orderByproperties = new ArrayList<>();
         orderByproperties.add(orderBy);
         Sort sort = new Sort(order, orderByproperties);
-        query.with(sort);
+       // query.with(sort);
 
         List<ReceivingLine> receiveLines = mongoTemplate.find(query, ReceivingLine.class, "receive-line");
 

@@ -108,7 +108,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         List<String> orderByproperties = new ArrayList<>();
         orderByproperties.add(orderBy);
         Sort sort = new Sort(order, orderByproperties);
-        dynamicQuery.with(sort);
+       // dynamicQuery.with(sort);
 
         List<ReceiveSummary> receiveSummaries = mongoTemplate.find(query, ReceiveSummary.class, "receive-summary");
         Page<ReceiveSummary> receiveSummaryPage = PageableExecutionUtils.getPage(
