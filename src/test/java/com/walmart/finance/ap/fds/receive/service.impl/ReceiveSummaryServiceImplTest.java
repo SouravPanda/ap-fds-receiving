@@ -86,17 +86,19 @@
             Integer parentReceiptId = 118;
             String parentReceiptNumber = "EEL117";
             LocalDateTime authorizedDate = null;
-            String purchaseOrderNumber = "TTTY";
+            Long purchaseOrderNumber = 0L;
             LocalDateTime receiptDateStart=null;
             LocalDateTime receiptDateEnd=null;
             Long invoiceId=9L;
             String invoiceNumber="AA";
             Integer countryCode=0;
+            Character typeIndicator='J';
+            Character writeIndicator='L';
             Query query = new Query();
 
             @Test
             public void getReceiveSummaryTest() {
-            ReceiveSummary receiveSummary = new ReceiveSummary(_id, receivingControlNumber, storeNumber, transactionType, finalDate, finalTime, controlType, vendorNumber, accountNumber, controlSequenceNumber, receiveSequenceNumber, matchIndicator, totalCostAmount, totalRetailAmount, freightBillId, businessStatusCode, freightBillExpandID, claimPendingIndicator, freeAstrayIndicator, freightConslIndicator, initialReceiveTimestamp, MDSReceiveDate, receiveProcessDate, receiveWeightQuantity, sequenceNumber, departmentNumber, casesReceived, finalizedLoadTimestamp, finalizedSequenceNumber, poReceiveId, baseDivisionNumber, userId, creationDate, purchaseOrderNumber);
+            ReceiveSummary receiveSummary = new ReceiveSummary(_id, receivingControlNumber, storeNumber, transactionType, finalDate, finalTime, controlType, vendorNumber, accountNumber, controlSequenceNumber, receiveSequenceNumber, matchIndicator, totalCostAmount, totalRetailAmount, freightBillId, businessStatusCode, freightBillExpandID, claimPendingIndicator, freeAstrayIndicator, freightConslIndicator, initialReceiveTimestamp, MDSReceiveDate, receiveProcessDate, receiveWeightQuantity, sequenceNumber, departmentNumber, casesReceived, finalizedLoadTimestamp, finalizedSequenceNumber, poReceiveId, baseDivisionNumber, userId, creationDate, purchaseOrderNumber.toString(),writeIndicator,typeIndicator);
             Optional<ReceiveSummary> receiveSummaryAt = Optional.of(receiveSummary);
             ReceiveSummary savedReceiveSummary = receiveSummaryAt.get();
             ReceivingSummaryResponse response = new ReceivingSummaryResponse(purchaseOrderId, receiptNumber, transactionType, controlNumber, locationNumber, divisionNumber, receiptDate,
@@ -111,7 +113,7 @@
         public void getReceiveSummarySearchTest() {
 
             query= new Query();
-            ReceivingSummarySearch receivingSummarySearch = new ReceivingSummarySearch(purchaseOrderNumber, Long.valueOf(purchaseOrderId), Long.valueOf(receiptNumber)
+            ReceivingSummarySearch receivingSummarySearch = new ReceivingSummarySearch(purchaseOrderNumber, Long.valueOf(purchaseOrderId), receiptNumber.toString()
                     , transactionType, controlNumber, locationNumber, divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, countryCode, receiptDateStart
                     , receiptDateEnd);
             query = searchCriteria(receivingSummarySearch);

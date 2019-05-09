@@ -10,11 +10,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ReceivingSummarySearch {
 
-    String purchaseOrderNumber;
+    Long purchaseOrderNumber;
 
     Long purchaseOrderId;
 
-    Long receiptNumber;
+    String receiptNumber;
 
     Integer transactionType;
 

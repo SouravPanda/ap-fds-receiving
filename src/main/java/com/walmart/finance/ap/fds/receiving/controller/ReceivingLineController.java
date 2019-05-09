@@ -78,7 +78,7 @@ public class ReceivingLineController {
      */
 
     @PostMapping("/search")
-    @ApiOperation(value = "API to search ReceivingSummary for given criteria")
+    @ApiOperation(value = "API to search ReceivingLine for given criteria")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Error")})
     public Page<ReceivingLineResponse> getReceiveLineSearch(
             @PathVariable("countryCode")

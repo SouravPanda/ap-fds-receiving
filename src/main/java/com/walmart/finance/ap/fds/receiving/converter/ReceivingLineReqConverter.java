@@ -38,7 +38,7 @@ public class ReceivingLineReqConverter implements Converter<ReceivingLineRequest
         //receivingLine.setUnitOfMeasure(receivingLineRequest.getUnitOfMeasure());
        // receivingLine.setReceivedWeightQuantity(receivingLineRequest.getReceivedWeightQuantity());
         receivingLine.setTransactionType(receivingLineRequest.getTransactionType());
-        receivingLine.setReceivingControlNumber(receivingLineRequest.getReceivingControlNumber());
+        receivingLine.setReceivingControlNumber(String.valueOf(receivingLineRequest.getReceivingControlNumber()));
         receivingLine.setStoreNumber(receivingLineRequest.getStoreNumber());
         receivingLine.setBaseDivisionNumber(receivingLineRequest.getBaseDivisionNumber());
         return receivingLine;

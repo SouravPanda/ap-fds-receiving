@@ -13,7 +13,7 @@ import java.util.Date;
 @Data
 @ToString
 public class ReceivingLineRequest {
-    private int purchaseOrderReceiveID;
+    private Integer purchaseOrderReceiveID;
     private Integer lineNumber;
     private Integer itemNumber;
     private Integer vendorNumber;
