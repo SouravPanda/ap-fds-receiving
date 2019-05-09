@@ -9,7 +9,6 @@ import org.springframework.data.domain.Sort;
 
 public interface ReceiveLineService {
    ReceivingLineResponse getLineSummary(String receivingControlNumber, String poReceiveId, String storeNumber, String baseDivisionNumber, String transactionType, String finalDate, String finalTime, String sequenceNumber);
-   ReceivingLineResponse getReceiveLine(ReceiveLineSearch receivingLineSearch);
    Page<ReceivingLineResponse> getReceiveLineSearch(ReceiveLineSearch receivingLineSearch, int pageNbr, int pageSize, String orderBy, Sort.Direction order);
 }
 

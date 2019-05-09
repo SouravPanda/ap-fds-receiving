@@ -69,33 +69,7 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
 
     @Override
     public Page<ReceivingLineResponse> getReceiveLineSearch(ReceiveLineSearch receivingLineSearch, int pageNbr, int pageSize, String orderBy, Sort.Direction order) {
-
-
-        Query query;
-            /*
-
-              If invoiceId or invoiceNbr is present in search
-
-             */
-
-
-/*
-       List<InvoiceResponse> invoiceResponse = new ArrayList<>();
-
-        if (StringUtils.isNotEmpty(receivingLineSearch.getInvoiceNumber()) || receivingLineSearch.getInvoiceId() != null) {
-
-            if (receivingLineSearch.getInvoiceId() != null) {
-                invoiceResponse.add(invoiceIntegrationService.getInvoiceByInvoiceId(receivingSummarySearch.getInvoiceId()));
-            } else {
-                invoiceResponse = invoiceIntegrationService.getInvoiceByinvoiceNbr(receivingSummarySearch.getInvoiceNumber());
-            }
-            query = searchCriteriaFromInvoiceResponse(invoiceResponse, dynamicQuery);
-        } else {*/
-
-        query = searchCriteria(receivingLineSearch);
-
-        //  }
-
+        Query query = searchCriteria(receivingLineSearch);
         Pageable pageable = PageRequest.of(pageNbr, pageSize);
         query.with(pageable);
         List<String> orderByproperties = new ArrayList<>();
@@ -124,11 +98,6 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
             }
         });
         return receivingLineResponsePage;
-    }
-
-    @Override
-    public ReceivingLineResponse getReceiveLine(ReceiveLineSearch receivingLineSearch) {
-        return null;
     }
 
     private Query searchCriteria(ReceiveLineSearch receivingLineSearch) {
