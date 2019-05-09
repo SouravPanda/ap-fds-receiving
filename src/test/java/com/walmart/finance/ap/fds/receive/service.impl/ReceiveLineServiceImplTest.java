@@ -139,8 +139,6 @@ public class ReceiveLineServiceImplTest {
                 listOfContent,
                 pageable,
                 () -> mongoTemplate.count(query, ReceivingLine.class));
-        System.out.println("hh "+receiveLineServiceImpl.getReceiveLineSearch(receiveLineSearch,1,1,"creationDate",Sort.Direction.DESC).toString());
-       // System.out.println("yy "+mapReceivingSummaryToResponse(receiveLinePage).toString());
         when(receivingLineResponseConverter.convert(receivingLine)).thenReturn(receivingLineResponse);
        // when(receiveLineServiceImpl.mapReceivingSummaryToResponse(Page<ReceivingLine>receiveLinePage))
        // Assert.assertEquals(receiveLineServiceImpl.getReceiveLineSearch(receiveLineSearch,1,1,"creationDate",Sort.Direction.DESC).toString(),mapReceivingSummaryToResponse(receiveLinePage).toString());

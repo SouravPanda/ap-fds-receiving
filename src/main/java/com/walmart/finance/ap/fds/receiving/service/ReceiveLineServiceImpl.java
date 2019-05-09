@@ -60,7 +60,6 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
         if (receivingLine.isPresent()) {
             ReceivingLine savedReceiveLine = receivingLine.get();
             ReceivingLineResponse response = receivingLineResponseConverter.convert(savedReceiveLine);
-            System.out.println("Inside getLineSummary");
             return response;
 
         } else {
@@ -106,7 +105,7 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
         Sort sort = new Sort(order, orderByproperties);
         dynamicQuery.with(sort);
 
-        List<ReceivingLine> receiveLines = mongoTemplate.find(query, ReceivingLine.class, "receive-line");
+        List<ReceivingLine> receiveLines = mongoTemplate.find(dynamicQuery, ReceivingLine.class, "receive-line");
 
 
         Page<ReceivingLine> receiveLinePage = PageableExecutionUtils.getPage(
@@ -139,7 +138,7 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
 
             if(Optional.ofNullable(receivingLineSearch.getPurchaseOrderId()).orElse(0L)!=0L||(StringUtils.isNotEmpty(receivingLineSearch.getControlNumber())||(receivingLineSearch.getControlNumber()!=null))) {
                 if(Optional.ofNullable(receivingLineSearch.getPurchaseOrderId()).orElse(0L)!=0L) {
-                    Criteria purchaseOrderIdCriteria = Criteria.where("receivingControlNumber").is(receivingLineSearch.getPurchaseOrderId());
+                    Criteria purchaseOrderIdCriteria = Criteria.where("receivingControlNumber").is(String.valueOf(receivingLineSearch.getPurchaseOrderId()));
                     dynamicQuery.addCriteria(purchaseOrderIdCriteria);
                 }
                 else {
@@ -148,7 +147,7 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
                 }
             }
             if(Optional.ofNullable(receivingLineSearch.getReceiptNumber()).orElse(0L)!=0L) {
-                Criteria receiptNumberCriteria = Criteria.where("purchaseOrderReceiveID").is(receivingLineSearch.getReceiptNumber());
+                Criteria receiptNumberCriteria = Criteria.where("purchaseOrderReceiveID").is(Integer.parseInt(receivingLineSearch.getReceiptNumber().toString()));
                 dynamicQuery.addCriteria(receiptNumberCriteria);
             }
             if(Optional.ofNullable(receivingLineSearch.getTransactionType()).orElse(0)!= 0){

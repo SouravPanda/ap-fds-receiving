@@ -23,6 +23,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.repository.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -160,7 +161,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                     Criteria controlNumberCriteria = Criteria.where("receivingControlNumber").is(receivingSummarySearch.getControlNumber());
                     dynamicQuery.addCriteria(controlNumberCriteria);
                 } else {
-                    Criteria purchaseOrderIdCriteria = Criteria.where("receivingControlNumber").is(receivingSummarySearch.getPurchaseOrderId());
+                    Criteria purchaseOrderIdCriteria = Criteria.where("receivingControlNumber").is(String.valueOf(receivingSummarySearch.getPurchaseOrderId()));
                     dynamicQuery.addCriteria(purchaseOrderIdCriteria);
 
                 }
@@ -173,10 +174,10 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
                 if (receivingSummarySearch.getReceiptDateStart() != null || receivingSummarySearch.getReceiptDateEnd() != null) {
                     if (receivingSummarySearch.getReceiptDateStart() != null) {
-                        Criteria mdsReceiveDateCriteria = Criteria.where("mdsReceiveDate").is(receivingSummarySearch.getReceiptDateStart());
+                        Criteria mdsReceiveDateCriteria = Criteria.where("mdsReceiveDate").is(receivingSummarySearch.getReceiptDateStart().toLocalDate());
                         dynamicQuery.addCriteria(mdsReceiveDateCriteria);
                     } else {
-                        Criteria receiptDateEndCriteria = Criteria.where("mdsReceiveDate").is(receivingSummarySearch.getReceiptDateEnd());
+                        Criteria receiptDateEndCriteria = Criteria.where("mdsReceiveDate").is(receivingSummarySearch.getReceiptDateEnd().toLocalDate());
                         dynamicQuery.addCriteria(receiptDateEndCriteria);
                     }
                 }
@@ -197,7 +198,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             }
 
             if (StringUtils.isNotEmpty(receivingSummarySearch.getReceiptNumber())) {
-                Criteria poReceiveIdCriteria = Criteria.where("poReceiveId").is(receivingSummarySearch.getReceiptNumber());
+                Criteria poReceiveIdCriteria = Criteria.where("poReceiveId").is(Integer.parseInt(receivingSummarySearch.getReceiptNumber()));
                 dynamicQuery.addCriteria(poReceiveIdCriteria);
             }
 
