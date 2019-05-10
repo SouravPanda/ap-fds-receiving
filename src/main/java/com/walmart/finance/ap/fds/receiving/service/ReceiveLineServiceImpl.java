@@ -108,7 +108,7 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
                 Criteria purchaseOrderIdCriteria = Criteria.where("receivingControlNumber").is(receivingLineSearch.getPurchaseOrderId());
                 dynamicQuery.addCriteria(purchaseOrderIdCriteria);
             } else {
-                Criteria controlNumberCriteria = Criteria.where("receivingControlNumber").is(receivingLineSearch.getControlNumber());
+                Criteria controlNumberCriteria = Criteria.where("receivingControlNumber").is(Integer.parseInt(receivingLineSearch.getControlNumber()));
                 dynamicQuery.addCriteria(controlNumberCriteria);
             }
         }
