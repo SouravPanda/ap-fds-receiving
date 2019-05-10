@@ -90,10 +90,10 @@ public class ReceivingLineController {
                     Integer pageSize,
             @RequestParam(value="orderBy", defaultValue="creationDate")
                     String orderBy,
-            @RequestParam(value = "order", defaultValue = "DESC")
-                    Sort.Direction order,
+/*            @RequestParam(value = "order", defaultValue = "DESC")
+                    Sort.Direction order,*/
             @RequestBody ReceiveLineSearch receivingLineSearch){
-        return receiveLineService.getReceiveLineSearch(receivingLineSearch,pageNbr,pageSize,orderBy,order);
+        return receiveLineService.getReceiveLineSearch(receivingLineSearch,pageNbr,pageSize,orderBy);
 
     }
 

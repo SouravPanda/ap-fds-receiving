@@ -68,13 +68,13 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
     }
 
     @Override
-    public Page<ReceivingLineResponse> getReceiveLineSearch(ReceiveLineSearch receivingLineSearch, int pageNbr, int pageSize, String orderBy, Sort.Direction order) {
+    public Page<ReceivingLineResponse> getReceiveLineSearch(ReceiveLineSearch receivingLineSearch, int pageNbr, int pageSize, String orderBy) {
         Query query = searchCriteria(receivingLineSearch);
         Pageable pageable = PageRequest.of(pageNbr, pageSize);
         query.with(pageable);
         List<String> orderByproperties = new ArrayList<>();
         orderByproperties.add(orderBy);
-        Sort sort = new Sort(order, orderByproperties);
+        //Sort sort = new Sort(orderByproperties);
        // query.with(sort);
 
         List<ReceivingLine> receiveLines = mongoTemplate.find(query, ReceivingLine.class, "receive-line");

@@ -11,9 +11,7 @@ import com.walmart.finance.ap.fds.receiving.service.ReceiveLineServiceImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +29,8 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.doReturn;
+import static org.powermock.api.mockito.PowerMockito.spy;
 
 public class ReceiveLineServiceImplTest {
     @InjectMocks
@@ -140,6 +140,8 @@ public class ReceiveLineServiceImplTest {
                 pageable,
                 () -> mongoTemplate.count(query, ReceivingLine.class));
         when(receivingLineResponseConverter.convert(receivingLine)).thenReturn(receivingLineResponse);
+        //ReceiveLineServiceImpl mock = spy(new ReceiveLineServiceImpl());
+       // doReturn("Page 1 of 25766 containing com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse instances").when(mock, "mapReceivingLineToResponse", ArgumentMatchers.isNull());
        // when(receiveLineServiceImpl.mapReceivingSummaryToResponse(Page<ReceivingLine>receiveLinePage))
        // Assert.assertEquals(receiveLineServiceImpl.getReceiveLineSearch(receiveLineSearch,1,1,"creationDate",Sort.Direction.DESC).toString(),mapReceivingSummaryToResponse(receiveLinePage).toString());
 
