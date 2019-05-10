@@ -105,7 +105,7 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
 
         if (Optional.ofNullable(receivingLineSearch.getPurchaseOrderId()).orElse(0L) != 0L || (StringUtils.isNotEmpty(receivingLineSearch.getControlNumber()))) {
             if (Optional.ofNullable(receivingLineSearch.getPurchaseOrderId()).orElse(0L) != 0L) {
-                Criteria purchaseOrderIdCriteria = Criteria.where("receivingControlNumber").is(receivingLineSearch.getPurchaseOrderId().toString());
+                Criteria purchaseOrderIdCriteria = Criteria.where("receivingControlNumber").is(receivingLineSearch.getPurchaseOrderId());
                 dynamicQuery.addCriteria(purchaseOrderIdCriteria);
             } else {
                 Criteria controlNumberCriteria = Criteria.where("receivingControlNumber").is(receivingLineSearch.getControlNumber());
