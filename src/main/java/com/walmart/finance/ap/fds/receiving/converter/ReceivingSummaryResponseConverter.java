@@ -15,7 +15,7 @@ public class ReceivingSummaryResponseConverter implements Converter<ReceiveSumma
 
         ReceivingSummaryResponse response = new ReceivingSummaryResponse();
         response.setPurchaseOrderId(receiveSummary.getReceivingControlNumber());
-        response.setReceiptNumber(receiveSummary.getPoReceiveId());
+        response.setReceiptNumber(Integer.valueOf(receiveSummary.getPoReceiveId()));
         response.setTransactionType(receiveSummary.getTransactionType());
         response.setControlNumber(receiveSummary.getReceivingControlNumber());
         response.setLocationNumber(receiveSummary.getStoreNumber());
@@ -32,7 +32,7 @@ public class ReceivingSummaryResponseConverter implements Converter<ReceiveSumma
         response.setTotalCostAmount(receiveSummary.getTotalCostAmount());
         response.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());   //TODO need to add in pipeline code
 
-        response.setParentReceiptId(receiveSummary.getPoReceiveId());
+        response.setParentReceiptId(Integer.valueOf(receiveSummary.getPoReceiveId()));
 
         response.setParentReceiptNumber(receiveSummary.getReceivingControlNumber());
 

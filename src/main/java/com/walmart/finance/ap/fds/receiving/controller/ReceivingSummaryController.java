@@ -1,4 +1,5 @@
 package com.walmart.finance.ap.fds.receiving.controller;
+
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummarySearch;
@@ -13,12 +14,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
 
 @RestController
-@RequestMapping(value = "/receiving/summary/countryCode/{countryCode}")
+//@RequestMapping(value = "{countryCode}/receiving/summary")
+@RequestMapping(value = "{countryCode}/receiving/summary")
 @Api(value = "REST APIs for receiving-summary ")
 public class ReceivingSummaryController {
 
@@ -35,34 +34,51 @@ public class ReceivingSummaryController {
     @ApiOperation(value = "API to add new Stores based on the payload")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
 
-    public ReceiveSummary saveReceiveSummary(@RequestBody ReceivingSummaryRequest receivingSummaryRequest,  @PathVariable("countryCode")
+    public ReceiveSummary saveReceiveSummary(@RequestBody ReceivingSummaryRequest receivingSummaryRequest, @PathVariable("countryCode")
             String countryCode) {
-       return receiveSummaryService.saveReceiveSummary(receivingSummaryRequest);
+        return receiveSummaryService.saveReceiveSummary(receivingSummaryRequest);
 
     }
 
 
-    /** ReceiveSummary
-     *  Method calls Receive Service to get
+    /**
+     * ReceiveSummary
+     * Method calls Receive Service to get
      *
      * @param
      * @return store
      */
-   /* @GetMapping
+    @GetMapping
     @ApiOperation(value = "API to add new Stores based on the payload")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Error")})
 
-    public ReceivingSummaryResponse getReceiveSummary(@NotEmpty @NotNull @RequestParam("receivingControlNumber")  String  receivingControlNumber  ,
-                                                      @NotEmpty @NotNull @RequestParam("poReceiveId") String poReceiveId,
-                                                      @NotEmpty @NotNull @RequestParam("storeNumber") String storeNumber,
-                                                      @NotEmpty @NotNull  @RequestParam("baseDivisionNumber") String baseDivisionNumber,
-                                                      @NotEmpty @NotNull  @RequestParam( "transactionType") String transactionType,
-                                                      @NotEmpty @NotNull @RequestParam( "finalDate" ) String finalDate,
-                                                      @NotEmpty @NotNull @RequestParam( "finalTime")  String finalTime){
+    public Page<ReceivingSummaryResponse> getReceiveSummary(@PathVariable("countryCode")
+                                                                    String countryCode,
+                                                            @RequestParam(value = "purchaseOrderNumber",required = false) String purchaseOrderNumber,
+                                                            @RequestParam(value = "purchaseOrderId",required = false) String purchaseOrderId,
+                                                            @RequestParam(value ="receiptNumber",required = false) String receiptNumber,
+                                                            @RequestParam(value ="transactionType",required = false) String transactionType,
+                                                            @RequestParam(value ="controlNumber",required = false) String controlNumber,
+                                                            @RequestParam(value ="locationNumber",required = false) String locationNumber,
+                                                            @RequestParam(value ="divisionNumber",required = false) String divisionNumber,
+                                                            @RequestParam(value ="vendorNumber",required = false) String vendorNumber,
+                                                            @RequestParam(value ="departmentNumber",required = false) String departmentNumber,
+                                                            @RequestParam(value ="invoiceId",required = false) String invoiceId,
+                                                            @RequestParam(value ="invoiceNumber",required = false) String invoiceNumber,
+                                                            @RequestParam(value ="receiptDateStart",required = false) String receiptDateStart,
+                                                            @RequestParam(value ="receiptDateEnd",required = false) String receiptDateEnd,
+                                                            @RequestParam(value = "pageNbr", defaultValue = "0")
+                                                                    Integer pageNbr,
+                                                            @RequestParam(value = "pageSize", defaultValue = "10")
+                                                                    Integer pageSize,
+                                                            @RequestParam(value = "orderBy", defaultValue = "creationDate")
+                                                                    String orderBy,
+                                                            @RequestParam(value = "order", defaultValue = "DESC")
+                                                                    Sort.Direction order) {
 
-        return receiveSummaryService.getReceiveSummary( receivingControlNumber,  poReceiveId,  storeNumber,  baseDivisionNumber,  transactionType,  finalDate, finalTime);
-
-    }*/
+        return receiveSummaryService.getReceiveSummary(purchaseOrderNumber, purchaseOrderId, receiptNumber, transactionType, controlNumber, locationNumber,
+                divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd, pageNbr, pageSize, orderBy, order);
+    }
 
 
     @PostMapping("/search")
@@ -71,20 +87,18 @@ public class ReceivingSummaryController {
     public Page<ReceivingSummaryResponse> getReceiveSummarySearch(
             @PathVariable("countryCode")
                     String countryCode,
-            @RequestParam(value = "pageNbr", defaultValue = "0" )
+            @RequestParam(value = "pageNbr", defaultValue = "0")
                     Integer pageNbr,
             @RequestParam(value = "pageSize", defaultValue = "10")
                     Integer pageSize,
-            @RequestParam(value="orderBy", defaultValue="creationDate")
+            @RequestParam(value = "orderBy", defaultValue = "creationDate")
                     String orderBy,
             @RequestParam(value = "order", defaultValue = "DESC")
                     Sort.Direction order,
-            @RequestBody ReceivingSummarySearch receivingSummarySearch){
-        return receiveSummaryService.getReceiveSummarySearch(receivingSummarySearch,pageNbr,pageSize,orderBy,order);
+            @RequestBody ReceivingSummarySearch receivingSummarySearch) {
+        return receiveSummaryService.getReceiveSummarySearch(receivingSummarySearch, pageNbr, pageSize, orderBy, order);
 
     }
-
-
 
 }
 

@@ -27,6 +27,9 @@ public class ReceiveSummary {
     //STORE_NBR
     private Integer storeNumber;//locationNumber
 
+    @NotEmpty
+    //BASE_DIV_NBR
+    private Integer baseDivisionNumber;
 
     @NotEmpty
     // TRANSACTION_TYPE
@@ -119,7 +122,7 @@ public class ReceiveSummary {
     private Double receiveWeightQuantity;
 
     //To be checked, not present in search or response
-    private String sequenceNumber;
+    private Integer sequenceNumber;
 
 
     // BKRM_PROC_XMIT_DTL/ ACCTG_DEPT_NBR
@@ -139,12 +142,9 @@ public class ReceiveSummary {
     // BASE_DIV_NBR + RPR_DATE(month) + RPR_SEQ_NBR
     @NotEmpty
     //To be checked
-    private Integer poReceiveId;//  receiptNumber //Long
+    private String poReceiveId;//  receiptNumber //Long
 
 
-    @NotEmpty
-    //BASE_DIV_NBR
-    private Integer baseDivisionNumber;
 
     //@Builder.Default("user")
     private String userId;
@@ -163,7 +163,7 @@ public class ReceiveSummary {
 
     //   identifier for SOE write and sync Service write
 //To be checked, not present in search or response
-    private Character writeIndicator;
+    private String writeIndicator;
 
 
 

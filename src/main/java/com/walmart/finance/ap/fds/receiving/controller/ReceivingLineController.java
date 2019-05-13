@@ -16,12 +16,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
 
 @RestController
-@RequestMapping(value = "/receiving/line/countryCode/{countryCode}")
+@RequestMapping(value = "{countryCode}/receiving/line")
 @Api(value = "RESTful APIs for Receiving Line ")
 public class ReceivingLineController {
 
@@ -36,23 +33,31 @@ public class ReceivingLineController {
       @param
       @return store
     */
-/*
+
     @GetMapping
     @ApiOperation(value = "API to get new LineSummary based on the payload")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
 
-    public ReceivingLineResponse getReceiveLine(@NotEmpty @NotNull @RequestParam("receivingControlNumber") String receivingControlNumber,
-                                                @NotEmpty @NotNull @RequestParam("poReceiveId") String poReceiveId,
-                                                @NotEmpty @NotNull @RequestParam("storeNumber") String storeNumber,
-                                                @NotEmpty @NotNull @RequestParam("baseDivisionNumber") String baseDivisionNumber,
-                                                @NotEmpty @NotNull @RequestParam("transactionType") String transactionType,
-                                                @NotEmpty @NotNull @RequestParam("finalDate") String finalDate,
-                                                @NotEmpty @NotNull @RequestParam("finalTime") String finalTime,
-                                                @NotEmpty @NotNull @RequestParam("sequenceNumber") String sequenceNumber) {
+    public Page<ReceivingLineResponse> getReceiveLine(@PathVariable("countryCode")
+                                                              String countryCode, @RequestParam(value = "purchaseOrderId",required = false) String purchaseOrderId,
+                                                      @RequestParam(value = "receiptNumber",required = false) String receiptNumber,
+                                                      @RequestParam(value = "transactionType",required = false) String transactionType,
+                                                      @RequestParam(value = "controlNumber",required = false) String controlNumber,
+                                                      @RequestParam(value = "locationNumber",required = false) String locationNumber,
+                                                      @RequestParam(value = "divisionNumber",required = false) String divisionNumber,
+                                                      @RequestParam(value = "pageNbr", defaultValue = "0")
+                                                              Integer pageNbr,
+                                                      @RequestParam(value = "pageSize", defaultValue = "10")
+                                                              Integer pageSize,
+                                                      @RequestParam(value = "orderBy", defaultValue = "creationDate")
+                                                              String orderBy,
+                                                      @RequestParam(value = "order", defaultValue = "DESC")
+                                                              Sort.Direction order) {
+                                               // @NotEmpty @NotNull @RequestParam("countryCode") String countryCode) {
 
-        return receiveLineService.getLineSummary(receivingControlNumber, poReceiveId, storeNumber, baseDivisionNumber, transactionType, finalDate, finalTime, sequenceNumber);
+        return receiveLineService.getLineSummary(purchaseOrderId, receiptNumber, transactionType,controlNumber, locationNumber, divisionNumber,pageNbr,pageSize,orderBy, order);
 
-    }*/
+    }
 
     /**
      * Method calls Service class to add stores in Db
@@ -77,21 +82,20 @@ public class ReceivingLineController {
      * @return
      */
 
-    @PostMapping("/search")
+   @PostMapping("/search")
     @ApiOperation(value = "API to search ReceivingLine for given criteria")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Error")})
     public Page<ReceivingLineResponse> getReceiveLineSearch(
-            @PathVariable("countryCode")
-            String countryCode,
-
-            @RequestParam(value = "pageNbr", defaultValue = "0" )
-                    Integer pageNbr,
-            @RequestParam(value = "pageSize", defaultValue = "10")
-                    Integer pageSize,
-            @RequestParam(value="orderBy", defaultValue="creationDate")
-                    String orderBy,
-/*            @RequestParam(value = "order", defaultValue = "DESC")
-                    Sort.Direction order,*/
+           @PathVariable("countryCode")
+                   String countryCode,
+           @RequestParam(value = "pageNbr", defaultValue = "0" )
+                   Integer pageNbr,
+           @RequestParam(value = "pageSize", defaultValue = "10")
+                   Integer pageSize,
+           @RequestParam(value="orderBy", defaultValue="creationDate")
+                   String orderBy,
+           @RequestParam(value = "order", defaultValue = "DESC")
+                   Sort.Direction order,
             @RequestBody ReceiveLineSearch receivingLineSearch){
         return receiveLineService.getReceiveLineSearch(receivingLineSearch,pageNbr,pageSize,orderBy);
 

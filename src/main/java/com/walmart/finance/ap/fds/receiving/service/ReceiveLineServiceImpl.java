@@ -50,26 +50,35 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
 
     }
 
-    public ReceivingLineResponse getLineSummary(String receivingControlNumber, String poReceiveId, String storeNumber, String baseDivisionNumber, String transactionType, String finalDate, String finalTime, String sequenceNumber) {
-        String id = formulateId(receivingControlNumber, poReceiveId, storeNumber, baseDivisionNumber, transactionType, finalDate, finalTime, sequenceNumber);
-        Optional<ReceivingLine> receivingLine = receiveLineDataRepository.findById(id);
+    public Page<ReceivingLineResponse> getLineSummary(String purchaseOrderId,String receiptNumber, String transactionType,String controlNumber, String locationNumber, String divisionNumber,int pageNbr, int pageSize, String orderBy,Sort.Direction order) {
+        Query dynamicQuery = new Query();
+        Query query = searchCriteriaForGet(dynamicQuery, purchaseOrderId, receiptNumber, transactionType, controlNumber, locationNumber, divisionNumber);
+        Pageable pageable = PageRequest.of(pageNbr, pageSize);
+        query.with(pageable);
+        List<String> orderByproperties = new ArrayList<>();
+        orderByproperties.add(orderBy);
+        //Sort sort = new Sort(orderByproperties);
+        // query.with(sort);
 
-        if (receivingLine.isPresent()) {
-            ReceivingLine savedReceiveLine = receivingLine.get();
-            ReceivingLineResponse response = receivingLineResponseConverter.convert(savedReceiveLine);
-            return response;
+        List<ReceivingLine> receiveLines = mongoTemplate.find(query, ReceivingLine.class, "receive-line");
 
-        } else {
-            throw new ContentNotFoundException("No content found");
 
-        }
+        Page<ReceivingLine> receiveLinePage = PageableExecutionUtils.getPage(
+                receiveLines,
+                pageable,
+                () -> mongoTemplate.count(query, ReceivingLine.class));
 
+        return mapReceivingLineToResponse(receiveLinePage);
 
     }
-
     @Override
     public Page<ReceivingLineResponse> getReceiveLineSearch(ReceiveLineSearch receivingLineSearch, int pageNbr, int pageSize, String orderBy) {
-        Query query = searchCriteria(receivingLineSearch);
+        Query dynamicQuery = new Query();
+
+        // If invoiceId or invoiceNbr is present in search
+
+        Query query;
+        query = searchCriteria(receivingLineSearch, dynamicQuery);
         Pageable pageable = PageRequest.of(pageNbr, pageSize);
         query.with(pageable);
         List<String> orderByproperties = new ArrayList<>();
@@ -100,15 +109,14 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
         return receivingLineResponsePage;
     }
 
-    private Query searchCriteria(ReceiveLineSearch receivingLineSearch) {
-        Query dynamicQuery = new Query();
+    private Query searchCriteria(ReceiveLineSearch receivingLineSearch, Query dynamicQuery) {
 
         if (Optional.ofNullable(receivingLineSearch.getPurchaseOrderId()).orElse(0L) != 0L || (StringUtils.isNotEmpty(receivingLineSearch.getControlNumber()))) {
             if (Optional.ofNullable(receivingLineSearch.getPurchaseOrderId()).orElse(0L) != 0L) {
                 Criteria purchaseOrderIdCriteria = Criteria.where("receivingControlNumber").is(receivingLineSearch.getPurchaseOrderId());
                 dynamicQuery.addCriteria(purchaseOrderIdCriteria);
             } else {
-                Criteria controlNumberCriteria = Criteria.where("receivingControlNumber").is(Integer.parseInt(receivingLineSearch.getControlNumber()));
+                Criteria controlNumberCriteria = Criteria.where("receivingControlNumber").is(receivingLineSearch.getControlNumber());
                 dynamicQuery.addCriteria(controlNumberCriteria);
             }
         }
@@ -137,6 +145,40 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
     private String formulateId(String receivingControlNumber, String poReceiveId, String storeNumber, String baseDivisionNumber, String transactionType, String finalDate, String finalTime, String sequenceNumber) {
 
         return receivingControlNumber + ReceivingConstants.PIPE_SEPARATOR + poReceiveId + ReceivingConstants.PIPE_SEPARATOR + storeNumber + ReceivingConstants.PIPE_SEPARATOR + baseDivisionNumber + ReceivingConstants.PIPE_SEPARATOR + transactionType + ReceivingConstants.PIPE_SEPARATOR + finalDate + ReceivingConstants.PIPE_SEPARATOR + finalTime + ReceivingConstants.PIPE_SEPARATOR + sequenceNumber;
+    }
+
+    private Query searchCriteriaForGet(Query dynamicQuery,String purchaseOrderId,String receiptNumber, String transactionType, String controlNumber, String locationNumber, String divisionNumber) {
+        ReceiveLineSearch receivingLineSearch= new ReceiveLineSearch();
+
+        if (Optional.ofNullable(receivingLineSearch.getPurchaseOrderId()).orElse(0L) != 0L || (StringUtils.isNotEmpty(receivingLineSearch.getControlNumber()))) {
+            if (Optional.ofNullable(receivingLineSearch.getPurchaseOrderId()).orElse(0L) != 0L) {
+                Criteria purchaseOrderIdCriteria = Criteria.where("receivingControlNumber").is(receivingLineSearch.getPurchaseOrderId());
+                dynamicQuery.addCriteria(purchaseOrderIdCriteria);
+            } else {
+                Criteria controlNumberCriteria = Criteria.where("receivingControlNumber").is(receivingLineSearch.getControlNumber());
+                dynamicQuery.addCriteria(controlNumberCriteria);
+            }
+        }
+        if (Optional.ofNullable(receivingLineSearch.getReceiptNumber()).orElse(0L) != 0L) {
+            Criteria receiptNumberCriteria = Criteria.where("purchaseOrderReceiveID").is(Integer.valueOf(receivingLineSearch.getReceiptNumber().toString()));
+            dynamicQuery.addCriteria(receiptNumberCriteria);
+        }
+        if (Optional.ofNullable(receivingLineSearch.getTransactionType()).orElse(0) != 0) {
+            Criteria transactionTypeCriteria = Criteria.where("transactionType").is(Integer.valueOf(receivingLineSearch.getTransactionType()));
+            dynamicQuery.addCriteria(transactionTypeCriteria);
+        }
+
+        if (Optional.ofNullable(receivingLineSearch.getDivisionNumber()).orElse(0) != 0) {
+            Criteria divisionNumberCriteria = Criteria.where("baseDivisionNumber").is(Integer.valueOf(receivingLineSearch.getDivisionNumber()));
+            dynamicQuery.addCriteria(divisionNumberCriteria);
+        }
+        if (Optional.ofNullable(receivingLineSearch.getLocationNumber()).orElse(0) != 0) {
+       // if (StringUtils.isNotEmpty(receivingLineSearch.getLocationNumber())) {
+            Criteria locationNumberCriteria = Criteria.where("storeNumber").is(Integer.valueOf(receivingLineSearch.getLocationNumber()));
+            dynamicQuery.addCriteria(locationNumberCriteria);
+        }
+
+        return dynamicQuery;
     }
 }
 

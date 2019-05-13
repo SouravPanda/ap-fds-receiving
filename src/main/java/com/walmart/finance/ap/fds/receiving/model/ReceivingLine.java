@@ -39,6 +39,10 @@ public class ReceivingLine {
     private LocalDateTime creationDate;
     private Character typeIndicator; // identifier for Store(S) and Warehouse(W)
     private Character writeIndicator; //
-
+    private String purchaseOrderNumber; // PO_NBR_XREF/P1A_KEY(warehouse) :BKRM_PROC_XMAT_HDR/CONTROL_NBR(store)
     private Integer quantity;   // PO_LINE_VALUE.PACK_QTY
+    private LocalDate MDSReceiveDate;//RPR_DATE
+    private Integer receiveSequenceNumber;// RPR_SEQ_NBR
+    private Double receivedWeightQuantity;//RECV_WEIGHT_QTY(Column)INITIAL_RECV_ITEM(Table)
+    private String receivedQuantityUnitOfMeasureCode;//RECV_QTY_UOM_CODE(Column)INITIAL_RECV_ITEM(Table)
 }

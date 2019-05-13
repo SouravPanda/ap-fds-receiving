@@ -32,7 +32,7 @@ public class ReceivingSummarySearch {
 
     String invoiceNumber;
 
-    Integer countryCode;
+    //Integer countryCode;
 
     /*String[] itemNumbers;//to be checked
 
