@@ -15,7 +15,7 @@ public class ReceivingLineReqConverter implements Converter<ReceivingLineRequest
 
         String id = receivingLineRequest.getReceivingControlNumber() + separator + receivingLineRequest.getPurchaseOrderReceiveID() + separator + receivingLineRequest.getPurchaseOrderReceiveID() + separator + receivingLineRequest.getBaseDivisionNumber() + separator + receivingLineRequest.getTransactionType() + separator + receivingLineRequest.getFinalDate() + separator + receivingLineRequest.getFinalTime() +separator + receivingLineRequest.getSequenceNumber();
         ReceivingLine receivingLine = new ReceivingLine();
-        receivingLine.setPurchaseOrderReceiveID(receivingLineRequest.getPurchaseOrderReceiveID());
+        receivingLine.setPurchaseOrderReceiveID(receivingLineRequest.getPurchaseOrderReceiveID().toString());
         receivingLine.setLineNumber(receivingLineRequest.getLineNumber());
         receivingLine.setItemNumber(receivingLineRequest.getItemNumber());
         receivingLine.setVendorNumber(receivingLineRequest.getVendorNumber());

@@ -146,9 +146,9 @@ import static org.powermock.api.mockito.PowerMockito.spy;
        // when(receiveLineServiceImpl.mapReceivingSummaryToResponse(Page<ReceivingLine>receiveLinePage))
        // Assert.assertEquals(receiveLineServiceImpl.getReceiveLineSearch(receiveLineSearch,1,1,"creationDate",Sort.Direction.DESC).toString(),mapReceivingSummaryToResponse(receiveLinePage).toString());
 
-/*    }
+   /*}
 
-    private Query searchCriteria(ReceiveLineSearch receiveLineSearch) {
+   /* private Query searchCriteria(ReceiveLineSearch receiveLineSearch) {
         Criteria criteria = Criteria.where("receivingControlNumber").is(466567L).and("purchaseOrderReceiveID").is(1L).and("baseDivisionNumber").is(44).and("storeNumber").is(112);
         dynamicQuery.addCriteria(criteria);
         return dynamicQuery;
@@ -165,5 +165,5 @@ import static org.powermock.api.mockito.PowerMockito.spy;
     }*//*
 
 
-}*/
-
+}
+*/

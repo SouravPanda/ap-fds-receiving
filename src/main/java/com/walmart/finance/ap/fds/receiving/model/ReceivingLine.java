@@ -17,7 +17,7 @@ public class ReceivingLine {
 
     private static final String separator = "|";
     private String _id;
-    private Integer purchaseOrderReceiveID;     //BASE_DIV_NBR + RPR_DATE(month) + RPR_SEQ_NBR from BKRM_PROC_XMIT_HDR
+    private String purchaseOrderReceiveID;     //BASE_DIV_NBR + RPR_DATE(month) + RPR_SEQ_NBR from BKRM_PROC_XMIT_HDR
     private Integer lineNumber;     //BKRM_PROC_XMIT_DTL.LINE_NBR
     private Integer itemNumber;     //BKRM_PROC_XMIT_DTL.ITEM_NBR
     private Integer vendorNumber;   //BKRM_PROC_XMIT_HDR.ORIG_DEST_ID
