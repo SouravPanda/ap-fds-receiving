@@ -38,7 +38,7 @@ public class ReceivingLine {
     private Integer sequenceNumber; //BKRM_PROC_XMIT_DTL.SEQUENCE_NBR
     private LocalDateTime creationDate;
     private Character typeIndicator; // identifier for Store(S) and Warehouse(W)
-    private Character writeIndicator; //
+    private String writeIndicator; //
     private String purchaseOrderNumber; // PO_NBR_XREF/P1A_KEY(warehouse) :BKRM_PROC_XMAT_HDR/CONTROL_NBR(store)
     private Integer quantity;   // PO_LINE_VALUE.PACK_QTY
     private LocalDate MDSReceiveDate;//RPR_DATE
