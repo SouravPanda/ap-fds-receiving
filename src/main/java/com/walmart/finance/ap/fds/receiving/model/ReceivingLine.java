@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Data
 @ToString
-@Document(collection="receive-line")
+@Document(collection="receive-line-new")
 public class ReceivingLine {
 
     private static final String separator = "|";

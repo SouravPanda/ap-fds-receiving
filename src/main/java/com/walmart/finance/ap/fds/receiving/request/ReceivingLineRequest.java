@@ -21,10 +21,10 @@ public class ReceivingLineRequest {
     private Double costAmount;
     private Double retailAmount;
     private Double packQuantity;
-    private int numberOfCasesReceived;
+    private Integer numberOfCasesReceived;
     private Integer vendorStockNumber;
     private Integer bottleStockNumber;
-    private int damaged;
+    private Integer damaged;
     private Integer receivingControlNumber;
     private Integer purchaseReceiptNumber;
     private Integer upcNumber;

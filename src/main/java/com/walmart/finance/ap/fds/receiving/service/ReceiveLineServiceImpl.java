@@ -173,7 +173,6 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
             dynamicQuery.addCriteria(divisionNumberCriteria);
         }
         if (Optional.ofNullable(receivingLineSearch.getLocationNumber()).orElse(0) != 0) {
-       // if (StringUtils.isNotEmpty(receivingLineSearch.getLocationNumber())) {
             Criteria locationNumberCriteria = Criteria.where("storeNumber").is(Integer.valueOf(receivingLineSearch.getLocationNumber()));
             dynamicQuery.addCriteria(locationNumberCriteria);
         }
