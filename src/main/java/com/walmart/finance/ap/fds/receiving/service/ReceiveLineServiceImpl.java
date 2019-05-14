@@ -50,26 +50,30 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
 
     }
 
-    public Page<ReceivingLineResponse> getLineSummary(String purchaseOrderId,String receiptNumber, String transactionType,String controlNumber, String locationNumber, String divisionNumber,int pageNbr, int pageSize, String orderBy,Sort.Direction order) {
-        Query dynamicQuery = new Query();
-        Query query = searchCriteriaForGet(dynamicQuery, purchaseOrderId, receiptNumber, transactionType, controlNumber, locationNumber, divisionNumber);
-        Pageable pageable = PageRequest.of(pageNbr, pageSize);
-        query.with(pageable);
-        List<String> orderByproperties = new ArrayList<>();
-        orderByproperties.add(orderBy);
-        //Sort sort = new Sort(orderByproperties);
-        // query.with(sort);
+    public Page<ReceivingLineResponse> getLineSummary(String purchaseOrderId, String receiptNumber, String transactionType, String controlNumber, String locationNumber, String divisionNumber, int pageNbr, int pageSize, String orderBy, Sort.Direction order) {
+        if (StringUtils.isNotEmpty(purchaseOrderId) || StringUtils.isNotEmpty(receiptNumber) || StringUtils.isNotEmpty(transactionType) || StringUtils.isNotEmpty(controlNumber) || StringUtils.isNotEmpty(locationNumber) || StringUtils.isNotEmpty(divisionNumber)) {
+            Query dynamicQuery = new Query();
+            Query query = searchCriteriaForGet(dynamicQuery, purchaseOrderId, receiptNumber, transactionType, controlNumber, locationNumber, divisionNumber);
+            Pageable pageable = PageRequest.of(pageNbr, pageSize);
+            query.with(pageable);
+            List<String> orderByproperties = new ArrayList<>();
+            orderByproperties.add(orderBy);
+            //Sort sort = new Sort(orderByproperties);
+            // query.with(sort);
 
-        List<ReceivingLine> receiveLines = mongoTemplate.find(query, ReceivingLine.class, "receive-line-new");
+            List<ReceivingLine> receiveLines = mongoTemplate.find(query, ReceivingLine.class, "receive-line-new");
 
 
-        Page<ReceivingLine> receiveLinePage = PageableExecutionUtils.getPage(
-                receiveLines,
-                pageable,
-                () -> mongoTemplate.count(query, ReceivingLine.class));
+            Page<ReceivingLine> receiveLinePage = PageableExecutionUtils.getPage(
+                    receiveLines,
+                    pageable,
+                    () -> mongoTemplate.count(query, ReceivingLine.class));
 
-        return mapReceivingLineToResponse(receiveLinePage);
+            return mapReceivingLineToResponse(receiveLinePage);
 
+        } else {
+            throw new ContentNotFoundException("No content found for the given query param");
+        }
     }
     @Override
     public Page<ReceivingLineResponse> getReceiveLineSearch(ReceiveLineSearch receivingLineSearch, int pageNbr, int pageSize, String orderBy) {

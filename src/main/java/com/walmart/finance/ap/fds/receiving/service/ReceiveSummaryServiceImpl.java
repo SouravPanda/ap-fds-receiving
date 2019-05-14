@@ -64,22 +64,27 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     @Override
     public Page<ReceivingSummaryResponse> getReceiveSummary(String purchaseOrderNumber, String purchaseOrderId, String receiptNumbers, String transactionType, String controlNumber, String locationNumber,
                                                             String divisionNumber, String vendorNumber, String departmentNumber, String invoiceId, String invoiceNumber, String receiptDateStart, String receiptDateEnd, int pageNbr, int pageSize, String orderBy, Sort.Direction order) {
+        if (StringUtils.isNotEmpty(purchaseOrderNumber) || StringUtils.isNotEmpty(purchaseOrderId) || StringUtils.isNotEmpty(receiptNumbers) || StringUtils.isNotEmpty(transactionType)
+                || StringUtils.isNotEmpty(controlNumber) || StringUtils.isNotEmpty(locationNumber) || StringUtils.isNotEmpty(vendorNumber) || StringUtils.isNotEmpty(departmentNumber) || StringUtils.isNotEmpty(invoiceId)
+                || StringUtils.isNotEmpty(invoiceNumber) || StringUtils.isNotEmpty(receiptDateStart) || StringUtils.isNotEmpty(receiptDateEnd)) {
+            Query dynamicQuery = new Query();
+            Query query = searchCriteriaForGet(dynamicQuery, purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
+                    divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd);
+            Pageable pageable = PageRequest.of(pageNbr, pageSize);
+            dynamicQuery.with(pageable);
+            List<String> orderByproperties = new ArrayList<>();
+            orderByproperties.add(orderBy);
+            Sort sort = new Sort(order, orderByproperties);
+            List<ReceiveSummary> receiveSummaries = mongoTemplate.find(query, ReceiveSummary.class, "receive-summary");
+            Page<ReceiveSummary> receiveSummaryPage = PageableExecutionUtils.getPage(
+                    receiveSummaries,
+                    pageable,
+                    () -> mongoTemplate.count(dynamicQuery, ReceiveSummary.class));
+            return mapReceivingSummaryToResponse(receiveSummaryPage);
 
-        Query dynamicQuery = new Query();
-        Query query = searchCriteriaForGet(dynamicQuery, purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
-                divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd);
-        Pageable pageable = PageRequest.of(pageNbr, pageSize);
-        dynamicQuery.with(pageable);
-        List<String> orderByproperties = new ArrayList<>();
-        orderByproperties.add(orderBy);
-        Sort sort = new Sort(order, orderByproperties);
-        List<ReceiveSummary> receiveSummaries = mongoTemplate.find(query, ReceiveSummary.class, "receive-summary");
-        Page<ReceiveSummary> receiveSummaryPage = PageableExecutionUtils.getPage(
-                receiveSummaries,
-                pageable,
-                () -> mongoTemplate.count(dynamicQuery, ReceiveSummary.class));
-        return mapReceivingSummaryToResponse(receiveSummaryPage);
-
+        } else {
+            throw new ContentNotFoundException("No content found for the given query parameter");
+        }
     }
 
     @Override
