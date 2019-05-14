@@ -8,7 +8,7 @@ import org.springframework.data.domain.Sort;
 
 
 public interface ReceiveLineService {
-   Page<ReceivingLineResponse> getLineSummary(String purchaseOrderId,String receiptNumber, String transactionType,String controlNumber, String locationNumber, String divisionNumber,int pageNbr, int pageSize, String orderBy,Sort.Direction order);
+   Page<ReceivingLineResponse> getLineSummary(String purchaseOrderId,String receiptNumbers, String transactionType,String controlNumber, String locationNumber, String divisionNumber,int pageNbr, int pageSize, String orderBy,Sort.Direction order);
    Page<ReceivingLineResponse> getReceiveLineSearch(ReceiveLineSearch receivingLineSearch, int pageNbr, int pageSize, String orderBy);
 }
 

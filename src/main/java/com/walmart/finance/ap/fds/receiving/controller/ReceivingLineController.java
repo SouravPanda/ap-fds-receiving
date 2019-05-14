@@ -40,7 +40,7 @@ public class ReceivingLineController {
 
     public Page<ReceivingLineResponse> getReceiveLine(@PathVariable("countryCode")
                                                               String countryCode, @RequestParam(value = "purchaseOrderId",required = false) String purchaseOrderId,
-                                                      @RequestParam(value = "receiptNumber",required = false) String receiptNumber,
+                                                      @RequestParam(value = "receiptNumbers",required = false) String receiptNumbers,
                                                       @RequestParam(value = "transactionType",required = false) String transactionType,
                                                       @RequestParam(value = "controlNumber",required = false) String controlNumber,
                                                       @RequestParam(value = "locationNumber",required = false) String locationNumber,
@@ -55,7 +55,7 @@ public class ReceivingLineController {
                                                               Sort.Direction order) {
                                                // @NotEmpty @NotNull @RequestParam("countryCode") String countryCode) {
 
-        return receiveLineService.getLineSummary(purchaseOrderId, receiptNumber, transactionType,controlNumber, locationNumber, divisionNumber,pageNbr,pageSize,orderBy, order);
+        return receiveLineService.getLineSummary(purchaseOrderId, receiptNumbers, transactionType,controlNumber, locationNumber, divisionNumber,pageNbr,pageSize,orderBy, order);
 
     }
 

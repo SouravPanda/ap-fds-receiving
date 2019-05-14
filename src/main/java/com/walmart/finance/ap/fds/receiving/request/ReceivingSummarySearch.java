@@ -14,7 +14,7 @@ public class ReceivingSummarySearch {
 
     Long purchaseOrderId;
 
-    String receiptNumber;
+    String receiptNumbers; //check with Rupesh
 
     Integer transactionType;
 

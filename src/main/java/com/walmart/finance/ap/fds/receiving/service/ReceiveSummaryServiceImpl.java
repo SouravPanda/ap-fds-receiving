@@ -209,8 +209,8 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             dynamicQuery.addCriteria(purchaseOrderNumberCriteria);
         }
 
-        if (StringUtils.isNotEmpty(receivingSummarySearch.getReceiptNumber())) {
-            Criteria poReceiveIdCriteria = Criteria.where("poReceiveId").is(Integer.parseInt(receivingSummarySearch.getReceiptNumber()));
+        if (StringUtils.isNotEmpty(receivingSummarySearch.getReceiptNumbers())) {
+            Criteria poReceiveIdCriteria = Criteria.where("poReceiveId").is(Integer.parseInt(receivingSummarySearch.getReceiptNumbers()));
             dynamicQuery.addCriteria(poReceiveIdCriteria);
         }
 

@@ -23,10 +23,10 @@ public class ReceivingLineResponse {
     private Integer packQuantity;
     private Integer numberofCasesReceived;
     private Integer vendorStockNumber;
-    private Integer bottleStockNumber;
+    private Integer bottleDepositAmount;
     private String damaged;
     private Integer purchaseOrderNumber;
-    private Integer purchaseReceiptNumber;
+    private Integer parentReceiptNumber;
     private Integer purchasedOrderId;
     private Integer upc;
     private String itemDescription;
