@@ -62,11 +62,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     }
 
     @Override
-    public Page<ReceivingSummaryResponse> getReceiveSummary(String purchaseOrderNumber, String purchaseOrderId, String receiptNumber, String transactionType, String controlNumber, String locationNumber,
+    public Page<ReceivingSummaryResponse> getReceiveSummary(String purchaseOrderNumber, String purchaseOrderId, String receiptNumbers, String transactionType, String controlNumber, String locationNumber,
                                                             String divisionNumber, String vendorNumber, String departmentNumber, String invoiceId, String invoiceNumber, String receiptDateStart, String receiptDateEnd, int pageNbr, int pageSize, String orderBy, Sort.Direction order) {
 
         Query dynamicQuery = new Query();
-        Query query = searchCriteriaForGet(dynamicQuery, purchaseOrderNumber, purchaseOrderId, receiptNumber, transactionType, controlNumber, locationNumber,
+        Query query = searchCriteriaForGet(dynamicQuery, purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
                 divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd);
         Pageable pageable = PageRequest.of(pageNbr, pageSize);
         dynamicQuery.with(pageable);
@@ -216,7 +216,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         return dynamicQuery;
     }
 
-    private Query searchCriteriaForGet(Query dynamicQuery, String purchaseOrderNumber, String purchaseOrderId, String receiptNumber, String transactionType, String controlNumber, String locationNumber,
+    private Query searchCriteriaForGet(Query dynamicQuery, String purchaseOrderNumber, String purchaseOrderId, String receiptNumbers, String transactionType, String controlNumber, String locationNumber,
                                        String divisionNumber, String vendorNumber, String departmentNumber, String invoiceId, String invoiceNumber, String receiptDateStart, String receiptDateEnd) {
         //ReceivingSummarySearch receivingSummarySearch = new ReceivingSummarySearch();
 
@@ -262,8 +262,8 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             dynamicQuery.addCriteria(purchaseOrderNumberCriteria);
         }
 
-        if (StringUtils.isNotEmpty(receiptNumber)) {
-            Criteria poReceiveIdCriteria = Criteria.where("poReceiveId").is(Integer.parseInt(receiptNumber));
+        if (StringUtils.isNotEmpty(receiptNumbers)) {
+            Criteria poReceiveIdCriteria = Criteria.where("poReceiveId").is(receiptNumbers);
             dynamicQuery.addCriteria(poReceiveIdCriteria);
         }
 

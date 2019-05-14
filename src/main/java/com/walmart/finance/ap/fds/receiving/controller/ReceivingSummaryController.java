@@ -56,7 +56,7 @@ public class ReceivingSummaryController {
                                                                     String countryCode,
                                                             @RequestParam(value = "purchaseOrderNumber",required = false) String purchaseOrderNumber,
                                                             @RequestParam(value = "purchaseOrderId",required = false) String purchaseOrderId,
-                                                            @RequestParam(value ="receiptNumber",required = false) String receiptNumber,
+                                                            @RequestParam(value ="receiptNumbers",required = false) String receiptNumbers,
                                                             @RequestParam(value ="transactionType",required = false) String transactionType,
                                                             @RequestParam(value ="controlNumber",required = false) String controlNumber,
                                                             @RequestParam(value ="locationNumber",required = false) String locationNumber,
@@ -76,7 +76,7 @@ public class ReceivingSummaryController {
                                                             @RequestParam(value = "order", defaultValue = "DESC")
                                                                     Sort.Direction order) {
 
-        return receiveSummaryService.getReceiveSummary(purchaseOrderNumber, purchaseOrderId, receiptNumber, transactionType, controlNumber, locationNumber,
+        return receiveSummaryService.getReceiveSummary(purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
                 divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd, pageNbr, pageSize, orderBy, order);
     }
 
