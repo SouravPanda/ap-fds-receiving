@@ -65,13 +65,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     public Page<ReceivingSummaryResponse> getReceiveSummary(String purchaseOrderNumber, String purchaseOrderId, String receiptNumber, String transactionType, String controlNumber, String locationNumber,
                                                             String divisionNumber, String vendorNumber, String departmentNumber, String invoiceId, String invoiceNumber, String receiptDateStart, String receiptDateEnd, int pageNbr, int pageSize, String orderBy, Sort.Direction order) {
 
-
-        if (StringUtils.isNotEmpty(invoiceId) || StringUtils.isNotEmpty(invoiceNumber)) {
-
-            new ContentNotFoundException("No content found for given search criteria");
-
-        }
-
         Query dynamicQuery = new Query();
         Query query = searchCriteriaForGet(dynamicQuery, purchaseOrderNumber, purchaseOrderId, receiptNumber, transactionType, controlNumber, locationNumber,
                 divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd);
@@ -85,10 +78,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 receiveSummaries,
                 pageable,
                 () -> mongoTemplate.count(dynamicQuery, ReceiveSummary.class));
-/*            if (receiveSummary.isPresent()) {
-                ReceiveSummary savedReceiveSummary = receiveSummary.get();
-                ReceivingSummaryResponse response = receivingSummaryResponseConverter.convert(savedReceiveSummary);
-                Page<ReceivingSummaryResponse> responseOfPagination = getReceiveSummarySearch()*/
         return mapReceivingSummaryToResponse(receiveSummaryPage);
 
     }
