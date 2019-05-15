@@ -51,30 +51,23 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
     }
 
     public Page<ReceivingLineResponse> getLineSummary(String purchaseOrderId, String receiptNumber, String transactionType, String controlNumber, String locationNumber, String divisionNumber, int pageNbr, int pageSize, String orderBy, Sort.Direction order) {
-        if (StringUtils.isNotEmpty(purchaseOrderId) || StringUtils.isNotEmpty(receiptNumber) || StringUtils.isNotEmpty(transactionType) || StringUtils.isNotEmpty(controlNumber) || StringUtils.isNotEmpty(locationNumber) || StringUtils.isNotEmpty(divisionNumber)) {
-            Query dynamicQuery = new Query();
-            Query query = searchCriteriaForGet(dynamicQuery, purchaseOrderId, receiptNumber, transactionType, controlNumber, locationNumber, divisionNumber);
-            Pageable pageable = PageRequest.of(pageNbr, pageSize);
-            query.with(pageable);
-            List<String> orderByproperties = new ArrayList<>();
-            orderByproperties.add(orderBy);
-            //Sort sort = new Sort(orderByproperties);
-            // query.with(sort);
 
-            List<ReceivingLine> receiveLines = mongoTemplate.find(query, ReceivingLine.class, "receive-line-new");
+        Query query = searchCriteriaForGet(purchaseOrderId, receiptNumber, transactionType, controlNumber, locationNumber, divisionNumber);
+        Pageable pageable = PageRequest.of(pageNbr, pageSize);
+        query.with(pageable);
+        List<String> orderByproperties = new ArrayList<>();
+        orderByproperties.add(orderBy);
+        //Sort sort = new Sort(orderByproperties);
+        // query.with(sort);
+        List<ReceivingLine> receiveLines = mongoTemplate.find(query, ReceivingLine.class, "receive-line-new");
+        Page<ReceivingLine> receiveLinePage = PageableExecutionUtils.getPage(
+                receiveLines,
+                pageable,
+                () -> mongoTemplate.count(query, ReceivingLine.class));
 
-
-            Page<ReceivingLine> receiveLinePage = PageableExecutionUtils.getPage(
-                    receiveLines,
-                    pageable,
-                    () -> mongoTemplate.count(query, ReceivingLine.class));
-
-            return mapReceivingLineToResponse(receiveLinePage);
-
-        } else {
-            throw new ContentNotFoundException("No content found for the given query param");
-        }
+        return mapReceivingLineToResponse(receiveLinePage);
     }
+
     @Override
     public Page<ReceivingLineResponse> getReceiveLineSearch(ReceiveLineSearch receivingLineSearch, int pageNbr, int pageSize, String orderBy) {
         Query dynamicQuery = new Query();
@@ -88,7 +81,7 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
         List<String> orderByproperties = new ArrayList<>();
         orderByproperties.add(orderBy);
         //Sort sort = new Sort(orderByproperties);
-       // query.with(sort);
+        // query.with(sort);
 
         List<ReceivingLine> receiveLines = mongoTemplate.find(query, ReceivingLine.class, "receive-line-new");
 
@@ -151,8 +144,9 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
         return receivingControlNumber + ReceivingConstants.PIPE_SEPARATOR + poReceiveId + ReceivingConstants.PIPE_SEPARATOR + storeNumber + ReceivingConstants.PIPE_SEPARATOR + baseDivisionNumber + ReceivingConstants.PIPE_SEPARATOR + transactionType + ReceivingConstants.PIPE_SEPARATOR + finalDate + ReceivingConstants.PIPE_SEPARATOR + finalTime + ReceivingConstants.PIPE_SEPARATOR + sequenceNumber;
     }
 
-    private Query searchCriteriaForGet(Query dynamicQuery,String purchaseOrderId,String receiptNumber, String transactionType, String controlNumber, String locationNumber, String divisionNumber) {
+    private Query searchCriteriaForGet(String purchaseOrderId, String receiptNumber, String transactionType, String controlNumber, String locationNumber, String divisionNumber) {
 
+        Query dynamicQuery = new Query();
         if (StringUtils.isNotEmpty(purchaseOrderId) || (StringUtils.isNotEmpty(controlNumber))) {
             if (StringUtils.isNotEmpty(purchaseOrderId)) {
                 Criteria purchaseOrderIdCriteria = Criteria.where("receivingControlNumber").is(purchaseOrderId);

@@ -64,11 +64,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     @Override
     public Page<ReceivingSummaryResponse> getReceiveSummary(String purchaseOrderNumber, String purchaseOrderId, String receiptNumbers, String transactionType, String controlNumber, String locationNumber,
                                                             String divisionNumber, String vendorNumber, String departmentNumber, String invoiceId, String invoiceNumber, String receiptDateStart, String receiptDateEnd, int pageNbr, int pageSize, String orderBy, Sort.Direction order) {
-        Query dynamicQuery = new Query();
-        Query query = searchCriteriaForGet(dynamicQuery, purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
+
+        Query query = searchCriteriaForGet(purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
                 divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd);
         Pageable pageable = PageRequest.of(pageNbr, pageSize);
-        dynamicQuery.with(pageable);
+        query.with(pageable);
         List<String> orderByproperties = new ArrayList<>();
         orderByproperties.add(orderBy);
         Sort sort = new Sort(order, orderByproperties);
@@ -76,7 +76,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         Page<ReceiveSummary> receiveSummaryPage = PageableExecutionUtils.getPage(
                 receiveSummaries,
                 pageable,
-                () -> mongoTemplate.count(dynamicQuery, ReceiveSummary.class));
+                () -> mongoTemplate.count(query, ReceiveSummary.class));
         return mapReceivingSummaryToResponse(receiveSummaryPage);
 
     }
@@ -215,9 +215,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         return dynamicQuery;
     }
 
-    private Query searchCriteriaForGet(Query dynamicQuery, String purchaseOrderNumber, String purchaseOrderId, String receiptNumbers, String transactionType, String controlNumber, String locationNumber,
+    private Query searchCriteriaForGet(String purchaseOrderNumber, String purchaseOrderId, String receiptNumbers, String transactionType, String controlNumber, String locationNumber,
                                        String divisionNumber, String vendorNumber, String departmentNumber, String invoiceId, String invoiceNumber, String receiptDateStart, String receiptDateEnd) {
-        //ReceivingSummarySearch receivingSummarySearch = new ReceivingSummarySearch();
+        Query dynamicQuery = new Query();
 
         if (StringUtils.isNotEmpty(controlNumber) || StringUtils.isNotEmpty(purchaseOrderId)) {
 
