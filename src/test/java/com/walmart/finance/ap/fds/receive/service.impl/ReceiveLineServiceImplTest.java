@@ -1,6 +1,6 @@
 
 
-/*package com.walmart.finance.ap.fds.receive.service.impl;
+package com.walmart.finance.ap.fds.receive.service.impl;
 
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineReqConverter;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineResponseConverter;
@@ -12,11 +12,12 @@ import com.walmart.finance.ap.fds.receiving.service.ReceiveLineServiceImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -25,6 +26,7 @@ import org.springframework.data.repository.support.PageableExecutionUtils;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -33,6 +35,8 @@ import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.doReturn;
 import static org.powermock.api.mockito.PowerMockito.spy;
 
+@PrepareForTest(ReceiveLineServiceImpl.class)
+@RunWith(PowerMockRunner.class)
 public class ReceiveLineServiceImplTest {
     @InjectMocks
     ReceiveLineServiceImpl receiveLineServiceImpl;
@@ -89,7 +93,7 @@ public class ReceiveLineServiceImplTest {
     Integer bottleStockNumber = 11333;
     String damaged = null;
     Integer upc = 117;
-    String itemDescription = "PR";
+    String itemDescription = "9890";
     Integer purchaseReceiptNumber = 199;
     String unitOfMeasure = "lbs";
     LocalDateTime creationDate = null;
@@ -97,14 +101,17 @@ public class ReceiveLineServiceImplTest {
     Integer locationNumber = 112;
     Integer divisionNumber = 44;
     String receivingControlNumber = "112";
+    Integer parentReceiptNumber=0;
     Integer countryCode = 0;
     Character typeIndicator='A';
     String writeIndicator="B";
-    String purchaseOrderNumber="KK";
+    Integer bottleDepositAmount=0;
+    String purchaseOrderNumber="888";
     LocalDate mdsReceiveDate=null;
     Integer receiveSequenceNumber=0;
     Double receivedWeightQuantity=9.0;
-    String receivedQuantityUnitOfMeasureCode="KK";
+    String receivedQuantityUnitOfMeasureCode="0";
+    Sort.Direction order=Sort.DEFAULT_DIRECTION;
     int pageNbr=0;
     int pageSize=0;
     String orderBy="creationDate";
@@ -120,17 +127,16 @@ public class ReceiveLineServiceImplTest {
                 vendorStockNumber, bottleStockNumber, damaged, Integer.valueOf(purchaseOrderNumber), purchaseReceiptNumber, purchasedOrderId, upc, itemDescription, unitOfMeasure, variableWeightInd, receivedWeightQuantity.toString(), transactionType, controlNumber, locationNumber, divisionNumber);
         when(receivingLineResponseConverter.convert(savedReceivingLine)).thenReturn(response);
         when(receiveLineDataRepository.findById(_id)).thenReturn(receiveLineAt);
-       // Assert.assertEquals(response, receiveLineServiceImpl.getLineSummary(receivingControlNumber, poReceiveId.toString(), storeNumber.toString()
-        //        , baseDivisionNumber.toString(), transactionType.toString(), finalDate.toString(), finalTime.toString(), sequenceNumber.toString(), pageNbr, pageSize, orderBy,Sort.Direction order));
-
+      //  Assert.assertEquals(response, receiveLineServiceImpl.getLineSummary(receivingControlNumber, poReceiveId.toString(), storeNumber.toString()
+      //         , baseDivisionNumber.toString(), transactionType.toString(), finalDate.toString(), finalTime.toString(), sequenceNumber.toString(), pageNbr, pageSize, orderBy, Sort.Direction.DESC));
     }
 
     @Test
-    public void getReceiveLineSearchTest() {
+    public void getReceiveLineSearchTest() throws Exception {
         ReceiveLineSearch receiveLineSearch = new ReceiveLineSearch(Long.valueOf(purchaseOrderId), receiptNumber.longValue(), transactionType, controlNumber.toString(), locationNumber, divisionNumber);
-        query = searchCriteria(receiveLineSearch);
+       // query = searchCriteria(receiveLineSearch);
         Pageable pageable = PageRequest.of(1, 1);
-        query.with(pageable);
+      //  query.with(pageable);
         List<String> orderByproperties = new ArrayList<>();
         orderByproperties.add("creationDate");
         List<ReceivingLine> listOfContent=new ArrayList<>();
@@ -138,37 +144,27 @@ public class ReceiveLineServiceImplTest {
         ReceivingLine receivingLineAt=new ReceivingLine("0|0|0|0|0|null|null|12", "6778", 0, 0, 0, 0, 0.0, 0.0, "0", 0, 0, 0, 0, 0, 0, null, null, 12, LocalDateTime.of(1985, 10, 17, 18, 45, 21),'A',"BKP","111",0,LocalDate.now(),0,1.9,"LL");
         listOfContent.add(receivingLine);
         listOfContent.add(receivingLineAt);
-        Sort sort = new Sort(Sort.Direction.DESC, orderByproperties);
-        query.with(sort);
-
-/*     when(mongoTemplate.find(query, ReceivingLine.class, "receive-line")).thenReturn(listOfContent);
-        Page<ReceivingLine> receiveLinePage = PageableExecutionUtils.getPage(
-                listOfContent,
-                pageable,
-                () -> mongoTemplate.count(query, ReceivingLine.class));*/
-       /* when(receivingLineResponseConverter.convert(receivingLine)).thenReturn(receivingLineResponse);
-        //ReceiveLineServiceImpl mock = spy(new ReceiveLineServiceImpl());
-       // doReturn("Page 1 of 25766 containing com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse instances").when(mock, "mapReceivingLineToResponse", ArgumentMatchers.isNull());
-       // when(receiveLineServiceImpl.mapReceivingSummaryToResponse(Page<ReceivingLine>receiveLinePage))
-       // Assert.assertEquals(receiveLineServiceImpl.getReceiveLineSearch(receiveLineSearch,1,1,"creationDate",Sort.Direction.DESC).toString(),mapReceivingSummaryToResponse(receiveLinePage).toString());
+   /*     Sort sort = new Sort(Sort.Direction.DESC, orderByproperties);
+        query.with(sort);*/
+        Query query= new Query();
+        ReceiveLineServiceImpl spy = PowerMockito.spy(receiveLineServiceImpl);
+        Criteria criteria=Criteria.where("receivingControlNumber").is(466567).and("purchaseOrderReceiveID").is(1).and("transactionType").is(0)
+                .and("baseDivisionNumber").is(44).and("storeNumber").is(112);
+        query.addCriteria(criteria);
+        PowerMockito.doReturn(query).when(spy,"searchCriteria",receiveLineSearch, query);
+        when(receivingLineResponseConverter.convert(receivingLine)).thenReturn(receivingLineResponse);
+        ReceivingLineResponse receivingLineResponse = new ReceivingLineResponse(0,0,0,0,0,2.9,1.9,0,0,0,0,null,0,0,0,0,null,null,null,null,0,0,0,0);
+        ReceivingLineResponse receivingLineResponseAt = new ReceivingLineResponse(1,1,1,1,0,2.9,1.9,0,0,0,0,null,0,0,0,0,null,null,null,null,0,0,0,0);
+        List<ReceivingLineResponse> content = new ArrayList<>();
+        content.add(receivingLineResponse);
+        content.add(receivingLineResponseAt);
+        PageRequest pageRequest= new PageRequest(1,1,Sort.unsorted());
+        PageImpl<ReceivingLineResponse> pageImplResponse= new PageImpl(content,pageRequest,1);
+        PageImpl<ReceivingLine> pageImplRequest= new PageImpl<>(listOfContent,pageRequest,1);
+        PowerMockito.doReturn(pageImplResponse).when(spy,"mapReceivingLineToResponse",pageImplRequest);
+      //  Assert.assertEquals(receiveLineServiceImpl.getReceiveLineSearch(receiveLineSearch,1, 1,"creationDate").toString(),pageImplResponse.toString());
 
    }
 
-   private Query searchCriteria(ReceiveLineSearch receiveLineSearch) {
-        Criteria criteria = Criteria.where("receivingControlNumber").is(466567L).and("purchaseOrderReceiveID").is(1L).and("baseDivisionNumber").is(44).and("storeNumber").is(112);
-        dynamicQuery.addCriteria(criteria);
-        return dynamicQuery;
-    }
-/* private Page<ReceivingLineResponse> mapReceivingSummaryToResponse(Page<ReceivingLine> receiveLinePage) {
-        Page<ReceivingLineResponse> receivingLineResponsePage = receiveLinePage.map(new Function<ReceivingLine, ReceivingLineResponse>() {
-            @Override
-            public ReceivingLineResponse apply(ReceivingLine receiveLine) {
-                ReceivingLineResponse receivingLineResponse = new ReceivingLineResponse(receiptNumber, receiptLineNumber, itemNumber, vendorNumber, quantity, receivedQuantity, costAmount, retailAmount, receivingControlNumber, purchaseReceiptNumber, purchasedOrderId, upcNumber, transactionType, storeNumber, baseDivisionNumber, finalDate, finalTime, sequenceNumber, creationDate);
-                return when(receivingLineResponseConverter.convert(receiveLine)).thenReturn(receivingLineResponse);
-            }
-        });
-        return receivingLineResponsePage;
-    }*/
-
-//}
+}
 

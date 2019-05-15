@@ -14,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 
 @RestController
 //@RequestMapping(value = "{countryCode}/receiving/summary")
@@ -75,9 +77,10 @@ public class ReceivingSummaryController {
                                                                     String orderBy,
                                                             @RequestParam(value = "order", defaultValue = "DESC")
                                                                     Sort.Direction order) {
+                                                           // @RequestParam Map<String,String> allRequestParam {
 
         return receiveSummaryService.getReceiveSummary(purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
-                divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd, pageNbr, pageSize, orderBy, order);
+                divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd, pageNbr, pageSize, orderBy, order);//allRequestParam);
     }
 
 

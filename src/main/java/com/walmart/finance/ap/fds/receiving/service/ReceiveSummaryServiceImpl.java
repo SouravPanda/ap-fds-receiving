@@ -3,7 +3,6 @@ package com.walmart.finance.ap.fds.receiving.service;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryReqConverter;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
-import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
 import com.walmart.finance.ap.fds.receiving.integrations.InvoiceIntegrationService;
 import com.walmart.finance.ap.fds.receiving.integrations.InvoiceResponse;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
@@ -11,6 +10,7 @@ import com.walmart.finance.ap.fds.receiving.repository.ReceiveSummaryDataReposit
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummarySearch;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
+import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -27,6 +27,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -53,6 +54,10 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     InvoiceIntegrationService invoiceIntegrationService;
 
 
+    @Autowired
+    ReceiveSummaryValidator receiveSummaryValidator;
+
+
     // TODO validation for incoming against MDM needs to be added later
 
     public ReceiveSummary saveReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest) {
@@ -63,8 +68,10 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     @Override
     public Page<ReceivingSummaryResponse> getReceiveSummary(String purchaseOrderNumber, String purchaseOrderId, String receiptNumbers, String transactionType, String controlNumber, String locationNumber,
-                                                            String divisionNumber, String vendorNumber, String departmentNumber, String invoiceId, String invoiceNumber, String receiptDateStart, String receiptDateEnd, int pageNbr, int pageSize, String orderBy, Sort.Direction order) {
+                                                            String divisionNumber, String vendorNumber, String departmentNumber, String invoiceId, String invoiceNumber, String receiptDateStart, String receiptDateEnd, int pageNbr, int pageSize, String orderBy, Sort.Direction order){// Map<String,String> allRequestParam) {
 
+
+       // receiveSummaryValidator.validate(allRequestParam);
         Query query = searchCriteriaForGet(purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
                 divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd);
         Pageable pageable = PageRequest.of(pageNbr, pageSize);

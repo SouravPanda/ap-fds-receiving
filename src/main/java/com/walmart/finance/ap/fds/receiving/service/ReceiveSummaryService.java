@@ -8,10 +8,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 public interface ReceiveSummaryService {
    ReceiveSummary saveReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest);
-   Page<ReceivingSummaryResponse> getReceiveSummary(String purchaseOrderNumber, String purchaseOrderId,  String receiptNumber,  String transactionType, String controlNumber, String locationNumber,
-                                              String  divisionNumber, String vendorNumber, String departmentNumber,String invoiceId,String invoiceNumber,String receiptDateStart,String receiptDateEnd,int pageNbr, int pageSize, String orderBy, Sort.Direction order);
+   Page<ReceivingSummaryResponse> getReceiveSummary(String purchaseOrderNumber, String purchaseOrderId, String receiptNumber, String transactionType, String controlNumber, String locationNumber,
+                                                    String  divisionNumber, String vendorNumber, String departmentNumber, String invoiceId, String invoiceNumber, String receiptDateStart, String receiptDateEnd, int pageNbr, int pageSize, String orderBy, Sort.Direction order);// Map<String,String> allRequestParam);
    Page<ReceivingSummaryResponse> getReceiveSummarySearch(ReceivingSummarySearch receivingSummarySearch,int pageNbr, int pageSize, String orderBy, Sort.Direction order);
 }
