@@ -14,5 +14,4 @@ public class ReceiveLineSearch {
     String controlNumber;
     Integer locationNumber;
     Integer divisionNumber;
-   // Integer countryCode;
 }

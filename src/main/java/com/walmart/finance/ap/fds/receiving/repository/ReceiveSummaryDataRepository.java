@@ -9,8 +9,4 @@ import java.util.List;
 
 @Repository
 public interface ReceiveSummaryDataRepository extends MongoRepository<ReceiveSummary,String> {
-    //List<ReceiveSummary> findByReceivingControlNumberAndPoReceiveIdAndStoreNumberAndBaseDivisionNumberAndTransactionType(Integer receConNo, Integer poReceId,
-                                                                                                                        // Integer storeNo, Integer baseDivisionNo, Integer transType);
-
-
 }

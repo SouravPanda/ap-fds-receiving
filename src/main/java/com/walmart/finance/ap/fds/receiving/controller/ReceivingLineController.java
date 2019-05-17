@@ -2,7 +2,6 @@
 package com.walmart.finance.ap.fds.receiving.controller;
 
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
-import com.walmart.finance.ap.fds.receiving.request.ReceiveLineSearch;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingLineRequest;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveLineService;
@@ -39,12 +38,12 @@ public class ReceivingLineController {
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
 
     public Page<ReceivingLineResponse> getReceiveLine(@PathVariable("countryCode")
-                                                              String countryCode, @RequestParam(value = "purchaseOrderId",required = false) String purchaseOrderId,
-                                                      @RequestParam(value = "receiptNumbers",required = false) String receiptNumbers,
-                                                      @RequestParam(value = "transactionType",required = false) String transactionType,
-                                                      @RequestParam(value = "controlNumber",required = false) String controlNumber,
-                                                      @RequestParam(value = "locationNumber",required = false) String locationNumber,
-                                                      @RequestParam(value = "divisionNumber",required = false) String divisionNumber,
+                                                              String countryCode, @RequestParam(value = "purchaseOrderId", required = false) String purchaseOrderId,
+                                                      @RequestParam(value = "receiptNumbers", required = false) String receiptNumbers,
+                                                      @RequestParam(value = "transactionType", required = false) String transactionType,
+                                                      @RequestParam(value = "controlNumber", required = false) String controlNumber,
+                                                      @RequestParam(value = "locationNumber", required = false) String locationNumber,
+                                                      @RequestParam(value = "divisionNumber", required = false) String divisionNumber,
                                                       @RequestParam(value = "pageNbr", defaultValue = "0")
                                                               Integer pageNbr,
                                                       @RequestParam(value = "pageSize", defaultValue = "1000")
@@ -53,9 +52,8 @@ public class ReceivingLineController {
                                                               String orderBy,
                                                       @RequestParam(value = "order", defaultValue = "DESC")
                                                               Sort.Direction order) {
-                                               // @NotEmpty @NotNull @RequestParam("countryCode") String countryCode) {
 
-        return receiveLineService.getLineSummary(purchaseOrderId, receiptNumbers, transactionType,controlNumber, locationNumber, divisionNumber,pageNbr,pageSize,orderBy, order);
+        return receiveLineService.getLineSummary(purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber, divisionNumber, pageNbr, pageSize, orderBy, order);
 
     }
 
@@ -70,35 +68,8 @@ public class ReceivingLineController {
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
 
     public ReceivingLine saveReceiveLine(@PathVariable("countryCode")
-                                                     String countryCode,@RequestBody ReceivingLineRequest receivingLineRequest ) {
+                                                 String countryCode, @RequestBody ReceivingLineRequest receivingLineRequest) {
         return receiveLineServiceImpl.saveReceiveLine(receivingLineRequest);
 
     }
-
-    /**
-     * Method calls Service class to search receiveLine in Db
-     *
-     * @param
-     * @return
-     */
-
-   @PostMapping("/search")
-    @ApiOperation(value = "API to search ReceivingLine for given criteria")
-    @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Error")})
-    public Page<ReceivingLineResponse> getReceiveLineSearch(
-           @PathVariable("countryCode")
-                   String countryCode,
-           @RequestParam(value = "pageNbr", defaultValue = "0" )
-                   Integer pageNbr,
-           @RequestParam(value = "pageSize", defaultValue = "1000")
-                   Integer pageSize,
-           @RequestParam(value="orderBy", defaultValue="creationDate")
-                   String orderBy,
-           @RequestParam(value = "order", defaultValue = "DESC")
-                   Sort.Direction order,
-            @RequestBody ReceiveLineSearch receivingLineSearch){
-        return receiveLineService.getReceiveLineSearch(receivingLineSearch,pageNbr,pageSize,orderBy);
-
-    }
-
 }

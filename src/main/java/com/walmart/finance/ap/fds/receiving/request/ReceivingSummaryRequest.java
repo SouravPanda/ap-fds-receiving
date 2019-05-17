@@ -104,5 +104,4 @@ public class ReceivingSummaryRequest {
     private String userId;
 
 
-
 }
