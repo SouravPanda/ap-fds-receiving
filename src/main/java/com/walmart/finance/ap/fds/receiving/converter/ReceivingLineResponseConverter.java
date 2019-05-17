@@ -36,7 +36,6 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
         response.setEachRetailAmount(receivingLine.getRetailAmount());
         response.setPackQuantity(receivingLine.getQuantity());
 
-
         response.setNumberofCasesReceived(0);
         response.setVendorStockNumber(0);
         response.setBottleDepositAmount(0);

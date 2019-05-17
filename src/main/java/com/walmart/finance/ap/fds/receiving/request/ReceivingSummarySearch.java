@@ -14,7 +14,7 @@ public class ReceivingSummarySearch {
 
     Long purchaseOrderId;
 
-    String receiptNumbers; //check with Rupesh
+    String receiptNumbers;
 
     Integer transactionType;
 
@@ -31,12 +31,6 @@ public class ReceivingSummarySearch {
     Long invoiceId;
 
     String invoiceNumber;
-
-    //Integer countryCode;
-
-    /*String[] itemNumbers;//to be checked
-
-    String[] upcNumbers;//to be checked, y multiple*/
 
     LocalDateTime receiptDateStart;
 

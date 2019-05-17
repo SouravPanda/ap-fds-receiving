@@ -58,6 +58,7 @@ public class ReceiveSummaryValidator {
         if (verdict == false)
             throw new InvalidValueException("Incorrect fields passed");
     }
+
 }
 
 

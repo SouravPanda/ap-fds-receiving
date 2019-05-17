@@ -71,7 +71,7 @@ public class ReceivingSummaryController {
                                                             @RequestParam(value ="receiptDateEnd",required = false) String receiptDateEnd,
                                                             @RequestParam(value = "pageNbr", defaultValue = "0")
                                                                     Integer pageNbr,
-                                                            @RequestParam(value = "pageSize", defaultValue = "10")
+                                                            @RequestParam(value = "pageSize", defaultValue = "1000")
                                                                     Integer pageSize,
                                                             @RequestParam(value = "orderBy", defaultValue = "creationDate")
                                                                     String orderBy,
@@ -92,7 +92,7 @@ public class ReceivingSummaryController {
                     String countryCode,
             @RequestParam(value = "pageNbr", defaultValue = "0")
                     Integer pageNbr,
-            @RequestParam(value = "pageSize", defaultValue = "10")
+            @RequestParam(value = "pageSize", defaultValue = "1000")
                     Integer pageSize,
             @RequestParam(value = "orderBy", defaultValue = "creationDate")
                     String orderBy,

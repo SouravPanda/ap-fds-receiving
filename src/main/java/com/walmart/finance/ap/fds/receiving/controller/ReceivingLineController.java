@@ -47,7 +47,7 @@ public class ReceivingLineController {
                                                       @RequestParam(value = "divisionNumber",required = false) String divisionNumber,
                                                       @RequestParam(value = "pageNbr", defaultValue = "0")
                                                               Integer pageNbr,
-                                                      @RequestParam(value = "pageSize", defaultValue = "10")
+                                                      @RequestParam(value = "pageSize", defaultValue = "1000")
                                                               Integer pageSize,
                                                       @RequestParam(value = "orderBy", defaultValue = "creationDate")
                                                               String orderBy,
@@ -90,7 +90,7 @@ public class ReceivingLineController {
                    String countryCode,
            @RequestParam(value = "pageNbr", defaultValue = "0" )
                    Integer pageNbr,
-           @RequestParam(value = "pageSize", defaultValue = "10")
+           @RequestParam(value = "pageSize", defaultValue = "1000")
                    Integer pageSize,
            @RequestParam(value="orderBy", defaultValue="creationDate")
                    String orderBy,
