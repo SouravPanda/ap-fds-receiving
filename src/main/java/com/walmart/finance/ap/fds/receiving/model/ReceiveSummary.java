@@ -20,12 +20,16 @@ public class ReceiveSummary {
     private String _id;
     @NotEmpty
     // CONTROL_NBR
-    private String receivingControlNumber;
+    //To be checked
+    private String receivingControlNumber;//purchaseOrderId //Long
 
     @NotEmpty
     //STORE_NBR
-    private Integer storeNumber;
+    private Integer storeNumber;//locationNumber
 
+    @NotEmpty
+    //BASE_DIV_NBR
+    private Integer baseDivisionNumber;
 
     @NotEmpty
     // TRANSACTION_TYPE
@@ -44,6 +48,7 @@ public class ReceiveSummary {
 
     // CONTROL_NBR_TYPE
     @NotEmpty
+    //To be checked, not present in search or response,
     private Integer controlType;
 
 
@@ -82,70 +87,89 @@ public class ReceiveSummary {
     private Integer freightBillId;
 
     // Default value should be blank
+    //To be checked, not present in search or response
     private Character businessStatusCode;
 
     // default value is zero
+    //To be checked, not present in search or response
     private Long freightBillExpandID;
 
     // default value is space
+    //To be checked, not present in search or response
     private Character claimPendingIndicator;
 
 
     // default value is space
+    //To be checked, not present in search or response
     private Character freeAstrayIndicator;
 
     // default value is space
+    //To be checked, not present in search or response
     private Character freightConslIndicator;
 
 
     //RECV_TIMESTAMP
+    //To be checked, not present in search or response
     private LocalDateTime initialReceiveTimestamp;
 
     //RPR_DATE
+    //To be checked, not present in search or response
     private LocalDate MDSReceiveDate;
 
-    //
+    //To be checked, not present in search or response
     private LocalDate receiveProcessDate;
 
     private Double receiveWeightQuantity;
 
-
-    private String sequenceNumber;
+    //To be checked, not present in search or response
+    private Integer sequenceNumber;
 
 
     // BKRM_PROC_XMIT_DTL/ ACCTG_DEPT_NBR
     private Integer departmentNumber;
 
     //CASES_RECV
+    //To be checked, not present in search or response
     private Integer casesReceived;
 
-
+    //To be checked, not present in search or response
     private LocalDateTime finalizedLoadTimestamp;
 
-
+    //To be checked, not present in search or response
     private Integer finalizedSequenceNumber;
 
 
     // BASE_DIV_NBR + RPR_DATE(month) + RPR_SEQ_NBR
     @NotEmpty
-    private Integer poReceiveId;
+    //To be checked
+    private String poReceiveId;//  receiptNumber //Long
 
 
-    @NotEmpty
-    //BASE_DIV_NBR
-    private Integer baseDivisionNumber;
 
-
+    //@Builder.Default("user")
     private String userId;
 
+    //To be checked, not present in search or response instead receiptDateStart present in SummarySearch
     private LocalDateTime creationDate;
 
 
+    // PO_NBR_XREF/P1A_KEY(warehouse) :BKRM_PROC_XMAT_HDR/CONTROL_NBR(store)
+    private String purchaseOrderNumber;
+
+// identifier for Store(S) and Warehouse(W)
+//To be checked, not present in search or response
+    private Character typeIndicator;
+
+
+    //   identifier for SOE write and sync Service write
+//To be checked, not present in search or response
+    private String writeIndicator;
 
 
 
 
 
+//TODO, pagination , indexing
 
 
 

@@ -13,32 +13,41 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
 
         ReceivingLineResponse response = new ReceivingLineResponse();
 
-        //TODO need to check on this
+        response.setControlNumber(Integer.parseInt(receivingLine.getReceivingControlNumber()));
 
-        response.setControlNumber(receivingLine.getReceivingControlNumber());
         response.setDamaged(" ");
-        response.setDivisionNumber(receivingLine.getBaseDivisionNumber());
+
+        if (receivingLine.getBaseDivisionNumber() == 0) {
+            response.setDivisionNumber(0);
+        } else {
+            response.setDivisionNumber(receivingLine.getBaseDivisionNumber());
+        }
         response.setEachCostAmount(receivingLine.getCostAmount());
-        response.setReceiptNumber(receivingLine.getPurchaseOrderReceiveID());
+        response.setReceiptNumber(Integer.valueOf(receivingLine.getPurchaseOrderReceiveID()));
         if(receivingLine.getLineNumber()==null){
             response.setReceiptLineNumber(0) ;
         } else {
             response.setReceiptLineNumber(receivingLine.getLineNumber());
         }
-
         response.setItemNumber(receivingLine.getItemNumber());
         response.setVendorNumber(receivingLine.getVendorNumber());
         response.setQuantity(receivingLine.getReceivedQuantity());
         response.setEachCostAmount(receivingLine.getCostAmount());
         response.setEachRetailAmount(receivingLine.getRetailAmount());
-        response.setPackQuantity(0);
+        response.setPackQuantity(receivingLine.getQuantity());
+
         response.setNumberofCasesReceived(0);
         response.setVendorStockNumber(0);
-        response.setBottleStockNumber(0);
-        response.setPurchaseOrderNumber(receivingLine.getReceivingControlNumber());
-        response.setPurchaseReceiptNumber(receivingLine.getPurchaseOrderReceiveID());
-        response.setPurchasedOrderId(receivingLine.getReceivingControlNumber());
-        response.setUpc(receivingLine.getUpcNumber());
+        response.setBottleDepositAmount(0);
+
+        response.setPurchaseOrderNumber(Integer.parseInt(receivingLine.getReceivingControlNumber()));
+        response.setParentReceiptNumber(Integer.valueOf(receivingLine.getPurchaseOrderReceiveID()));
+        response.setPurchasedOrderId(Integer.parseInt(receivingLine.getReceivingControlNumber()));
+        if (receivingLine.getUpcNumber() == null) {
+            response.setUpc(0);
+        } else {
+            response.setUpc(receivingLine.getUpcNumber());
+        }
         // TODO Need to check Item Desc. From Item Service ?
         response.setItemDescription("NA");
 
@@ -56,7 +65,7 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
 
             response.setTransactionType(receivingLine.getTransactionType());
         }
-        response.setControlNumber(receivingLine.getReceivingControlNumber());
+        response.setControlNumber(Integer.parseInt(receivingLine.getReceivingControlNumber()));
         response.setLocationNumber(receivingLine.getStoreNumber());
         // TODO default to 0 if not there
         if(receivingLine.getBaseDivisionNumber()==null){

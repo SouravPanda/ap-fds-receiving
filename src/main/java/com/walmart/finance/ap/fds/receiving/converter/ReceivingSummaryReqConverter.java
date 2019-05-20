@@ -38,15 +38,15 @@ public class ReceivingSummaryReqConverter implements Converter<ReceivingSummaryR
         receiveSummary.setFreeAstrayIndicator(receivingSummaryRequest.getFreeAstrayIndicator());
         receiveSummary.setFreightConslIndicator(receivingSummaryRequest.getFreightConslIndicator());
         receiveSummary.setInitialReceiveTimestamp(receivingSummaryRequest.getInitialReceiveTimestamp());
-        receiveSummary.setMDSReceiveDate(receivingSummaryRequest.getMDSReceiveDate());
+        receiveSummary.setMDSReceiveDate(receivingSummaryRequest.getMdsReceiveDate());
         receiveSummary.setReceiveProcessDate(receivingSummaryRequest.getReceiveProcessDate());
         receiveSummary.setReceiveWeightQuantity(receivingSummaryRequest.getReceiveWeightQuantity());
-        receiveSummary.setSequenceNumber(receivingSummaryRequest.getSequenceNumber());
+        receiveSummary.setSequenceNumber(Integer.valueOf(receivingSummaryRequest.getSequenceNumber()));
         receiveSummary.setDepartmentNumber(receivingSummaryRequest.getDepartmentNumber());
         receiveSummary.setCasesReceived(receivingSummaryRequest.getCasesReceived());
         receiveSummary.setFinalizedLoadTimestamp(receivingSummaryRequest.getFinalizedLoadTimestamp());
         receiveSummary.setFinalizedSequenceNumber(receivingSummaryRequest.getFinalizedSequenceNumber());
-        receiveSummary.setPoReceiveId(receivingSummaryRequest.getPoReceiveId());
+        receiveSummary.setPoReceiveId(receivingSummaryRequest.getPoReceiveId().toString());
         receiveSummary.setBaseDivisionNumber(receivingSummaryRequest.getBaseDivisionNumber());
         receiveSummary.setUserId(receivingSummaryRequest.getUserId());
         receiveSummary.setCreationDate(LocalDateTime.now());

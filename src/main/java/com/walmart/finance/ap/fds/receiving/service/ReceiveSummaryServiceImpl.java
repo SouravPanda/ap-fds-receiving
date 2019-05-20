@@ -1,35 +1,61 @@
 package com.walmart.finance.ap.fds.receiving.service;
 
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
-import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
-import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
-import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
-import com.walmart.finance.ap.fds.receiving.repository.ReceiveDataRepository;
-import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
-import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryReqConverter;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
+import com.walmart.finance.ap.fds.receiving.integrations.InvoiceIntegrationService;
+import com.walmart.finance.ap.fds.receiving.integrations.InvoiceResponse;
+import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
+import com.walmart.finance.ap.fds.receiving.repository.ReceiveSummaryDataRepository;
+import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
+import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
+import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryValidator;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.repository.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
 
 
 @Service
 public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
+    public static final Logger log = LoggerFactory.getLogger(ReceiveSummaryServiceImpl.class);
 
-    private static final String separator = "|";
 
     @Autowired
-    ReceiveDataRepository receiveDataRepository;
+    ReceiveSummaryDataRepository receiveDataRepository;
+
+    @Autowired
+    MongoTemplate mongoTemplate;
 
     @Autowired
     ReceivingSummaryResponseConverter receivingSummaryResponseConverter;
 
     @Autowired
     ReceivingSummaryReqConverter receivingSummaryReqConverter;
+
+    @Autowired
+    InvoiceIntegrationService invoiceIntegrationService;
+
+
+    @Autowired
+    ReceiveSummaryValidator receiveSummaryValidator;
 
 
     // TODO validation for incoming against MDM needs to be added later
@@ -40,27 +66,124 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     }
 
+    @Override
+    public Page<ReceivingSummaryResponse> getReceiveSummary(String purchaseOrderNumber, String purchaseOrderId, String receiptNumbers, String transactionType, String controlNumber, String locationNumber,
+                                                            String divisionNumber, String vendorNumber, String departmentNumber, String invoiceId, String invoiceNumber, String receiptDateStart, String receiptDateEnd, int pageNbr, int pageSize, String orderBy, Sort.Direction order){// Map<String,String> allRequestParam) {
 
-    public ReceivingSummaryResponse getReceiveSummary(String receivingControlNumber, String poReceiveId, String storeNumber, String baseDivisionNumber, String transactionType, String finalDate, String finalTime) {
-        String id = formulateId(receivingControlNumber, poReceiveId, storeNumber, baseDivisionNumber, transactionType, finalDate, finalTime);
-        Optional<ReceiveSummary> receiveSummary = receiveDataRepository.findById(id);
-        if (receiveSummary.isPresent()) {
-            ReceiveSummary savedReceiveSummary = receiveSummary.get();
-            ReceivingSummaryResponse response = receivingSummaryResponseConverter.convert(savedReceiveSummary);
-            return response;
 
-        } else {
-            throw new ContentNotFoundException("No content found");
+       // receiveSummaryValidator.validate(allRequestParam);
+        Query query = searchCriteriaForGet(purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
+                divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd);
+        Pageable pageable = PageRequest.of(pageNbr, pageSize);
+        query.with(pageable);
+        List<String> orderByproperties = new ArrayList<>();
+        orderByproperties.add(orderBy);
+        Sort sort = new Sort(order, orderByproperties);
+        List<ReceiveSummary> receiveSummaries = mongoTemplate.find(query, ReceiveSummary.class, "receive-summary");
+        Page<ReceiveSummary> receiveSummaryPage = PageableExecutionUtils.getPage(
+                receiveSummaries,
+                pageable,
+                () -> mongoTemplate.count(query, ReceiveSummary.class));
+        return mapReceivingSummaryToResponse(receiveSummaryPage);
+
+    }
+
+    private Page<ReceivingSummaryResponse> mapReceivingSummaryToResponse(Page<ReceiveSummary> receiveSummaryPage) {
+        Page<ReceivingSummaryResponse> receivingSummaryResponsePage = receiveSummaryPage.map(new Function<ReceiveSummary, ReceivingSummaryResponse>() {
+            @Override
+            public ReceivingSummaryResponse apply(ReceiveSummary receiveSummary) {
+                return receivingSummaryResponseConverter.convert(receiveSummary);
+            }
+        });
+        return receivingSummaryResponsePage;
+    }
+
+
+    private String formulateId(String controlNumber, String receiptNumber, String locationNumber, String divisionNumber, String transactionType, String receiptDateStart, String receiptDateEnd) {
+        return controlNumber + ReceivingConstants.PIPE_SEPARATOR + receiptNumber + ReceivingConstants.PIPE_SEPARATOR + locationNumber + ReceivingConstants.PIPE_SEPARATOR + divisionNumber + ReceivingConstants.PIPE_SEPARATOR + transactionType + ReceivingConstants.PIPE_SEPARATOR + receiptDateStart + ReceivingConstants.PIPE_SEPARATOR + receiptDateEnd;
+
+    }
+
+    private Query searchCriteriaFromInvoiceResponse(List<InvoiceResponse> invoiceResponses, Query dynamicQuery) {
+
+        if (CollectionUtils.isNotEmpty(invoiceResponses) && invoiceResponses.size() > 1) {
 
         }
+
+        return dynamicQuery;
     }
 
 
-    private String formulateId(String receivingControlNumber, String poReceiveId, String storeNumber, String baseDivisionNumber, String transactionType, String finalDate, String finalTime) {
-        return receivingControlNumber + ReceivingConstants.PIPE_SEPARATOR + poReceiveId + ReceivingConstants.PIPE_SEPARATOR + storeNumber + ReceivingConstants.PIPE_SEPARATOR +  baseDivisionNumber + ReceivingConstants.PIPE_SEPARATOR + transactionType + ReceivingConstants.PIPE_SEPARATOR +  finalDate + ReceivingConstants.PIPE_SEPARATOR +  finalTime;
+    private Query searchCriteriaForGet(String purchaseOrderNumber, String purchaseOrderId, String receiptNumbers, String transactionType, String controlNumber, String locationNumber,
+                                       String divisionNumber, String vendorNumber, String departmentNumber, String invoiceId, String invoiceNumber, String receiptDateStart, String receiptDateEnd) {
+        Query dynamicQuery = new Query();
 
+        if (StringUtils.isNotEmpty(controlNumber) || StringUtils.isNotEmpty(purchaseOrderId)) {
+
+            if (StringUtils.isNotEmpty(controlNumber)) {
+                Criteria controlNumberCriteria = Criteria.where("receivingControlNumber").is(controlNumber);
+                dynamicQuery.addCriteria(controlNumberCriteria);
+            } else {
+                Criteria purchaseOrderIdCriteria = Criteria.where("receivingControlNumber").is(purchaseOrderId);
+                dynamicQuery.addCriteria(purchaseOrderIdCriteria);
+
+            }
+        }
+
+        if (StringUtils.isNotEmpty(divisionNumber)) {
+            Criteria baseDivisionNumberCriteria = Criteria.where("baseDivisionNumber").is(Integer.valueOf(divisionNumber));
+            dynamicQuery.addCriteria(baseDivisionNumberCriteria);
+        }
+
+        if (StringUtils.isNotEmpty(receiptDateStart) && StringUtils.isNotEmpty(receiptDateEnd)) {
+
+            Criteria mdsReceiveDateCriteria = Criteria.where("MDSReceiveDate").gte(getDate(receiptDateStart)).lte(getDate(receiptDateEnd));
+            dynamicQuery.addCriteria(mdsReceiveDateCriteria);
+        }
+
+        if (StringUtils.isNotEmpty(transactionType)) {
+            Criteria transactionTypeCriteria = Criteria.where("transactionType").is(Integer.valueOf(transactionType));
+            dynamicQuery.addCriteria(transactionTypeCriteria);
+        }
+
+        if (StringUtils.isNotEmpty(locationNumber)) {
+            Criteria storeNumberCriteria = Criteria.where("storeNumber").is(Integer.valueOf(locationNumber));
+            dynamicQuery.addCriteria(storeNumberCriteria);
+        }
+
+        if (StringUtils.isNotEmpty(purchaseOrderNumber)) {
+            Criteria purchaseOrderNumberCriteria = Criteria.where("purchaseOrderNumber").is(purchaseOrderNumber);
+            dynamicQuery.addCriteria(purchaseOrderNumberCriteria);
+        }
+
+        if (StringUtils.isNotEmpty(receiptNumbers)) {
+            Criteria poReceiveIdCriteria = Criteria.where("poReceiveId").is(receiptNumbers);
+            dynamicQuery.addCriteria(poReceiveIdCriteria);
+        }
+
+        if (StringUtils.isNotEmpty(departmentNumber)) {
+            Criteria departmentNumberCriteria = Criteria.where("departmentNumber").is(Integer.valueOf(departmentNumber));
+            dynamicQuery.addCriteria(departmentNumberCriteria);
+        }
+
+        if (StringUtils.isNotEmpty(vendorNumber)) {
+            Criteria vendorNumberCriteria = Criteria.where("vendorNumber").is(Integer.valueOf(vendorNumber));
+            dynamicQuery.addCriteria(vendorNumberCriteria);
+        }
+
+        return dynamicQuery;
+    }
+
+    public LocalDate getDate(String date) {
+        if (null != date && !"null".equals(date)) {
+            DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            return LocalDate.parse(date, formatterDate);
+
+        }
+        return null;
 
     }
+
 }
 
 
