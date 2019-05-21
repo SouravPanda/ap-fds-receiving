@@ -1,20 +1,49 @@
 package com.walmart.finance.ap.fds.receiving.integrations;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.walmart.finance.ap.fds.receiving.deserializer.LocalDateDeserializer;
-import com.walmart.finance.ap.fds.receiving.serializer.LocalDateSerializer;
-import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
 
-@Data
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class InvoiceResponse {
+
+
+    @JsonProperty("invoiceId")
+    private String invoiceId;
+
+    @JsonProperty("invoiceNumber")
+    private String invoiceNumber;
+
+    @JsonProperty("poID")
+    private String purchaseOrderId;
+
+    @JsonProperty("poNum")
+    private String purchaseOrderNumber;
+
+    //TODO
+    @JsonProperty("receivingNum")
+    private String receivingNum;
+
+    @JsonProperty("destDivNbr")
+    private String destDivNbr;
+
+    @JsonProperty("destStoreNbr")
+    private String baseDivisionNum;
+
+    @JsonProperty("vendorNumber")
+    private String vendorNumber;
+
+    @JsonProperty("invoiceDeptNumber")
+    private String invoiceDeptNumber;
+
+
+
+    /*
+
 
     @ApiModelProperty(required = true, notes = "Username")
     private String userName;
@@ -108,6 +137,6 @@ public class InvoiceResponse {
     @ApiModelProperty(required = true, example = "26051990", notes = "Validation should be less than or equal to current date. Format is DD/MM/YY. It’s mandatory field for HN,NI,EL Salvador.")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    private LocalDate receptionDate;
+    private LocalDate receptionDate;*/
 
 }

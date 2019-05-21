@@ -14,6 +14,7 @@ public class ReceivingExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({FieldValidationException.class})
     public ResponseEntity<Object> fieldValidation(
             Exception ex, WebRequest request) {
+
         return new ResponseEntity<>(
                 new FieldValidationError((FieldValidationException) ex), new HttpHeaders(), HttpStatus.OK);
     }
@@ -26,11 +27,19 @@ public class ReceivingExceptionHandler extends ResponseEntityExceptionHandler {
                 new ReceivingError(400, ex.getMessage()), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
+
     @ExceptionHandler({ContentNotFoundException.class})
     public ResponseEntity<Object> contentNotFoundExceptionHandler(
             Exception ex, WebRequest request) {
         return new ResponseEntity<>(
                 new ReceivingError(204, ex.getMessage()), new HttpHeaders(), HttpStatus.NO_CONTENT);
+    }
+
+    @ExceptionHandler({NotFoundException.class})
+    public ResponseEntity<Object> notFoundExceptionHandler(
+            Exception ex, WebRequest request) {
+        return new ResponseEntity<>(
+                new ReceivingError(204, ex.getMessage()), new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
 
 }

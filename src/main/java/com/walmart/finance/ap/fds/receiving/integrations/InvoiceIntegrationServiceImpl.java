@@ -1,52 +1,93 @@
 package com.walmart.finance.ap.fds.receiving.integrations;
 
+import com.google.common.base.Enums;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
 
 @Service
-public class InvoiceIntegrationServiceImpl  implements  InvoiceIntegrationService{
+public class InvoiceIntegrationServiceImpl implements InvoiceIntegrationService {
 
+    public static final Logger log = LoggerFactory.getLogger(InvoiceIntegrationServiceImpl.class);
 
-
-   // @Value("${invoice.clientId}")
+    @Getter
+    @Setter
+    @Value("${invoice.clientId}")
     private String clientId;
 
-    //@Value("${invoice.consumerId}")
+    @Getter
+    @Setter
+    @Value("${invoice.consumerId}")
     private String consumerId;
 
-   // @Value("${invoice.base.url}")
+    @Getter
+    @Setter
+    @Value("${invoice.base.url}")
     private String invoicebaseUrl;
+
+    @Getter
+    @Setter
+    @Value("${invoice.base.endpoint}")
+    private String invoiceBaseEndpoint;
 
     @Resource
     private RestTemplate restTemplate;
 
+    /**
+     * Method makes an call to in Invoice Summary Api and return the array of InvoiceResponse.
+     *
+     * @param paramMap
+     * @return
+     */
     @Override
-    public InvoiceResponse getInvoiceByInvoiceId(Long invoiceId) {
+    public InvoiceResponse[] getInvoice(HashMap<String, String> paramMap) {
         HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-        requestHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_XML));
         requestHeaders.set(ReceivingConstants.WM_CONSUMER, consumerId);
         requestHeaders.set(ReceivingConstants.WMAPIKEY, clientId);
         HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
-        InvoiceResponse invoiceResponse =null;
-        ResponseEntity<InvoiceResponse> response = restTemplate.exchange(invoicebaseUrl, HttpMethod.GET,entity,InvoiceResponse.class);
 
-        if(response!=null && response.getBody()!=null){
-            invoiceResponse =response.getBody();
+        InvoiceResponse[] invoiceResponseArray = null;
+        String url = makeInvoiceURL(paramMap);
+        ResponseEntity<InvoiceResponse[]> response = null;
+        try {
+            response = restTemplate.exchange(url, HttpMethod.GET, entity, InvoiceResponse[].class);
+        } catch (HttpStatusCodeException e) {
+            log.error(ExceptionUtils.getStackTrace(e));
+            throw new NotFoundException("Content not found.");
         }
-        return invoiceResponse;
+        if (response != null && response.getBody() != null && response.getBody().length > 0) {
+            invoiceResponseArray = response.getBody();
+        }
+        return invoiceResponseArray;
     }
 
-    @Override
-    public List<InvoiceResponse> getInvoiceByinvoiceNbr(String invoiceNbr) {
-        return null;
+    // TODO Need to check country code.
+    private String makeInvoiceURL(HashMap<String, String> paramMap) {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(invoicebaseUrl + paramMap.get(ReceivingConstants.COUNTRYCODE) + invoiceBaseEndpoint);
+        paramMap.entrySet()
+                .stream()
+                .filter((t) -> Enums.getIfPresent(InvoiceQueryParameters.class, t.getKey()).isPresent())
+                .forEach(y -> builder.queryParam(InvoiceQueryParameters.valueOf(y.getKey()).toString(), y.getValue()));
+        return builder.toUriString();
     }
+
+
 }
+
+

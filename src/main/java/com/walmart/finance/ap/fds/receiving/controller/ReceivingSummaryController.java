@@ -74,7 +74,7 @@ public class ReceivingSummaryController {
                                                             @RequestParam(value = "order", defaultValue = "DESC")
                                                                     Sort.Direction order) {
 
-        return receiveSummaryService.getReceiveSummary(purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
+        return receiveSummaryService.getReceiveSummary(countryCode,purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
                 divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd, pageNbr, pageSize, orderBy, order);//allRequestParam);
     }
 
