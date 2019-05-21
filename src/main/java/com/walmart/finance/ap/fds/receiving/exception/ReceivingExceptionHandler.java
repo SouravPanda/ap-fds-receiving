@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.time.LocalDateTime;
+
 @RestControllerAdvice
 public class ReceivingExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -24,7 +26,7 @@ public class ReceivingExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> invalidValueExceptionHandler(
             Exception ex, WebRequest request) {
         return new ResponseEntity<>(
-                new ReceivingError(400, ex.getMessage()), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+                new ReceivingError(400, ex.getMessage(), LocalDateTime.now()), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
 
@@ -32,14 +34,14 @@ public class ReceivingExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> contentNotFoundExceptionHandler(
             Exception ex, WebRequest request) {
         return new ResponseEntity<>(
-                new ReceivingError(204, ex.getMessage()), new HttpHeaders(), HttpStatus.NO_CONTENT);
+                new ReceivingError(204, ex.getMessage(), LocalDateTime.now()), new HttpHeaders(), HttpStatus.NO_CONTENT);
     }
 
     @ExceptionHandler({NotFoundException.class})
     public ResponseEntity<Object> notFoundExceptionHandler(
             Exception ex, WebRequest request) {
         return new ResponseEntity<>(
-                new ReceivingError(204, ex.getMessage()), new HttpHeaders(), HttpStatus.NOT_FOUND);
+                new ReceivingError(204, ex.getMessage(), LocalDateTime.now()), new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
 
 }
