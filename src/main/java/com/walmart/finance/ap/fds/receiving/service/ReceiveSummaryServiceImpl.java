@@ -3,7 +3,7 @@ package com.walmart.finance.ap.fds.receiving.service;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryReqConverter;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
-import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
+import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.integrations.InvoiceIntegrationService;
 import com.walmart.finance.ap.fds.receiving.integrations.InvoiceResponse;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
@@ -124,7 +124,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                     () -> mongoTemplate.count(query, ReceiveSummary.class));
         }
         if (receiveSummaries.isEmpty()) {
-            throw new ContentNotFoundException("Content not found.");
+            throw new NotFoundException("Content not found.");
         }
         return mapReceivingSummaryToResponse(receiveSummaryPage);
 
