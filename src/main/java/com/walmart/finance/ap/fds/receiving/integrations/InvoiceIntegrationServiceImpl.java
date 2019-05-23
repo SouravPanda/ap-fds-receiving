@@ -65,12 +65,15 @@ public class InvoiceIntegrationServiceImpl implements InvoiceIntegrationService 
         InvoiceResponse[] invoiceResponseArray = null;
         String url = makeInvoiceURL(paramMap);
         ResponseEntity<InvoiceResponse[]> response = null;
-        try {
-            response = restTemplate.exchange(url, HttpMethod.GET, entity, InvoiceResponse[].class);
-        } catch (HttpStatusCodeException e) {
-            log.error(ExceptionUtils.getStackTrace(e));
-            throw new NotFoundException("Content not found.");
-        }
+            try {
+                response = restTemplate.exchange(url, HttpMethod.GET, entity, InvoiceResponse[].class);
+            } catch (HttpStatusCodeException e) {
+                log.error(ExceptionUtils.getStackTrace(e));
+                if (!paramMap.containsKey(ReceivingConstants.PURCHASEORDERNUMBER)) {
+                    throw new NotFoundException("Content not found.");
+                }
+            }
+
         if (response != null && response.getBody() != null && response.getBody().length > 0) {
             invoiceResponseArray = response.getBody();
         }

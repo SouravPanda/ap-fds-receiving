@@ -45,6 +45,4 @@ public class ReceivingConstants {
     public static final String RECEIPTDATEEND = "receiptDateStart";
     public static final String RECEIPTDATESTART = "receiptDateEnd";
 
-    public static final String COSMOSRECORDCOUNT = "1000";
-
 }

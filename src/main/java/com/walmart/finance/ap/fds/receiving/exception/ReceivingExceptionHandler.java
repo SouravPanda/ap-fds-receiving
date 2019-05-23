@@ -44,4 +44,11 @@ public class ReceivingExceptionHandler extends ResponseEntityExceptionHandler {
                 new ReceivingError(204, ex.getMessage(), LocalDateTime.now()), new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler({SearchCriteriaException.class})
+    public ResponseEntity<Object> searchCriteriaExceptionHandler(
+            Exception ex, WebRequest request) {
+        return new ResponseEntity<>(
+                new ReceivingError(204, ex.getMessage(), LocalDateTime.now()), new HttpHeaders(), HttpStatus.OK);
+    }
+
 }

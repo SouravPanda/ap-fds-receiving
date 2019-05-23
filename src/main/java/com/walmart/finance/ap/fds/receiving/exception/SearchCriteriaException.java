@@ -4,10 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
-public class NotFoundException extends RuntimeException {
+public class SearchCriteriaException extends RuntimeException {
 
-    private static final long serialVersionUID = -3255314823136086298L;
+    private static final long serialVersionUID = -1266556740546743027L;
     @Getter
     private final String message;
 
 }
+
