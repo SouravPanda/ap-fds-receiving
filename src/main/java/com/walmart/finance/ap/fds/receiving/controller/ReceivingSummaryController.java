@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -64,16 +65,15 @@ public class ReceivingSummaryController {
                                                             @RequestParam(value = "invoiceId", required = false) String invoiceId,
                                                             @RequestParam(value = "invoiceNumber", required = false) String invoiceNumber,
                                                             @RequestParam(value = "receiptDateStart", required = false) String receiptDateStart,
-                                                            @RequestParam(value = "receiptDateEnd", required = false) String receiptDateEnd
-
-                                                  /*,@RequestParam(value = "pageNbr", defaultValue = "0")
+                                                            @RequestParam(value = "receiptDateEnd", required = false) String receiptDateEnd,
+                                                            @RequestParam(value = "pageNbr", defaultValue = "0")
                                                                     Integer pageNbr,
-                                                  @RequestParam(value = "pageSize", defaultValue = "1000")
+                                                            @RequestParam(value = "pageSize", defaultValue = "1000")
                                                                     Integer pageSize,
-                                                  @RequestParam(value = "orderBy", defaultValue = "creationDate")
+                                                            @RequestParam(value = "orderBy", defaultValue = "creationDate")
                                                                     String orderBy,
-                                                  @RequestParam(value = "order", defaultValue = "DESC")
-                                                                    Sort.Direction order*/) {
+                                                            @RequestParam(value = "order", defaultValue = "DESC")
+                                                                    Sort.Direction order) {
 
         return receiveSummaryService.getReceiveSummary(countryCode, purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
                 divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd);//allRequestParam); , pageNbr, pageSize, orderBy, order
