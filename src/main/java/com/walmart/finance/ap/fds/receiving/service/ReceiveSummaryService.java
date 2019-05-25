@@ -9,7 +9,8 @@ import java.util.List;
 
 @Service
 public interface ReceiveSummaryService {
-   ReceiveSummary saveReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest);
-   List<ReceivingSummaryResponse> getReceiveSummary(String countryCode, String purchaseOrderNumber, String purchaseOrderId, String receiptNumber, String transactionType, String controlNumber, String locationNumber,
-                                                    String divisionNumber, String vendorNumber, String departmentNumber, String invoiceId, String invoiceNumber, String receiptDateStart, String receiptDateEnd);// Map<String,String> allRequestParam);
+    ReceiveSummary saveReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest);
+
+    List<ReceivingSummaryResponse> getReceiveSummary(String countryCode, String purchaseOrderNumber, String purchaseOrderId, String receiptNumber, String transactionType, String controlNumber, String locationNumber,
+                                                     String divisionNumber, String vendorNumber, String departmentNumber, String invoiceId, String invoiceNumber, String receiptDateStart, String receiptDateEnd);// Map<String,String> allRequestParam);
 }

@@ -32,7 +32,7 @@ public class InvoiceResponse {
     private String destDivNbr;
 
     @JsonProperty("destStoreNbr")
-    private String baseDivisionNum;
+    private String destStoreNbr;
 
     @JsonProperty("vendorNumber")
     private String vendorNumber;

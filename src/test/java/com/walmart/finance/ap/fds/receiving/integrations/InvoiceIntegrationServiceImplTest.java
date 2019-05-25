@@ -43,15 +43,10 @@ public class InvoiceIntegrationServiceImplTest {
     @Test
     public void getInvoice() {
 
-        List<InvoiceResponse> invoiceResponseList = new ArrayList<>();
         InvoiceResponse invoiceResponse = new InvoiceResponse("invoiceid","invoiceNumber","708588561","0708588561",null,"918","0","621680","90");
         InvoiceResponse[] invoiceResponseArray =  new InvoiceResponse[]{
                 invoiceResponse
         };
-/*        InvoiceResponseListArray invoiceResponseArray = new InvoiceResponseListArray(new InvoiceResponse[]{
-                invoiceResponse
-        }
-        );*/
         HashMap<String,String> paramMap = new HashMap<String,String>(){
             {
                 put(ReceivingConstants.COUNTRYCODE, "US");
@@ -66,7 +61,6 @@ public class InvoiceIntegrationServiceImplTest {
         ResponseEntity<InvoiceResponse[]> response = new ResponseEntity<>(invoiceResponseArray,HttpStatus.OK);
 
         when(restTemplate.exchange(url, HttpMethod.GET, entity, InvoiceResponse[].class)).thenReturn(response);
-//        assertEquals(invoiceResponse.getVendorNumber(),invoiceIntegrationService.getInvoice(paramMap)[0].getVendorNumber());
         assertArrayEquals(invoiceResponseArray,invoiceIntegrationService.getInvoice(paramMap));
     }
 }

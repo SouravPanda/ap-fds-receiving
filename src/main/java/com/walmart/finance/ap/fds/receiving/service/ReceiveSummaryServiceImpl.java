@@ -5,6 +5,8 @@ import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryReqConvert
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.exception.SearchCriteriaException;
+import com.walmart.finance.ap.fds.receiving.integrations.FreightLineIntegrationService;
+import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
 import com.walmart.finance.ap.fds.receiving.integrations.InvoiceIntegrationService;
 import com.walmart.finance.ap.fds.receiving.integrations.InvoiceResponse;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
@@ -26,6 +28,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -48,6 +51,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     @Autowired
     InvoiceIntegrationService invoiceIntegrationService;
+
+    @Autowired
+    FreightLineIntegrationService freightLineIntegrationService;
 
 
     @Autowired
@@ -90,6 +96,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         HashMap<String, String> paramMap = checkingNotNullParameters(countryCode, purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
                 divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd);
         List<ReceiveSummary> receiveSummaries;
+        List<ReceivingSummaryResponse> responseList;
 
         if (paramMap.containsKey(ReceivingConstants.INVOICENUMBER) || paramMap.containsKey(ReceivingConstants.INVOICEID) || paramMap.containsKey(ReceivingConstants.PURCHASEORDERNUMBER)) {
             receiveSummaries = getInvoiceFromInvoiceSummary(paramMap);
@@ -101,11 +108,24 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         }
 
         if (receiveSummaries.isEmpty()) {
-            throw new NotFoundException("Content not found.");
+            throw new NotFoundException("Content not found for given search criteria .");
         } else if (receiveSummaries.size() > 1000) {
-            throw new SearchCriteriaException("Modify the search criteria.");
+            throw new SearchCriteriaException("Modify the search criteria. records are more than 1000");
         } else {
-            List<ReceivingSummaryResponse> responseList = receiveSummaries.stream().map((t) -> receivingSummaryResponseConverter.convert(t)).collect(Collectors.toList());
+            Map<String, FreightResponse> freightResponseMap = freightLineIntegrationService.getFreightLineAPIData(receiveSummaries);
+
+            if (freightResponseMap.isEmpty()) {
+                responseList = receiveSummaries.stream().map((t) -> receivingSummaryResponseConverter.convert(t)).collect(Collectors.toList());
+            } else {
+                responseList = receiveSummaries.stream().map(
+                        (t) -> {
+                            ReceivingSummaryResponse response = receivingSummaryResponseConverter.convert(t);
+                            response.setCarrierCode(freightResponseMap.get(t.get_id()) == null ? null : freightResponseMap.get(t.get_id()).getCarrierCode());
+                            response.setTrailerNumber(freightResponseMap.get(t.get_id()) == null ? null : Integer.parseInt(freightResponseMap.get(t.get_id()).getTrailerNumber()));
+                            return response;
+                        }
+                ).collect(Collectors.toList());
+            }
             return responseList;
         }
     }
@@ -241,8 +261,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         log.info("Inside getInvoiceFromInvoiceSummary method");
         InvoiceResponse[] invoiceResponseList = invoiceIntegrationService.getInvoice(paramMap);
         HashMap<String, ReceiveSummary> receiveSummaryHashMap = new HashMap<>();
-        if(invoiceResponseList != null && invoiceResponseList.length > 0)
-        {
+        if (invoiceResponseList != null && invoiceResponseList.length > 0) {
             for (InvoiceResponse invoiceResponse : invoiceResponseList) {
                 listToMapConversion(callRecvSmryAllAttributes(invoiceResponse), receiveSummaryHashMap);
                 listToMapConversion(callRecvSmryByPOId(invoiceResponse), receiveSummaryHashMap);
@@ -261,7 +280,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     private Query queryRecvSmryByInvoiceNum(InvoiceResponse invoiceResponse) {
         Query query = new Query();
         if (StringUtils.isNotEmpty(invoiceResponse.getInvoiceNumber())) {
-            query.addCriteria(Criteria.where(ReceiveSummaryParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponse.getInvoiceNumber()));
+            query.addCriteria(Criteria.where(ReceiveSummaryParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponse.getInvoiceNumber().trim()));
             query.addCriteria(Criteria.where(ReceiveSummaryParameters.TRANSACTIONTYPE.getParameterName()).is(1));
         }
         log.info("query: " + query);
@@ -276,7 +295,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     private Query queryRecvSmryByPOId(InvoiceResponse invoiceResponse) {
         Query query = new Query();
         if (StringUtils.isNotEmpty(invoiceResponse.getPurchaseOrderNumber())) {
-            query.addCriteria(Criteria.where(ReceiveSummaryParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponse.getPurchaseOrderNumber()));
+            query.addCriteria(Criteria.where(ReceiveSummaryParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponse.getPurchaseOrderNumber().trim()));
             query.addCriteria(Criteria.where(ReceiveSummaryParameters.TRANSACTIONTYPE.getParameterName()).is(0));
         }
         log.info("query: " + query);
@@ -298,14 +317,15 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             query.addCriteria(Criteria.where(ReceiveSummaryParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponse.getPurchaseOrderId().trim()));
         }
         if (StringUtils.isNotEmpty(invoiceResponse.getDestDivNbr())) {
-            query.addCriteria(Criteria.where(ReceiveSummaryParameters.STORENUMBER.getParameterName()).is(Integer.parseInt(invoiceResponse.getBaseDivisionNum().trim())));
+            query.addCriteria(Criteria.where(ReceiveSummaryParameters.STORENUMBER.getParameterName()).is(Integer.parseInt(invoiceResponse.getDestStoreNbr().trim())));
         }
-        if (StringUtils.isNotEmpty(invoiceResponse.getBaseDivisionNum())) {
+        if (StringUtils.isNotEmpty(invoiceResponse.getDestStoreNbr())) {
             query.addCriteria(Criteria.where(ReceiveSummaryParameters.BASEDIVISIONNUMBER.getParameterName()).is(Integer.parseInt(invoiceResponse.getDestDivNbr().trim())));
         }
-        if (StringUtils.isNotEmpty(invoiceResponse.getVendorNumber())) {
+/*TODO  : Commented due to dilemma of 6 digits and 9 digits
+           if (StringUtils.isNotEmpty(invoiceResponse.getVendorNumber())) {
             query.addCriteria(Criteria.where(ReceiveSummaryParameters.VENDORNUMBER.getParameterName()).is(Integer.parseInt(invoiceResponse.getVendorNumber().trim())));
-        }
+        }*/
         if (StringUtils.isNotEmpty(invoiceResponse.getInvoiceDeptNumber())) {
             query.addCriteria(Criteria.where(ReceiveSummaryParameters.DEPARTMENTNUMBER.getParameterName()).is(Integer.parseInt(invoiceResponse.getInvoiceDeptNumber().trim())));
         }
