@@ -14,6 +14,8 @@ public class ReceivingConstants {
     public static final String AP_FDS_CLIENT_ID = "client_id";
 
     public static final String CORRELATION_ID_HEADER_KEY = "X-Correlation-ID" ;
+    public static final String CLIENT_SECRET_ID_HEADER_KEY ="X-IBM-Client-Secret";
+    public static final String CLIENT_ID_HEADER_KEY ="X-IBM-Client-Id";
 
     public static final String PIPE_SEPARATOR = "|";
 

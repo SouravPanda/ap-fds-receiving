@@ -1,7 +1,9 @@
 package com.walmart.finance.ap.fds.receiving.controller;
 
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
+import com.walmart.finance.ap.fds.receiving.request.ReceiveSummaryLineSearch;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
+import com.walmart.finance.ap.fds.receiving.request.ReceivingSummarySearch;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveSummaryService;
 import io.swagger.annotations.Api;
@@ -77,6 +79,36 @@ public class ReceivingSummaryController {
         return receiveSummaryService.getReceiveSummary(purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
                 divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd, pageNbr, pageSize, orderBy, order);//allRequestParam);
     }
+
+    /**
+     * Method calls Service class to add stores in Db
+     *
+     * @param
+     * @return
+     */
+    @PutMapping
+    @ApiOperation(value = "API to update Stores based on the payload")
+    @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
+    public ReceivingSummarySearch updateSummary(@PathVariable("countryCode") String countryCode, @RequestBody ReceivingSummarySearch receivingSummarySearch) {
+        return receiveSummaryService.updateReceiveSummary(receivingSummarySearch,receivingSummarySearch.getVendorNumber(),countryCode);
+    }
+
+
+
+
+    /**
+     * Method calls Service class to add stores in Db
+     *
+     * @param
+     * @return
+     */
+    @PutMapping("/line")
+    @ApiOperation(value = "API to update Stores based on the payload")
+    @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
+    public ReceiveSummaryLineSearch updateSummaryAndLine(@PathVariable("countryCode") String countryCode, @RequestBody ReceiveSummaryLineSearch receiveSummaryLineSearch) throws Exception {
+        return receiveSummaryService.updateReceiveSummaryAndLine(receiveSummaryLineSearch,countryCode);
+    }
+
 
 }
 

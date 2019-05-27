@@ -1,15 +1,23 @@
 package com.walmart.finance.ap.fds.receiving.validator;
 
+import com.walmart.finance.ap.fds.receiving.common.ReceiveSummaryBusinessStat;
 import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
+import com.walmart.finance.ap.fds.receiving.integrations.VendorIntegrationServiceImpl;
+import com.walmart.finance.ap.fds.receiving.request.ReceivingSummarySearch;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 @Component
 public class ReceiveSummaryValidator {
+
+    @Autowired
+    VendorIntegrationServiceImpl vendorIntegrationService;
 
     public static final String purchaseOrderNumber = "purchaseOrderNumber";
     public static final String purchaseOrderId = "purchaseOrderId";
@@ -28,6 +36,8 @@ public class ReceiveSummaryValidator {
     public static final Integer pageSize = 10;
     public static final String orderBy = "creationDate";
     public static final Sort.Direction order = Sort.Direction.DESC;
+    boolean verdict = false;
+    List<ReceiveSummaryBusinessStat> businessStatList = Arrays.asList(ReceiveSummaryBusinessStat.values());
     public static final List<Object> comparisonList = new ArrayList<Object>();
 
     public void validate(Map<String, String> allRequestParam) {
@@ -48,7 +58,7 @@ public class ReceiveSummaryValidator {
         comparisonList.add(pageSize);
         comparisonList.add(orderBy);
         comparisonList.add(order);
-        boolean verdict = false;
+
         for (Map.Entry<String, String> entry : allRequestParam.entrySet())
             for (int i = 0; i < comparisonList.size(); i++) {
                 if (entry.getKey().equalsIgnoreCase(comparisonList.get(i).toString())) {
@@ -57,6 +67,24 @@ public class ReceiveSummaryValidator {
             }
         if (verdict == false)
             throw new InvalidValueException("Incorrect fields passed");
+    }
+
+    public boolean validateVendorNumberUpdateSummary(ReceivingSummarySearch receivingSummarySearch, Integer vendorNumber, String countryCode) {
+        if (vendorIntegrationService.getVendorBySupplierNumberAndCountryCode(vendorNumber, countryCode).equals(receivingSummarySearch.getVendorNumber())) {
+           return !verdict;
+        }
+        return verdict;
+    }
+
+    public boolean validateBusinessStatUpdateSummary(ReceivingSummarySearch receivingSummarySearch) {
+        for (ReceiveSummaryBusinessStat businessStat : businessStatList) {
+            if (businessStat.toString().equalsIgnoreCase(receivingSummarySearch.getBusinessStatusCode())) {
+                verdict = true;
+                break;
+            }
+        }
+        return verdict;
+
     }
 
 }

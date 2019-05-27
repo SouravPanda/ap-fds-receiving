@@ -72,4 +72,6 @@ public class ReceivingSummaryResponse {
     @NotEmpty
     private Integer departmentNumber;
 
+    private Integer supplierNumber;
+
 }

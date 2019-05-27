@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 @ToString
 @NoArgsConstructor
-@Document(collection = "receive-summary")
+@Document(collection = "receiving-summary")
 public class Warehouse {
         @Id
         private String _id;

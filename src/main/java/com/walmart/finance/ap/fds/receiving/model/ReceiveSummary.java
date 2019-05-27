@@ -14,7 +14,7 @@ import java.time.LocalTime;
 @Setter
 @ToString
 @NoArgsConstructor
-@Document(collection = "receive-summary")
+@Document(collection = "receiving-summary")
 public class ReceiveSummary {
     @Id
     private String _id;
