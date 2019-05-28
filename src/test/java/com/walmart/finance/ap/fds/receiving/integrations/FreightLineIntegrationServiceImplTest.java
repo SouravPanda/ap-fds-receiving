@@ -34,14 +34,14 @@ public class FreightLineIntegrationServiceImplTest {
     public void getFreightLineAPIData() {
         ReceiveSummary receiveSummary = new ReceiveSummary();
         receiveSummary.set_id("0");
-        receiveSummary.setFreightBillId(1234);
+        receiveSummary.setFreightBillExpandID(new Long(1234));
         List<ReceiveSummary> receiveSummaries = new ArrayList<ReceiveSummary>(){
             {
                 add(receiveSummary);
             }
         };
         FreightResponse freightResponse = new FreightResponse("RPS","91");
-        String url = "https://api.qa.wal-mart.com/si/bofap/po/receiving/freight/billId/"+receiveSummaries.get(0).getFreightBillId();
+        String url = "https://api.qa.wal-mart.com/si/bofap/po/receiving/freight/billId/"+receiveSummaries.get(0).getFreightBillExpandID();
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set(ReceivingConstants.WM_CONSUMER, freightLineIntegrationService.getConsumerId());
         requestHeaders.set(ReceivingConstants.WMAPIKEY, freightLineIntegrationService.getClientId());
