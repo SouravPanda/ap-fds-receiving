@@ -110,7 +110,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         }
 
         //TODO change exception messages
-        //Todo parallel stream
+        //Todo parallel stream performance check
         if (receiveSummaries.isEmpty()) {
             throw new NotFoundException("Content not found for given search criteria.");
         } else if (receiveSummaries.size() > 1000) {
