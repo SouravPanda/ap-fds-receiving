@@ -19,6 +19,4 @@ public class FreightResponse {
     private String trailerNumber;
 
 
-
-
 }

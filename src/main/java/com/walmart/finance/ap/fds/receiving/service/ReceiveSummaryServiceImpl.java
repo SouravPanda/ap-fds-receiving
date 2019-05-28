@@ -118,7 +118,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             Map<String, ReceiveLineResponse> lineResponseMap = getLineResponseMap(receiveSummaries);
             if (freightResponseMap.isEmpty() && lineResponseMap.isEmpty()) {
                 responseList = receiveSummaries.stream().map((t) -> receivingSummaryResponseConverter.convert(t)).collect(Collectors.toList());
-            } else if(freightResponseMap.isEmpty()  && !lineResponseMap.isEmpty()){
+            } else if (freightResponseMap.isEmpty() && !lineResponseMap.isEmpty()) {
                 responseList = receiveSummaries.stream().map(
                         (t) -> {
                             ReceivingSummaryResponse response = receivingSummaryResponseConverter.convert(t);
@@ -135,7 +135,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                             response.setCarrierCode(freightResponseMap.get(t.get_id()) == null ? null : freightResponseMap.get(t.get_id()).getCarrierCode());
                             response.setTrailerNumber(freightResponseMap.get(t.get_id()) == null ? null : Integer.parseInt(freightResponseMap.get(t.get_id()).getTrailerNumber()));
                             response.setLineCount(lineResponseMap.get(t.get_id()) == null ? null : lineResponseMap.get(t.get_id()).getLineCount());
-                            response.setLineCount(lineResponseMap.get(t.get_id()) == null ? null : lineResponseMap.get(t.get_id()).getLineCount());
                             response.setTotalCostAmount(lineResponseMap.get(t.get_id()) == null ? null : lineResponseMap.get(t.get_id()).getTotalCostAmount());
                             response.setTotalRetailAmount(lineResponseMap.get(t.get_id()) == null ? null : lineResponseMap.get(t.get_id()).getTotalRetailAmount());
                             return response;
@@ -145,7 +144,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             return responseList;
         }
     }
-
 
 
     private HashMap<String, String> checkingNotNullParameters(String countryCode, String purchaseOrderNumber, String purchaseOrderId, List<String> receiptNumber, String transactionType, String controlNumber, String locationNumber, String divisionNumber,
@@ -358,15 +356,15 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     /******* receive -line data fetching   *********/
 
     private Map<String, ReceiveLineResponse> getLineResponseMap(List<ReceiveSummary> receiveSummaries) {
-        Map<String,ReceiveLineResponse> lineResponseMap = new HashMap<>();
-        for(ReceiveSummary receiveSummary : receiveSummaries){
-            List<ReceivingLine> lineResponseList = queryForLineResponse(receiveSummary) ;
-            if(lineResponseList != null  && !lineResponseList.isEmpty()) {
+        Map<String, ReceiveLineResponse> lineResponseMap = new HashMap<>();
+        for (ReceiveSummary receiveSummary : receiveSummaries) {
+            List<ReceivingLine> lineResponseList = queryForLineResponse(receiveSummary);
+            if (lineResponseList != null && !lineResponseList.isEmpty()) {
                 ReceiveLineResponse response = new ReceiveLineResponse();
-                response.setTotalCostAmount(lineResponseList.stream().mapToDouble((t)-> t.getReceivedQuantity()*t.getCostAmount()).sum());
-                response.setTotalRetailAmount(lineResponseList.stream().mapToDouble((t)-> t.getReceivedQuantity()*t.getRetailAmount()).sum());
+                response.setTotalCostAmount(lineResponseList.stream().mapToDouble((t) -> t.getReceivedQuantity() * t.getCostAmount()).sum());
+                response.setTotalRetailAmount(lineResponseList.stream().mapToDouble((t) -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
                 response.setLineCount(new Long(lineResponseList.size()));
-                lineResponseMap.put(receiveSummary.get_id(),response);
+                lineResponseMap.put(receiveSummary.get_id(), response);
             }
         }
         return lineResponseMap;
@@ -377,28 +375,28 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     private List<ReceivingLine> queryForLineResponse(ReceiveSummary receiveSummary) {
 
         Query query = new Query();
-        if(StringUtils.isNotEmpty(receiveSummary.getReceivingControlNumber())){
+        if (StringUtils.isNotEmpty(receiveSummary.getReceivingControlNumber())) {
             query.addCriteria(Criteria.where(ReceivingLineParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(receiveSummary.getReceivingControlNumber().trim()));
         }
-        if(StringUtils.isNotEmpty(receiveSummary.getPoReceiveId())){
+        if (StringUtils.isNotEmpty(receiveSummary.getPoReceiveId())) {
             query.addCriteria(Criteria.where(ReceivingLineParameters.PORECEIVEID.getParameterName()).is(receiveSummary.getPoReceiveId().trim()));
         }
-        if(receiveSummary.getStoreNumber() != null){
+        if (receiveSummary.getStoreNumber() != null) {
             query.addCriteria(Criteria.where(ReceivingLineParameters.STORENUMBER.getParameterName()).is(receiveSummary.getStoreNumber()));
         }
-        if(receiveSummary.getBaseDivisionNumber() != null ){
+        if (receiveSummary.getBaseDivisionNumber() != null) {
             query.addCriteria(Criteria.where(ReceivingLineParameters.BASEDIVISIONNUMBER.getParameterName()).is(receiveSummary.getBaseDivisionNumber()));
         }
-        if(receiveSummary.getTransactionType() != null ){
+        if (receiveSummary.getTransactionType() != null) {
             query.addCriteria(Criteria.where(ReceivingLineParameters.TRANSACTIONTYPE.getParameterName()).is(receiveSummary.getTransactionType()));
         }
-        if(receiveSummary.getFinalDate() != null ){
-            query.addCriteria(Criteria.where(ReceivingLineParameters.FINALDATE.getParameterName()).is(receiveSummary.getFinalDate()));
-        }
-        if(receiveSummary.getFinalTime() != null ){
-            query.addCriteria(Criteria.where(ReceivingLineParameters.FINALTIME.getParameterName()).is(receiveSummary.getFinalTime()));
-        }
-        log.info("Query is "+ query);
+//        if (receiveSummary.getFinalDate() != null) {
+//            query.addCriteria(Criteria.where(ReceivingLineParameters.FINALDATE.getParameterName()).is(receiveSummary.getFinalDate()));
+//        }
+//        if (receiveSummary.getFinalTime() != null) {
+//            query.addCriteria(Criteria.where(ReceivingLineParameters.FINALTIME.getParameterName()).is(receiveSummary.getFinalTime()));
+//        }
+        log.info("Query is " + query);
         return executeQueryReceiveline(query);
 
     }
@@ -411,6 +409,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         List<ReceiveSummary> receiveSummaries = mongoTemplate.find(query, ReceiveSummary.class, "receive-summary");
         return receiveSummaries;
     }
+
     //TODO Count query in line
     private List<ReceivingLine> executeQueryReceiveline(Query query) {
         List<ReceivingLine> receiveSummaries = mongoTemplate.find(query, ReceivingLine.class, "receive-line-new");

@@ -29,8 +29,8 @@ public class ReceivingSummaryResponseConverter implements Converter<ReceiveSumma
 //        response.setAuthorizedBy(receiveSummary.getUserId());
 //        response.setAuthorizedDate(receiveSummary.getCreationDate());
         //TODO need to add in pipeline code
-        response.setTotalCostAmount(receiveSummary.getTotalCostAmount());
-        response.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());   //TODO need to add in pipeline code
+//        response.setTotalCostAmount(receiveSummary.getTotalCostAmount());
+//        response.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());   //TODO need to add in pipeline code
 
 //        response.setParentReceiptId(Integer.valueOf(receiveSummary.getPoReceiveId()));
 
