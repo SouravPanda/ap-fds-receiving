@@ -13,6 +13,7 @@ import com.walmart.finance.ap.fds.receiving.request.ReceiveSummaryLineSearch;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummarySearch;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
+import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryLineValidator;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -56,6 +57,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     @Autowired
     ReceiveSummaryValidator receiveSummaryValidator;
+
+    @Autowired
+    ReceiveSummaryLineValidator receiveSummaryLineValidator;
 
 
     // TODO validation for incoming against MDM needs to be added later
@@ -250,7 +254,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     }
 
     @Override
-    public ReceiveSummaryLineSearch updateReceiveSummaryAndLine(ReceiveSummaryLineSearch receivingSummaryLineSearch, String countryCode) throws Exception {
+    public ReceiveSummaryLineSearch updateReceiveSummaryAndLine(ReceiveSummaryLineSearch receivingSummaryLineSearch, String countryCode, Integer vendorNumber) throws Exception {
         Query dynamicQuery = new Query();
         List<ReceivingLine> receiveLines = new ArrayList();
 
@@ -266,14 +270,18 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         receiveSummary.setReceivingControlNumber(receivingSummaryLineSearch.getControlNumber());
         receiveSummary.setReceivingControlNumber(receivingSummaryLineSearch.getPurchasedOrderId().toString());
         receiveSummary.setPurchaseOrderNumber(receivingSummaryLineSearch.getPurchaseOrderNumber());
-        receiveSummary.setDepartmentNumber(receivingSummaryLineSearch.getDepartmentNumber());
+        if (receivingSummaryLineSearch.getDepartmentNumber() >= 0 && receivingSummaryLineSearch.getDepartmentNumber() <= 99) {
+            receiveSummary.setDepartmentNumber(receivingSummaryLineSearch.getDepartmentNumber());
+        }
         receiveSummary.setPoReceiveId(receivingSummaryLineSearch.getPurchaseOrderId().toString());
         receiveSummary.setVendorNumber(receivingSummaryLineSearch.getVendorNumber());
         receiveSummary.setAccountNumber(receivingSummaryLineSearch.getAccountNumber());
         receiveSummary.setCasesReceived(receivingSummaryLineSearch.getCasesReceived());
         receiveSummary.setClaimPendingIndicator(receivingSummaryLineSearch.getClaimPendingIndicator());
         receiveSummary.setControlSequenceNumber(receivingSummaryLineSearch.getControlSequenceNumber());
-        receiveSummary.setControlType(receivingSummaryLineSearch.getControlType());
+        if (receiveSummaryLineValidator.validateControlType(receivingSummaryLineSearch) == true) {
+            receiveSummary.setControlType(receivingSummaryLineSearch.getControlType());
+        }
         receiveSummary.setFinalDate(receivingSummaryLineSearch.getFinalDate());
         receiveSummary.setFinalizedLoadTimestamp(receivingSummaryLineSearch.getFinalizedLoadTimestamp());
         receiveSummary.setFreeAstrayIndicator(receivingSummaryLineSearch.getFreeAstrayIndicator());
@@ -290,6 +298,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         receiveSummary.setFreightBillId(receivingSummaryLineSearch.getFreightBillId());
         receiveSummary.setSequenceNumber(receivingSummaryLineSearch.getSequenceNumber());
         receiveSummary.setFinalTime(receivingSummaryLineSearch.getFinalTime());
+        if (receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineSearch) == true) {
+            receiveSummary.setBusinessStatusCode(receivingSummaryLineSearch.getBusinessStatusCode().charAt(0));
+        } else {
+            throw new InvalidValueException("Value of field  businessStatusCode passed is not valid");
+        }
         receiveSummary.setPoReceiveId(receivingSummaryLineSearch.getReceiptNumber().toString());
         mongoTemplate.save(receiveSummary, "receiving-summary");
 
@@ -329,7 +342,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 receiveLine.setStoreNumber(receivingSummaryLineSearch.getLocationNumber());
                 receiveLine.setTransactionType(receivingSummaryLineSearch.getTransactionType());
                 receiveLine.setUpcNumber(receivingSummaryLineSearch.getUpcNumber());
-                receiveLine.setVendorNumber(receivingSummaryLineSearch.getVendorNumber());
+                if (receiveSummaryLineValidator.validateVendorNumberUpdateSummary(receivingSummaryLineSearch, vendorNumber, countryCode) == true) {
+                    receiveLine.setVendorNumber(receivingSummaryLineSearch.getVendorNumber());
+                } else {
+                    throw new InvalidValueException("Value of field vendorNumber passed is not valid");
+                }
                 mongoTemplate.save(receiveLine, "receive-line");
 
             }
@@ -392,7 +409,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             receivingLine.setStoreNumber(receivingSummaryLineSearch.getLocationNumber());
             receivingLine.setTransactionType(receivingSummaryLineSearch.getTransactionType());
             receivingLine.setUpcNumber(receivingSummaryLineSearch.getUpcNumber());
-            receivingLine.setVendorNumber(receivingSummaryLineSearch.getVendorNumber());
+            if (receiveSummaryLineValidator.validateVendorNumberUpdateSummary(receivingSummaryLineSearch, vendorNumber, countryCode) == true) {
+                receivingLine.setVendorNumber(receivingSummaryLineSearch.getVendorNumber());
+            } else {
+                throw new InvalidValueException("Value of field vendorNumber passed is not valid");
+            }
             receiveLines.add(receivingLine);
         }
         mongoTemplate.save(receiveLines, "receive-line");

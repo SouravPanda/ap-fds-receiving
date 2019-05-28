@@ -45,7 +45,7 @@ public class ReceiveSummaryLineSearch {
 
     Integer freightBillId;
 
-    Character businessStatusCode;
+    String businessStatusCode;
 
     Long freightBillExpandID;
 

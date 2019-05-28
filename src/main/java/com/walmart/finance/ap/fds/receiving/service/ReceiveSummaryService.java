@@ -18,5 +18,5 @@ public interface ReceiveSummaryService {
 
     ReceivingSummarySearch updateReceiveSummary(ReceivingSummarySearch receivingSummarySearch, Integer vendorNumber, String countryCode);
 
-    ReceiveSummaryLineSearch updateReceiveSummaryAndLine(ReceiveSummaryLineSearch receivingSummaryLineSearch, String countryCode)throws Exception;
+    ReceiveSummaryLineSearch updateReceiveSummaryAndLine(ReceiveSummaryLineSearch receivingSummaryLineSearch, String countryCode,Integer vendorNumber)throws Exception;
 }
