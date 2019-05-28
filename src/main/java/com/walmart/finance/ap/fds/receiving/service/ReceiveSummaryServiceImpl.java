@@ -14,6 +14,7 @@ import com.walmart.finance.ap.fds.receiving.repository.ReceiveSummaryDataReposit
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryValidator;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,6 +110,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         }
 
         //TODO change exception messages
+        //Todo parallel stream
         if (receiveSummaries.isEmpty()) {
             throw new NotFoundException("Content not found for given search criteria.");
         } else if (receiveSummaries.size() > 1000) {
@@ -359,7 +361,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         Map<String, ReceiveLineResponse> lineResponseMap = new HashMap<>();
         for (ReceiveSummary receiveSummary : receiveSummaries) {
             List<ReceivingLine> lineResponseList = queryForLineResponse(receiveSummary);
-            if (lineResponseList != null && !lineResponseList.isEmpty()) {
+            if (CollectionUtils.isNotEmpty(lineResponseList)) {
                 ReceiveLineResponse response = new ReceiveLineResponse();
                 response.setTotalCostAmount(lineResponseList.stream().mapToDouble((t) -> t.getReceivedQuantity() * t.getCostAmount()).sum());
                 response.setTotalRetailAmount(lineResponseList.stream().mapToDouble((t) -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
@@ -390,6 +392,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         if (receiveSummary.getTransactionType() != null) {
             query.addCriteria(Criteria.where(ReceivingLineParameters.TRANSACTIONTYPE.getParameterName()).is(receiveSummary.getTransactionType()));
         }
+        //TODO final date and final time not present in receive-summary so
 //        if (receiveSummary.getFinalDate() != null) {
 //            query.addCriteria(Criteria.where(ReceivingLineParameters.FINALDATE.getParameterName()).is(receiveSummary.getFinalDate()));
 //        }
