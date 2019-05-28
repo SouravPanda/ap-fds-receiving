@@ -51,11 +51,11 @@ public class ReceivingSummaryResponse {
     @NotEmpty
     private String associateName;
 
-    @NotEmpty
-    private String authorizedBy;
+//    @NotEmpty
+//    private String authorizedBy;
 
-    @NotEmpty
-    private LocalDateTime authorizedDate;
+//    @NotEmpty
+//    private LocalDateTime authorizedDate;
 
     @NotEmpty
     private Double totalCostAmount;
@@ -63,13 +63,16 @@ public class ReceivingSummaryResponse {
     @NotEmpty
     private Double totalRetailAmount;
 
-    @NotEmpty
-    private Integer parentReceiptId;
+//    @NotEmpty
+//    private Integer parentReceiptId;
 
-    @NotEmpty
-    private String parentReceiptNumber;
+//    @NotEmpty
+//    private String parentReceiptNumber;
 
     @NotEmpty
     private Integer departmentNumber;
+
+    @NotEmpty
+    private Long lineCount;
 
 }

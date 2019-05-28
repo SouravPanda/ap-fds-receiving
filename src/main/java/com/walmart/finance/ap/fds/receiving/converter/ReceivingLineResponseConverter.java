@@ -15,7 +15,7 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
 
         response.setControlNumber(Integer.parseInt(receivingLine.getReceivingControlNumber()));
 
-        response.setDamaged(" ");
+//        response.setDamaged(" ");
 
         if (receivingLine.getBaseDivisionNumber() == 0) {
             response.setDivisionNumber(0);
@@ -37,8 +37,8 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
         response.setPackQuantity(receivingLine.getQuantity());
 
         response.setNumberofCasesReceived(0);
-        response.setVendorStockNumber(0);
-        response.setBottleDepositAmount(0);
+//        response.setVendorStockNumber(0);
+//        response.setBottleDepositAmount(0);
 
         response.setPurchaseOrderNumber(Integer.parseInt(receivingLine.getReceivingControlNumber()));
         response.setParentReceiptNumber(Integer.valueOf(receivingLine.getPurchaseOrderReceiveID()));

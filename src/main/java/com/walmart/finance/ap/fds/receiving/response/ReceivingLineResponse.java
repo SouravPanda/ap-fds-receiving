@@ -19,9 +19,9 @@ public class ReceivingLineResponse {
     private Double eachRetailAmount;
     private Integer packQuantity;
     private Integer numberofCasesReceived;
-    private Integer vendorStockNumber;
-    private Integer bottleDepositAmount;
-    private String damaged;
+//    private Integer vendorStockNumber;
+//    private Integer bottleDepositAmount;
+//    private String damaged;
     private Integer purchaseOrderNumber;
     private Integer parentReceiptNumber;
     private Integer purchasedOrderId;

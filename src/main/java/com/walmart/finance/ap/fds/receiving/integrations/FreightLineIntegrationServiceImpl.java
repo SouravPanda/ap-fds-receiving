@@ -51,7 +51,7 @@ public class FreightLineIntegrationServiceImpl implements FreightLineIntegration
         HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
         Map<String, FreightResponse> freightResponseMap = new HashMap<>();
         for (ReceiveSummary receiveSummary : receiveSummaries) {
-            Integer buildId = receiveSummary.getFreightBillId();
+            Long buildId = receiveSummary.getFreightBillExpandID();
             if (buildId == null) {
                 continue;
             }
