@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class ReceiveSummaryValidator {
@@ -71,7 +68,7 @@ public class ReceiveSummaryValidator {
 
     public boolean validateVendorNumberUpdateSummary(ReceivingSummarySearch receivingSummarySearch, Integer vendorNumber, String countryCode) {
         if (vendorIntegrationService.getVendorBySupplierNumberAndCountryCode(vendorNumber, countryCode).equals(receivingSummarySearch.getVendorNumber())) {
-           return !verdict;
+            return !verdict;
         }
         return verdict;
     }
@@ -85,6 +82,19 @@ public class ReceiveSummaryValidator {
         }
         return verdict;
 
+    }
+
+    public boolean validateControlType(ReceivingSummarySearch receivingSummarySearch) {
+        Set<String> controlNumberSet = new HashSet<>();
+        controlNumberSet.add("0");
+        controlNumberSet.add("1");
+        controlNumberSet.add("2");
+        controlNumberSet.add("3");
+        controlNumberSet.add("99");
+        if (controlNumberSet.contains(receivingSummarySearch.getControlNumber())) {
+            verdict = true;
+        }
+        return verdict;
     }
 
 }

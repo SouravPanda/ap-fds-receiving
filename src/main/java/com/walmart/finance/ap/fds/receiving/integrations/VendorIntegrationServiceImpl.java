@@ -3,7 +3,6 @@ package com.walmart.finance.ap.fds.receiving.integrations;
 
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.response.FoundationSupplierWrapper;
-import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;

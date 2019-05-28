@@ -198,26 +198,23 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
             ReceiveSummary receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receiving-summary");
             if (receiveSummary != null) {
-                // (receivingSummarySearch.getInvoiceNumber()!=null) ? receiveSummary.setReceivingControlNumber(receivingSummarySearch.getInvoiceNumber()):throw new Exception("Not a valid invoiceNumber");
                 receiveSummary.setReceivingControlNumber(receivingSummarySearch.getInvoiceNumber());
                 receiveSummary.setPurchaseOrderNumber(receivingSummarySearch.getPurchaseOrderNumber().toString());
                 receiveSummary.setDepartmentNumber(receivingSummarySearch.getDepartmentNumber());
                 receiveSummary.setTotalCostAmount(receivingSummarySearch.getCostAmount());
                 receiveSummary.setTotalRetailAmount(receivingSummarySearch.getRetailAmount());
-                receiveSummary.setDepartmentNumber(receivingSummarySearch.getDepartmentNumber());
+                if (receivingSummarySearch.getDepartmentNumber() >= 0 && receivingSummarySearch.getDepartmentNumber() <= 99) {
+                    receiveSummary.setDepartmentNumber(receivingSummarySearch.getDepartmentNumber());
+                }
                 receiveSummary.setPoReceiveId(receivingSummarySearch.getPurchaseOrderId().toString());
                 receiveSummary.setVendorNumber(receivingSummarySearch.getVendorNumber());
                 receiveSummary.setAccountNumber(receivingSummarySearch.getAccountNumber());
-                receiveSummary.setCasesReceived(receivingSummarySearch.getCasesReceived());
                 receiveSummary.setClaimPendingIndicator(receivingSummarySearch.getClaimPendingIndicator());
                 receiveSummary.setControlSequenceNumber(receivingSummarySearch.getControlSequenceNumber());
-                receiveSummary.setControlType(receivingSummarySearch.getControlType());
-                //receiveSummary.setCreationDate(receivingSummarySearch.getCreationDate());//TODO need updated Date
-                //  receiveSummary.setFinalDate(receivingSummarySearch.getFinalDate());//TODO, do we need to change?
-//                receiveSummary.setFinalizedLoadTimestamp(receivingSummarySearch.getFinalizedLoadTimestamp());
+                if (receiveSummaryValidator.validateControlType(receivingSummarySearch) == true) {
+                    receiveSummary.setControlType(receivingSummarySearch.getControlType());
+                }
                 receiveSummary.setFreeAstrayIndicator(receivingSummarySearch.getFreeAstrayIndicator());
-//                receiveSummary.setFinalizedSequenceNumber(receivingSummarySearch.getFinalizedSequenceNumber());
-//                receiveSummary.setFreightBillExpandID(receivingSummarySearch.getFreightBillExpandID());
                 receiveSummary.setFreightConslIndicator(receivingSummarySearch.getFreightConslIndicator());
                 receiveSummary.setMatchIndicator(receivingSummarySearch.getMatchIndicator());
                 receiveSummary.setReceiveSequenceNumber(receivingSummarySearch.getReceiveSequenceNumber());
@@ -230,14 +227,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 receiveSummary.setMDSReceiveDate(receivingSummarySearch.getReceiptDateStart().toLocalDate());//TODO, do we need to change?
                 receiveSummary.setMDSReceiveDate(receivingSummarySearch.getReceiptDateEnd().toLocalDate());
                 receiveSummary.setFreightBillId(receivingSummarySearch.getFreightBillId());
-//                receiveSummary.setInitialReceiveTimestamp(receivingSummarySearch.getInitialReceiveTimestamp());
                 receiveSummary.setSequenceNumber(receivingSummarySearch.getSequenceNumber());
-//                receiveSummary.setFinalTime(receivingSummarySearch.getFinalTime());//TODO
                 receiveSummary.setPoReceiveId(receivingSummarySearch.getReceiptNumbers());
 
                 if (receiveSummaryValidator.validateVendorNumberUpdateSummary(receivingSummarySearch, vendorNumber, countryCode) == true) {
                     receiveSummary.setVendorNumber(receivingSummarySearch.getVendorNumber());
-                    mongoTemplate.save(receiveSummary);
                 } else {
                     throw new InvalidValueException("Value of field vendorNumber passed is not valid");
                 }
@@ -249,6 +243,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             } else {
                 throw new ContentNotFoundException("The content not found for the given id");
             }
+            mongoTemplate.save(receiveSummary, "receiving-summary");
 
         }
         return receivingSummarySearch;
