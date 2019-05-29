@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -15,18 +17,32 @@ public class ReceiveSummaryLineSearch {
 
     Long purchaseOrderId;
 
+    @NotNull
+    @NotEmpty
     Long receiptNumber;
 
+    @NotNull
+    @NotEmpty
     Integer transactionType;
 
+    @NotNull
+    @NotEmpty
     String controlNumber;
 
+    @NotNull
+    @NotEmpty
     Integer locationNumber;
 
+    @NotNull
+    @NotEmpty
     Integer divisionNumber;
 
+    @NotNull
+    @NotEmpty
     LocalDate finalDate;
 
+    @NotNull
+    @NotEmpty
     LocalTime finalTime;
 
     Integer controlType;
@@ -63,6 +79,8 @@ public class ReceiveSummaryLineSearch {
 
     Double receiveWeightQuantity;
 
+    @NotNull
+    @NotEmpty
     Integer sequenceNumber;
 
     Integer departmentNumber;

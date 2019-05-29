@@ -1,10 +1,8 @@
 
-
-/*package com.walmart.finance.ap.fds.receiving.controller;
+package com.walmart.finance.ap.fds.receiving.controller;
 
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineResponseConverter;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
-import com.walmart.finance.ap.fds.receiving.request.ReceiveSummaryLineSearch;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveLineServiceImpl;
 import org.junit.Before;
@@ -13,18 +11,15 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,17 +27,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
+@RunWith(PowerMockRunner.class)
 @WebMvcTest(ReceivingLineController.class)
 public class ReceivingLineControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Mock
     private ReceiveLineServiceImpl receiveLineServiceImpl;
 
     @Mock
@@ -96,40 +89,11 @@ public class ReceivingLineControllerTest {
         when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.anyString())).thenReturn(listOfContent);
         when(receivingLineResponseConverter.convert(Mockito.any(ReceivingLine.class))).thenReturn(receivingLineResponse);
 
-        ReceiveLineServiceImpl receiveLineServiceImpl = Mockito.mock(ReceiveLineServiceImpl.class);
-        RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get("/US/receiving/line");
         Mockito.when(receiveLineServiceImpl.getLineSummary("1145", "1124", "11", "HHLL", "3580",
-                "99", 1, 1, "creationDate", Sort.DEFAULT_DIRECTION).toString()).thenReturn(pageImplResponse.toString());
-        mockMvc.perform(requestBuilder)
-                .andExpect(status().isOk())
-                .andExpect(content().json("{\n" +
-                        "    \"receiptNumber\": \"80218\",\n" +
-                        "    \"receiptLineNumber\": \"0\",\n" +
-                        "    \"itemNumber\": \"null\",\n" +
-                        "    \"vendorNumber\": \"467175\",\n" +
-                        "    \"quantity\": 100,\n" +
-                        "    \"eachCostAmount\": \"0\",\n" +
-                        "    \"eachRetailAmount\": \"0\",\n" +
-                        "    \"packQuantity\": 1,\n" +
-                        "    \"numberofCasesReceived\": \"0\",\n" +
-                        "    \"vendorStockNumber\": 0,\n" +
-                        "    \"bottleDepositAmount\": 0,\n" +
-                        "    \"damaged\": \n" +
-                        "    \"purchaseOrderNumber\": 852180484,\n" +
-                        "    \"parentReceiptNumber\":80218, \n" +
-                        "    \"upc\":0, \n" +
-                        "    \"unitOfMeasure\": lbs,\n" +
-                        "    \"variableWeightInd\": \"\",\n" +
-                        "    \"transactionType\": 99,\n" +
-                        "    \"controlNumber\": 852180484,\n" +
-                        "    \"locationNumber\": 3680,\n" +
-                        "    \"divisionNumber\": 0,\n" +
-                        "}"))
-                .andReturn();
-    }
+                "99", 1, 1, "creationDate", Sort.DEFAULT_DIRECTION)).thenReturn(pageImplResponse);
 
-}*/
+    }
+}
 
 
 

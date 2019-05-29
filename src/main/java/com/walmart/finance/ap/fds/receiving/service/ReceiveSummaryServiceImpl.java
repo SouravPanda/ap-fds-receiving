@@ -262,12 +262,12 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         Query dynamicQuery = new Query();
         List<ReceivingLine> receiveLines = new ArrayList();
 
-         String id = formulateId(receivingSummaryLineSearch.getControlNumber(), receivingSummaryLineSearch.getReceiptNumber().toString(), receivingSummaryLineSearch.getLocationNumber().toString(),
-               receivingSummaryLineSearch.getDivisionNumber().toString(), receivingSummaryLineSearch.getTransactionType().toString(), "0", "0");
+      String id = formulateId(receivingSummaryLineSearch.getControlNumber(), receivingSummaryLineSearch.getReceiptNumber().toString(), receivingSummaryLineSearch.getLocationNumber().toString(),
+              receivingSummaryLineSearch.getDivisionNumber().toString(), receivingSummaryLineSearch.getTransactionType().toString(), "0", "0");
 
-       // String id = "708542521|30005|1018|0|99|0|0";
+      // String id = "708542521|30005|1018|0|99|0|0";
 
-        ReceiveSummary receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receive-summary");
+        ReceiveSummary receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receiving-summary");
 
         if (receiveSummary == null) {
             throw new ContentNotFoundException("No content found for the given id");
@@ -405,7 +405,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             receivingLine.setMDSReceiveDate(receivingSummaryLineSearch.getReceiptDateEnd().toLocalDate());
             receivingLine.setFinalDate(receivingSummaryLineSearch.getFinalDate());
             receivingLine.setCostAmount(receivingSummaryLineSearch.getCostAmount());
-            //receiveLine.setFinalTime(receivingSummaryLineSearch.getFinalTime());//needs clarifications, check with Rupesh
             receivingLine.setFinalDate(receivingSummaryLineSearch.getFinalDate());
             receivingLine.setItemNumber(receivingSummaryLineSearch.getItemNumber());
             receivingLine.setLineNumber(receivingSummaryLineSearch.getLineNumber());
@@ -416,9 +415,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             receivingLine.setPurchaseOrderReceiveID(receivingSummaryLineSearch.getPurchaseOrderReceiveID());
             receivingLine.setReceivedQuantityUnitOfMeasureCode(receivingSummaryLineSearch.getReceivedQuantityUnitOfMeasureCode());
             receivingLine.setReceiveSequenceNumber(receivingSummaryLineSearch.getReceiveSequenceNumber());
-            receivingLine.setReceivedQuantity(receivingSummaryLineSearch.getReceivedQuantity());
+            receivingLine.setReceivedQuantity(receivingSummaryLineSearch.getReceivedQuantity());//check
             receivingLine.setReceivedWeightQuantity(receivingSummaryLineSearch.getReceivedWeightQuantity());
-            receivingLine.setReceivingControlNumber(receivingSummaryLineSearch.getReceivingControlNumber());
+            receivingLine.setReceivingControlNumber(receivingSummaryLineSearch.getReceivingControlNumber());//check
             receivingLine.setRetailAmount(receivingSummaryLineSearch.getRetailAmount());
             receivingLine.setStoreNumber(receivingSummaryLineSearch.getLocationNumber());
             receivingLine.setTransactionType(receivingSummaryLineSearch.getTransactionType());
