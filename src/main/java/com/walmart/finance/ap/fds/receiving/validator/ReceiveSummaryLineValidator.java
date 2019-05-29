@@ -23,7 +23,7 @@ public class ReceiveSummaryLineValidator {
 
     public boolean validateVendorNumberUpdateSummary(ReceiveSummaryLineSearch receivingSummaryLineSearch, Integer vendorNumber, String countryCode) {
         if (vendorIntegrationService.getVendorBySupplierNumberAndCountryCode(vendorNumber, countryCode).equals(receivingSummaryLineSearch.getVendorNumber())) {
-            return !verdict;
+            verdict=true;
         }
         return verdict;
     }
@@ -40,13 +40,13 @@ public class ReceiveSummaryLineValidator {
     }
 
     public boolean validateControlType(ReceiveSummaryLineSearch receivingSummaryLineSearch) {
-        Set<String> controlNumberSet = new HashSet<>();
-        controlNumberSet.add("0");
-        controlNumberSet.add("1");
-        controlNumberSet.add("2");
-        controlNumberSet.add("3");
-        controlNumberSet.add("99");
-        if (controlNumberSet.contains(receivingSummaryLineSearch.getControlNumber())) {
+        Set<Integer> controlNumberSet = new HashSet<>();
+        controlNumberSet.add(0);
+        controlNumberSet.add(1);
+        controlNumberSet.add(2);
+        controlNumberSet.add(3);
+        controlNumberSet.add(99);
+        if (controlNumberSet.contains(receivingSummaryLineSearch.getControlType())) {
             verdict = true;
         }
         return verdict;

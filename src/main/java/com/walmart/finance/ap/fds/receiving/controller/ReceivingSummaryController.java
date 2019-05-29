@@ -105,7 +105,7 @@ public class ReceivingSummaryController {
     @PutMapping("/line")
     @ApiOperation(value = "API to update Stores based on the payload")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
-    public ReceiveSummaryLineSearch updateSummaryAndLine(@PathVariable("countryCode") String countryCode, @RequestBody ReceiveSummaryLineSearch receiveSummaryLineSearch) throws Exception {
+    public ReceiveSummaryLineSearch updateSummaryAndLine(@PathVariable("countryCode") String countryCode, @RequestBody ReceiveSummaryLineSearch receiveSummaryLineSearch) {
         return receiveSummaryService.updateReceiveSummaryAndLine(receiveSummaryLineSearch,countryCode,receiveSummaryLineSearch.getVendorNumber());
     }
 

@@ -1,6 +1,6 @@
 
 
-package com.walmart.finance.ap.fds.receiving.controller;
+/*package com.walmart.finance.ap.fds.receiving.controller;
 
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineResponseConverter;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
@@ -60,8 +60,7 @@ public class ReceivingLineControllerTest {
     @Test
     public void getReceiveLineTest() throws Exception {
 
-/*       ReceiveSummaryLineSearch receiveLineSearch = new ReceiveSummaryLineSearch(1145L, 1124L, 11, "HHLL",
-                3590, 113);*/
+
         ReceivingLineResponse receivingLineResponse = new ReceivingLineResponse(0, 0, 0, 0, 0, 2.9,
                 1.9, 0, 0, 0, 0, null, 0, 0,
                 0, 0, null, null, null, null, 0, 0, 0,
@@ -130,7 +129,7 @@ public class ReceivingLineControllerTest {
                 .andReturn();
     }
 
-}
+}*/
 
 
 
