@@ -13,7 +13,7 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
 
         ReceivingLineResponse response = new ReceivingLineResponse();
 
-        response.setControlNumber(Integer.parseInt(receivingLine.getReceivingControlNumber()));
+        response.setControlNumber(receivingLine.getReceivingControlNumber());
 
 //        response.setDamaged(" ");
 
@@ -65,7 +65,7 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
 
             response.setTransactionType(receivingLine.getTransactionType());
         }
-        response.setControlNumber(Integer.parseInt(receivingLine.getReceivingControlNumber()));
+        response.setControlNumber(receivingLine.getReceivingControlNumber());
         response.setLocationNumber(receivingLine.getStoreNumber());
         // TODO default to 0 if not there
         if(receivingLine.getBaseDivisionNumber()==null){

@@ -40,7 +40,7 @@ public class FreightLineIntegrationServiceImplTest {
                 add(receiveSummary);
             }
         };
-        FreightResponse freightResponse = new FreightResponse("RPS","91");
+        FreightResponse freightResponse = new FreightResponse("1","RPS","91");
         String url = "https://api.qa.wal-mart.com/si/bofap/po/receiving/freight/billId/"+receiveSummaries.get(0).getFreightBillExpandID();
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set(ReceivingConstants.WM_CONSUMER, freightLineIntegrationService.getConsumerId());
@@ -50,6 +50,6 @@ public class FreightLineIntegrationServiceImplTest {
 
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FreightResponse.class)).thenReturn(response);
         assertEquals(response.getBody().getCarrierCode(),freightLineIntegrationService.getFreightLineAPIData(receiveSummaries).get("0").getCarrierCode());
-        assertEquals(response.getBody().getTrailerNumber(),freightLineIntegrationService.getFreightLineAPIData(receiveSummaries).get("0").getTrailerNumber());
+        assertEquals(response.getBody().getTrailerNbr(),freightLineIntegrationService.getFreightLineAPIData(receiveSummaries).get("0").getTrailerNbr());
     }
 }

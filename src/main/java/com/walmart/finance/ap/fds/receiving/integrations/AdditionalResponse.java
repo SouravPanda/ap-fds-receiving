@@ -9,8 +9,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ReceiveLineResponse {
+public class AdditionalResponse {
 
+    private String trailerNumber;
+    private String carrierCode;
     private Long lineCount;
     private Double totalCostAmount;
     private Double totalRetailAmount;

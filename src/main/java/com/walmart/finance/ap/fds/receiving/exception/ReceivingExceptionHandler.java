@@ -48,7 +48,7 @@ public class ReceivingExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> searchCriteriaExceptionHandler(
             Exception ex, WebRequest request) {
         return new ResponseEntity<>(
-                new ReceivingError(204, ex.getMessage(), LocalDateTime.now()), new HttpHeaders(), HttpStatus.OK);
+                new ReceivingError(200, ex.getMessage(), LocalDateTime.now()), new HttpHeaders(), HttpStatus.OK);
     }
 
 }

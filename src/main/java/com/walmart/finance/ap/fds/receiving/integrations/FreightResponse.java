@@ -12,11 +12,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class FreightResponse {
 
-    @JsonProperty("carrierCode")
+    private String _id;
+
     private String carrierCode;
 
-    @JsonProperty("trailerNbr")
-    private String trailerNumber;
+    private String trailerNbr;
 
 
 }

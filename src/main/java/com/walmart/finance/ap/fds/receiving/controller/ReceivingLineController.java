@@ -11,9 +11,10 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -37,7 +38,7 @@ public class ReceivingLineController {
     @ApiOperation(value = "API to get new LineSummary based on the payload")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
 
-    public Page<ReceivingLineResponse> getReceiveLine(@PathVariable("countryCode")
+    public List<ReceivingLineResponse> getReceiveLine(@PathVariable("countryCode")
                                                               String countryCode, @RequestParam(value = "purchaseOrderId", required = false) String purchaseOrderId,
                                                       @RequestParam(value = "receiptNumbers", required = false) String receiptNumbers,
                                                       @RequestParam(value = "transactionType", required = false) String transactionType,
@@ -53,7 +54,7 @@ public class ReceivingLineController {
                                                       @RequestParam(value = "order", defaultValue = "DESC")
                                                               Sort.Direction order) {
 
-        return receiveLineService.getLineSummary(purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber, divisionNumber, pageNbr, pageSize, orderBy, order);
+        return receiveLineService.getLineSummary(purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber, divisionNumber);
 
     }
 
