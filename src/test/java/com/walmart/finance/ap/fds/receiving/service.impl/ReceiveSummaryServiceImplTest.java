@@ -169,7 +169,7 @@ public class ReceiveSummaryServiceImplTest {
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
                 0, 1.9, "LL");
-        String id = "0|56HKKL|8897|99|0|0|0";
+        String id = "56HKKL|33383|0|0|99|0|0";
         String lineId = "000000001027498|1|1|1|1|2019-04-23|09:30:30|0";
         Mockito.when(mongoTemplate.findById(Mockito.eq(id),Mockito.eq(ReceiveSummary.class),Mockito.eq("receiving-summary"))).thenReturn(receiveSummary);
         Mockito.when(mongoTemplate.findById(Mockito.eq(lineId),Mockito.eq(ReceivingLine.class),Mockito.eq("receive-line"))).thenReturn(receivingLine);
