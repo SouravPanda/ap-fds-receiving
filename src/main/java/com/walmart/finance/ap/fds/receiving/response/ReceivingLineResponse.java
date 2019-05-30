@@ -25,7 +25,7 @@ public class ReceivingLineResponse {
     private Integer purchaseOrderNumber;
     private Integer parentReceiptNumber;
     private Integer purchasedOrderId;
-    private Integer upc;
+    private String upc;
     private String itemDescription;
     private String unitOfMeasure;
     private String variableWeightInd;

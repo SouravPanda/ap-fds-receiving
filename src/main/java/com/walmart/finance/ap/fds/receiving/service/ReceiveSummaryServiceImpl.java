@@ -367,7 +367,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                     response.setTotalRetailAmount(lineResponseList.stream().mapToDouble((t) -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
                 } else {
                     response.setTotalCostAmount(receiveSummary.getTotalCostAmount());
-                    response.setTotalRetailAmount(receiveSummary.getTotalCostAmount());
+                    response.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());
                 }
                 response.setLineCount(new Long(lineResponseList.size()));
                 getFreightResponse(receiveSummary, response);
@@ -408,7 +408,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             query.addCriteria(Criteria.where(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Integer::parseInt).collect(Collectors.toList())));
         }
         if (CollectionUtils.isNotEmpty(upcNumbers)) {
-            query.addCriteria(Criteria.where(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(upcNumbers.stream().map(Integer::parseInt).collect(Collectors.toList())));
+            query.addCriteria(Criteria.where(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(upcNumbers));
         }
         //TODO final date and final time not present in receive-summary thus commented out
 //        if (receiveSummary.getFinalDate() != null) {

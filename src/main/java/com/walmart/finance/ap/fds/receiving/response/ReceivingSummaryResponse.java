@@ -48,8 +48,8 @@ public class ReceivingSummaryResponse {
     @NotEmpty
     private Integer trailerNumber;
 
-    @NotEmpty
-    private String associateName;
+//    @NotEmpty
+//    private String associateName;
 
     @NotEmpty
     private String authorizedBy;
@@ -63,8 +63,8 @@ public class ReceivingSummaryResponse {
     @NotEmpty
     private Double totalRetailAmount;
 
-    @NotEmpty
-    private Integer parentReceiptId;
+//    @NotEmpty
+//    private Integer parentReceiptId;
 
     @NotEmpty
     private String parentReceiptNumber;
@@ -75,4 +75,21 @@ public class ReceivingSummaryResponse {
     @NotEmpty
     private Integer departmentNumber;
 
+    @NotEmpty
+    private String parentPurchaseOrderId;
+
+    @NotEmpty
+    private  Integer parentTransactionType;
+
+    @NotEmpty
+    private String parentControlNumber;
+
+    @NotEmpty
+    private Integer parentLocationNumber;
+
+    @NotEmpty
+    private Integer parentDivisionNumber;
+
+    @NotEmpty
+    private String memo;
 }

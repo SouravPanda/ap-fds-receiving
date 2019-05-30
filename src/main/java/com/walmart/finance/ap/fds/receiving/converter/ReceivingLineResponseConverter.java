@@ -44,7 +44,7 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
         response.setParentReceiptNumber(Integer.valueOf(receivingLine.getPurchaseOrderReceiveID()));
         response.setPurchasedOrderId(Integer.parseInt(receivingLine.getReceivingControlNumber()));
         if (receivingLine.getUpcNumber() == null) {
-            response.setUpc(0);
+            response.setUpc("0");
         } else {
             response.setUpc(receivingLine.getUpcNumber());
         }
