@@ -19,12 +19,12 @@ public class ReceivingLineResponse {
     private Double eachRetailAmount;
     private Integer packQuantity;
     private Integer numberofCasesReceived;
-    private Integer vendorStockNumber;
+//    private Integer vendorStockNumber;
     private Integer bottleDepositAmount;
-    private String damaged;
+//    private String damaged;
     private Integer purchaseOrderNumber;
     private Integer parentReceiptNumber;
-    private Integer purchasedOrderId;
+    private Integer purchaseOrderId;
     private String upc;
     private String itemDescription;
     private String unitOfMeasure;
