@@ -23,8 +23,8 @@ public class ReceivingSummaryResponseConverter implements Converter<ReceiveSumma
         response.setReceiptDate(LocalDate.now()); // TODO will change once  Receipt_Date is available
         response.setReceiptStatus(receiveSummary.getBusinessStatusCode()); //   TODO will change once  TOTAL_MATCH_IND is available
         response.setVendorNumber(receiveSummary.getVendorNumber());
-        response.setCarrierCode("CRCode");
-        response.setTrailerNumber(0);
+//        response.setCarrierCode("CRCode");
+//        response.setTrailerNumber(0);
         response.setAssociateName(receiveSummary.getUserId());
         response.setAuthorizedBy(receiveSummary.getUserId());
         response.setAuthorizedDate(receiveSummary.getCreationDate());

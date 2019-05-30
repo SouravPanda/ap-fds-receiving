@@ -70,6 +70,9 @@ public class ReceivingSummaryResponse {
     private String parentReceiptNumber;
 
     @NotEmpty
+    private Long lineCount;
+
+    @NotEmpty
     private Integer departmentNumber;
 
 }
