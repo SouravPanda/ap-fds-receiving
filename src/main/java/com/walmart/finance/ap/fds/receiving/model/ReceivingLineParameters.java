@@ -14,7 +14,9 @@ public enum ReceivingLineParameters {
     BASEDIVISIONNUMBER("baseDivisionNumber"),
     TRANSACTIONTYPE("transactionType"),
     FINALDATE("finalDate"),
-    FINALTIME("finalTime")
+    FINALTIME("finalTime"),
+    ITEMNUMBER("itemNumber"),
+    UPCNUMBER("upcNumber")
     ;
 
     @Getter

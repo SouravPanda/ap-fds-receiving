@@ -4,7 +4,6 @@ import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryReqConverter;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
-import com.walmart.finance.ap.fds.receiving.exception.SearchCriteriaException;
 import com.walmart.finance.ap.fds.receiving.integrations.*;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryParameters;
@@ -109,16 +108,23 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         } else {
             receiveSummaries = getSearchCriteriaForGet(paramMap);
         }
-
+        log.info("Before : size of recesummary list -" + receiveSummaries.size());
+        if( CollectionUtils.isNotEmpty(receiveSummaries) && receiveSummaries.size() > 1000 )
+        {
+            receiveSummaries.subList(1000, receiveSummaries.size()).clear();
+        }
+        log.info("After : size of recesummary list -" + receiveSummaries.size());
         Map<String, AdditionalResponse> responseMap = getLineResponseMap(receiveSummaries, itemNumbers, upcNumbers);
 
         //Todo parallel stream performance check
         if (CollectionUtils.isEmpty(receiveSummaries)) {
             throw new NotFoundException("Content not found for given search criteria.");
-        } else if (receiveSummaries.size() > 1000) {
+        }
+        /*else if (receiveSummaries.size() > 1000) {
             throw new SearchCriteriaException("Modify the search criteria as records are more than 1000");
-        } else {
-            responseList = receiveSummaries.stream().map(
+        } */
+        else {
+                        responseList = receiveSummaries.stream().map(
                     (t) -> {
                         ReceivingSummaryResponse response = receivingSummaryResponseConverter.convert(t);
                         if (responseMap.get(t.get_id()) != null) {
@@ -399,10 +405,10 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             query.addCriteria(Criteria.where(ReceivingLineParameters.TRANSACTIONTYPE.getParameterName()).is(receiveSummary.getTransactionType()));
         }
         if (CollectionUtils.isNotEmpty(itemNumbers)) {
-            query.addCriteria(Criteria.where("itemNumber").in(itemNumbers.stream().map(Integer::parseInt).collect(Collectors.toList())));
+            query.addCriteria(Criteria.where(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Integer::parseInt).collect(Collectors.toList())));
         }
         if (CollectionUtils.isNotEmpty(upcNumbers)) {
-            query.addCriteria(Criteria.where("upcNumber").in(upcNumbers.stream().map(Integer::parseInt).collect(Collectors.toList())));
+            query.addCriteria(Criteria.where(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(upcNumbers.stream().map(Integer::parseInt).collect(Collectors.toList())));
         }
         //TODO final date and final time not present in receive-summary thus commented out
 //        if (receiveSummary.getFinalDate() != null) {
@@ -423,15 +429,15 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
         List<FreightResponse> receiveFreights = makeQueryForFreight(receiveSummary);
         if (CollectionUtils.isNotEmpty(receiveFreights)) {
-            additionalResponse.setCarrierCode(receiveFreights.get(0).getCarrierCode());
-            additionalResponse.setTrailerNumber(receiveFreights.get(0).getTrailerNbr());
+            additionalResponse.setCarrierCode(receiveFreights.get(0).getCarrierCode()== null ? null : receiveFreights.get(0).getCarrierCode().trim());
+            additionalResponse.setTrailerNumber(receiveFreights.get(0).getTrailerNbr()== null ? null : receiveFreights.get(0).getTrailerNbr().trim());
         }
     }
 
     private List<FreightResponse> makeQueryForFreight(ReceiveSummary receiveSummary) {
         if (receiveSummary.getFreightBillExpandID() != null) {
             Query query = new Query();
-            query.addCriteria(Criteria.where("billExpndId").in(receiveSummary.getFreightBillExpandID()));
+            query.addCriteria(Criteria.where("_id").in(receiveSummary.getFreightBillExpandID()));
             return executeQueryReceiveFreight(query);
         }
         return null;
@@ -443,7 +449,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     /******* Common Methods  *********/
 
     private List<ReceiveSummary> executeQueryForReceiveSummary(Query query) {
-        List<ReceiveSummary> receiveSummaries = mongoTemplate.find(query, ReceiveSummary.class, "receive-summary");
+        List<ReceiveSummary> receiveSummaries = mongoTemplate.find(query.limit(1000), ReceiveSummary.class, "receive-summary");
         return receiveSummaries;
     }
 
