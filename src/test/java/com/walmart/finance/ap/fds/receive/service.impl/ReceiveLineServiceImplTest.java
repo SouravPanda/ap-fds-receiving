@@ -75,7 +75,7 @@ public class ReceiveLineServiceImplTest {
     Integer receiptNumber = 1;
     Integer receivedQuantity = null;
     Integer quantity = 12;
-    Integer purchasedOrderId = 1114;
+    Integer purchaseOrderId = 1114;
     Double eachCostAmount = 2223.9;
     Double eachRetailAmount = 11222.8;
     Integer packQuantity = 34;
@@ -119,11 +119,11 @@ public class ReceiveLineServiceImplTest {
 
    /* @Test
     public void getLineSummaryTest() {
-        ReceivingLine receivingLine = new ReceivingLine(_id, purchaseOrderReceiveID, lineNumber, itemNumber, vendorNumber, receivedQuantity, costAmount, retailAmount, receivingControlNumber, purchaseReceiptNumber, purchasedOrderId, upcNumber, transactionType, storeNumber, baseDivisionNumber, finalDate, finalTime, sequenceNumber, creationDate, typeIndicator, writeIndicator, purchaseOrderNumber, quantity, mdsReceiveDate, receiveSequenceNumber, receivedWeightQuantity, receivedQuantityUnitOfMeasureCode);
+        ReceivingLine receivingLine = new ReceivingLine(_id, purchaseOrderReceiveID, lineNumber, itemNumber, vendorNumber, receivedQuantity, costAmount, retailAmount, receivingControlNumber, purchaseReceiptNumber, purchaseOrderId, upcNumber, transactionType, storeNumber, baseDivisionNumber, finalDate, finalTime, sequenceNumber, creationDate, typeIndicator, writeIndicator, purchaseOrderNumber, quantity, mdsReceiveDate, receiveSequenceNumber, receivedWeightQuantity, receivedQuantityUnitOfMeasureCode);
         Optional<ReceivingLine> receiveLineAt = Optional.of(receivingLine);
         ReceivingLine savedReceivingLine = receiveLineAt.get();
         ReceivingLineResponse response = new ReceivingLineResponse(receiptNumber, receiptLineNumber, itemNumber, vendorNumber, quantity, eachCostAmount, eachRetailAmount, packQuantity, numberofCasesReceived,
-                vendorStockNumber, bottleStockNumber, damaged, Integer.valueOf(purchaseOrderNumber), purchaseReceiptNumber, purchasedOrderId, upc, itemDescription, unitOfMeasure, variableWeightInd, receivedWeightQuantity.toString(), transactionType, controlNumber, locationNumber, divisionNumber);
+                vendorStockNumber, bottleStockNumber, damaged, Integer.valueOf(purchaseOrderNumber), purchaseReceiptNumber, purchaseOrderId, upc, itemDescription, unitOfMeasure, variableWeightInd, receivedWeightQuantity.toString(), transactionType, controlNumber, locationNumber, divisionNumber);
         when(receivingLineResponseConverter.convert(savedReceivingLine)).thenReturn(response);
         when(receiveLineDataRepository.findById(_id)).thenReturn(receiveLineAt);
         //  Assert.assertEquals(response, receiveLineServiceImpl.getLineSummary(receivingControlNumber, poReceiveId.toString(), storeNumber.toString()

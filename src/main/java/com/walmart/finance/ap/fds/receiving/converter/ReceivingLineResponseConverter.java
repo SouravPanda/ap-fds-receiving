@@ -15,7 +15,7 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
 
         response.setControlNumber(receivingLine.getReceivingControlNumber());
 
-        response.setDamaged(" ");
+//        response.setDamaged(" ");
 
         if (receivingLine.getBaseDivisionNumber() == 0) {
             response.setDivisionNumber(0);
@@ -37,14 +37,14 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
         response.setPackQuantity(receivingLine.getQuantity());
 
         response.setNumberofCasesReceived(0);
-        response.setVendorStockNumber(0);
+//        response.setVendorStockNumber(0);
         response.setBottleDepositAmount(0);
 
         response.setPurchaseOrderNumber(Integer.parseInt(receivingLine.getReceivingControlNumber()));
         response.setParentReceiptNumber(Integer.valueOf(receivingLine.getPurchaseOrderReceiveID()));
-        response.setPurchasedOrderId(Integer.parseInt(receivingLine.getReceivingControlNumber()));
+        response.setPurchaseOrderId(Integer.parseInt(receivingLine.getReceivingControlNumber()));
         if (receivingLine.getUpcNumber() == null) {
-            response.setUpc(0);
+            response.setUpc("0");
         } else {
             response.setUpc(receivingLine.getUpcNumber());
         }
