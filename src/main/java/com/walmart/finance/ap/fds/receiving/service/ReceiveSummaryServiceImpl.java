@@ -20,15 +20,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -109,8 +107,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             receiveSummaries = getSearchCriteriaForGet(paramMap);
         }
         log.info("Before : size of recesummary list -" + receiveSummaries.size());
-        if( CollectionUtils.isNotEmpty(receiveSummaries) && receiveSummaries.size() > 1000 )
-        {
+        if (CollectionUtils.isNotEmpty(receiveSummaries) && receiveSummaries.size() > 1000) {
             receiveSummaries.subList(1000, receiveSummaries.size()).clear();
         }
         log.info("After : size of recesummary list -" + receiveSummaries.size());
@@ -124,7 +121,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             throw new SearchCriteriaException("Modify the search criteria as records are more than 1000");
         } */
         else {
-                        responseList = receiveSummaries.stream().map(
+            responseList = receiveSummaries.stream().map(
                     (t) -> {
                         ReceivingSummaryResponse response = receivingSummaryResponseConverter.convert(t);
                         if (responseMap.get(t.get_id()) != null) {
@@ -291,8 +288,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     }
 
     private Query queryRecvSmryByInvoiceNum(InvoiceResponse invoiceResponse) {
-        Query query = new Query();
+        Query query = null ;
         if (StringUtils.isNotEmpty(invoiceResponse.getInvoiceNumber())) {
+             query = new Query();
             query.addCriteria(Criteria.where(ReceiveSummaryParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponse.getInvoiceNumber().trim()));
             query.addCriteria(Criteria.where(ReceiveSummaryParameters.TRANSACTIONTYPE.getParameterName()).is(1));
         }
@@ -306,8 +304,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     }
 
     private Query queryRecvSmryByPOId(InvoiceResponse invoiceResponse) {
-        Query query = new Query();
+        Query query = null;
         if (StringUtils.isNotEmpty(invoiceResponse.getPurchaseOrderNumber())) {
+            query = new Query();
             query.addCriteria(Criteria.where(ReceiveSummaryParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponse.getPurchaseOrderNumber().trim()));
             query.addCriteria(Criteria.where(ReceiveSummaryParameters.TRANSACTIONTYPE.getParameterName()).is(0));
         }
@@ -323,14 +322,18 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     // TODO       addCriteria( "x", invoiceResponse.getReceivingNum(),query);
     private Query queryRecvSmryAllAttributes(InvoiceResponse invoiceResponse) {
         Query query = new Query();
+        CriteriaDefinition criteriaDefinition = null;
         if (StringUtils.isNotEmpty(invoiceResponse.getPurchaseOrderNumber())) {
-            query.addCriteria(Criteria.where(ReceiveSummaryParameters.PURCHASEORDERNUMBER.getParameterName()).is(invoiceResponse.getPurchaseOrderNumber().trim()));
+            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.PURCHASEORDERNUMBER.getParameterName()).is(invoiceResponse.getPurchaseOrderNumber().trim());
+            query.addCriteria(criteriaDefinition);
         }
         if (StringUtils.isNotEmpty(invoiceResponse.getPurchaseOrderId())) {
-            query.addCriteria(Criteria.where(ReceiveSummaryParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponse.getPurchaseOrderId().trim()));
+            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponse.getPurchaseOrderId().trim());
+            query.addCriteria(criteriaDefinition);
         }
         if (StringUtils.isNotEmpty(invoiceResponse.getDestDivNbr())) {
-            query.addCriteria(Criteria.where(ReceiveSummaryParameters.STORENUMBER.getParameterName()).is(Integer.parseInt(invoiceResponse.getDestStoreNbr().trim())));
+            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.STORENUMBER.getParameterName()).is(Integer.parseInt(invoiceResponse.getDestStoreNbr().trim()));
+            query.addCriteria(criteriaDefinition);
         }
         //TODO : According to conversion with Anurag, this has been commented (29/May/2019)
         /*if (StringUtils.isNotEmpty(invoiceResponse.getDestStoreNbr())) {
@@ -341,10 +344,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             query.addCriteria(Criteria.where(ReceiveSummaryParameters.VENDORNUMBER.getParameterName()).is(Integer.parseInt(invoiceResponse.getVendorNumber().trim())));
         }*/
         if (StringUtils.isNotEmpty(invoiceResponse.getInvoiceDeptNumber())) {
-            query.addCriteria(Criteria.where(ReceiveSummaryParameters.DEPARTMENTNUMBER.getParameterName()).is(Integer.parseInt(invoiceResponse.getInvoiceDeptNumber().trim())));
+            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.DEPARTMENTNUMBER.getParameterName()).is(Integer.parseInt(invoiceResponse.getInvoiceDeptNumber().trim()));
+            query.addCriteria(criteriaDefinition);
         }
         log.info("query: " + query);
-        return query;
+        return criteriaDefinition == null ? null : query;
 
     }
 
@@ -389,26 +393,34 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     private List<ReceivingLine> queryForLineResponse(ReceiveSummary receiveSummary, List<String> itemNumbers, List<String> upcNumbers) {
 
         Query query = new Query();
+        CriteriaDefinition criteriaDefinition = null;
         if (StringUtils.isNotEmpty(receiveSummary.getReceivingControlNumber())) {
-            query.addCriteria(Criteria.where(ReceivingLineParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(receiveSummary.getReceivingControlNumber().trim()));
+            criteriaDefinition = Criteria.where(ReceivingLineParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(receiveSummary.getReceivingControlNumber().trim());
+            query.addCriteria(criteriaDefinition);
         }
         if (StringUtils.isNotEmpty(receiveSummary.getPoReceiveId())) {
-            query.addCriteria(Criteria.where(ReceivingLineParameters.PORECEIVEID.getParameterName()).is(receiveSummary.getPoReceiveId().trim()));
+            criteriaDefinition = Criteria.where(ReceivingLineParameters.PORECEIVEID.getParameterName()).is(receiveSummary.getPoReceiveId().trim());
+            query.addCriteria(criteriaDefinition);
         }
         if (receiveSummary.getStoreNumber() != null) {
-            query.addCriteria(Criteria.where(ReceivingLineParameters.STORENUMBER.getParameterName()).is(receiveSummary.getStoreNumber()));
+            criteriaDefinition = Criteria.where(ReceivingLineParameters.STORENUMBER.getParameterName()).is(receiveSummary.getStoreNumber());
+            query.addCriteria(criteriaDefinition);
         }
         if (receiveSummary.getBaseDivisionNumber() != null) {
-            query.addCriteria(Criteria.where(ReceivingLineParameters.BASEDIVISIONNUMBER.getParameterName()).is(receiveSummary.getBaseDivisionNumber()));
+            criteriaDefinition = Criteria.where(ReceivingLineParameters.BASEDIVISIONNUMBER.getParameterName()).is(receiveSummary.getBaseDivisionNumber());
+            query.addCriteria(criteriaDefinition);
         }
         if (receiveSummary.getTransactionType() != null) {
-            query.addCriteria(Criteria.where(ReceivingLineParameters.TRANSACTIONTYPE.getParameterName()).is(receiveSummary.getTransactionType()));
+            criteriaDefinition = Criteria.where(ReceivingLineParameters.TRANSACTIONTYPE.getParameterName()).is(receiveSummary.getTransactionType());
+            query.addCriteria(criteriaDefinition);
         }
         if (CollectionUtils.isNotEmpty(itemNumbers)) {
-            query.addCriteria(Criteria.where(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Integer::parseInt).collect(Collectors.toList())));
+            criteriaDefinition = Criteria.where(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Integer::parseInt).collect(Collectors.toList()));
+            query.addCriteria(criteriaDefinition);
         }
         if (CollectionUtils.isNotEmpty(upcNumbers)) {
-            query.addCriteria(Criteria.where(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(upcNumbers));
+            criteriaDefinition = Criteria.where(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(upcNumbers);
+            query.addCriteria(criteriaDefinition);
         }
         //TODO final date and final time not present in receive-summary thus commented out
 //        if (receiveSummary.getFinalDate() != null) {
@@ -418,7 +430,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 //            query.addCriteria(Criteria.where(ReceivingLineParameters.FINALTIME.getParameterName()).is(receiveSummary.getFinalTime()));
 //        }
         log.info("Query is " + query);
-        return executeQueryReceiveline(query);
+        return executeQueryReceiveline(criteriaDefinition == null ? null : query);
 
     }
     /******* receive -line data fetching   *********/
@@ -429,8 +441,8 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
         List<FreightResponse> receiveFreights = makeQueryForFreight(receiveSummary);
         if (CollectionUtils.isNotEmpty(receiveFreights)) {
-            additionalResponse.setCarrierCode(receiveFreights.get(0).getCarrierCode()== null ? null : receiveFreights.get(0).getCarrierCode().trim());
-            additionalResponse.setTrailerNumber(receiveFreights.get(0).getTrailerNbr()== null ? null : receiveFreights.get(0).getTrailerNbr().trim());
+            additionalResponse.setCarrierCode(receiveFreights.get(0).getCarrierCode() == null ? null : receiveFreights.get(0).getCarrierCode().trim());
+            additionalResponse.setTrailerNumber(receiveFreights.get(0).getTrailerNbr() == null ? null : receiveFreights.get(0).getTrailerNbr().trim());
         }
     }
 
@@ -449,12 +461,19 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     /******* Common Methods  *********/
 
     private List<ReceiveSummary> executeQueryForReceiveSummary(Query query) {
-        List<ReceiveSummary> receiveSummaries = mongoTemplate.find(query.limit(1000), ReceiveSummary.class, "receive-summary");
+        List<ReceiveSummary> receiveSummaries = new ArrayList<>();
+        if (query != null) {
+            receiveSummaries = mongoTemplate.find(query.limit(1000), ReceiveSummary.class, "receive-summary");
+        }
         return receiveSummaries;
+
     }
 
     private List<ReceivingLine> executeQueryReceiveline(Query query) {
-        List<ReceivingLine> receiveLines = mongoTemplate.find(query, ReceivingLine.class, "receive-line-new");
+        List<ReceivingLine> receiveLines = new ArrayList<>();
+        if (query != null) {
+            receiveLines = mongoTemplate.find(query, ReceivingLine.class, "receive-line-new");
+        }
         return receiveLines;
     }
 
