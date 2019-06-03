@@ -449,7 +449,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     private List<FreightResponse> makeQueryForFreight(ReceiveSummary receiveSummary) {
         if (receiveSummary.getFreightBillExpandID() != null) {
             Query query = new Query();
-            query.addCriteria(Criteria.where("_id").in(receiveSummary.getFreightBillExpandID()));
+            query.addCriteria(Criteria.where("_id").is(receiveSummary.getFreightBillExpandID()));
             return executeQueryReceiveFreight(query);
         }
         return null;
