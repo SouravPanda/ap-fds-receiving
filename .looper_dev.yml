@@ -94,7 +94,7 @@ flows:
       - call: hygieiaPublish
   runsonar:
     - sonar("Sonar"):
-        - (name sonar) sonar-scanner -Dproject.settings=sonar-project.properties
+        - (name sonar) sonar-scanner -X -Dproject.settings=sonar-project.properties
         - hygieia.publishSonar()
   hygieiaPublish:
     - hygieia.publishBuild()
