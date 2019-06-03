@@ -3,6 +3,8 @@ tools:
     - 1.8
   maven:
     - 3.6.0
+  sonarscanner:
+    - 3.0.3.778
 envs:
   global:
     variables:
@@ -12,7 +14,7 @@ envs:
       GIT_REVISION: ''
       devAcrName: 'apfsregistrydev.azurecr.io' #here goes your container registry name
       devAcrCred: 'c1f34f31-f988-49d1-b32a-a20de27cd559'
-      releaseAcrName: 'apfsregistryrelease.azurecr.io' #here goes your container registry  name
+      releaseAcrName: 'apfsregistryrelease.azurecr.io' #here goes your container registry name
       releaseAcrCred: 'da462fd4-c11d-476b-9255-cd085d4de03e' #here goes your looper credential for the container registry
 flows:
   default:
@@ -20,6 +22,7 @@ flows:
     - call: readpom
     - mvn clean install
     - call: build_push_latest_img_dev
+    - call: runsonar
   pr:
     - mvn clean package
     - call: runsonar
