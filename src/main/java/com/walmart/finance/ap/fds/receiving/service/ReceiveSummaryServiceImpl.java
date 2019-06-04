@@ -202,7 +202,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
 
             String id = formulateId(receivingSummarySearch.getControlNumber(), receivingSummarySearch.getReceiptNumbers(), receivingSummarySearch.getLocationNumber().toString(),
-                    receivingSummarySearch.getDivisionNumber().toString(), receivingSummarySearch.getTransactionType().toString(), "0", "0");
+                    receivingSummarySearch.getDivisionNumber().toString(), receivingSummarySearch.getTransactionType().toString(), receivingSummarySearch.getReceiptDateStart().toString(), receivingSummarySearch.getReceiptDateEnd().toString());
 
             ReceiveSummary receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receive-summary");
             if (receiveSummary != null) {
@@ -263,7 +263,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         List<ReceivingLine> receiveLines = new ArrayList();
 
       String id = formulateId(receivingSummaryLineSearch.getControlNumber(), receivingSummaryLineSearch.getReceiptNumber().toString(), receivingSummaryLineSearch.getLocationNumber().toString(),
-              receivingSummaryLineSearch.getDivisionNumber().toString(), receivingSummaryLineSearch.getTransactionType().toString(), "0", "0");
+              receivingSummaryLineSearch.getDivisionNumber().toString(), receivingSummaryLineSearch.getTransactionType().toString(), receivingSummaryLineSearch.getReceiptDateStart().toString(), receivingSummaryLineSearch.getReceiptDateEnd().toString());
 
       // String id = "708542521|30005|1018|0|99|0|0";
 
@@ -324,7 +324,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         if (StringUtils.isNotEmpty(receivingSummaryLineSearch.getSequenceNumber().toString())) {
 
             String lineId = formulateLineId(receivingSummaryLineSearch.getControlNumber(), receivingSummaryLineSearch.getReceiptNumber().toString(), receivingSummaryLineSearch.getLocationNumber().toString(),
-                    receivingSummaryLineSearch.getDivisionNumber().toString(), receivingSummaryLineSearch.getTransactionType().toString(), "0", "0", receivingSummaryLineSearch.getSequenceNumber().toString());
+                    receivingSummaryLineSearch.getDivisionNumber().toString(), receivingSummaryLineSearch.getTransactionType().toString(), receivingSummaryLineSearch.getFinalDate().toString(), receivingSummaryLineSearch.getFinalTime().toString(), receivingSummaryLineSearch.getSequenceNumber().toString());
 
             ReceivingLine receiveLine = mongoTemplate.findById(lineId, ReceivingLine.class, "receive-line");
 
