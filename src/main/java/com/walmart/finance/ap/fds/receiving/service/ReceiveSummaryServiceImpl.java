@@ -115,7 +115,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
         //Todo parallel stream performance check
         if (CollectionUtils.isEmpty(receiveSummaries)) {
-            throw new NotFoundException("Content not found for given search criteria.");
+            throw new NotFoundException("Receiving summary not found for given search criteria.");
         }
         /*else if (receiveSummaries.size() > 1000) {
             throw new SearchCriteriaException("Modify the search criteria as records are more than 1000");

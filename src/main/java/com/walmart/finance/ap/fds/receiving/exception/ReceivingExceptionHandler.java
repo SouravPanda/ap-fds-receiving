@@ -41,7 +41,7 @@ public class ReceivingExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> notFoundExceptionHandler(
             Exception ex, WebRequest request) {
         return new ResponseEntity<>(
-                new ReceivingError(204, ex.getMessage(), LocalDateTime.now()), new HttpHeaders(), HttpStatus.NOT_FOUND);
+                new ReceivingError(204, ex.getMessage(), LocalDateTime.now()), new HttpHeaders(), HttpStatus.OK);
     }
 
     @ExceptionHandler({SearchCriteriaException.class})
