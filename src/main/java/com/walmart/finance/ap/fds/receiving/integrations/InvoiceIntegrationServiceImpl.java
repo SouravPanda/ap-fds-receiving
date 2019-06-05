@@ -70,7 +70,7 @@ public class InvoiceIntegrationServiceImpl implements InvoiceIntegrationService 
         } catch (HttpStatusCodeException e) {
             log.error(ExceptionUtils.getStackTrace(e));
             if (!paramMap.containsKey(ReceivingConstants.PURCHASEORDERNUMBER)) {
-                throw new NotFoundException("Content not found.");
+                throw new NotFoundException("Receiving summary not found for given search criteria.");
             }
         }
 

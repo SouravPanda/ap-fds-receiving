@@ -48,7 +48,7 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
         List<ReceivingLine> receiveLines = mongoTemplate.find(query.limit(1000), ReceivingLine.class, "receive-line-new");
         List<ReceivingLineResponse> responseList;
         if (CollectionUtils.isEmpty(receiveLines)) {
-            throw new NotFoundException("Content not found for given search criteria.");
+            throw new NotFoundException("Receiving line not found for given search criteria.");
         } /*else if (receiveLines.size() > 1000) {
             throw new SearchCriteriaException("Modify the search criteria as records are more than 1000");
         } */ else {
