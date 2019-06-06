@@ -40,9 +40,9 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
 //        response.setVendorStockNumber(0);
         response.setBottleDepositAmount(0);
 
-        response.setPurchaseOrderNumber(Integer.parseInt(receivingLine.getReceivingControlNumber()));
+        response.setPurchaseOrderNumber(receivingLine.getReceivingControlNumber());
         response.setParentReceiptNumber(Integer.valueOf(receivingLine.getPurchaseOrderReceiveID()));
-        response.setPurchaseOrderId(Integer.parseInt(receivingLine.getReceivingControlNumber()));
+        response.setPurchaseOrderId(receivingLine.getReceivingControlNumber());
         if (receivingLine.getUpcNumber() == null) {
             response.setUpc("0");
         } else {
