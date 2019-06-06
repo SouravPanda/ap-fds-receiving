@@ -3,6 +3,7 @@ package com.walmart.finance.ap.fds.receiving.request;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -10,11 +11,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReceiveSummaryLineSearch {
-
+@Data
+@ToString
+public class ReceivingSummaryLineRequest {
     Long purchaseOrderId;
 
     @NotNull
@@ -71,11 +72,11 @@ public class ReceiveSummaryLineSearch {
 
     Character freightConslIndicator;
 
-  //  LocalDateTime initialReceiveTimestamp;
+    //  LocalDateTime initialReceiveTimestamp;
 
     LocalDate MDSReceiveDate;
 
-  //  LocalDate receiveProcessDate;
+    //  LocalDate receiveProcessDate;
 
     Double receiveWeightQuantity;
 
@@ -95,7 +96,7 @@ public class ReceiveSummaryLineSearch {
 
     String userId;
 
-   // LocalDateTime creationDate;
+    // LocalDateTime creationDate;
 
     String purchaseOrderNumber;
 
@@ -132,5 +133,8 @@ public class ReceiveSummaryLineSearch {
 
     Integer upcNumber;
 
+    Integer invMatchStatus;
+
+    Meta meta;
 
 }

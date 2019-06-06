@@ -69,12 +69,12 @@ public class ReceivingLineControllerTest {
                 89, 12, 1122, 99, 8264, 18,
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
-                0, 1.9, "LL");
+                0, 1.9, "LL",0);
         ReceivingLine receivingLineAt = new ReceivingLine("0|0|0|0|0|null|null|12", "6778", 0,
                 0, 0, 0, 0.0, 0.0, "0", 0,
                 0, 0, 0, 0, 0, null, null, 12,
                 LocalDateTime.of(1985, 10, 17, 18, 45, 21), 'A', "BKP", "111",
-                0, LocalDate.now(), 0, 1.9, "LL");
+                0, LocalDate.now(), 0, 1.9, "LL",0);
         listOfContent.add(receivingLine);
         listOfContent.add(receivingLineAt);
 

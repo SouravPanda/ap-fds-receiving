@@ -1,10 +1,12 @@
 package com.walmart.finance.ap.fds.receiving.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -12,96 +14,109 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class ReceivingSummaryRequest {
 
 
-    //TODO need to check the json property names
+    Long purchaseOrderNumber;
+
+    Long purchaseOrderId;
+
+    @NotNull
     @NotEmpty
-    private String receivingControlNumber;
+    String receiptNumbers;
 
+    @NotNull
     @NotEmpty
-    private Integer poReceiveId;
+    Integer transactionType;
 
+    @NotNull
     @NotEmpty
-    private Integer storeNumber;
+    String controlNumber;
 
+    @NotNull
     @NotEmpty
-    private Integer baseDivisionNumber;
+    Integer locationNumber;
 
+    @NotNull
     @NotEmpty
-    private Integer transactionType;
+    Integer divisionNumber;
 
+    Integer vendorNumber;
+
+    Integer departmentNumber;
+
+    Long invoiceId;
+
+    String invoiceNumber;
+
+    @NotNull
     @NotEmpty
-    private LocalDate finalDate;
+    LocalDate finalDate;
 
+    LocalDateTime receiptDateStart;
+
+    @NotNull
     @NotEmpty
-    private LocalTime finalTime;
+    LocalTime finalTime;
 
-    @NotEmpty
-    private Integer controlType;
+    LocalDateTime receiptDateEnd;
 
-    @NotEmpty
-    private Integer poId;
+    String businessStatusCode;
 
-    @NotEmpty
-    private Integer vendorNumber;
+    Double costAmount;
 
-    @NotEmpty
-    private Integer accountNumber;
+    Double retailAmount;
 
-    private Integer controlSequenceNumber;
+    // LocalDate finalDate;
 
-    private Integer receiveSequenceNumber;
+    // LocalTime finalTime;
 
-    @NotEmpty
-    private char matchIndicator;
+    Integer controlType;
 
-    @NotEmpty
-    private Double totalCostAmount;
+    Integer accountNumber;
 
-    @NotEmpty
-    private Double totalRetailAmount;
+    Integer controlSequenceNumber;
 
-    @NotEmpty
-    private Integer freightBillId;
+    Integer receiveSequenceNumber;
 
-    @NotEmpty
-    private Character businessStatusCode;
+    Character matchIndicator;
 
-    @NotEmpty
-    private Long freightBillExpandID;
+    Double totalCostAmount;
 
-    private Character claimPendingIndicator;
+    Double totalRetailAmount;
 
-    private Character freeAstrayIndicator;
+    Integer freightBillId;
 
-    private Character freightConslIndicator;
+    // Long freightBillExpandID;
 
-    @NotEmpty
-    private LocalDateTime initialReceiveTimestamp;
+    Character claimPendingIndicator;
 
-    private LocalDate mdsReceiveDate;
+    Character freeAstrayIndicator;
 
-    private LocalDate receiveProcessDate;
+    Character freightConslIndicator;
 
-    private Double receiveWeightQuantity;
+    // LocalDateTime initialReceiveTimestamp;
 
-    @NotEmpty
-    private String sequenceNumber;
+    Double receiveWeightQuantity;
 
-    @NotEmpty
-    private Integer departmentNumber;
+    Integer sequenceNumber;
 
-    private Integer casesReceived;
+    Integer casesReceived;
 
-    @NotEmpty
-    private LocalDateTime finalizedLoadTimestamp;
+    // LocalDateTime finalizedLoadTimestamp;
 
-    @NotEmpty
-    private Integer finalizedSequenceNumber;
+    // Integer finalizedSequenceNumber;
 
-    @NotEmpty
-    private String userId;
+    String userId;
+
+    //  LocalDateTime creationDate;
+
+    Character typeIndicator;
+
+    String writeIndicator;
+
+    Meta meta;
 
 
 }

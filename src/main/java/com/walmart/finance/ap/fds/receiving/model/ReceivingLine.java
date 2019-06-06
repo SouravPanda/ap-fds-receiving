@@ -45,4 +45,5 @@ public class ReceivingLine {
     private Integer receiveSequenceNumber;// RPR_SEQ_NBR
     private Double receivedWeightQuantity;//RECV_WEIGHT_QTY(Column)INITIAL_RECV_ITEM(Table)
     private String receivedQuantityUnitOfMeasureCode;//RECV_QTY_UOM_CODE(Column)INITIAL_RECV_ITEM(Table)
+    private Integer invMatchStatus;
 }

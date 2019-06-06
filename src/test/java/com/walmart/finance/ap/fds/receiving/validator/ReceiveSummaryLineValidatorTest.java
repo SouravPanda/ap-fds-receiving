@@ -1,7 +1,7 @@
 package com.walmart.finance.ap.fds.receiving.validator;
 
 import com.walmart.finance.ap.fds.receiving.integrations.VendorIntegrationServiceImpl;
-import com.walmart.finance.ap.fds.receiving.request.ReceiveSummaryLineSearch;
+import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +28,7 @@ public class ReceiveSummaryLineValidatorTest {
 
     String countryCode = "US";
 
-    ReceiveSummaryLineSearch receivingSummaryLineSearch = new ReceiveSummaryLineSearch(65267L, 33383L, 99, "56HKKL",
+    ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest(65267L, 33383L, 99, "56HKKL",
             0, 0, LocalDate.now(), LocalTime.now(), 0, 122663, 0, 98, 0, 8.9, 8.7,
             0, "A",
             8897L, 'A', 'N', 'L', LocalDate.now(), 22.0, 0, 0, 0,
@@ -36,22 +36,22 @@ public class ReceiveSummaryLineValidatorTest {
             "UUU", "user", "purchase", 11.0, "hyhh", LocalDateTime.of(1998, 12, 12, 18, 56, 22),
             LocalDateTime.of(2000, 12, 12, 18, 56, 22),
             "988", 2222,
-            2228, "bbb", 7665, 0, 0, 11.8, 22.9, 0, 0, 0);
+            2228, "bbb", 7665, 0, 0, 11.8, 22.9, 0, 0, 0,0,null);
 
     @Test
     public void validateVendorNumberUpdateSummaryTest() {
-        Mockito.when(vendorIntegrationService.getVendorBySupplierNumberAndCountryCode(receivingSummaryLineSearch.getVendorNumber(), countryCode)).thenReturn(receivingSummaryLineSearch.getVendorNumber());
-        Assert.assertTrue(receiveSummaryLineValidator.validateVendorNumberUpdateSummary(receivingSummaryLineSearch, receivingSummaryLineSearch.getVendorNumber(), countryCode));
+        Mockito.when(vendorIntegrationService.getVendorBySupplierNumberAndCountryCode(receivingSummaryLineRequest.getVendorNumber(), countryCode)).thenReturn(receivingSummaryLineRequest.getVendorNumber());
+        Assert.assertTrue(receiveSummaryLineValidator.validateVendorNumberUpdateSummary(receivingSummaryLineRequest, receivingSummaryLineRequest.getVendorNumber(), countryCode));
     }
 
     @Test
     public void validateBusinessStatUpdateSummary() {
-        Assert.assertTrue(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineSearch));
+        Assert.assertTrue(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest));
     }
 
     @Test
     public void validateControlTypeTest() {
-        Assert.assertTrue(receiveSummaryLineValidator.validateControlType(receivingSummaryLineSearch));
+        Assert.assertTrue(receiveSummaryLineValidator.validateControlType(receivingSummaryLineRequest));
     }
 }
 

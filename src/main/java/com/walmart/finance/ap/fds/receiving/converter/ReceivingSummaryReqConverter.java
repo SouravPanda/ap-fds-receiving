@@ -15,14 +15,12 @@ public class ReceivingSummaryReqConverter implements Converter<ReceivingSummaryR
     @Override
     public ReceiveSummary convert(ReceivingSummaryRequest receivingSummaryRequest) {
 
-        String id = receivingSummaryRequest.getReceivingControlNumber() + separator + receivingSummaryRequest.getPoReceiveId() + separator + receivingSummaryRequest.getStoreNumber() + separator + receivingSummaryRequest.getBaseDivisionNumber() + separator + receivingSummaryRequest.getTransactionType() + separator + receivingSummaryRequest.getFinalDate() + separator + receivingSummaryRequest.getFinalTime();
+        String id = receivingSummaryRequest.getControlNumber() + separator + receivingSummaryRequest.getReceiptNumbers() + separator + receivingSummaryRequest.getLocationNumber() + separator + receivingSummaryRequest.getDivisionNumber() + separator + receivingSummaryRequest.getTransactionType() + separator + receivingSummaryRequest.getReceiptDateStart() + separator + receivingSummaryRequest.getReceiptDateEnd();
         ReceiveSummary receiveSummary = new ReceiveSummary();
         receiveSummary.set_id(id);
-        receiveSummary.setReceivingControlNumber(receivingSummaryRequest.getReceivingControlNumber());
-        receiveSummary.setStoreNumber(receivingSummaryRequest.getStoreNumber());
+        receiveSummary.setReceivingControlNumber(receivingSummaryRequest.getControlNumber());
+        receiveSummary.setStoreNumber(receivingSummaryRequest.getLocationNumber());
         receiveSummary.setTransactionType(receivingSummaryRequest.getTransactionType());
-        receiveSummary.setFinalDate(receivingSummaryRequest.getFinalDate());
-        receiveSummary.setFinalTime(receivingSummaryRequest.getFinalTime());
         receiveSummary.setControlType(receivingSummaryRequest.getControlType());
         receiveSummary.setVendorNumber(receivingSummaryRequest.getVendorNumber());
         receiveSummary.setAccountNumber(receivingSummaryRequest.getAccountNumber());
@@ -32,22 +30,13 @@ public class ReceivingSummaryReqConverter implements Converter<ReceivingSummaryR
         receiveSummary.setTotalCostAmount(receivingSummaryRequest.getTotalCostAmount());
         receiveSummary.setTotalRetailAmount(receivingSummaryRequest.getTotalRetailAmount());
         receiveSummary.setFreightBillId(receivingSummaryRequest.getFreightBillId());
-        receiveSummary.setBusinessStatusCode(receivingSummaryRequest.getBusinessStatusCode());
-        receiveSummary.setFreightBillExpandID(receivingSummaryRequest.getFreightBillExpandID());
         receiveSummary.setClaimPendingIndicator(receivingSummaryRequest.getClaimPendingIndicator());
         receiveSummary.setFreeAstrayIndicator(receivingSummaryRequest.getFreeAstrayIndicator());
         receiveSummary.setFreightConslIndicator(receivingSummaryRequest.getFreightConslIndicator());
-        receiveSummary.setInitialReceiveTimestamp(receivingSummaryRequest.getInitialReceiveTimestamp());
-        receiveSummary.setMDSReceiveDate(receivingSummaryRequest.getMdsReceiveDate());
-        receiveSummary.setReceiveProcessDate(receivingSummaryRequest.getReceiveProcessDate());
         receiveSummary.setReceiveWeightQuantity(receivingSummaryRequest.getReceiveWeightQuantity());
         receiveSummary.setSequenceNumber(Integer.valueOf(receivingSummaryRequest.getSequenceNumber()));
         receiveSummary.setDepartmentNumber(receivingSummaryRequest.getDepartmentNumber());
         receiveSummary.setCasesReceived(receivingSummaryRequest.getCasesReceived());
-        receiveSummary.setFinalizedLoadTimestamp(receivingSummaryRequest.getFinalizedLoadTimestamp());
-        receiveSummary.setFinalizedSequenceNumber(receivingSummaryRequest.getFinalizedSequenceNumber());
-        receiveSummary.setPoReceiveId(receivingSummaryRequest.getPoReceiveId().toString());
-        receiveSummary.setBaseDivisionNumber(receivingSummaryRequest.getBaseDivisionNumber());
         receiveSummary.setUserId(receivingSummaryRequest.getUserId());
         receiveSummary.setCreationDate(LocalDateTime.now());
 

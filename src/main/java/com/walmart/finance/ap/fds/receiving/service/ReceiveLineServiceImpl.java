@@ -7,7 +7,7 @@ import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineReqConverter;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineResponseConverter;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.repository.ReceiveLineDataRepository;
-import com.walmart.finance.ap.fds.receiving.request.ReceivingLineRequest;
+import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +41,8 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
     @Autowired
     MongoTemplate mongoTemplate;
 
-    public ReceivingLine saveReceiveLine(ReceivingLineRequest receivingLineRequest) {
-        ReceivingLine receiveLine = receivingLineRequestConverter.convert(receivingLineRequest);
+    public ReceivingLine saveReceiveLine(ReceivingSummaryLineRequest receivingSummaryLineRequest) {
+        ReceivingLine receiveLine = receivingLineRequestConverter.convert(receivingSummaryLineRequest);
         return receiveLineDataRepository.save(receiveLine);
 
     }

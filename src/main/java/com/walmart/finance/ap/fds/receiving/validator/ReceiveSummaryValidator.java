@@ -3,7 +3,7 @@ package com.walmart.finance.ap.fds.receiving.validator;
 import com.walmart.finance.ap.fds.receiving.common.ReceiveSummaryBusinessStat;
 import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
 import com.walmart.finance.ap.fds.receiving.integrations.VendorIntegrationServiceImpl;
-import com.walmart.finance.ap.fds.receiving.request.ReceivingSummarySearch;
+import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
@@ -66,16 +66,16 @@ public class ReceiveSummaryValidator {
             throw new InvalidValueException("Incorrect fields passed");
     }
 
-    public boolean validateVendorNumberUpdateSummary(ReceivingSummarySearch receivingSummarySearch, Integer vendorNumber, String countryCode) {
-        if (vendorIntegrationService.getVendorBySupplierNumberAndCountryCode(vendorNumber, countryCode).equals(receivingSummarySearch.getVendorNumber())) {
+    public boolean validateVendorNumberUpdateSummary(ReceivingSummaryRequest receivingSummaryRequest, Integer vendorNumber, String countryCode) {
+        if (vendorIntegrationService.getVendorBySupplierNumberAndCountryCode(vendorNumber, countryCode).equals(receivingSummaryRequest.getVendorNumber())) {
             return !verdict;
         }
         return verdict;
     }
 
-    public boolean validateBusinessStatUpdateSummary(ReceivingSummarySearch receivingSummarySearch) {
+    public boolean validateBusinessStatUpdateSummary(ReceivingSummaryRequest receivingSummaryRequest) {
         for (ReceiveSummaryBusinessStat businessStat : businessStatList) {
-            if (businessStat.toString().equalsIgnoreCase(receivingSummarySearch.getBusinessStatusCode())) {
+            if (businessStat.toString().equalsIgnoreCase(receivingSummaryRequest.getBusinessStatusCode())) {
                 verdict = true;
                 break;
             }
@@ -84,14 +84,14 @@ public class ReceiveSummaryValidator {
 
     }
 
-    public boolean validateControlType(ReceivingSummarySearch receivingSummarySearch) {
+    public boolean validateControlType(ReceivingSummaryRequest receivingSummaryRequest) {
         Set<String> controlNumberSet = new HashSet<>();
         controlNumberSet.add("0");
         controlNumberSet.add("1");
         controlNumberSet.add("2");
         controlNumberSet.add("3");
         controlNumberSet.add("99");
-        if (controlNumberSet.contains(receivingSummarySearch.getControlNumber())) {
+        if (controlNumberSet.contains(receivingSummaryRequest.getControlNumber())) {
             verdict = true;
         }
         return verdict;

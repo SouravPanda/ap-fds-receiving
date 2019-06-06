@@ -2,7 +2,7 @@ package com.walmart.finance.ap.fds.receiving.validator;
 
 import com.walmart.finance.ap.fds.receiving.common.ReceiveSummaryBusinessStat;
 import com.walmart.finance.ap.fds.receiving.integrations.VendorIntegrationServiceImpl;
-import com.walmart.finance.ap.fds.receiving.request.ReceiveSummaryLineSearch;
+import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,16 +21,16 @@ public class ReceiveSummaryLineValidator {
     List<ReceiveSummaryBusinessStat> businessStatList = Arrays.asList(ReceiveSummaryBusinessStat.values());
     boolean verdict = false;
 
-    public boolean validateVendorNumberUpdateSummary(ReceiveSummaryLineSearch receivingSummaryLineSearch, Integer vendorNumber, String countryCode) {
-        if (vendorIntegrationService.getVendorBySupplierNumberAndCountryCode(vendorNumber, countryCode).equals(receivingSummaryLineSearch.getVendorNumber())) {
+    public boolean validateVendorNumberUpdateSummary(ReceivingSummaryLineRequest receivingSummaryLineRequest, Integer vendorNumber, String countryCode) {
+        if (vendorIntegrationService.getVendorBySupplierNumberAndCountryCode(vendorNumber, countryCode).equals(receivingSummaryLineRequest.getVendorNumber())) {
             verdict=true;
         }
         return verdict;
     }
 
-    public boolean validateBusinessStatUpdateSummary(ReceiveSummaryLineSearch receivingSummaryLineSearch) {
+    public boolean validateBusinessStatUpdateSummary(ReceivingSummaryLineRequest receivingSummaryLineRequest) {
         for (ReceiveSummaryBusinessStat businessStat : businessStatList) {
-            if (businessStat.toString().equalsIgnoreCase(receivingSummaryLineSearch.getBusinessStatusCode())) {
+            if (businessStat.toString().equalsIgnoreCase(receivingSummaryLineRequest.getBusinessStatusCode())) {
                 verdict = true;
                 break;
             }
@@ -39,7 +39,7 @@ public class ReceiveSummaryLineValidator {
 
     }
 
-    public boolean validateControlType(ReceiveSummaryLineSearch receivingSummaryLineSearch) {
+    public boolean validateControlType(ReceivingSummaryLineRequest receivingSummaryLineSearch) {
         Set<Integer> controlNumberSet = new HashSet<>();
         controlNumberSet.add(0);
         controlNumberSet.add(1);

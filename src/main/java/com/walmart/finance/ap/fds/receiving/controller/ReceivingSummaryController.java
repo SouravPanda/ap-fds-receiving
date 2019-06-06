@@ -1,9 +1,8 @@
 package com.walmart.finance.ap.fds.receiving.controller;
 
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
-import com.walmart.finance.ap.fds.receiving.request.ReceiveSummaryLineSearch;
+import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
-import com.walmart.finance.ap.fds.receiving.request.ReceivingSummarySearch;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveSummaryService;
 import io.swagger.annotations.Api;
@@ -89,8 +88,8 @@ public class ReceivingSummaryController {
     @PutMapping
     @ApiOperation(value = "API to update Stores based on the payload")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
-    public ReceivingSummarySearch updateSummary(@PathVariable("countryCode") String countryCode, @RequestBody ReceivingSummarySearch receivingSummarySearch) {
-        return receiveSummaryService.updateReceiveSummary(receivingSummarySearch,receivingSummarySearch.getVendorNumber(),countryCode);
+    public ReceivingSummaryRequest updateSummary(@PathVariable("countryCode") String countryCode, @RequestBody ReceivingSummaryRequest receivingSummaryRequest) {
+        return receiveSummaryService.updateReceiveSummary(receivingSummaryRequest,receivingSummaryRequest.getVendorNumber(),countryCode);
     }
 
 
@@ -105,8 +104,8 @@ public class ReceivingSummaryController {
     @PutMapping("/line")
     @ApiOperation(value = "API to update Stores based on the payload")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
-    public ReceiveSummaryLineSearch updateSummaryAndLine(@PathVariable("countryCode") String countryCode, @RequestBody ReceiveSummaryLineSearch receiveSummaryLineSearch) {
-        return receiveSummaryService.updateReceiveSummaryAndLine(receiveSummaryLineSearch,countryCode,receiveSummaryLineSearch.getVendorNumber());
+    public ReceivingSummaryLineRequest updateSummaryAndLine(@PathVariable("countryCode") String countryCode, @RequestBody ReceivingSummaryLineRequest receiveSummaryLineRequest) {
+        return receiveSummaryService.updateReceiveSummaryAndLine(receiveSummaryLineRequest,countryCode,receiveSummaryLineRequest.getVendorNumber());
     }
 
 

@@ -22,11 +22,11 @@ public class WriteSummaryValidator {
 
     public void validate(ReceivingSummaryRequest receiveSummaryRequest) {
 
-        if (!(listOfControlNumbers.contains(receiveSummaryRequest.getReceivingControlNumber()))) {
+        if (!(listOfControlNumbers.contains(receiveSummaryRequest.getControlNumber()))) {
             throw new InvalidValueException("Incorrect controlNumber passed");
         }
         try {
-            Integer.valueOf(receiveSummaryRequest.getPoReceiveId());
+            Integer.valueOf(receiveSummaryRequest.getReceiptNumbers());
 
         } catch (NumberFormatException e) {
             throw new NumberFormatException("Invalid entry, please enter an integer for poReceiveId");

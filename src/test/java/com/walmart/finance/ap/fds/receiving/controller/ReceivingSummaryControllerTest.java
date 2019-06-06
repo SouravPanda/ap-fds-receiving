@@ -1,15 +1,11 @@
 
 package com.walmart.finance.ap.fds.receiving.controller;
 
-import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineResponseConverter;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
-import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
-import com.walmart.finance.ap.fds.receiving.request.ReceiveSummaryLineSearch;
-import com.walmart.finance.ap.fds.receiving.request.ReceivingSummarySearch;
-import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
+import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
+import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
-import com.walmart.finance.ap.fds.receiving.service.ReceiveLineServiceImpl;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveSummaryServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -118,26 +114,28 @@ public class ReceivingSummaryControllerTest {
 
     @Test
     public void updateSummaryTest(){
-        ReceivingSummarySearch receivingSummarySearch = new ReceivingSummarySearch(65267L, 33383L, "56HKKL", 0, "0", 8897, 99, 122663, 997, 999L, "kkk",
+        ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest(65267L, 33383L, "56HKKL", 0, "0", 8897, 99, 122663, 997, 999L, "kkk",
+                LocalDate.now(),
                 LocalDateTime.of(1990, 12, 12, 18, 56, 22),
+                LocalTime.now(),
                 LocalDateTime.of(1991, 12, 12, 18, 56, 22),
                 "UUU", 11.0, 11.9, 988, 2222, 2228, 7665,
                 'A', 11.8, 22.9, 90, 'A', 'B', 'C', 88.0,
-                44, 49, "hh", 'J', "99");
-        Mockito.when(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummarySearch,12283,"US")).thenReturn(receivingSummarySearch);
+                44, 49, "hh", 'J', "99",null);
+        Mockito.when(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest,12283,"US")).thenReturn(receivingSummaryRequest);
     }
 
     @Test
     public void updateSummaryAndLineTest(){
-        ReceiveSummaryLineSearch receivingSummaryLineSearch = new ReceiveSummaryLineSearch(65267L, 33383L, 99,"56HKKL",
+        ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest(65267L, 33383L, 99,"56HKKL",
                 0,0,LocalDate.now(),LocalTime.now(),9,99,0,98,0,8.9,8.7,
                 0, "0",
                 8897L,'A','N','L',LocalDate.now(),22.0,0,0,0,
                 LocalDateTime.of(1990, 12, 12, 18, 56, 22),9,
                 "UUU","user","purchase", 11.0, "hyhh",LocalDateTime.of(1998, 12, 12, 18, 56, 22),LocalDateTime.of(2000, 12, 12, 18, 56, 22),
                 "988", 2222,
-                2228,"bbb", 7665,0,0, 11.8, 22.9, 0,0,0);
-        Mockito.when(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineSearch,"US",12283)).thenReturn(receivingSummaryLineSearch);
+                2228,"bbb", 7665,0,0, 11.8, 22.9, 0,0,0,0,null);
+        Mockito.when(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest,"US",12283)).thenReturn(receivingSummaryLineRequest);
     }
 }
 
