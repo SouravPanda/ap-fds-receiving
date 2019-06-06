@@ -2,27 +2,28 @@
 package com.walmart.finance.ap.fds.receiving.service;
 
 
+import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineReqConverter;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineResponseConverter;
-import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.repository.ReceiveLineDataRepository;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.repository.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 @Service
 public class ReceiveLineServiceImpl implements ReceiveLineService {
@@ -46,7 +47,7 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
 
     }
 
-    public List<ReceivingLineResponse> getLineSummary(String purchaseOrderId, String receiptNumber, String transactionType, String controlNumber, String locationNumber, String divisionNumber) {
+    public Page<ReceivingLineResponse> getLineSummary(String purchaseOrderId, String receiptNumber, String transactionType, String controlNumber, String locationNumber, String divisionNumber, int pageNbr, int pageSize, String orderBy, Sort.Direction order) {
 
         Query query = searchCriteriaForGet(purchaseOrderId, receiptNumber, transactionType, controlNumber, locationNumber, divisionNumber);
         Pageable pageable = PageRequest.of(pageNbr, pageSize);
@@ -62,20 +63,9 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
                 () -> mongoTemplate.count(query, ReceivingLine.class));
 
         return mapReceivingLineToResponse(receiveLinePage);
-
-        List<ReceivingLine> receiveLines = mongoTemplate.find(query.limit(1000), ReceivingLine.class, "receive-line-new");
-        List<ReceivingLineResponse> responseList;
-        if (CollectionUtils.isEmpty(receiveLines)) {
-            throw new NotFoundException("Receiving line not found for given search criteria.");
-        } /*else if (receiveLines.size() > 1000) {
-            throw new SearchCriteriaException("Modify the search criteria as records are more than 1000");
-        } */ else {
-            responseList = receiveLines.stream().map((t) -> receivingLineResponseConverter.convert(t)).collect(Collectors.toList());
-            return responseList;
-        }
     }
 
-/*    private Page<ReceivingLineResponse> mapReceivingLineToResponse(Page<ReceivingLine> receiveLinePage) {
+    private Page<ReceivingLineResponse> mapReceivingLineToResponse(Page<ReceivingLine> receiveLinePage) {
         Page<ReceivingLineResponse> receivingLineResponsePage = receiveLinePage.map(new Function<ReceivingLine, ReceivingLineResponse>() {
             @Override
             public ReceivingLineResponse apply(ReceivingLine receiveLine) {
@@ -88,7 +78,7 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
     private String formulateId(String receivingControlNumber, String poReceiveId, String storeNumber, String baseDivisionNumber, String transactionType, String finalDate, String finalTime, String sequenceNumber) {
 
         return receivingControlNumber + ReceivingConstants.PIPE_SEPARATOR + poReceiveId + ReceivingConstants.PIPE_SEPARATOR + storeNumber + ReceivingConstants.PIPE_SEPARATOR + baseDivisionNumber + ReceivingConstants.PIPE_SEPARATOR + transactionType + ReceivingConstants.PIPE_SEPARATOR + finalDate + ReceivingConstants.PIPE_SEPARATOR + finalTime + ReceivingConstants.PIPE_SEPARATOR + sequenceNumber;
-    }*/
+    }
 
     private Query searchCriteriaForGet(String purchaseOrderId, String receiptNumber, String transactionType, String controlNumber, String locationNumber, String divisionNumber) {
 

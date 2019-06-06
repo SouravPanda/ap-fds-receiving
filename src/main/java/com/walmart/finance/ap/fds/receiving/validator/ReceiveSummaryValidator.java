@@ -85,13 +85,13 @@ public class ReceiveSummaryValidator {
     }
 
     public boolean validateControlType(ReceivingSummaryRequest receivingSummaryRequest) {
-        Set<Integer> controlNumberSet = new HashSet<>();
-        controlNumberSet.add(0);
-        controlNumberSet.add(1);
-        controlNumberSet.add(2);
-        controlNumberSet.add(3);
-        controlNumberSet.add(99);
-        if (controlNumberSet.contains(receivingSummaryRequest.getControlType())) {
+        Set<String> controlNumberSet = new HashSet<>();
+        controlNumberSet.add("0");
+        controlNumberSet.add("1");
+        controlNumberSet.add("2");
+        controlNumberSet.add("3");
+        controlNumberSet.add("99");
+        if (controlNumberSet.contains(receivingSummaryRequest.getControlNumber())) {
             verdict = true;
         }
         return verdict;

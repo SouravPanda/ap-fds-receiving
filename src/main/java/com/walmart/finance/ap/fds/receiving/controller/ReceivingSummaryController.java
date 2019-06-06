@@ -10,10 +10,9 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 
 @RestController
@@ -48,16 +47,15 @@ public class ReceivingSummaryController {
      * @param
      * @return store
      */
-    //TODO receiptNumbers :  as of now passing first object.
-    // itemNumbers and upcNumbers : implementation are pending
     @GetMapping
     @ApiOperation(value = "API to add new Stores based on the payload")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Error")})
-    public List<ReceivingSummaryResponse> getReceiveSummary(@PathVariable("countryCode")
+
+    public Page<ReceivingSummaryResponse> getReceiveSummary(@PathVariable("countryCode")
                                                                     String countryCode,
                                                             @RequestParam(value = "purchaseOrderNumber", required = false) String purchaseOrderNumber,
                                                             @RequestParam(value = "purchaseOrderId", required = false) String purchaseOrderId,
-                                                            @RequestParam(value = "receiptNumbers", required = false) List<String> receiptNumbers,
+                                                            @RequestParam(value = "receiptNumbers", required = false) String receiptNumbers,
                                                             @RequestParam(value = "transactionType", required = false) String transactionType,
                                                             @RequestParam(value = "controlNumber", required = false) String controlNumber,
                                                             @RequestParam(value = "locationNumber", required = false) String locationNumber,
@@ -68,8 +66,6 @@ public class ReceivingSummaryController {
                                                             @RequestParam(value = "invoiceNumber", required = false) String invoiceNumber,
                                                             @RequestParam(value = "receiptDateStart", required = false) String receiptDateStart,
                                                             @RequestParam(value = "receiptDateEnd", required = false) String receiptDateEnd,
-                                                            @RequestParam(value = "itemNumbers", required = false) List<String> itemNumbers,
-                                                            @RequestParam(value = "upcNumbers", required = false) List<String> upcNumbers,
                                                             @RequestParam(value = "pageNbr", defaultValue = "0")
                                                                     Integer pageNbr,
                                                             @RequestParam(value = "pageSize", defaultValue = "1000")
@@ -79,8 +75,8 @@ public class ReceivingSummaryController {
                                                             @RequestParam(value = "order", defaultValue = "DESC")
                                                                     Sort.Direction order) {
 
-        return receiveSummaryService.getReceiveSummary(countryCode, purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
-                divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd, itemNumbers, upcNumbers);//allRequestParam); , pageNbr, pageSize, orderBy, order
+        return receiveSummaryService.getReceiveSummary(purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
+                divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd, pageNbr, pageSize, orderBy, order);//allRequestParam);
     }
 
     /**

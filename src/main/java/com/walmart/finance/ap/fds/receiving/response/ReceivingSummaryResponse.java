@@ -46,10 +46,10 @@ public class ReceivingSummaryResponse {
     private String carrierCode;
 
     @NotEmpty
-    private String trailerNumber;
+    private Integer trailerNumber;
 
-//    @NotEmpty
-//    private String associateName;
+    @NotEmpty
+    private String associateName;
 
     @NotEmpty
     private String authorizedBy;
@@ -63,38 +63,15 @@ public class ReceivingSummaryResponse {
     @NotEmpty
     private Double totalRetailAmount;
 
-//    @NotEmpty
-//    private Integer parentReceiptId;
+    @NotEmpty
+    private Integer parentReceiptId;
 
     @NotEmpty
     private String parentReceiptNumber;
 
     @NotEmpty
-    private Long lineCount;
-
-    @NotEmpty
     private Integer departmentNumber;
 
-<<<<<<< HEAD
     private Integer supplierNumber;
 
-=======
-    @NotEmpty
-    private String parentPurchaseOrderId;
-
-    @NotEmpty
-    private  Integer parentTransactionType;
-
-    @NotEmpty
-    private String parentControlNumber;
-
-    @NotEmpty
-    private Integer parentLocationNumber;
-
-    @NotEmpty
-    private Integer parentDivisionNumber;
-
-    @NotEmpty
-    private String memo;
->>>>>>> daadff28131316176dc16a7451c8396663e7767f
 }
