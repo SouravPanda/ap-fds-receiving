@@ -22,9 +22,9 @@ public class ReceivingLineResponse {
 //    private Integer vendorStockNumber;
     private Integer bottleDepositAmount;
 //    private String damaged;
-    private Integer purchaseOrderNumber;
+    private String purchaseOrderNumber;
     private Integer parentReceiptNumber;
-    private Integer purchaseOrderId;
+    private String purchaseOrderId;
     private String upc;
     private String itemDescription;
     private String unitOfMeasure;
