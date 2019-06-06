@@ -13,9 +13,9 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
 
         ReceivingLineResponse response = new ReceivingLineResponse();
 
-        response.setControlNumber(Integer.parseInt(receivingLine.getReceivingControlNumber()));
+        response.setControlNumber(receivingLine.getReceivingControlNumber());
 
-        response.setDamaged(" ");
+//        response.setDamaged(" ");
 
         if (receivingLine.getBaseDivisionNumber() == 0) {
             response.setDivisionNumber(0);
@@ -37,14 +37,14 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
         response.setPackQuantity(receivingLine.getQuantity());
 
         response.setNumberofCasesReceived(0);
-        response.setVendorStockNumber(0);
+//        response.setVendorStockNumber(0);
         response.setBottleDepositAmount(0);
 
-        response.setPurchaseOrderNumber(Integer.parseInt(receivingLine.getReceivingControlNumber()));
+        response.setPurchaseOrderNumber(receivingLine.getReceivingControlNumber());
         response.setParentReceiptNumber(Integer.valueOf(receivingLine.getPurchaseOrderReceiveID()));
-        response.setPurchasedOrderId(Integer.parseInt(receivingLine.getReceivingControlNumber()));
+        response.setPurchaseOrderId(receivingLine.getReceivingControlNumber());
         if (receivingLine.getUpcNumber() == null) {
-            response.setUpc(0);
+            response.setUpc("0");
         } else {
             response.setUpc(receivingLine.getUpcNumber());
         }
@@ -65,7 +65,7 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
 
             response.setTransactionType(receivingLine.getTransactionType());
         }
-        response.setControlNumber(Integer.parseInt(receivingLine.getReceivingControlNumber()));
+        response.setControlNumber(receivingLine.getReceivingControlNumber());
         response.setLocationNumber(receivingLine.getStoreNumber());
         // TODO default to 0 if not there
         if(receivingLine.getBaseDivisionNumber()==null){

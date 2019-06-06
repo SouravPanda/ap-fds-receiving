@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public interface ReceiveSummaryService {
     ReceiveSummary saveReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest);
@@ -18,4 +20,7 @@ public interface ReceiveSummaryService {
     ReceivingSummaryRequest updateReceiveSummary(ReceivingSummaryRequest receivingSummarySearch, Integer vendorNumber, String countryCode);
 
     ReceivingSummaryLineRequest updateReceiveSummaryAndLine(ReceivingSummaryLineRequest receivingSummaryLineSearch, String countryCode, Integer vendorNumber);
+
+    List<ReceivingSummaryResponse> getReceiveSummary(String countryCode, String purchaseOrderNumber, String purchaseOrderId, List<String> receiptNumber, String transactionType, String controlNumber, String locationNumber,
+                                                     String divisionNumber, String vendorNumber, String departmentNumber, String invoiceId, String invoiceNumber, String receiptDateStart, String receiptDateEnd, List<String> itemNumbers, List<String> upcNumbers);// Map<String,String> allRequestParam);
 }
