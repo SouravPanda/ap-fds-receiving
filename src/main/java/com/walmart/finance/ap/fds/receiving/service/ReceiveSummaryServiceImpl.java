@@ -374,7 +374,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 receiveLine.setStoreNumber(receivingSummaryLineRequest.getLocationNumber());
                 receiveLine.setTransactionType(receivingSummaryLineRequest.getTransactionType());
                 receiveLine.setUpcNumber(receivingSummaryLineRequest.getUpcNumber());
-                receiveLine.setInvMatchStatus(receivingSummaryLineRequest.getInvMatchStatus());
+                receiveLine.setInventoryMatchStatus(receivingSummaryLineRequest.getInventoryMatchStatus());
                 if (receiveSummaryLineValidator.validateVendorNumberUpdateSummary(receivingSummaryLineRequest, vendorNumber, countryCode) == true) {
                     receiveLine.setVendorNumber(receivingSummaryLineRequest.getVendorNumber());
                 } else {
@@ -446,7 +446,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             receivingLine.setStoreNumber(receivingSummaryLineRequest.getLocationNumber());
             receivingLine.setTransactionType(receivingSummaryLineRequest.getTransactionType());
             receivingLine.setUpcNumber(receivingSummaryLineRequest.getUpcNumber());
-            receivingLine.setInvMatchStatus(receivingSummaryLineRequest.getInvMatchStatus());
+            receivingLine.setInventoryMatchStatus(receivingSummaryLineRequest.getInventoryMatchStatus());
             if (receiveSummaryLineValidator.validateVendorNumberUpdateSummary(receivingSummaryLineRequest, vendorNumber, countryCode)) {
                 receivingLine.setVendorNumber(receivingSummaryLineRequest.getVendorNumber());
             } else {

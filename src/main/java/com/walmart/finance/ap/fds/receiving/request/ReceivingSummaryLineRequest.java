@@ -133,7 +133,7 @@ public class ReceivingSummaryLineRequest {
 
     Integer upcNumber;
 
-    Integer invMatchStatus;
+    Integer inventoryMatchStatus;
 
     Meta meta;
 

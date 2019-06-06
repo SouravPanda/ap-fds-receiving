@@ -45,5 +45,39 @@ public class ReceivingLine {
     private Integer receiveSequenceNumber;// RPR_SEQ_NBR
     private Double receivedWeightQuantity;//RECV_WEIGHT_QTY(Column)INITIAL_RECV_ITEM(Table)
     private String receivedQuantityUnitOfMeasureCode;//RECV_QTY_UOM_CODE(Column)INITIAL_RECV_ITEM(Table)
-    private Integer invMatchStatus;
+    private Integer inventoryMatchStatus;
+
+    @Override
+    public String toString() {
+        return "ReceivingLine{" +
+                "id='" + _id + '\'' +
+                ", purchaseOrderReceiveID='" + purchaseOrderReceiveID + '\'' +
+                ", lineNumber='" + lineNumber + '\'' +
+                ", itemNumber='" + itemNumber + '\'' +
+                ", vendorNumber='" + vendorNumber + '\'' +
+                ", receivedQuantity='" + receivedQuantity + '\'' +
+                ", costAmount='" + costAmount + '\'' +
+                ", retailAmount='" + retailAmount + '\'' +
+                ", receivingControlNumber='" + receivingControlNumber + '\'' +
+                ", purchaseReceiptNumber='" + purchaseReceiptNumber + '\'' +
+                ", purchasedOrderId='" + purchasedOrderId + '\'' +
+                ", upcNumber='" + upcNumber + '\'' +
+                ", transactionType='" + transactionType + '\'' +
+                ", storeNumber='" + storeNumber + '\'' +
+                ", baseDivisionNumber='" + baseDivisionNumber + '\'' +
+                ", finalDate='" + finalDate + '\'' +
+                ", finalTime='" + finalTime + '\'' +
+                ", sequenceNumber='" + sequenceNumber + '\'' +
+                ", creationDate='" + creationDate + '\'' +
+                ", typeIndicator='" + typeIndicator + '\'' +
+                ", writeIndicator='" + writeIndicator + '\'' +
+                ", purchaseOrderNumber='" + purchaseOrderNumber + '\'' +
+                ", quantity='" + quantity + '\'' +
+                ", MDSReceiveDate='" + MDSReceiveDate + '\'' +
+                ", receiveSequenceNumber='" + receiveSequenceNumber + '\'' +
+                ", receivedWeightQuantity='" + receivedWeightQuantity + '\'' +
+                ", receivedQuantityUnitOfMeasureCode='" + receivedQuantityUnitOfMeasureCode + '\'' +
+                ",inventoryMatchStatus='"+inventoryMatchStatus+'\''+
+                '}';
+    }
 }
