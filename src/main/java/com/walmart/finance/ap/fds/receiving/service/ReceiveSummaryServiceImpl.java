@@ -195,10 +195,10 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     }
 
-    private boolean isWareHouseData(Integer invProcAreaCode, String replnTypCd, String locationCountryCd) {
+    private boolean isWareHouseData(Integer invProcAreaCode, String repInTypCd, String locationCountryCd) {
 
-        if (StringUtils.isNotEmpty(locationCountryCd) && StringUtils.isNotEmpty(replnTypCd)) {
-            if ((invProcAreaCode == 36 || invProcAreaCode == 30) && (replnTypCd.equals("R") || replnTypCd.equals("U") || replnTypCd.equals("F")) && (locationCountryCd.equals("US")))
+        if (StringUtils.isNotEmpty(locationCountryCd) && StringUtils.isNotEmpty(repInTypCd)) {
+            if ((invProcAreaCode == 36 || invProcAreaCode == 30) && (repInTypCd.equals("R") || repInTypCd.equals("U") || repInTypCd.equals("F")) && (locationCountryCd.equals("US")))
                 return true;
         }
         return false;
@@ -215,7 +215,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
             ReceiveSummary receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receive-summary");
             if (receiveSummary != null) {
-                receiveSummary.setReceivingControlNumber(receivingSummaryRequest.getInvoiceNumber());
+                receiveSummary.setReceivingControlNumber(receivingSummaryRequest.getControlNumber());
                 receiveSummary.setPurchaseOrderNumber(receivingSummaryRequest.getPurchaseOrderNumber().toString());
                 receiveSummary.setDepartmentNumber(receivingSummaryRequest.getDepartmentNumber());
                 receiveSummary.setTotalCostAmount(receivingSummaryRequest.getCostAmount());
@@ -223,7 +223,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 if (receivingSummaryRequest.getDepartmentNumber() >= 0 && receivingSummaryRequest.getDepartmentNumber() <= 99) {
                     receiveSummary.setDepartmentNumber(receivingSummaryRequest.getDepartmentNumber());
                 }
-                receiveSummary.setPoReceiveId(receivingSummaryRequest.getPurchaseOrderId().toString());
                 receiveSummary.setVendorNumber(receivingSummaryRequest.getVendorNumber());
                 receiveSummary.setAccountNumber(receivingSummaryRequest.getAccountNumber());
                 receiveSummary.setClaimPendingIndicator(receivingSummaryRequest.getClaimPendingIndicator());
