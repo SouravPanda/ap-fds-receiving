@@ -249,11 +249,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 receiveSummary.setSequenceNumber(receivingSummaryRequest.getSequenceNumber());
                 receiveSummary.setPoReceiveId(receivingSummaryRequest.getReceiptNumbers());
 
-                if (receiveSummaryValidator.validateVendorNumberUpdateSummary(receivingSummaryRequest, vendorNumber, countryCode) == true) {
+               /* if (receiveSummaryValidator.validateVendorNumberUpdateSummary(receivingSummaryRequest, vendorNumber, countryCode) == true) {
                     receiveSummary.setVendorNumber(receivingSummaryRequest.getVendorNumber());
                 } else {
                     throw new InvalidValueException("Value of field vendorNumber passed is not valid");
-                }
+                }*/
                 if (receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryRequest) == true) {
                     receiveSummary.setBusinessStatusCode(receivingSummaryRequest.getBusinessStatusCode().charAt(0));
                 } else {
@@ -375,11 +375,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 receiveLine.setTransactionType(receivingSummaryLineRequest.getTransactionType());
                 receiveLine.setUpcNumber(receivingSummaryLineRequest.getUpcNumber());
                 receiveLine.setInventoryMatchStatus(receivingSummaryLineRequest.getInventoryMatchStatus());
-                if (receiveSummaryLineValidator.validateVendorNumberUpdateSummary(receivingSummaryLineRequest, vendorNumber, countryCode) == true) {
+            /*    if (receiveSummaryLineValidator.validateVendorNumberUpdateSummary(receivingSummaryLineRequest, vendorNumber, countryCode) == true) {
                     receiveLine.setVendorNumber(receivingSummaryLineRequest.getVendorNumber());
                 } else {
                     throw new InvalidValueException("Value of field vendorNumber passed is not valid");
-                }
+                }*/
                 mongoTemplate.save(receiveLine, "receive-line");
 
                 ReceivingLine commitedRcvLine = mongoTemplate.save(receiveLine, "receive-line");
@@ -447,11 +447,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             receivingLine.setTransactionType(receivingSummaryLineRequest.getTransactionType());
             receivingLine.setUpcNumber(receivingSummaryLineRequest.getUpcNumber());
             receivingLine.setInventoryMatchStatus(receivingSummaryLineRequest.getInventoryMatchStatus());
-            if (receiveSummaryLineValidator.validateVendorNumberUpdateSummary(receivingSummaryLineRequest, vendorNumber, countryCode)) {
+       /*     if (receiveSummaryLineValidator.validateVendorNumberUpdateSummary(receivingSummaryLineRequest, vendorNumber, countryCode)) {
                 receivingLine.setVendorNumber(receivingSummaryLineRequest.getVendorNumber());
             } else {
                 throw new InvalidValueException("Value of field vendorNumber passed is not valid");
-            }
+            }*/
             receiveLines.add(receivingLine);
         }
         List<ReceivingLine> commitedRcvLineList = mongoTemplate.save(receiveLines, "receive-line");

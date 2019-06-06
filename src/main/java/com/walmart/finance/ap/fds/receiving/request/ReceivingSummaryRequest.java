@@ -62,6 +62,8 @@ public class ReceivingSummaryRequest {
 
     LocalDateTime receiptDateEnd;
 
+    @NotEmpty
+    @NotNull
     String businessStatusCode;
 
     Double costAmount;
