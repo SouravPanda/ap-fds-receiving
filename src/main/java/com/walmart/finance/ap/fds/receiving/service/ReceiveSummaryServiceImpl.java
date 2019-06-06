@@ -126,7 +126,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                         ReceivingSummaryResponse response = receivingSummaryResponseConverter.convert(t);
                         if (responseMap.get(t.get_id()) != null) {
                             response.setCarrierCode(responseMap.get(t.get_id()).getCarrierCode());
-                            response.setTrailerNumber(responseMap.get(t.get_id()).getTrailerNumber() == null ? 0 : Integer.parseInt(responseMap.get(t.get_id()).getTrailerNumber()));
+                            response.setTrailerNumber(responseMap.get(t.get_id()).getTrailerNumber());
                             response.setLineCount(responseMap.get(t.get_id()).getLineCount());
                             response.setTotalCostAmount(responseMap.get(t.get_id()).getTotalCostAmount());
                             response.setTotalRetailAmount(responseMap.get(t.get_id()).getTotalRetailAmount());

@@ -46,7 +46,7 @@ public class ReceivingSummaryResponse {
     private String carrierCode;
 
     @NotEmpty
-    private Integer trailerNumber;
+    private String trailerNumber;
 
 //    @NotEmpty
 //    private String associateName;
