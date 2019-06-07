@@ -570,16 +570,12 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 dynamicQuery.addCriteria(receiptNumberCriteria);
             }
             if (receivingSummaryLineRequest.getLocationNumber() != null) {
-                Criteria locationNumberCriteria = Criteria.where("storeNumber").is(Integer.valueOf(receivingSummaryLineRequest.getLocationNumber()));
+                Criteria locationNumberCriteria = Criteria.where("storeNumber").is(receivingSummaryLineRequest.getLocationNumber());
                 dynamicQuery.addCriteria(locationNumberCriteria);
             }
             if (receivingSummaryLineRequest.getReceiptDate() != null) {
-                Criteria receiptDateCriteria = Criteria.where("mdsReceiveDate").is(receivingSummaryLineRequest.getReceiptDate());
+                Criteria receiptDateCriteria = Criteria.where("MDSReceiveDate").is(receivingSummaryLineRequest.getReceiptDate());
                 dynamicQuery.addCriteria(receiptDateCriteria);
-            }
-            if (receivingSummaryLineRequest.getSequenceNumber() != null) {
-                Criteria sequenceNumberCriteria = Criteria.where("sequenceNumber").is(receivingSummaryLineRequest.getSequenceNumber());
-                dynamicQuery.addCriteria(sequenceNumberCriteria);
             }
 
             //TODO code needs to optimized remove the DB calls in loop
