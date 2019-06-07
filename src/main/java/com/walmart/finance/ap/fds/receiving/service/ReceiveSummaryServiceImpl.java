@@ -205,6 +205,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         return controlNumber + ReceivingConstants.PIPE_SEPARATOR + receiptNumber + ReceivingConstants.PIPE_SEPARATOR + locationNumber + ReceivingConstants.PIPE_SEPARATOR + divisionNumber + ReceivingConstants.PIPE_SEPARATOR + transactionType + ReceivingConstants.PIPE_SEPARATOR + receiptDateStart + ReceivingConstants.PIPE_SEPARATOR + receiptDateEnd;
 
     }
+
     /*******  Search Criteria methods  *********/
 
     private List<ReceiveSummary> getSearchCriteriaForGet(HashMap<String, String> paramMap) {
@@ -567,6 +568,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getLocationCountryCd());
         Query dynamicQuery = new Query();
         List<ReceivingLine> receiveLines = new ArrayList();
+        ReceivingLine commitedRcvLine = null;
 
         String id = formulateId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber().toString(), receivingSummaryLineRequest.getLocationNumber().toString(),
                 receivingSummaryLineRequest.getDivisionNumber().toString(), receivingSummaryLineRequest.getTransactionType().toString(), receivingSummaryLineRequest.getFinalDate().toString(), receivingSummaryLineRequest.getFinalTime().toString());
@@ -642,8 +644,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             if (receiveLine != null) {
                 receiveLine.setBaseDivisionNumber(receivingSummaryLineRequest.getBaseDivisionNumber());
                 receiveLine.setCostAmount(receivingSummaryLineRequest.getCostAmount());
-                receiveLine.setMDSReceiveDate(receivingSummaryLineRequest.getReceiptDateStart().toLocalDate());
-                receiveLine.setMDSReceiveDate(receivingSummaryLineRequest.getReceiptDateEnd().toLocalDate());
+                receiveLine.setMDSReceiveDate(receivingSummaryLineRequest.getMDSReceiveDate());
                 receiveLine.setFinalDate(receivingSummaryLineRequest.getFinalDate());
                 receiveLine.setCostAmount(receivingSummaryLineRequest.getCostAmount());
                 receiveLine.setFinalDate(receivingSummaryLineRequest.getFinalDate());
@@ -674,7 +675,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 }*/
                 mongoTemplate.save(receiveLine, "receive-line");
 
-                ReceivingLine commitedRcvLine = mongoTemplate.save(receiveLine, "receive-line");
+                 commitedRcvLine = mongoTemplate.save(receiveLine, "receive-line");
                 if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
                     publisher.publishEvent(commitedRcvLine);
                 }
@@ -748,9 +749,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             }*/
             receiveLines.add(receivingLine);
         }
-        List<ReceivingLine> commitedRcvLineList = mongoTemplate.save(receiveLines, "receive-line");
-        if (Objects.nonNull(commitedRcvLineList) && isWareHouseData) {
-            publisher.publishEvent(commitedRcvLineList);
+        for (ReceivingLine listOfReceiveLine : receiveLines) {
+            commitedRcvLine = mongoTemplate.save(listOfReceiveLine, "receive-line");
+            if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
+                publisher.publishEvent(commitedRcvLine);
+            }
         }
         return receivingSummaryLineRequest;
     }
