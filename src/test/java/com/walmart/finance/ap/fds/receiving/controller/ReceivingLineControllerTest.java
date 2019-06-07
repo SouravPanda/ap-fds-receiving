@@ -55,24 +55,22 @@ public class ReceivingLineControllerTest {
 
 
         ReceivingLineResponse receivingLineResponse = new ReceivingLineResponse(0, 0, 0, 0, 0, 2.9,
-                1.9, 0, 0, 0, 0, null, 0, 0,
-                0, 0, null, null, null, null, 0, 0, 0,
-                0);
-        ReceivingLineResponse receivingLineResponseAt = new ReceivingLineResponse(1, 1, 1, 1,
-                0, 2.9, 1.9, 0, 0, 0, 0,
-                null, 0, 0, 0, 0, null, null, null,
-                null, 0, 0, 0, 0);
+                1.9, 0, 0,0,"0", 0, "kk","0","0",
+                "0","0","0", 0, null, 0,0);
+        ReceivingLineResponse receivingLineResponseAt = new ReceivingLineResponse(0, 0, 0, 0, 0, 2.9,
+                1.9, 0, 0,0,"0", 0, "kk","0","0",
+                "0","0","LL90", 99, null, 0,0);
 
         List listOfContent = new ArrayList<ReceivingLine>();
         ReceivingLine receivingLine = new ReceivingLine("112|1804823|8264|18|0|1995-10-17|1995-10-17T18:45:21|122", "4665267",
                 0, 3777, 94493, 0, 0.0, 0.0, "9",
-                89, 12, 1122, 99, 8264, 18,
+                89, 12, "1122", 99, 8264, 18,
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
                 0, 1.9, "LL",0);
         ReceivingLine receivingLineAt = new ReceivingLine("0|0|0|0|0|null|null|12", "6778", 0,
                 0, 0, 0, 0.0, 0.0, "0", 0,
-                0, 0, 0, 0, 0, null, null, 12,
+                0, "0KKL", 0, 0, 0, null, null, 12,
                 LocalDateTime.of(1985, 10, 17, 18, 45, 21), 'A', "BKP", "111",
                 0, LocalDate.now(), 0, 1.9, "LL",0);
         listOfContent.add(receivingLine);
@@ -90,7 +88,7 @@ public class ReceivingLineControllerTest {
         when(receivingLineResponseConverter.convert(Mockito.any(ReceivingLine.class))).thenReturn(receivingLineResponse);
 
         Mockito.when(receiveLineServiceImpl.getLineSummary("1145", "1124", "11", "HHLL", "3580",
-                "99", 1, 1, "creationDate", Sort.DEFAULT_DIRECTION)).thenReturn(pageImplResponse);
+                "99")).thenReturn(listOfContent);
 
     }
 }

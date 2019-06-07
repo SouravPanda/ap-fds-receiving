@@ -89,16 +89,29 @@ public class ReceivingSummaryControllerTest {
         query.with(pageable);
 
         ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", 1122, 99, "776", 3680, 0,
-                LocalDate.of(1986, 12, 12), 'L', 78, "hjhj", 77, "user", "ooi", LocalDateTime.now(), 7.0,
-                9.0, 9, "hh", 8, 0);
+                LocalDate.of(1986, 12, 12), 'L', 78, "hjhj", "77", "user",  LocalDateTime.now(), 9.0,7.0,
+                "9LLL",0L,0, 9,"LL", 0, "PP",0, 0,"jjj");
 
-        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7708", 1122, 99, "776", 3680, 0,
-                LocalDate.of(1986, 12, 12), 'L', 78, "kkk", 77, "user", "ooi", LocalDateTime.now(), 7.0,
-                9.0, 0, "hh", 0, 0);
+        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("999778", 10022, 99, "776", 3680, 0,
+                LocalDate.of(1986, 12, 12), 'L', 78, "hjhj", "77", "user",  LocalDateTime.now(), 9.0,7.0,
+                "9LLL",0L,0, 9,"LL", 0, "PP",0, 0,"88");
 
         List<ReceivingSummaryResponse> content = new ArrayList<>();
         content.add(receivingSummaryResponse);
         content.add(receivingSummaryResponseAt);
+
+        List<String> listOfReceiptNumbers= new ArrayList<>();
+        listOfReceiptNumbers.add("99");
+        listOfReceiptNumbers.add("89");
+
+        List<String> listOfItemNumbers= new ArrayList<>();
+        listOfItemNumbers.add("99K");
+        listOfItemNumbers.add("89P");
+
+        List<String> listOfUpcNumbers= new ArrayList<>();
+        listOfItemNumbers.add("9K");
+        listOfItemNumbers.add("89P");
+
         PageRequest pageRequest = new PageRequest(1, 1, Sort.unsorted());
         PageImpl<ReceivingSummaryResponse> pageImplResponse = new PageImpl(content, pageRequest, 1);
 
@@ -106,9 +119,9 @@ public class ReceivingSummaryControllerTest {
         when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.anyString())).thenReturn(listOfContent);
         when(receivingSummaryResponseConverter.convert(Mockito.any(ReceiveSummary.class))).thenReturn(receivingSummaryResponse);
 
-        Mockito.when(receiveSummaryServiceImpl.getReceiveSummary("777", "77", "8", "88", "66",
+        Mockito.when(receiveSummaryServiceImpl.getReceiveSummary("777", "77", "8", listOfReceiptNumbers, "66",
                 "99", "675", "987", "18", "WW8", "776"
-                , "1980-12-12", "1988-12-12", 1, 1, "creationDate", Sort.DEFAULT_DIRECTION)).thenReturn(pageImplResponse);
+                , "1980-12-12", "1988-12-12", "1990-12-12", listOfItemNumbers, listOfUpcNumbers)).thenReturn(content);
 
     }
 

@@ -3,6 +3,8 @@ tools:
     - 1.8
   maven:
     - 3.6.0
+  sonarscanner:
+    - 3.0.3.778
 envs:
   global:
     variables:
@@ -20,6 +22,7 @@ flows:
     - call: readpom
     - mvn clean install
     - call: build_push_latest_img_dev
+    - call: runsonar
   pr:
     - mvn clean package
     - call: runsonar
@@ -91,7 +94,7 @@ flows:
       - call: hygieiaPublish
   runsonar:
     - sonar("Sonar"):
-        - (name sonar) sonar-scanner -Dproject.settings=sonar-project.properties
+        - (name sonar) sonar-scanner -X -Dproject.settings=sonar-project.properties
         - hygieia.publishSonar()
   hygieiaPublish:
     - hygieia.publishBuild()

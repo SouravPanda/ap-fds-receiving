@@ -1,11 +1,9 @@
 package com.walmart.finance.ap.fds.receiving.integrations;
 
-import java.util.List;
+import java.util.HashMap;
 
 public interface InvoiceIntegrationService {
 
-    InvoiceResponse getInvoiceByInvoiceId(Long invoiceId);
-
-    List<InvoiceResponse> getInvoiceByinvoiceNbr(String invoiceNbr);
+    InvoiceResponse[] getInvoice(HashMap<String, String> invoiceNbr);
 
 }
