@@ -497,7 +497,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     }
 
     @Override
-    public ReceivingSummaryRequest updateReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest,String countryCode) {
+    public ReceivingSummaryRequest updateReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest, String countryCode) {
         Boolean isWareHouseData = isWareHouseData(receivingSummaryRequest.getMeta().getSorRoutingCtx().getInvProcAreaCode(), receivingSummaryRequest.getMeta().getSorRoutingCtx().getRepInTypCd(),
                 receivingSummaryRequest.getMeta().getSorRoutingCtx().getLocationCountryCd());
 
@@ -536,7 +536,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         Query dynamicQuery = new Query();
         List<ReceivingLine> receiveLines = new ArrayList();
         ReceivingLine commitedRcvLine = null;
-        if(StringUtils.isEmpty(receivingSummaryLineRequest.getSequenceNumber().toString())) {
+        if (StringUtils.isEmpty(receivingSummaryLineRequest.getSequenceNumber().toString())) {
             String id = formulateId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), receivingSummaryLineRequest.getReceiptDate().toString());
 
             // String id = "708542521|30005|1018|0|99|0|0";
@@ -558,10 +558,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
                 publisher.publishEvent(commitedRcvSummary);
             }
-        }
-
-
-       else if (StringUtils.isNotEmpty(receivingSummaryLineRequest.getSequenceNumber().toString())) {
+        } else if (StringUtils.isNotEmpty(receivingSummaryLineRequest.getSequenceNumber().toString())) {
 
             String lineId = formulateLineId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(),
                     receivingSummaryLineRequest.getReceiptDate().toString(), receivingSummaryLineRequest.getSequenceNumber().toString());
@@ -609,21 +606,21 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 dynamicQuery.addCriteria(sequenceNumberCriteria);
             }
 
-        }
-        List<ReceivingLine> receivingLineList = mongoTemplate.find(dynamicQuery, ReceivingLine.class, "receive-line");
-        for (ReceivingLine receivingLine : receivingLineList) {
-            receivingLine.setInventoryMatchStatus(receivingSummaryLineRequest.getInventoryMatchStatus());
+            List<ReceivingLine> receivingLineList = mongoTemplate.find(dynamicQuery, ReceivingLine.class, "receive-line");
+            for (ReceivingLine receivingLine : receivingLineList) {
+                receivingLine.setInventoryMatchStatus(receivingSummaryLineRequest.getInventoryMatchStatus());
        /*     if (receiveSummaryLineValidator.validateVendorNumberUpdateSummary(receivingSummaryLineRequest, vendorNumber, countryCode)) {
                 receivingLine.setVendorNumber(receivingSummaryLineRequest.getVendorNumber());
             } else {
                 throw new InvalidValueException("Value of field vendorNumber passed is not valid");
             }*/
-            receiveLines.add(receivingLine);
-        }
-        for (ReceivingLine listOfReceiveLine : receiveLines) {
-            commitedRcvLine = mongoTemplate.save(listOfReceiveLine, "receive-line");
-            if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
-                publisher.publishEvent(commitedRcvLine);
+                receiveLines.add(receivingLine);
+            }
+            for (ReceivingLine listOfReceiveLine : receiveLines) {
+                commitedRcvLine = mongoTemplate.save(listOfReceiveLine, "receive-line");
+                if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
+                    publisher.publishEvent(commitedRcvLine);
+                }
             }
         }
         return receivingSummaryLineRequest;
