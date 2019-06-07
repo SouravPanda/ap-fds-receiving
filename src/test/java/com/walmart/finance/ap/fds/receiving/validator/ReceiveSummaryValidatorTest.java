@@ -31,7 +31,7 @@ public class ReceiveSummaryValidatorTest {
             LocalDateTime.of(1990, 12, 12, 18, 56, 22),
             LocalTime.now(),
             LocalDateTime.of(1991, 12, 12, 18, 56, 22),
-            "A", 11.0, 11.9, 988, 2222, 2228, 7665,
+            "A", 11.0, 11.9, 0, 2222, 2228, 7665,
             'A', 11.8, 22.9, 90, 'A', 'B', 'C', 88.0,
             44, 49, "hh", 'J', "99",null);
 

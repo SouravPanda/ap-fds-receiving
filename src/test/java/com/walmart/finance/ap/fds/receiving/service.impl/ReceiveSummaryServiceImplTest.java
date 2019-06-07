@@ -133,6 +133,7 @@ public class ReceiveSummaryServiceImplTest {
     public void updateReceiveSummaryTest() {
         Integer vendorNumber = 122663;
         String countryCode = "US";
+        Boolean isWareHouseData=false;
         ReceiveSummary receiveSummary = new ReceiveSummary("553683865|999997|6565|0|99|0|0", "553683865",
                 6565, 18, 0, LocalDate.of(1996, 12, 12), LocalTime.of(18, 45, 21),
                 0, 122663, 1111,
@@ -154,7 +155,7 @@ public class ReceiveSummaryServiceImplTest {
         when(mongoTemplate.findById((Mockito.any()), Mockito.any(Class.class), Mockito.anyString())).thenReturn(receiveSummary);
         Mockito.when(receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryRequest)).thenReturn(true);
         Mockito.when(receiveSummaryValidator.validateVendorNumberUpdateSummary(receivingSummaryRequest, vendorNumber, countryCode)).thenReturn(true);
-//        Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, vendorNumber, countryCode).toString(),receivingSummaryRequest.toString());
+      //  Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, vendorNumber, countryCode).toString(),receivingSummaryRequest.toString());
     }
 
     @Test
