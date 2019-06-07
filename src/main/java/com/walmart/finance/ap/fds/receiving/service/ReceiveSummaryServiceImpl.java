@@ -538,7 +538,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         Query dynamicQuery = new Query();
         List<ReceivingLine> receiveLines = new ArrayList();
         ReceivingLine commitedRcvLine = null;
-        if (StringUtils.isEmpty(receivingSummaryLineRequest.getSequenceNumber().toString())) {
+        if (receivingSummaryLineRequest.getSequenceNumber()==null) {
             String id = formulateId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), receivingSummaryLineRequest.getReceiptDate().toString());
 
             ReceiveSummary receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receive-summary");
@@ -593,7 +593,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             }
 
 
-        } else if (StringUtils.isNotEmpty(receivingSummaryLineRequest.getSequenceNumber().toString())) {
+        } else {
 
             String lineId = formulateLineId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(),
                     receivingSummaryLineRequest.getReceiptDate().toString(), receivingSummaryLineRequest.getSequenceNumber().toString());
