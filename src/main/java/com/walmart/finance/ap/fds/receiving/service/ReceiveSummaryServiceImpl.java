@@ -28,6 +28,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -530,6 +531,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     }
 
     @Override
+    @Transactional
     public ReceivingSummaryLineRequest updateReceiveSummaryAndLine(ReceivingSummaryLineRequest receivingSummaryLineRequest, String countryCode) {
         Boolean isWareHouseData = isWareHouseData(receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getInvProcAreaCode(), receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getRepInTypCd(),
                 receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getLocationCountryCd());
@@ -539,49 +541,23 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         if (StringUtils.isEmpty(receivingSummaryLineRequest.getSequenceNumber().toString())) {
             String id = formulateId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), receivingSummaryLineRequest.getReceiptDate().toString());
 
-            // String id = "708542521|30005|1018|0|99|0|0";
-
             ReceiveSummary receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receive-summary");
 
             if (receiveSummary == null) {
-                throw new ContentNotFoundException("No content found for the given id");
+                throw new NotFoundException("No content found for the given id");
             }
+            //TODO need to check the datatype for BusinessStatusCode
 
             if (receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest) == true) {
                 receiveSummary.setBusinessStatusCode(receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
             } else {
                 throw new InvalidValueException("Value of field  businessStatusCode passed is not valid");
             }
-            mongoTemplate.save(receiveSummary, "receive-summary");
-
             ReceiveSummary commitedRcvSummary = mongoTemplate.save(receiveSummary, "receive-summary");
+
             if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
                 publisher.publishEvent(commitedRcvSummary);
             }
-        } else if (StringUtils.isNotEmpty(receivingSummaryLineRequest.getSequenceNumber().toString())) {
-
-            String lineId = formulateLineId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(),
-                    receivingSummaryLineRequest.getReceiptDate().toString(), receivingSummaryLineRequest.getSequenceNumber().toString());
-
-            ReceivingLine receiveLine = mongoTemplate.findById(lineId, ReceivingLine.class, "receive-line");
-
-            if (receiveLine != null) {
-                receiveLine.setInventoryMatchStatus(receivingSummaryLineRequest.getInventoryMatchStatus());
-            /*    if (receiveSummaryLineValidator.validateVendorNumberUpdateSummary(receivingSummaryLineRequest, vendorNumber, countryCode) == true) {
-                    receiveLine.setVendorNumber(receivingSummaryLineRequest.getVendorNumber());
-                } else {
-                    throw new InvalidValueException("Value of field vendorNumber passed is not valid");
-                }*/
-                mongoTemplate.save(receiveLine, "receive-line");
-
-                commitedRcvLine = mongoTemplate.save(receiveLine, "receive-line");
-                if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
-                    publisher.publishEvent(commitedRcvLine);
-                }
-
-            }
-
-        } else {
 
             // TODO, ideally we should have receiveSummary key reference in Receive Line
 
@@ -606,22 +582,34 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 dynamicQuery.addCriteria(sequenceNumberCriteria);
             }
 
+            //TODO code needs to optimized remove the DB calls in loop
             List<ReceivingLine> receivingLineList = mongoTemplate.find(dynamicQuery, ReceivingLine.class, "receive-line");
             for (ReceivingLine receivingLine : receivingLineList) {
                 receivingLine.setInventoryMatchStatus(receivingSummaryLineRequest.getInventoryMatchStatus());
-       /*     if (receiveSummaryLineValidator.validateVendorNumberUpdateSummary(receivingSummaryLineRequest, vendorNumber, countryCode)) {
-                receivingLine.setVendorNumber(receivingSummaryLineRequest.getVendorNumber());
-            } else {
-                throw new InvalidValueException("Value of field vendorNumber passed is not valid");
-            }*/
-                receiveLines.add(receivingLine);
-            }
-            for (ReceivingLine listOfReceiveLine : receiveLines) {
-                commitedRcvLine = mongoTemplate.save(listOfReceiveLine, "receive-line");
+                commitedRcvLine = mongoTemplate.save(receivingLine, "receive-line");
                 if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
                     publisher.publishEvent(commitedRcvLine);
                 }
             }
+
+
+        } else if (StringUtils.isNotEmpty(receivingSummaryLineRequest.getSequenceNumber().toString())) {
+
+            String lineId = formulateLineId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(),
+                    receivingSummaryLineRequest.getReceiptDate().toString(), receivingSummaryLineRequest.getSequenceNumber().toString());
+
+            ReceivingLine receiveLine = mongoTemplate.findById(lineId, ReceivingLine.class, "receive-line");
+
+            if (receiveLine != null) {
+
+                receiveLine.setInventoryMatchStatus(receivingSummaryLineRequest.getInventoryMatchStatus());
+                commitedRcvLine = mongoTemplate.save(receiveLine, "receive-line");
+                if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
+                    publisher.publishEvent(commitedRcvLine);
+                }
+
+            }
+
         }
         return receivingSummaryLineRequest;
     }
