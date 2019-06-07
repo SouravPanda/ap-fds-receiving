@@ -552,7 +552,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             } else {
                 throw new InvalidValueException("Value of field  businessStatusCode passed is not valid");
             }
-            mongoTemplate.save(receiveSummary, "receiving-summary");
+            mongoTemplate.save(receiveSummary, "receive-summary");
 
             ReceiveSummary commitedRcvSummary = mongoTemplate.save(receiveSummary, "receive-summary");
             if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
