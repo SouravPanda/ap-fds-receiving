@@ -65,13 +65,13 @@ public class ReceiveSummaryValidator {
         if (verdict == false)
             throw new InvalidValueException("Incorrect fields passed");
     }
-
+/*
     public boolean validateVendorNumberUpdateSummary(ReceivingSummaryRequest receivingSummaryRequest, Integer vendorNumber, String countryCode) {
         if (vendorIntegrationService.getVendorBySupplierNumberAndCountryCode(vendorNumber, countryCode).equals(receivingSummaryRequest.getVendorNumber())) {
             return !verdict;
         }
         return verdict;
-    }
+    }*/
 
     public boolean validateBusinessStatUpdateSummary(ReceivingSummaryRequest receivingSummaryRequest) {
         for (ReceiveSummaryBusinessStat businessStat : businessStatList) {
@@ -84,7 +84,7 @@ public class ReceiveSummaryValidator {
 
     }
 
-    public boolean validateControlType(ReceivingSummaryRequest receivingSummaryRequest) {
+/*    public boolean validateControlType(ReceivingSummaryRequest receivingSummaryRequest) {
         Set<Integer> controlNumberSet = new HashSet<>();
         controlNumberSet.add(0);
         controlNumberSet.add(1);
@@ -95,7 +95,7 @@ public class ReceiveSummaryValidator {
             verdict = true;
         }
         return verdict;
-    }
+    }*/
 
 }
 

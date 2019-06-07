@@ -92,7 +92,7 @@ public class ReceivingSummaryController {
     @ApiOperation(value = "API to update Stores based on the payload")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
     public ReceivingSummaryRequest updateSummary(@PathVariable("countryCode") String countryCode, @RequestBody ReceivingSummaryRequest receivingSummaryRequest) {
-        return receiveSummaryService.updateReceiveSummary(receivingSummaryRequest,receivingSummaryRequest.getVendorNumber(),countryCode);
+        return receiveSummaryService.updateReceiveSummary(receivingSummaryRequest,countryCode);
     }
 
 
@@ -108,7 +108,7 @@ public class ReceivingSummaryController {
     @ApiOperation(value = "API to update Stores based on the payload")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
     public ReceivingSummaryLineRequest updateSummaryAndLine(@PathVariable("countryCode") String countryCode, @RequestBody ReceivingSummaryLineRequest receiveSummaryLineRequest) {
-        return receiveSummaryService.updateReceiveSummaryAndLine(receiveSummaryLineRequest,countryCode,receiveSummaryLineRequest.getVendorNumber());
+        return receiveSummaryService.updateReceiveSummaryAndLine(receiveSummaryLineRequest,countryCode);
     }
 
 

@@ -21,7 +21,7 @@ public class WriteSummaryValidator {
     List<Integer> listOfMdseConditionCode = Arrays.asList(mdseConditionCodeList);
 
     public void validate(ReceivingSummaryRequest receiveSummaryRequest) {
-
+/*
         if (!(listOfControlNumbers.contains(receiveSummaryRequest.getControlNumber()))) {
             throw new InvalidValueException("Incorrect controlNumber passed");
         }
@@ -33,7 +33,7 @@ public class WriteSummaryValidator {
         }
         if (!(listOfTransactionType.contains(receiveSummaryRequest.getTransactionType()))) {
             throw new InvalidValueException("Incorrect transactionType passed");
-        }
+        }*/
         //if(!(listOfMdseConditionCode.contains(receiveSummaryRequest.get)))
 
     }

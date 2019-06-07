@@ -148,8 +148,8 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         }
     }
 
-    private String formulateLineId(String receivingControlNumber, String poReceiveId, String storeNumber, String baseDivisionNumber, String transactionType, String finalDate, String finalTime, String sequenceNumber) {
-        return receivingControlNumber + ReceivingConstants.PIPE_SEPARATOR + poReceiveId + ReceivingConstants.PIPE_SEPARATOR + storeNumber + ReceivingConstants.PIPE_SEPARATOR + baseDivisionNumber + ReceivingConstants.PIPE_SEPARATOR + transactionType + ReceivingConstants.PIPE_SEPARATOR + finalDate + ReceivingConstants.PIPE_SEPARATOR + finalTime + ReceivingConstants.PIPE_SEPARATOR + sequenceNumber;
+    private String formulateLineId(String receivingControlNumber, String poReceiveId, String storeNumber, String receiptDate, String sequenceNumber) {
+        return receivingControlNumber + ReceivingConstants.PIPE_SEPARATOR + poReceiveId + ReceivingConstants.PIPE_SEPARATOR + storeNumber + ReceivingConstants.PIPE_SEPARATOR + receiptDate + ReceivingConstants.PIPE_SEPARATOR + ReceivingConstants.PIPE_SEPARATOR + sequenceNumber;
     }
 
     private HashMap<String, String> checkingNotNullParameters(String countryCode, String purchaseOrderNumber, String purchaseOrderId, List<String> receiptNumber, String transactionType, String controlNumber, String locationNumber, String divisionNumber,
@@ -201,8 +201,8 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         return paramMap;
     }
 
-    private String formulateId(String controlNumber, String receiptNumber, String locationNumber, String divisionNumber, String transactionType, String receiptDateStart, String receiptDateEnd) {
-        return controlNumber + ReceivingConstants.PIPE_SEPARATOR + receiptNumber + ReceivingConstants.PIPE_SEPARATOR + locationNumber + ReceivingConstants.PIPE_SEPARATOR + divisionNumber + ReceivingConstants.PIPE_SEPARATOR + transactionType + ReceivingConstants.PIPE_SEPARATOR + receiptDateStart + ReceivingConstants.PIPE_SEPARATOR + receiptDateEnd;
+    private String formulateId(String controlNumber, String receiptNumber, String locationNumber, String receiptDate) {
+        return controlNumber + ReceivingConstants.PIPE_SEPARATOR + receiptNumber + ReceivingConstants.PIPE_SEPARATOR + locationNumber + ReceivingConstants.PIPE_SEPARATOR + receiptDate;
 
     }
 
@@ -497,48 +497,15 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     }
 
     @Override
-    public ReceivingSummaryRequest updateReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest, Integer vendorNumber, String countryCode) {
+    public ReceivingSummaryRequest updateReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest,String countryCode) {
         Boolean isWareHouseData = isWareHouseData(receivingSummaryRequest.getMeta().getSorRoutingCtx().getInvProcAreaCode(), receivingSummaryRequest.getMeta().getSorRoutingCtx().getRepInTypCd(),
                 receivingSummaryRequest.getMeta().getSorRoutingCtx().getLocationCountryCd());
 
         if (receivingSummaryRequest != null) {
-            String id = formulateId(receivingSummaryRequest.getControlNumber(), receivingSummaryRequest.getReceiptNumbers(), receivingSummaryRequest.getLocationNumber().toString(),
-                    receivingSummaryRequest.getDivisionNumber().toString(), receivingSummaryRequest.getTransactionType().toString(), receivingSummaryRequest.getFinalDate().toString(), receivingSummaryRequest.getFinalTime().toString());
+            String id = formulateId(receivingSummaryRequest.getControlNumber(), receivingSummaryRequest.getReceiptNumber(), receivingSummaryRequest.getLocationNumber().toString(), receivingSummaryRequest.getReceiptDate().toString());
 
             ReceiveSummary receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receive-summary");
             if (receiveSummary != null) {
-                receiveSummary.setReceivingControlNumber(receivingSummaryRequest.getControlNumber());
-                receiveSummary.setPurchaseOrderNumber(receivingSummaryRequest.getPurchaseOrderNumber().toString());
-                receiveSummary.setDepartmentNumber(receivingSummaryRequest.getDepartmentNumber());
-                receiveSummary.setTotalCostAmount(receivingSummaryRequest.getCostAmount());
-                receiveSummary.setTotalRetailAmount(receivingSummaryRequest.getRetailAmount());
-                if (receivingSummaryRequest.getDepartmentNumber() >= 0 && receivingSummaryRequest.getDepartmentNumber() <= 99) {
-                    receiveSummary.setDepartmentNumber(receivingSummaryRequest.getDepartmentNumber());
-                }
-                receiveSummary.setVendorNumber(receivingSummaryRequest.getVendorNumber());
-                receiveSummary.setAccountNumber(receivingSummaryRequest.getAccountNumber());
-                receiveSummary.setClaimPendingIndicator(receivingSummaryRequest.getClaimPendingIndicator());
-                receiveSummary.setControlSequenceNumber(receivingSummaryRequest.getControlSequenceNumber());
-                if (receiveSummaryValidator.validateControlType(receivingSummaryRequest) == true) {
-                    receiveSummary.setControlType(receivingSummaryRequest.getControlType());
-                }
-                receiveSummary.setFreeAstrayIndicator(receivingSummaryRequest.getFreeAstrayIndicator());
-                receiveSummary.setFinalDate(receivingSummaryRequest.getFinalDate());
-                receiveSummary.setFinalTime(receivingSummaryRequest.getFinalTime());
-                receiveSummary.setFreightConslIndicator(receivingSummaryRequest.getFreightConslIndicator());
-                receiveSummary.setMatchIndicator(receivingSummaryRequest.getMatchIndicator());
-                receiveSummary.setReceiveSequenceNumber(receivingSummaryRequest.getReceiveSequenceNumber());
-                receiveSummary.setReceiveWeightQuantity(receivingSummaryRequest.getReceiveWeightQuantity());
-                receiveSummary.setWriteIndicator(receivingSummaryRequest.getWriteIndicator());
-                receiveSummary.setTypeIndicator(receivingSummaryRequest.getTypeIndicator());
-                receiveSummary.setUserId(receivingSummaryRequest.getUserId());
-                receiveSummary.setBaseDivisionNumber(receivingSummaryRequest.getDivisionNumber());
-                receiveSummary.setStoreNumber(receivingSummaryRequest.getLocationNumber());
-                receiveSummary.setMDSReceiveDate(receivingSummaryRequest.getReceiptDateStart().toLocalDate());//TODO, do we need to change?
-                receiveSummary.setMDSReceiveDate(receivingSummaryRequest.getReceiptDateEnd().toLocalDate());
-                receiveSummary.setFreightBillId(receivingSummaryRequest.getFreightBillId());
-                receiveSummary.setSequenceNumber(receivingSummaryRequest.getSequenceNumber());
-                receiveSummary.setPoReceiveId(receivingSummaryRequest.getReceiptNumbers());
 
                /* if (receiveSummaryValidator.validateVendorNumberUpdateSummary(receivingSummaryRequest, vendorNumber, countryCode) == true) {
                     receiveSummary.setVendorNumber(receivingSummaryRequest.getVendorNumber());
@@ -563,110 +530,45 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     }
 
     @Override
-    public ReceivingSummaryLineRequest updateReceiveSummaryAndLine(ReceivingSummaryLineRequest receivingSummaryLineRequest, String countryCode, Integer vendorNumber) {
+    public ReceivingSummaryLineRequest updateReceiveSummaryAndLine(ReceivingSummaryLineRequest receivingSummaryLineRequest, String countryCode) {
         Boolean isWareHouseData = isWareHouseData(receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getInvProcAreaCode(), receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getRepInTypCd(),
                 receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getLocationCountryCd());
         Query dynamicQuery = new Query();
         List<ReceivingLine> receiveLines = new ArrayList();
         ReceivingLine commitedRcvLine = null;
+        if(StringUtils.isEmpty(receivingSummaryLineRequest.getSequenceNumber().toString())) {
+            String id = formulateId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), receivingSummaryLineRequest.getReceiptDate().toString());
 
-        String id = formulateId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber().toString(), receivingSummaryLineRequest.getLocationNumber().toString(),
-                receivingSummaryLineRequest.getDivisionNumber().toString(), receivingSummaryLineRequest.getTransactionType().toString(), receivingSummaryLineRequest.getFinalDate().toString(), receivingSummaryLineRequest.getFinalTime().toString());
+            // String id = "708542521|30005|1018|0|99|0|0";
 
-        // String id = "708542521|30005|1018|0|99|0|0";
+            ReceiveSummary receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receive-summary");
 
-        ReceiveSummary receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receiving-summary");
+            if (receiveSummary == null) {
+                throw new ContentNotFoundException("No content found for the given id");
+            }
 
-        if (receiveSummary == null) {
-            throw new ContentNotFoundException("No content found for the given id");
-        }
+            if (receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest) == true) {
+                receiveSummary.setBusinessStatusCode(receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
+            } else {
+                throw new InvalidValueException("Value of field  businessStatusCode passed is not valid");
+            }
+            mongoTemplate.save(receiveSummary, "receiving-summary");
 
-        receiveSummary.setReceivingControlNumber(receivingSummaryLineRequest.getControlNumber());
-        if (receivingSummaryLineRequest.getPurchasedOrderId() != null) {
-            receiveSummary.setReceivingControlNumber(receivingSummaryLineRequest.getPurchasedOrderId().toString());
-        }
-        receiveSummary.setPurchaseOrderNumber(receivingSummaryLineRequest.getPurchaseOrderNumber());
-        if (receivingSummaryLineRequest.getDepartmentNumber() >= 0 && receivingSummaryLineRequest.getDepartmentNumber() <= 99) {
-            receiveSummary.setDepartmentNumber(receivingSummaryLineRequest.getDepartmentNumber());
-        }
-        if (Objects.nonNull(receivingSummaryLineRequest) && receivingSummaryLineRequest.getPurchasedOrderId() != null) {
-            receiveSummary.setPoReceiveId(receivingSummaryLineRequest.getPurchaseOrderId().toString());
-        }
-        receiveSummary.setVendorNumber(receivingSummaryLineRequest.getVendorNumber());
-        receiveSummary.setAccountNumber(receivingSummaryLineRequest.getAccountNumber());
-        receiveSummary.setCasesReceived(receivingSummaryLineRequest.getCasesReceived());
-        receiveSummary.setClaimPendingIndicator(receivingSummaryLineRequest.getClaimPendingIndicator());
-        receiveSummary.setControlSequenceNumber(receivingSummaryLineRequest.getControlSequenceNumber());
-        if (receiveSummaryLineValidator.validateControlType(receivingSummaryLineRequest) == true) {
-            receiveSummary.setControlType(receivingSummaryLineRequest.getControlType());
-        } else {
-            throw new InvalidValueException("Value of field controlType passed is not valid");
-        }
-        receiveSummary.setFinalDate(receivingSummaryLineRequest.getFinalDate());
-        receiveSummary.setFinalizedLoadTimestamp(receivingSummaryLineRequest.getFinalizedLoadTimestamp());
-        receiveSummary.setFreeAstrayIndicator(receivingSummaryLineRequest.getFreeAstrayIndicator());
-        receiveSummary.setFinalizedSequenceNumber(receivingSummaryLineRequest.getFinalizedSequenceNumber());
-        receiveSummary.setFreightBillExpandID(receivingSummaryLineRequest.getFreightBillExpandID());
-        receiveSummary.setFreightConslIndicator(receivingSummaryLineRequest.getFreightConslIndicator());
-        receiveSummary.setReceiveSequenceNumber(receivingSummaryLineRequest.getReceiveSequenceNumber());
-        receiveSummary.setReceiveWeightQuantity(receivingSummaryLineRequest.getReceiveWeightQuantity());
-        receiveSummary.setUserId(receiveSummary.getUserId());
-        receiveSummary.setBaseDivisionNumber(receivingSummaryLineRequest.getDivisionNumber());
-        receiveSummary.setStoreNumber(receivingSummaryLineRequest.getLocationNumber());
-        receiveSummary.setMDSReceiveDate(receivingSummaryLineRequest.getReceiptDateStart().toLocalDate());
-        receiveSummary.setMDSReceiveDate(receivingSummaryLineRequest.getReceiptDateEnd().toLocalDate());
-        receiveSummary.setFreightBillId(receivingSummaryLineRequest.getFreightBillId());
-        receiveSummary.setSequenceNumber(receivingSummaryLineRequest.getSequenceNumber());
-        receiveSummary.setFinalTime(receivingSummaryLineRequest.getFinalTime());
-        if (receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest) == true) {
-            receiveSummary.setBusinessStatusCode(receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
-        } else {
-            throw new InvalidValueException("Value of field  businessStatusCode passed is not valid");
-        }
-        if (receivingSummaryLineRequest.getReceiptNumber() != null) {
-            receiveSummary.setPoReceiveId(receivingSummaryLineRequest.getReceiptNumber().toString());
-        }
-        mongoTemplate.save(receiveSummary, "receiving-summary");
-
-        ReceiveSummary commitedRcvSummary = mongoTemplate.save(receiveSummary, "receiving-summary");
-        if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
-            publisher.publishEvent(commitedRcvSummary);
+            ReceiveSummary commitedRcvSummary = mongoTemplate.save(receiveSummary, "receive-summary");
+            if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
+                publisher.publishEvent(commitedRcvSummary);
+            }
         }
 
 
-        if (StringUtils.isNotEmpty(receivingSummaryLineRequest.getSequenceNumber().toString())) {
+       else if (StringUtils.isNotEmpty(receivingSummaryLineRequest.getSequenceNumber().toString())) {
 
-            String lineId = formulateLineId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber().toString(), receivingSummaryLineRequest.getLocationNumber().toString(),
-                    receivingSummaryLineRequest.getDivisionNumber().toString(), receivingSummaryLineRequest.getTransactionType().toString(), receivingSummaryLineRequest.getFinalDate().toString(), receivingSummaryLineRequest.getFinalTime().toString(), receivingSummaryLineRequest.getSequenceNumber().toString());
+            String lineId = formulateLineId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(),
+                    receivingSummaryLineRequest.getReceiptDate().toString(), receivingSummaryLineRequest.getSequenceNumber().toString());
 
             ReceivingLine receiveLine = mongoTemplate.findById(lineId, ReceivingLine.class, "receive-line");
 
             if (receiveLine != null) {
-                receiveLine.setBaseDivisionNumber(receivingSummaryLineRequest.getBaseDivisionNumber());
-                receiveLine.setCostAmount(receivingSummaryLineRequest.getCostAmount());
-                receiveLine.setMDSReceiveDate(receivingSummaryLineRequest.getMDSReceiveDate());
-                receiveLine.setFinalDate(receivingSummaryLineRequest.getFinalDate());
-                receiveLine.setCostAmount(receivingSummaryLineRequest.getCostAmount());
-                receiveLine.setFinalDate(receivingSummaryLineRequest.getFinalDate());
-                receiveLine.setItemNumber(receivingSummaryLineRequest.getItemNumber());
-                receiveLine.setLineNumber(receivingSummaryLineRequest.getLineNumber());
-                receiveLine.setPurchasedOrderId(receivingSummaryLineRequest.getPurchasedOrderId());
-                receiveLine.setPurchaseOrderNumber(receivingSummaryLineRequest.getPurchaseOrderNumber());
-                receiveLine.setPurchaseReceiptNumber(receivingSummaryLineRequest.getPurchaseReceiptNumber());
-                receiveLine.setPurchaseOrderReceiveID(receivingSummaryLineRequest.getReceiptNumber().toString());
-                receiveLine.setReceivedQuantityUnitOfMeasureCode(receivingSummaryLineRequest.getReceivedQuantityUnitOfMeasureCode());
-                receiveLine.setReceiveSequenceNumber(receivingSummaryLineRequest.getReceiveSequenceNumber());
-                receiveLine.setReceivedQuantity(receivingSummaryLineRequest.getReceivedQuantity());
-                receiveLine.setReceivedWeightQuantity(receivingSummaryLineRequest.getReceivedWeightQuantity());
-                receiveLine.setReceivingControlNumber(receivingSummaryLineRequest.getControlNumber());
-                receiveLine.setReceivingControlNumber(receivingSummaryLineRequest.getPurchasedOrderId().toString());
-                receiveLine.setRetailAmount(receivingSummaryLineRequest.getRetailAmount());
-                receiveLine.setSequenceNumber(receivingSummaryLineRequest.getSequenceNumber());
-                receiveLine.setStoreNumber(receivingSummaryLineRequest.getLocationNumber());
-                receiveLine.setTransactionType(receivingSummaryLineRequest.getTransactionType());
-                if (receivingSummaryLineRequest.getUpcNumber() != null) {
-                    receiveLine.setUpcNumber(receivingSummaryLineRequest.getUpcNumber().toString());
-                }
                 receiveLine.setInventoryMatchStatus(receivingSummaryLineRequest.getInventoryMatchStatus());
             /*    if (receiveSummaryLineValidator.validateVendorNumberUpdateSummary(receivingSummaryLineRequest, vendorNumber, countryCode) == true) {
                     receiveLine.setVendorNumber(receivingSummaryLineRequest.getVendorNumber());
@@ -675,7 +577,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 }*/
                 mongoTemplate.save(receiveLine, "receive-line");
 
-                 commitedRcvLine = mongoTemplate.save(receiveLine, "receive-line");
+                commitedRcvLine = mongoTemplate.save(receiveLine, "receive-line");
                 if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
                     publisher.publishEvent(commitedRcvLine);
                 }
@@ -686,61 +588,30 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
             // TODO, ideally we should have receiveSummary key reference in Receive Line
 
-            if ((receivingSummaryLineRequest.getPurchasedOrderId() != null) || (receivingSummaryLineRequest.getControlNumber() != null)) {
-                if (receivingSummaryLineRequest.getPurchasedOrderId() != null) {
-                    Criteria purchaseOrderIdCriteria = Criteria.where("receivingControlNumber").is(receivingSummaryLineRequest.getPurchasedOrderId().toString());//TODO,purchasedOrderId, needed in COSMOS
-                    dynamicQuery.addCriteria(purchaseOrderIdCriteria);
-                } else {
-                    Criteria controlNumberCriteria = Criteria.where("receivingControlNumber").is(receivingSummaryLineRequest.getControlNumber());
-                    dynamicQuery.addCriteria(controlNumberCriteria);
-                }
+            if (receivingSummaryLineRequest.getControlNumber() != null) {
+                Criteria purchaseOrderIdCriteria = Criteria.where("receivingControlNumber").is(receivingSummaryLineRequest.getControlNumber());//TODO,purchasedOrderId, needed in COSMOS
+                dynamicQuery.addCriteria(purchaseOrderIdCriteria);
             }
             if (receivingSummaryLineRequest.getReceiptNumber() != null) {
                 Criteria receiptNumberCriteria = Criteria.where("purchaseOrderReceiveID").is(receivingSummaryLineRequest.getReceiptNumber());
                 dynamicQuery.addCriteria(receiptNumberCriteria);
             }
-            if (receivingSummaryLineRequest.getTransactionType() != null) {
-                Criteria transactionTypeCriteria = Criteria.where("transactionType").is(receivingSummaryLineRequest.getTransactionType());
-                dynamicQuery.addCriteria(transactionTypeCriteria);
-            }
-
-            if (receivingSummaryLineRequest.getBaseDivisionNumber() != null) {
-                Criteria divisionNumberCriteria = Criteria.where("baseDivisionNumber").is(receivingSummaryLineRequest.getBaseDivisionNumber());
-                dynamicQuery.addCriteria(divisionNumberCriteria);
-            }
-            if (receivingSummaryLineRequest.getStoreNumber() != null) {
-                Criteria locationNumberCriteria = Criteria.where("storeNumber").is(Integer.valueOf(receivingSummaryLineRequest.getStoreNumber()));
+            if (receivingSummaryLineRequest.getLocationNumber() != null) {
+                Criteria locationNumberCriteria = Criteria.where("storeNumber").is(Integer.valueOf(receivingSummaryLineRequest.getLocationNumber()));
                 dynamicQuery.addCriteria(locationNumberCriteria);
+            }
+            if (receivingSummaryLineRequest.getReceiptDate() != null) {
+                Criteria receiptDateCriteria = Criteria.where("mdsReceiveDate").is(receivingSummaryLineRequest.getReceiptDate());
+                dynamicQuery.addCriteria(receiptDateCriteria);
+            }
+            if (receivingSummaryLineRequest.getSequenceNumber() != null) {
+                Criteria sequenceNumberCriteria = Criteria.where("sequenceNumber").is(receivingSummaryLineRequest.getSequenceNumber());
+                dynamicQuery.addCriteria(sequenceNumberCriteria);
             }
 
         }
         List<ReceivingLine> receivingLineList = mongoTemplate.find(dynamicQuery, ReceivingLine.class, "receive-line");
         for (ReceivingLine receivingLine : receivingLineList) {
-            receivingLine.setBaseDivisionNumber(receivingSummaryLineRequest.getBaseDivisionNumber());
-            receivingLine.setCostAmount(receivingSummaryLineRequest.getCostAmount());
-            receivingLine.setMDSReceiveDate(receivingSummaryLineRequest.getReceiptDateStart().toLocalDate());
-            receivingLine.setMDSReceiveDate(receivingSummaryLineRequest.getReceiptDateEnd().toLocalDate());
-            receivingLine.setFinalDate(receivingSummaryLineRequest.getFinalDate());
-            receivingLine.setCostAmount(receivingSummaryLineRequest.getCostAmount());
-            receivingLine.setFinalDate(receivingSummaryLineRequest.getFinalDate());
-            receivingLine.setItemNumber(receivingSummaryLineRequest.getItemNumber());
-            receivingLine.setLineNumber(receivingSummaryLineRequest.getLineNumber());
-            receivingLine.setPurchasedOrderId(receivingSummaryLineRequest.getPurchasedOrderId());
-            receivingLine.setPurchaseOrderNumber(receivingSummaryLineRequest.getPurchaseOrderNumber());
-            receivingLine.setPurchaseReceiptNumber(receivingSummaryLineRequest.getPurchaseReceiptNumber());
-            receivingLine.setQuantity(receivingSummaryLineRequest.getReceivedQuantity());
-            receivingLine.setPurchaseOrderReceiveID(receivingSummaryLineRequest.getPurchaseOrderReceiveID());
-            receivingLine.setReceivedQuantityUnitOfMeasureCode(receivingSummaryLineRequest.getReceivedQuantityUnitOfMeasureCode());
-            receivingLine.setReceiveSequenceNumber(receivingSummaryLineRequest.getReceiveSequenceNumber());
-            receivingLine.setReceivedQuantity(receivingSummaryLineRequest.getReceivedQuantity());
-            receivingLine.setReceivedWeightQuantity(receivingSummaryLineRequest.getReceivedWeightQuantity());
-            receivingLine.setReceivingControlNumber(receivingSummaryLineRequest.getReceivingControlNumber());
-            receivingLine.setRetailAmount(receivingSummaryLineRequest.getRetailAmount());
-            receivingLine.setStoreNumber(receivingSummaryLineRequest.getLocationNumber());
-            receivingLine.setTransactionType(receivingSummaryLineRequest.getTransactionType());
-            if (receivingSummaryLineRequest.getUpcNumber() != null) {
-                receivingLine.setUpcNumber(receivingSummaryLineRequest.getUpcNumber().toString());
-            }
             receivingLine.setInventoryMatchStatus(receivingSummaryLineRequest.getInventoryMatchStatus());
        /*     if (receiveSummaryLineValidator.validateVendorNumberUpdateSummary(receivingSummaryLineRequest, vendorNumber, countryCode)) {
                 receivingLine.setVendorNumber(receivingSummaryLineRequest.getVendorNumber());

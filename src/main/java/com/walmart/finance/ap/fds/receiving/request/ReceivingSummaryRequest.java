@@ -17,102 +17,29 @@ import java.util.List;
 @AllArgsConstructor
 public class ReceivingSummaryRequest {
 
-
-    Long purchaseOrderNumber;
-
-    Long purchaseOrderId;
-
+    //Key2
     @NotNull
     @NotEmpty
-    String receiptNumbers;
+    String receiptNumber;
 
-    @NotNull
-    @NotEmpty
-    Integer transactionType;
-
+    // Key1
     @NotNull
     @NotEmpty
     String controlNumber;
 
+    //Key3
+    @NotNull
+    @NotEmpty
+    private LocalDate receiptDate;
+
+    //key4
     @NotNull
     @NotEmpty
     Integer locationNumber;
 
-    @NotNull
-    @NotEmpty
-    Integer divisionNumber;
-
-    Integer vendorNumber;
-
-    Integer departmentNumber;
-
-    Long invoiceId;
-
-    String invoiceNumber;
-
-    @NotNull
-    @NotEmpty
-    LocalDate finalDate;
-
-    LocalDateTime receiptDateStart;
-
-    @NotNull
-    @NotEmpty
-    LocalTime finalTime;
-
-    LocalDateTime receiptDateEnd;
-
     @NotEmpty
     @NotNull
     String businessStatusCode;
-
-    Double costAmount;
-
-    Double retailAmount;
-
-    // LocalDate finalDate;
-
-    // LocalTime finalTime;
-
-    Integer controlType;
-
-    Integer accountNumber;
-
-    Integer controlSequenceNumber;
-
-    Integer receiveSequenceNumber;
-
-    Character matchIndicator;
-
-    Double totalCostAmount;
-
-    Double totalRetailAmount;
-
-    Integer freightBillId;
-
-    // Long freightBillExpandID;
-
-    Character claimPendingIndicator;
-
-    Character freeAstrayIndicator;
-
-    Character freightConslIndicator;
-
-    // LocalDateTime initialReceiveTimestamp;
-
-    Double receiveWeightQuantity;
-
-    Integer sequenceNumber;
-
-    Integer casesReceived;
-
-    // LocalDateTime finalizedLoadTimestamp;
-
-    // Integer finalizedSequenceNumber;
-
-    String userId;
-
-    //  LocalDateTime creationDate;
 
     Character typeIndicator;
 

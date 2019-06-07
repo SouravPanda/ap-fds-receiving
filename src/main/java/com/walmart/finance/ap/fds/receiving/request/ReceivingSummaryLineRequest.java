@@ -16,122 +16,39 @@ import java.time.LocalTime;
 @Data
 @ToString
 public class ReceivingSummaryLineRequest {
-    Long purchaseOrderId;
 
+    //Key2
     @NotNull
     @NotEmpty
-    Long receiptNumber;
+    String receiptNumber;
 
-    @NotNull
-    @NotEmpty
-    Integer transactionType;
-
+    // Key1
     @NotNull
     @NotEmpty
     String controlNumber;
 
+    //Key3
+    @NotNull
+    @NotEmpty
+    private LocalDate receiptDate;
+
+    //key4
     @NotNull
     @NotEmpty
     Integer locationNumber;
 
-    @NotNull
     @NotEmpty
-    Integer divisionNumber;
-
     @NotNull
-    @NotEmpty
-    LocalDate finalDate;
-
-    @NotNull
-    @NotEmpty
-    LocalTime finalTime;
-
-    Integer controlType;
-
-    Integer vendorNumber;
-
-    Integer accountNumber;
-
-    Integer controlSequenceNumber;
-
-    Integer receiveSequenceNumber;
-
-    Double totalCostAmount;
-
-    Double totalRetailAmount;
-
-    Integer freightBillId;
-
     String businessStatusCode;
 
-    Long freightBillExpandID;
+    Character typeIndicator;
 
-    Character claimPendingIndicator;
-
-    Character freeAstrayIndicator;
-
-    Character freightConslIndicator;
-
-    //  LocalDateTime initialReceiveTimestamp;
-
-    LocalDate MDSReceiveDate;
-
-    //  LocalDate receiveProcessDate;
-
-    Double receiveWeightQuantity;
+    String writeIndicator;
 
     @NotNull
     @NotEmpty
     Integer sequenceNumber;
 
-    Integer departmentNumber;
-
-    Integer casesReceived;
-
-    LocalDateTime finalizedLoadTimestamp;
-
-    Integer finalizedSequenceNumber;
-
-    String poReceiveId;//  receiptNumber //Long
-
-    String userId;
-
-    // LocalDateTime creationDate;
-
-    String purchaseOrderNumber;
-
-
-    Double receivedWeightQuantity;
-
-    String receivedQuantityUnitOfMeasureCode;
-
-    LocalDateTime receiptDateStart;
-
-    LocalDateTime receiptDateEnd;
-
-    String receivingControlNumber;//purchaseOrderId //Long
-
-    Integer storeNumber;//locationNumber
-
-    Integer baseDivisionNumber;
-
-    String purchaseOrderReceiveID;
-
-    Integer lineNumber;
-
-    Integer itemNumber;
-
-    Integer receivedQuantity;
-
-    Double costAmount;
-
-    Double retailAmount;
-
-    Integer purchaseReceiptNumber;
-
-    Integer purchasedOrderId;
-
-    Integer upcNumber;
 
     @NotEmpty
     @NotNull

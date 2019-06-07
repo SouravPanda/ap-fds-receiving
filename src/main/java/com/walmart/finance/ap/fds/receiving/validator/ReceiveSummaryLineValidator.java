@@ -21,12 +21,12 @@ public class ReceiveSummaryLineValidator {
     List<ReceiveSummaryBusinessStat> businessStatList = Arrays.asList(ReceiveSummaryBusinessStat.values());
     boolean verdict = false;
 
-    public boolean validateVendorNumberUpdateSummary(ReceivingSummaryLineRequest receivingSummaryLineRequest, Integer vendorNumber, String countryCode) {
+/*    public boolean validateVendorNumberUpdateSummary(ReceivingSummaryLineRequest receivingSummaryLineRequest, Integer vendorNumber, String countryCode) {
         if (vendorIntegrationService.getVendorBySupplierNumberAndCountryCode(vendorNumber, countryCode).equals(receivingSummaryLineRequest.getVendorNumber())) {
             verdict=true;
         }
         return verdict;
-    }
+    }*/
 
     public boolean validateBusinessStatUpdateSummary(ReceivingSummaryLineRequest receivingSummaryLineRequest) {
         for (ReceiveSummaryBusinessStat businessStat : businessStatList) {
@@ -38,7 +38,7 @@ public class ReceiveSummaryLineValidator {
         return verdict;
 
     }
-
+/*
     public boolean validateControlType(ReceivingSummaryLineRequest receivingSummaryLineSearch) {
         Set<Integer> controlNumberSet = new HashSet<>();
         controlNumberSet.add(0);
@@ -50,7 +50,7 @@ public class ReceiveSummaryLineValidator {
             verdict = true;
         }
         return verdict;
-    }
+    }*/
 
 }
 
