@@ -202,8 +202,8 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         return paramMap;
     }
 
-    private String formulateId(String controlNumber, String receiptNumber, String locationNumber){//, String receiptDate) {
-        return controlNumber + ReceivingConstants.PIPE_SEPARATOR + receiptNumber + ReceivingConstants.PIPE_SEPARATOR + locationNumber ;//+ ReceivingConstants.PIPE_SEPARATOR + receiptDate;
+    private String formulateId(String controlNumber){//, String receiptNumber, String locationNumber){//, String receiptDate) {
+        return controlNumber;// + ReceivingConstants.PIPE_SEPARATOR + receiptNumber + ReceivingConstants.PIPE_SEPARATOR + locationNumber ;//+ ReceivingConstants.PIPE_SEPARATOR + receiptDate;
 
     }
 
@@ -503,7 +503,8 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 receivingSummaryRequest.getMeta().getSorRoutingCtx().getLocationCountryCd());
 
         if (receivingSummaryRequest != null) {
-            String id = formulateId(receivingSummaryRequest.getControlNumber(), receivingSummaryRequest.getReceiptNumber(), receivingSummaryRequest.getLocationNumber().toString());//, receivingSummaryRequest.getReceiptDate().toString());
+            String id = formulateId(receivingSummaryRequest.getControlNumber());//, receivingSummaryRequest.getReceiptNumber(), receivingSummaryRequest.getLocationNumber().toString());//, receivingSummaryRequest.getReceiptDate().toString());
+            System.out.println("I am here "+id);
 
             ReceiveSummary receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receive-summary");
             if (receiveSummary != null) {
@@ -539,7 +540,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         List<ReceivingLine> receiveLines = new ArrayList();
         ReceivingLine commitedRcvLine = null;
         if (receivingSummaryLineRequest.getSequenceNumber()==null) {
-            String id = formulateId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString());//, receivingSummaryLineRequest.getReceiptDate().toString());
+            String id = formulateId(receivingSummaryLineRequest.getControlNumber());//, receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString());//, receivingSummaryLineRequest.getReceiptDate().toString());
 
             ReceiveSummary receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receive-summary");
 
