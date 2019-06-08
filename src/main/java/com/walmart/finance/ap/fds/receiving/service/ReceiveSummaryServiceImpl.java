@@ -519,7 +519,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                     throw new InvalidValueException("Value of field  businessStatusCode passed is not valid");
                 }
             } else {
-                throw new ContentNotFoundException("The content not found for the given id");
+                throw new NotFoundException("Receive summary not found for the given id");
             }
             ReceiveSummary commitedRcvSummary = mongoTemplate.save(receiveSummary, "receive-summary");
             if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
@@ -544,7 +544,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             ReceiveSummary receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receive-summary");
 
             if (receiveSummary == null) {
-                throw new NotFoundException("No content found for the given id");
+                throw new NotFoundException("Receive summary not found for the given id");
             }
             //TODO need to check the datatype for BusinessStatusCode
 
