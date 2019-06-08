@@ -28,8 +28,8 @@ public class ReceivingSummaryLineRequest {
     String controlNumber;
 
     //Key3
-  //  @NotNull
-  //  @NotEmpty
+    @NotNull
+    @NotEmpty
     private LocalDate receiptDate;
 
     //key4
