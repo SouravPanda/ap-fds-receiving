@@ -1,6 +1,6 @@
 package com.walmart.finance.ap.fds.receiving.listener;
 
-import com.walmart.finance.ap.fds.receiving.KafkaProducer.Producer;
+import com.walmart.finance.ap.fds.receiving.messageproducer.Producer;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import org.springframework.beans.factory.annotation.Autowired;
