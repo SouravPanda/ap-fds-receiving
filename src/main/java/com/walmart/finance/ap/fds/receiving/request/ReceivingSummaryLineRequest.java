@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -19,38 +20,44 @@ import java.time.LocalTime;
 public class ReceivingSummaryLineRequest {
 
     //Key2
-    @NotNull
-    @NotEmpty
+  //  @NotNull(message = "receiptNumber cannot be null")
+   @Size(max = 10, min = 1)
+    @NotEmpty(message = "Please enter a valid receiptNumber")
     String receiptNumber;
 
     // Key1
-    @NotNull
-    @NotEmpty
+   // @NotNull(message = "controlNumber cannot be null")
+    @Size(max = 10, min = 1)
+    @NotEmpty(message = "Please enter a valid controlNumber")
     String controlNumber;
 
     //Key3
-    @NotNull
-    @NotEmpty
+    @NotNull(message = "receiptDate cannot be null")
+   // @Size(max = 10, min = 1)
+  //  @NotEmpty(message = "Please enter a valid receiptDate")
     private LocalDate receiptDate;
 
     //key4
-    @NotNull
-    @NotEmpty
+    @NotNull(message = "locationNumber cannot be null")
+   // @Size(max = 10, min = 1)
+  //  @NotEmpty(message = "Please enter a valid locationNumber")
     Integer locationNumber;
 
-    @NotEmpty
-    @NotNull
-    @Range(min = 1,max = 1)
+    //@NotNull(message = "businessStatusCode cannot be null")
+    @Size(max = 1, min = 1)
+    @NotEmpty(message = "Please enter a valid businessStatusCode")
+  //  @Range(min = 1,max = 1)
     String businessStatusCode;
 
 
-    @NotNull
-    @NotEmpty
+ //   @NotNull
+ //   @NotEmpty
     Integer sequenceNumber;
 
 
-    @NotEmpty
-    @NotNull
+    @NotNull(message = "inventoryMatchStatus cannot be null")
+  //  @Size(max = 10, min = 1)
+ //   @NotEmpty(message = "Please enter a valid inventoryMatchStatus")
     Integer inventoryMatchStatus;
 
     Meta meta;

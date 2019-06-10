@@ -8,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -19,28 +20,25 @@ import java.util.List;
 public class ReceivingSummaryRequest {
 
     //Key2
-    @NotNull
-    @NotEmpty
+    @Size(max = 10, min = 1)
+    @NotEmpty(message = "Please enter a valid receiptNumber")
     String receiptNumber;
 
     // Key1
-    @NotNull
-    @NotEmpty
+    @Size(max = 10, min = 1)
+    @NotEmpty(message = "Please enter a valid controlNumber")
     String controlNumber;
 
     //Key3
-    @NotNull
-    @NotEmpty
+    @NotNull(message = "receiptDate cannot be null")
     private LocalDate receiptDate;
 
     //key4
-    @NotNull
-    @NotEmpty
+    @NotNull(message = "locationNumber cannot be null")
     Integer locationNumber;
 
-    @NotEmpty
-    @NotNull
-    @Range(min = 1,max = 1)
+    @Size(max = 1, min = 1)
+    @NotEmpty(message = "Please enter a valid businessStatusCode")
     String businessStatusCode;
 
 
