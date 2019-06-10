@@ -2,19 +2,18 @@ package com.walmart.finance.ap.fds.receiving.validator;
 
 import com.walmart.finance.ap.fds.receiving.common.ReceiveSummaryBusinessStat;
 import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
-import com.walmart.finance.ap.fds.receiving.integrations.VendorIntegrationServiceImpl;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class ReceiveSummaryValidator {
-
-    @Autowired
-    VendorIntegrationServiceImpl vendorIntegrationService;
 
     public static final String purchaseOrderNumber = "purchaseOrderNumber";
     public static final String purchaseOrderId = "purchaseOrderId";
@@ -65,13 +64,6 @@ public class ReceiveSummaryValidator {
         if (verdict == false)
             throw new InvalidValueException("Incorrect fields passed");
     }
-/*
-    public boolean validateVendorNumberUpdateSummary(ReceivingSummaryRequest receivingSummaryRequest, Integer vendorNumber, String countryCode) {
-        if (vendorIntegrationService.getVendorBySupplierNumberAndCountryCode(vendorNumber, countryCode).equals(receivingSummaryRequest.getVendorNumber())) {
-            return !verdict;
-        }
-        return verdict;
-    }*/
 
     public boolean validateBusinessStatUpdateSummary(ReceivingSummaryRequest receivingSummaryRequest) {
         for (ReceiveSummaryBusinessStat businessStat : businessStatList) {
@@ -82,19 +74,6 @@ public class ReceiveSummaryValidator {
         return false;
 
     }
-
-/*    public boolean validateControlType(ReceivingSummaryRequest receivingSummaryRequest) {
-        Set<Integer> controlNumberSet = new HashSet<>();
-        controlNumberSet.add(0);
-        controlNumberSet.add(1);
-        controlNumberSet.add(2);
-        controlNumberSet.add(3);
-        controlNumberSet.add(99);
-        if (controlNumberSet.contains(receivingSummaryRequest.getControlType())) {
-            verdict = true;
-        }
-        return verdict;
-    }*/
 
 }
 
