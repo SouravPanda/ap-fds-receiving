@@ -1,4 +1,4 @@
-package com.walmart.finance.ap.fds.receiving.KafkaProducer;
+package com.walmart.finance.ap.fds.receiving.messageproducer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
