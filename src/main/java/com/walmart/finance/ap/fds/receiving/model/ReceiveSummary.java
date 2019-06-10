@@ -14,7 +14,7 @@ import java.time.LocalTime;
 @Setter
 @ToString
 @NoArgsConstructor
-@Document(collection = "receive-summary")
+@Document(collection = "receiving-summary")
 public class ReceiveSummary {
     @Id
     private String _id;
@@ -166,51 +166,46 @@ public class ReceiveSummary {
     private String writeIndicator;
 
 
-
-
-
-//TODO, pagination , indexing
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-        @NotEmpty
-        @JsonProperty("Receive MDS")
-        private List<ReceiveMDS> receiveMDS;
-        @JsonProperty("Receive Expense")
-        private List<ReceiveExpense> receiveExpense;
-
-        @JsonProperty("Finalized Update Sequence Number")
-        private Integer finalizedUpdateSequenceNumber;
-        @JsonProperty("Last Updated Date")
-        private LocalDateTime lastUpdatedDate;
-
-        @JsonProperty("cosmos DB2 Sync Status")
-        private Character cosmosDB2SyncStatus;
-        @JsonProperty("warehouse store indicator")
-        private Character warehouseStoreIndicator;
-
-        private Integer recordType;
-
-        private Character countryCode;
-
-
-      */
+    @Override
+    public String toString() {
+        return "ReceiveSummary{" +
+                "receivingControlNumber=" + receivingControlNumber +
+                ", storeNumber=" + storeNumber +
+                ", poReceiveId=" + poReceiveId +
+                ", businessStatusCode=" + businessStatusCode +
+                ", _id='" + _id + '\'' +
+                ", transactionType='" + transactionType + '\'' +
+                ", finalDate='" + finalDate + '\'' +
+                ", finalTime='" + finalTime + '\'' +
+                ", controlType='" + controlType + '\'' +
+                ", vendorNumber='" + vendorNumber + '\'' +
+                ", accountNumber='" + accountNumber + '\'' +
+                ", controlSequenceNumber='" + controlSequenceNumber + '\'' +
+                ", receiveSequenceNumber='" + receiveSequenceNumber + '\'' +
+                ", matchIndicator='" + matchIndicator + '\'' +
+                ", totalCostAmount='" + totalCostAmount + '\'' +
+                ", totalRetailAmount='" + totalRetailAmount + '\'' +
+                ", freightBillId='" + freightBillId + '\'' +
+                ", freightBillExpandID='" + freightBillExpandID + '\'' +
+                ", claimPendingIndicator='" + claimPendingIndicator + '\'' +
+                ", freeAstrayIndicator='" + freeAstrayIndicator + '\'' +
+                ", freightConslIndicator='" + freightConslIndicator + '\'' +
+                ", initialReceiveTimestamp='" + initialReceiveTimestamp + '\'' +
+                ", MDSReceiveDate='" + MDSReceiveDate + '\'' +
+                ", receiveProcessDate='" + receiveProcessDate + '\'' +
+                ", receiveWeightQuantity='" + receiveWeightQuantity + '\'' +
+                ", sequenceNumber='" + sequenceNumber + '\'' +
+                ", departmentNumber='" + departmentNumber + '\'' +
+                ", casesReceived='" + casesReceived + '\'' +
+                ", finalizedLoadTimestamp='" + finalizedLoadTimestamp + '\'' +
+                ", finalizedSequenceNumber='" + finalizedSequenceNumber + '\'' +
+                ", baseDivisionNumber='" + baseDivisionNumber + '\'' +
+                ", userId='" + userId + '\'' +
+                ", creationDate='" + creationDate + '\'' +
+                ", purchaseOrderNumber='" + purchaseOrderNumber + '\'' +
+                ", typeIndicator='" + typeIndicator + '\'' +
+                ", writeIndicator='" + writeIndicator + '\'' +
+                '}';
+    }
 }
 

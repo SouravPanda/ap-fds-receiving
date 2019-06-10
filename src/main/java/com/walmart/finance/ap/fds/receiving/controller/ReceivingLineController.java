@@ -2,7 +2,7 @@
 package com.walmart.finance.ap.fds.receiving.controller;
 
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
-import com.walmart.finance.ap.fds.receiving.request.ReceivingLineRequest;
+import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveLineService;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveLineServiceImpl;
@@ -69,8 +69,8 @@ public class ReceivingLineController {
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
 
     public ReceivingLine saveReceiveLine(@PathVariable("countryCode")
-                                                 String countryCode, @RequestBody ReceivingLineRequest receivingLineRequest) {
-        return receiveLineServiceImpl.saveReceiveLine(receivingLineRequest);
+                                                 String countryCode, @RequestBody ReceivingSummaryLineRequest receivingSummaryLineRequest) {
+        return receiveLineServiceImpl.saveReceiveLine(receivingSummaryLineRequest);
 
     }
 }

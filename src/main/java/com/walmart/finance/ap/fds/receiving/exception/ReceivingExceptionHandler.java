@@ -26,7 +26,7 @@ public class ReceivingExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> invalidValueExceptionHandler(
             Exception ex, WebRequest request) {
         return new ResponseEntity<>(
-                new ReceivingError(400, ex.getMessage(), LocalDateTime.now()), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+                new ReceivingError(200, ex.getMessage(), LocalDateTime.now()), new HttpHeaders(), HttpStatus.OK);
     }
 
 

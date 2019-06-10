@@ -1,6 +1,7 @@
 package com.walmart.finance.ap.fds.receiving.controller;
 
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
+import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveSummaryService;
@@ -11,6 +12,7 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -80,6 +82,36 @@ public class ReceivingSummaryController {
         return receiveSummaryService.getReceiveSummary(countryCode, purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
                 divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd, itemNumbers, upcNumbers);//allRequestParam); , pageNbr, pageSize, orderBy, order
     }
+
+    /**
+     * Method calls Service class to add stores in Db
+     *
+     * @param
+     * @return
+     */
+    @PutMapping
+    @ApiOperation(value = "API to update Stores based on the payload")
+    @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
+    public ReceivingSummaryRequest updateSummary(@PathVariable("countryCode") String countryCode, @RequestBody @Valid ReceivingSummaryRequest receivingSummaryRequest) {
+        return receiveSummaryService.updateReceiveSummary(receivingSummaryRequest,countryCode);
+    }
+
+
+
+
+    /**
+     * Method calls Service class to add stores in Db
+     *
+     * @param
+     * @return
+     */
+    @PutMapping("/line")
+    @ApiOperation(value = "API to update Stores based on the payload")
+    @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
+    public ReceivingSummaryLineRequest updateSummaryAndLine(@PathVariable("countryCode") String countryCode, @RequestBody @Valid ReceivingSummaryLineRequest receiveSummaryLineRequest) {
+        return receiveSummaryService.updateReceiveSummaryAndLine(receiveSummaryLineRequest,countryCode);
+    }
+
 
 }
 

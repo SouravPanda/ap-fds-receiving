@@ -3,6 +3,7 @@ package com.walmart.finance.ap.fds.receiving.service;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryReqConverter;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
+import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.integrations.*;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
@@ -10,19 +11,23 @@ import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryParameters;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLineParameters;
 import com.walmart.finance.ap.fds.receiving.repository.ReceiveSummaryDataRepository;
+import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
+import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryLineValidator;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -51,11 +56,16 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     InvoiceIntegrationService invoiceIntegrationService;
 
     @Autowired
+    ReceiveSummaryValidator receiveSummaryValidator;
+
+    @Autowired
+    ReceiveSummaryLineValidator receiveSummaryLineValidator;
+
     FreightLineIntegrationService freightLineIntegrationService;
 
 
     @Autowired
-    ReceiveSummaryValidator receiveSummaryValidator;
+    private ApplicationEventPublisher publisher;
 
 
     // TODO validation for incoming against MDM needs to be added later
@@ -87,7 +97,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
      * @param upcNumbers
      * @return
      */
-    @Override
+
     public List<ReceivingSummaryResponse> getReceiveSummary(String countryCode, String purchaseOrderNumber, String purchaseOrderId, List<String> receiptNumbers, String transactionType, String controlNumber, String locationNumber,
                                                             String divisionNumber, String vendorNumber, String departmentNumber, String invoiceId, String invoiceNumber, String receiptDateStart, String receiptDateEnd, List<String> itemNumbers, List<String> upcNumbers) {// Map<String,String> allRequestParam) {
 
@@ -138,6 +148,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         }
     }
 
+    private String formulateLineId(String receivingControlNumber, String poReceiveId, String storeNumber, String receiptDate, String sequenceNumber) {
+        return receivingControlNumber + ReceivingConstants.PIPE_SEPARATOR + poReceiveId + ReceivingConstants.PIPE_SEPARATOR + storeNumber + ReceivingConstants.PIPE_SEPARATOR + receiptDate + ReceivingConstants.PIPE_SEPARATOR + sequenceNumber;
+    }
 
     private HashMap<String, String> checkingNotNullParameters(String countryCode, String purchaseOrderNumber, String purchaseOrderId, List<String> receiptNumber, String transactionType, String controlNumber, String locationNumber, String divisionNumber,
                                                               String vendorNumber, String departmentNumber, String invoiceId, String invoiceNumber, String receiptDateStart, String receiptDateEnd) {
@@ -186,6 +199,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             paramMap.put(ReceivingConstants.RECEIPTDATEEND, receiptDateEnd);
         }
         return paramMap;
+    }
+
+    private String formulateId(String controlNumber, String receiptNumber, String locationNumber, String receiptDate) {
+        return controlNumber + ReceivingConstants.PIPE_SEPARATOR + receiptNumber + ReceivingConstants.PIPE_SEPARATOR + locationNumber + ReceivingConstants.PIPE_SEPARATOR + receiptDate;
+
     }
 
     /*******  Search Criteria methods  *********/
@@ -288,9 +306,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     }
 
     private Query queryRecvSmryByInvoiceNum(InvoiceResponse invoiceResponse) {
-        Query query = null ;
+        Query query = null;
         if (StringUtils.isNotEmpty(invoiceResponse.getInvoiceNumber())) {
-             query = new Query();
+            query = new Query();
             query.addCriteria(Criteria.where(ReceiveSummaryParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponse.getInvoiceNumber().trim()));
             query.addCriteria(Criteria.where(ReceiveSummaryParameters.TRANSACTIONTYPE.getParameterName()).is(1));
         }
@@ -469,6 +487,130 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     }
 
+    private boolean isWareHouseData(Integer invProcAreaCode, String repInTypCd, String locationCountryCd) {
+
+        if (StringUtils.isNotEmpty(locationCountryCd) && StringUtils.isNotEmpty(repInTypCd)) {
+            if ((invProcAreaCode == 36 || invProcAreaCode == 30) && (repInTypCd.equals("R") || repInTypCd.equals("U") || repInTypCd.equals("F")) && (locationCountryCd.equals("US")))
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    @Transactional
+    public ReceivingSummaryRequest updateReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest, String countryCode) {
+        Boolean isWareHouseData = isWareHouseData(receivingSummaryRequest.getMeta().getSorRoutingCtx().getInvProcAreaCode(), receivingSummaryRequest.getMeta().getSorRoutingCtx().getReplnTypCd(),
+                receivingSummaryRequest.getMeta().getSorRoutingCtx().getLocationCountryCd());
+
+        if (receivingSummaryRequest != null) {
+            String id = formulateId(receivingSummaryRequest.getControlNumber(), receivingSummaryRequest.getReceiptNumber(), receivingSummaryRequest.getLocationNumber().toString(), receivingSummaryRequest.getReceiptDate().toString());
+
+            ReceiveSummary receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receive-summary");
+            if (receiveSummary != null) {
+                if (receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryRequest) == true) {
+                    receiveSummary.setBusinessStatusCode(receivingSummaryRequest.getBusinessStatusCode().charAt(0));
+                } else {
+                    throw new InvalidValueException("Value of field  businessStatusCode passed is not valid, it should be one among " +
+                            "A,C,D,I,M,X,Z");
+                }
+            } else {
+                throw new NotFoundException("Receive summary not found for the given id");
+            }
+            ReceiveSummary commitedRcvSummary = mongoTemplate.save(receiveSummary, "receive-summary");
+            if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
+                publisher.publishEvent(commitedRcvSummary);
+            }
+
+        }
+        return receivingSummaryRequest;
+    }
+
+    @Override
+    @Transactional
+    public ReceivingSummaryLineRequest updateReceiveSummaryAndLine(ReceivingSummaryLineRequest receivingSummaryLineRequest, String countryCode) {
+        Boolean isWareHouseData = isWareHouseData(receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getInvProcAreaCode(), receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getReplnTypCd(),
+                receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getLocationCountryCd());
+        Query dynamicQuery = new Query();
+        ReceivingLine receiveLine;
+        ReceivingLine commitedRcvLine;
+        ReceiveSummary commitedRcvSummary;
+        if (receivingSummaryLineRequest.getSequenceNumber() == null) {
+            String id = formulateId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), receivingSummaryLineRequest.getReceiptDate().toString());
+
+            if (receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest) == false) {
+                throw new InvalidValueException("Value of field  businessStatusCode passed is not valid, it should be one among " +
+                        "A,C,D,I,M,X,Z");
+            }
+
+            if (receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest) == false) {
+                throw new InvalidValueException("Value of InventoryMatchStatus should be between 0-9");
+            }
+
+            ReceiveSummary receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receive-summary");
+
+            if (receiveSummary == null) {
+                throw new NotFoundException("Receive summary not found for the given id");
+            }
+
+            receiveSummary.setBusinessStatusCode(receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
+
+            commitedRcvSummary = mongoTemplate.save(receiveSummary, "receive-summary");
+
+            if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
+                publisher.publishEvent(commitedRcvSummary);
+            }
+
+            if (receivingSummaryLineRequest.getControlNumber() != null) {
+                Criteria purchaseOrderIdCriteria = Criteria.where("receivingControlNumber").is(receivingSummaryLineRequest.getControlNumber());//TODO,purchasedOrderId, needed in COSMOS
+                dynamicQuery.addCriteria(purchaseOrderIdCriteria);
+            }
+            if (receivingSummaryLineRequest.getReceiptNumber() != null) {
+                Criteria receiptNumberCriteria = Criteria.where("purchaseOrderReceiveID").is(receivingSummaryLineRequest.getReceiptNumber());
+                dynamicQuery.addCriteria(receiptNumberCriteria);
+            }
+            if (receivingSummaryLineRequest.getLocationNumber() != null) {
+                Criteria locationNumberCriteria = Criteria.where("storeNumber").is(receivingSummaryLineRequest.getLocationNumber());
+                dynamicQuery.addCriteria(locationNumberCriteria);
+            }
+            if (receivingSummaryLineRequest.getReceiptDate() != null) {
+                Criteria receiptDateCriteria = Criteria.where("MDSReceiveDate").is(receivingSummaryLineRequest.getReceiptDate());
+                dynamicQuery.addCriteria(receiptDateCriteria);
+            }
+
+            //TODO code needs to optimized remove the DB calls in loop
+            List<ReceivingLine> receivingLineList = mongoTemplate.find(dynamicQuery, ReceivingLine.class, "receive-line");
+            for (ReceivingLine receivingLine : receivingLineList) {
+                receivingLine.setInventoryMatchStatus(receivingSummaryLineRequest.getInventoryMatchStatus());
+                commitedRcvLine = mongoTemplate.save(receivingLine, "receive-line");
+
+                if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
+                    publisher.publishEvent(commitedRcvLine);
+                }
+            }
+
+
+        } else {
+
+            if (receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest) == false) {
+                throw new InvalidValueException("Value of InventoryMatchStatus should be between 0-9");
+            }
+            String lineId = formulateLineId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(),
+                    receivingSummaryLineRequest.getReceiptDate().toString(), receivingSummaryLineRequest.getSequenceNumber().toString());
+            receiveLine = mongoTemplate.findById(lineId, ReceivingLine.class, "receive-line");
+
+            if (receiveLine == null) {
+                throw new NotFoundException("Receive line not found for the given id ");
+            }
+            receiveLine.setInventoryMatchStatus(receivingSummaryLineRequest.getInventoryMatchStatus());
+            commitedRcvLine = mongoTemplate.save(receiveLine, "receive-line");
+            if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
+                publisher.publishEvent(commitedRcvLine);
+            }
+
+        }
+        return receivingSummaryLineRequest;
+    }
+
     private List<ReceivingLine> executeQueryReceiveline(Query query) {
         List<ReceivingLine> receiveLines = new ArrayList<>();
         if (query != null) {
@@ -485,7 +627,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     private void listToMapConversion(List<ReceiveSummary> receiveSummaries, HashMap<String, ReceiveSummary> receiveSummaryHashMap) {
         receiveSummaries.stream().forEach((t) -> receiveSummaryHashMap.put(t.get_id(), t));
     }
-    /******* Common Methods  *********/
 
 
 }

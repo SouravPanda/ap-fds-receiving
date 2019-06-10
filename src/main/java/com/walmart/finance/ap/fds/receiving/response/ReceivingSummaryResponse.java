@@ -75,6 +75,8 @@ public class ReceivingSummaryResponse {
     @NotEmpty
     private Integer departmentNumber;
 
+    private Integer supplierNumber;
+
     @NotEmpty
     private String parentPurchaseOrderId;
 
@@ -92,4 +94,5 @@ public class ReceivingSummaryResponse {
 
     @NotEmpty
     private String memo;
+
 }
