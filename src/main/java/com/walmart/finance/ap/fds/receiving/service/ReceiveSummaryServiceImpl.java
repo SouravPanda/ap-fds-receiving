@@ -606,11 +606,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             String lineId = formulateLineId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(),
                     receivingSummaryLineRequest.getReceiptDate().toString(), receivingSummaryLineRequest.getSequenceNumber().toString());
 
-            if (receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest) == false) {
-                throw new InvalidValueException("Value of field  businessStatusCode passed is not valid, it should be one among " +
-                        "A,C,D,I,M,X,Z");
-            }
-
             if (receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest) == false) {
                 throw new InvalidValueException("Value of InventoryMatchStatus should be between 0-9");
             }
