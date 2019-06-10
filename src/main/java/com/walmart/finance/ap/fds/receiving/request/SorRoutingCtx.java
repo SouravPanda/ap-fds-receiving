@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SorRoutingCtx {
 
-    String repLnTypCd;
+    String replnTypCd;
 
     Integer invProcAreaCode;
 
