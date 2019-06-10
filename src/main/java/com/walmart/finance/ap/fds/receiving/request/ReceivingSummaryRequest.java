@@ -19,21 +19,17 @@ import java.util.List;
 @AllArgsConstructor
 public class ReceivingSummaryRequest {
 
-    //Key2
     @Size(max = 10, min = 1)
     @NotEmpty(message = "Please enter a valid receiptNumber")
     String receiptNumber;
 
-    // Key1
     @Size(max = 10, min = 1)
     @NotEmpty(message = "Please enter a valid controlNumber")
     String controlNumber;
 
-    //Key3
     @NotNull(message = "receiptDate cannot be null")
     private LocalDate receiptDate;
 
-    //key4
     @NotNull(message = "locationNumber cannot be null")
     Integer locationNumber;
 

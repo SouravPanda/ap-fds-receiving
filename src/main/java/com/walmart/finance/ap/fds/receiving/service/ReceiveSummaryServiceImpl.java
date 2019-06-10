@@ -531,16 +531,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         Boolean isWareHouseData = isWareHouseData(receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getInvProcAreaCode(), receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getReplnTypCd(),
                 receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getLocationCountryCd());
         Query dynamicQuery = new Query();
-
-        ReceivingLine receiveLine = null;
-        List<ReceivingLine> receiveLines = new ArrayList();
-        ReceivingLine commitedRcvLine = null;
-        ReceiveSummary commitedRcvSummary = null;
+        ReceivingLine receiveLine;
+        ReceivingLine commitedRcvLine;
+        ReceiveSummary commitedRcvSummary;
         if (receivingSummaryLineRequest.getSequenceNumber() == null) {
             String id = formulateId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), receivingSummaryLineRequest.getReceiptDate().toString());
-
-
-            //TODO need to check the datatype for BusinessStatusCode
 
             if (receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest) == false) {
                 throw new InvalidValueException("Value of field  businessStatusCode passed is not valid, it should be one among " +
@@ -558,15 +553,12 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             }
 
             receiveSummary.setBusinessStatusCode(receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
-            //   receiveLine.setInventoryMatchStatus(receivingSummaryLineRequest.getInventoryMatchStatus());
 
             commitedRcvSummary = mongoTemplate.save(receiveSummary, "receive-summary");
 
-            if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) { //Check with Rupesh
+            if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
                 publisher.publishEvent(commitedRcvSummary);
             }
-
-            // TODO, ideally we should have receiveSummary key reference in Receive Line
 
             if (receivingSummaryLineRequest.getControlNumber() != null) {
                 Criteria purchaseOrderIdCriteria = Criteria.where("receivingControlNumber").is(receivingSummaryLineRequest.getControlNumber());//TODO,purchasedOrderId, needed in COSMOS
@@ -580,21 +572,17 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 Criteria locationNumberCriteria = Criteria.where("storeNumber").is(receivingSummaryLineRequest.getLocationNumber());
                 dynamicQuery.addCriteria(locationNumberCriteria);
             }
-       /*     if (receivingSummaryLineRequest.getReceiptDate() != null) {
+            if (receivingSummaryLineRequest.getReceiptDate() != null) {
                 Criteria receiptDateCriteria = Criteria.where("MDSReceiveDate").is(receivingSummaryLineRequest.getReceiptDate());
                 dynamicQuery.addCriteria(receiptDateCriteria);
-            }*/
+            }
 
             //TODO code needs to optimized remove the DB calls in loop
             List<ReceivingLine> receivingLineList = mongoTemplate.find(dynamicQuery, ReceivingLine.class, "receive-line");
             for (ReceivingLine receivingLine : receivingLineList) {
-                receivingLine.setInventoryMatchStatus(receivingSummaryLineRequest.getInventoryMatchStatus());//Check with Rupesh
-               // commitedRcvSummary = mongoTemplate.save(receiveSummary, "receive-summary");//Check with Rupesh
+                receivingLine.setInventoryMatchStatus(receivingSummaryLineRequest.getInventoryMatchStatus());
                 commitedRcvLine = mongoTemplate.save(receivingLine, "receive-line");
 
-            /*    if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {//Check with Rupesh
-                    publisher.publishEvent(commitedRcvSummary);
-                }*/
                 if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
                     publisher.publishEvent(commitedRcvLine);
                 }
@@ -603,13 +591,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
         } else {
 
-            String lineId = formulateLineId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(),
-                    receivingSummaryLineRequest.getReceiptDate().toString(), receivingSummaryLineRequest.getSequenceNumber().toString());
-
             if (receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest) == false) {
                 throw new InvalidValueException("Value of InventoryMatchStatus should be between 0-9");
             }
-
+            String lineId = formulateLineId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(),
+                    receivingSummaryLineRequest.getReceiptDate().toString(), receivingSummaryLineRequest.getSequenceNumber().toString());
             receiveLine = mongoTemplate.findById(lineId, ReceivingLine.class, "receive-line");
 
             if (receiveLine == null) {
