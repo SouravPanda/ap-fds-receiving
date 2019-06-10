@@ -580,10 +580,10 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 Criteria locationNumberCriteria = Criteria.where("storeNumber").is(receivingSummaryLineRequest.getLocationNumber());
                 dynamicQuery.addCriteria(locationNumberCriteria);
             }
-            if (receivingSummaryLineRequest.getReceiptDate() != null) {
+       /*     if (receivingSummaryLineRequest.getReceiptDate() != null) {
                 Criteria receiptDateCriteria = Criteria.where("MDSReceiveDate").is(receivingSummaryLineRequest.getReceiptDate());
                 dynamicQuery.addCriteria(receiptDateCriteria);
-            }
+            }*/
 
             //TODO code needs to optimized remove the DB calls in loop
             List<ReceivingLine> receivingLineList = mongoTemplate.find(dynamicQuery, ReceivingLine.class, "receive-line");
