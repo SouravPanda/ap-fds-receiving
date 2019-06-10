@@ -499,7 +499,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     @Override
     @Transactional
     public ReceivingSummaryRequest updateReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest, String countryCode) {
-        Boolean isWareHouseData = isWareHouseData(receivingSummaryRequest.getMeta().getSorRoutingCtx().getInvProcAreaCode(), receivingSummaryRequest.getMeta().getSorRoutingCtx().getRepInTypCd(),
+        Boolean isWareHouseData = isWareHouseData(receivingSummaryRequest.getMeta().getSorRoutingCtx().getInvProcAreaCode(), receivingSummaryRequest.getMeta().getSorRoutingCtx().getRepLnTypCd(),
                 receivingSummaryRequest.getMeta().getSorRoutingCtx().getLocationCountryCd());
 
         if (receivingSummaryRequest != null) {
@@ -527,11 +527,12 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     @Override
     @Transactional
     public ReceivingSummaryLineRequest updateReceiveSummaryAndLine(ReceivingSummaryLineRequest receivingSummaryLineRequest, String countryCode) {
-        Boolean isWareHouseData = isWareHouseData(receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getInvProcAreaCode(), receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getRepInTypCd(),
+        Boolean isWareHouseData = isWareHouseData(receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getInvProcAreaCode(), receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getRepLnTypCd(),
                 receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getLocationCountryCd());
         Query dynamicQuery = new Query();
         List<ReceivingLine> receiveLines = new ArrayList();
         ReceivingLine commitedRcvLine = null;
+        ReceiveSummary commitedRcvSummary = null;
         if (receivingSummaryLineRequest.getSequenceNumber() == null) {
             String id = formulateId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), receivingSummaryLineRequest.getReceiptDate().toString());
 
@@ -547,7 +548,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             } else {
                 throw new InvalidValueException("Value of field  businessStatusCode passed is not valid");
             }
-            ReceiveSummary commitedRcvSummary = mongoTemplate.save(receiveSummary, "receive-summary");
+            commitedRcvSummary = mongoTemplate.save(receiveSummary, "receive-summary");
 
             if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
                 publisher.publishEvent(commitedRcvSummary);
@@ -580,7 +581,17 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 } else {
                     throw new InvalidValueException("Value of InventoryMatchStatus should be between 0-9");
                 }
+                if (receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest) == true) {
+                    receiveSummary.setBusinessStatusCode(receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
+                } else {
+                    throw new InvalidValueException("Value of field  businessStatusCode passed is not valid");
+                }
+                commitedRcvSummary = mongoTemplate.save(receiveSummary, "receive-summary");
                 commitedRcvLine = mongoTemplate.save(receivingLine, "receive-line");
+
+                if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
+                    publisher.publishEvent(commitedRcvSummary);
+                }
                 if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
                     publisher.publishEvent(commitedRcvLine);
                 }
