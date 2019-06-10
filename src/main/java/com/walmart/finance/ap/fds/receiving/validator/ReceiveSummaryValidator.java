@@ -75,12 +75,11 @@ public class ReceiveSummaryValidator {
 
     public boolean validateBusinessStatUpdateSummary(ReceivingSummaryRequest receivingSummaryRequest) {
         for (ReceiveSummaryBusinessStat businessStat : businessStatList) {
-            if (businessStat.toString().equalsIgnoreCase(receivingSummaryRequest.getBusinessStatusCode())) {
-                verdict = true;
-                break;
+            if (businessStat.toString().equals(receivingSummaryRequest.getBusinessStatusCode())) {
+                return true;
             }
         }
-        return verdict;
+        return false;
 
     }
 

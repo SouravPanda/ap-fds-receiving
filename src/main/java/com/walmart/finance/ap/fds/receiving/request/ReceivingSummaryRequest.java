@@ -3,6 +3,7 @@ package com.walmart.finance.ap.fds.receiving.request;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotEmpty;
@@ -39,11 +40,9 @@ public class ReceivingSummaryRequest {
 
     @NotEmpty
     @NotNull
+    @Range(min = 1,max = 1)
     String businessStatusCode;
 
-    Character typeIndicator;
-
-    String writeIndicator;
 
     Meta meta;
 

@@ -127,13 +127,13 @@ public class ReceivingSummaryControllerTest {
 
     @Test
     public void updateSummaryTest(){
-        ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("0","0",LocalDate.now(),0,"A",'A',"TT",null);
+        ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("0","0",LocalDate.now(),0,"A",null);
         Mockito.when(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest,"US")).thenReturn(receivingSummaryRequest);
     }
 
     @Test
     public void updateSummaryAndLineTest(){
-        ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("0","0",LocalDate.now(),0,"A",'A',"TT",9,0,null);
+        ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("0","0",LocalDate.now(),0,"A",1,0,null);
         Mockito.when(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest,"US")).thenReturn(receivingSummaryLineRequest);
     }
 }

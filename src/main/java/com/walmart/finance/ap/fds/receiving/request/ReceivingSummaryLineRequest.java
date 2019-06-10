@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -39,11 +40,9 @@ public class ReceivingSummaryLineRequest {
 
     @NotEmpty
     @NotNull
+    @Range(min = 1,max = 1)
     String businessStatusCode;
 
-    Character typeIndicator;
-
-    String writeIndicator;
 
     @NotNull
     @NotEmpty

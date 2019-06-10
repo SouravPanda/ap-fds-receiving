@@ -3,7 +3,6 @@ package com.walmart.finance.ap.fds.receiving.service;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryReqConverter;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
-import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
 import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.integrations.*;
@@ -508,12 +507,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
             ReceiveSummary receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receive-summary");
             if (receiveSummary != null) {
-
-               /* if (receiveSummaryValidator.validateVendorNumberUpdateSummary(receivingSummaryRequest, vendorNumber, countryCode) == true) {
-                    receiveSummary.setVendorNumber(receivingSummaryRequest.getVendorNumber());
-                } else {
-                    throw new InvalidValueException("Value of field vendorNumber passed is not valid");
-                }*/
                 if (receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryRequest) == true) {
                     receiveSummary.setBusinessStatusCode(receivingSummaryRequest.getBusinessStatusCode().charAt(0));
                 } else {
@@ -539,7 +532,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         Query dynamicQuery = new Query();
         List<ReceivingLine> receiveLines = new ArrayList();
         ReceivingLine commitedRcvLine = null;
-        if (receivingSummaryLineRequest.getSequenceNumber()==null) {
+        if (receivingSummaryLineRequest.getSequenceNumber() == null) {
             String id = formulateId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), receivingSummaryLineRequest.getReceiptDate().toString());
 
             ReceiveSummary receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receive-summary");
@@ -582,7 +575,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             //TODO code needs to optimized remove the DB calls in loop
             List<ReceivingLine> receivingLineList = mongoTemplate.find(dynamicQuery, ReceivingLine.class, "receive-line");
             for (ReceivingLine receivingLine : receivingLineList) {
-                receivingLine.setInventoryMatchStatus(receivingSummaryLineRequest.getInventoryMatchStatus());
+                if (receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest) == true) {
+                    receivingLine.setInventoryMatchStatus(receivingSummaryLineRequest.getInventoryMatchStatus());
+                } else {
+                    throw new InvalidValueException("Value of InventoryMatchStatus should be between 0-9");
+                }
                 commitedRcvLine = mongoTemplate.save(receivingLine, "receive-line");
                 if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
                     publisher.publishEvent(commitedRcvLine);
@@ -597,14 +594,17 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
             ReceivingLine receiveLine = mongoTemplate.findById(lineId, ReceivingLine.class, "receive-line");
 
-            if (receiveLine != null) {
-
+            if (receiveLine == null) {
+                throw new NotFoundException("Receive line not found for the given id ");
+            }
+            if (receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest) == true) {
                 receiveLine.setInventoryMatchStatus(receivingSummaryLineRequest.getInventoryMatchStatus());
-                commitedRcvLine = mongoTemplate.save(receiveLine, "receive-line");
-                if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
-                    publisher.publishEvent(commitedRcvLine);
-                }
-
+            } else {
+                throw new InvalidValueException("Value of InventoryMatchStatus should be between 0-9");
+            }
+            commitedRcvLine = mongoTemplate.save(receiveLine, "receive-line");
+            if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
+                publisher.publishEvent(commitedRcvLine);
             }
 
         }

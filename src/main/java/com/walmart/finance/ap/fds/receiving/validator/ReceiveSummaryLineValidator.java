@@ -30,13 +30,19 @@ public class ReceiveSummaryLineValidator {
 
     public boolean validateBusinessStatUpdateSummary(ReceivingSummaryLineRequest receivingSummaryLineRequest) {
         for (ReceiveSummaryBusinessStat businessStat : businessStatList) {
-            if (businessStat.toString().equalsIgnoreCase(receivingSummaryLineRequest.getBusinessStatusCode())) {
-                verdict = true;
-                break;
+            if (businessStat.toString().equals(receivingSummaryLineRequest.getBusinessStatusCode())) {
+                return true;
             }
         }
-        return verdict;
+        return false;
 
+    }
+
+    public boolean validateInventoryMatchStatus(ReceivingSummaryLineRequest receivingSummaryLineRequest) {
+        if (receivingSummaryLineRequest.getInventoryMatchStatus() >= 0 && receivingSummaryLineRequest.getInventoryMatchStatus() <= 9) {
+            return true;
+        }
+        return false;
     }
 /*
     public boolean validateControlType(ReceivingSummaryLineRequest receivingSummaryLineSearch) {
