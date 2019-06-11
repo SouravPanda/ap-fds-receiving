@@ -561,7 +561,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             }
 
             if (receivingSummaryLineRequest.getControlNumber() != null) {
-                Criteria purchaseOrderIdCriteria = Criteria.where("receivingControlNumber").is(receivingSummaryLineRequest.getControlNumber());//TODO,purchasedOrderId, needed in COSMOS
+                Criteria purchaseOrderIdCriteria = Criteria.where("receivingControlNumber").is(receivingSummaryLineRequest.getControlNumber());
                 dynamicQuery.addCriteria(purchaseOrderIdCriteria);
             }
             if (receivingSummaryLineRequest.getReceiptNumber() != null) {
@@ -591,11 +591,32 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
         } else {
 
+            if (receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest) == false) {
+                throw new InvalidValueException("Value of field  businessStatusCode passed is not valid, it should be one among " +
+                        "A,C,D,I,M,X,Z");
+            }
+
             if (receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest) == false) {
                 throw new InvalidValueException("Value of InventoryMatchStatus should be between 0-9");
             }
+
+            String summaryId = formulateId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), receivingSummaryLineRequest.getReceiptDate().toString());
             String lineId = formulateLineId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(),
                     receivingSummaryLineRequest.getReceiptDate().toString(), receivingSummaryLineRequest.getSequenceNumber().toString());
+
+            ReceiveSummary receiveSummary = mongoTemplate.findById(summaryId, ReceiveSummary.class, "receive-summary");
+
+            if (receiveSummary == null) {
+                throw new NotFoundException("Receive summary not found for the given id");
+            }
+
+            receiveSummary.setBusinessStatusCode(receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
+
+            commitedRcvSummary = mongoTemplate.save(receiveSummary, "receive-summary");
+
+            if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
+                publisher.publishEvent(commitedRcvSummary);
+            }
             receiveLine = mongoTemplate.findById(lineId, ReceivingLine.class, "receive-line");
 
             if (receiveLine == null) {
