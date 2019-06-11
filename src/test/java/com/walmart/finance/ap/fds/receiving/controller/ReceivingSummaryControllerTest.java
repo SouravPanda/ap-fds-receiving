@@ -88,13 +88,21 @@ public class ReceivingSummaryControllerTest {
         Pageable pageable = PageRequest.of(pageNbr, pageSize);
         query.with(pageable);
 
-        ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", 1122, 99, "776", 3680, 0,
+ /*       ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", 1122, 99, "776", 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "hjhj", "77", "user",  LocalDateTime.now(), 9.0,7.0,
                 "9LLL",0L,0, 9,"LL", 0, "PP",0, 0,"jjj");
-
-        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("999778", 10022, 99, "776", 3680, 0,
+          ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("999778", 10022, 99, "776", 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "hjhj", "77", "user",  LocalDateTime.now(), 9.0,7.0,
                 "9LLL",0L,0, 9,"LL", 0, "PP",0, 0,"88");
+
+*/
+        ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", 1122, 99, "776", 3680, 0,
+                LocalDate.of(1986, 12, 12), 'L', 78, "hjhj", "77",  9.0,7.0,
+                0L,0);
+
+        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("999778", 10022, 99, "776", 3680, 0,
+                LocalDate.of(1986, 12, 12), 'L', 78, "hjhj", "77", 9.0,7.0,
+                0L,0);
 
         List<ReceivingSummaryResponse> content = new ArrayList<>();
         content.add(receivingSummaryResponse);
