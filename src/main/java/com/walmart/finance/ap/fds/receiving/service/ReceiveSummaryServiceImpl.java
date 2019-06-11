@@ -399,7 +399,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             } else {
                 getFreightResponse(receiveSummary, response);
                 response.setTotalCostAmount(receiveSummary.getTotalCostAmount());
-                response.setTotalRetailAmount(receiveSummary.getTotalCostAmount());
+                response.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());
                 lineResponseMap.put(receiveSummary.get_id(), response);
             }
         }
