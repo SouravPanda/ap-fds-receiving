@@ -30,18 +30,18 @@ public class ReceivingExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
 
-    @ExceptionHandler({ContentNotFoundException.class})
+/*    @ExceptionHandler({ContentNotFoundException.class})
     public ResponseEntity<Object> contentNotFoundExceptionHandler(
             Exception ex, WebRequest request) {
         return new ResponseEntity<>(
                 new ReceivingError(204, ex.getMessage(), LocalDateTime.now()), new HttpHeaders(), HttpStatus.NO_CONTENT);
-    }
+    }*/
 
     @ExceptionHandler({NotFoundException.class})
     public ResponseEntity<Object> notFoundExceptionHandler(
             Exception ex, WebRequest request) {
         return new ResponseEntity<>(
-                new ReceivingError(204, ex.getMessage(), LocalDateTime.now()), new HttpHeaders(), HttpStatus.OK);
+                new ReceivingError(204, ex.getMessage(), LocalDateTime.now()), new HttpHeaders(), HttpStatus.NO_CONTENT);
     }
 
     @ExceptionHandler({SearchCriteriaException.class})
