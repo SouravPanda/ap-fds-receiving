@@ -38,5 +38,4 @@ public class ReceivingSummaryRequest {
 
     private Meta meta;
 
-
 }
