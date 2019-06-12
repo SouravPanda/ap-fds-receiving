@@ -519,19 +519,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         } else {
             id = formulateId(receivingSummaryRequest.getControlNumber(), receivingSummaryRequest.getReceiptNumber(), receivingSummaryRequest.getLocationNumber().toString(), "0");
         }
-
-<<<<<<< HEAD
+        
         receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receive-summary");
         if (receiveSummary == null) {
             throw new NotFoundException("Receive summary not found for the given id");
         }
-=======
-            receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receive-summary");
-            if (receiveSummary == null) {
-                throw new ContentNotFoundException("Receive summary not found for the given id");
-            }
->>>>>>> efcb983e07b211e34f07723c514aca5c85d4f65b
-
         receiveSummary.setBusinessStatusCode(receivingSummaryRequest.getBusinessStatusCode().charAt(0));
         ReceiveSummary commitedRcvSummary = mongoTemplate.save(receiveSummary, "receive-summary");
         if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
