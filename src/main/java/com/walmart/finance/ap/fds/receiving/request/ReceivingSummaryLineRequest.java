@@ -7,7 +7,6 @@ import lombok.ToString;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
@@ -26,7 +25,7 @@ public class ReceivingSummaryLineRequest {
     String controlNumber;
 
     @NotNull(message = "receiptDate cannot be null")
-    private LocalDate receiptDate;
+    LocalDate receiptDate;
 
     @NotNull(message = "locationNumber cannot be null")
     Integer locationNumber;
@@ -36,7 +35,7 @@ public class ReceivingSummaryLineRequest {
 
     Integer sequenceNumber;
 
-    @Pattern(regexp="[0-9]")
+   // @Pattern(regexp="[0-9]")
     @NotEmpty(message = "inventoryMatchStatus cannot be null")
     String inventoryMatchStatus;
 

@@ -82,15 +82,15 @@ public class ReceiveSummaryServiceImplTest {
         listOfContent.add(receiveSummary);
         listOfContent.add(receiveSummaryAt);
 
-        List<String> listOfReceiptNumbers= new ArrayList<>();
+        List<String> listOfReceiptNumbers = new ArrayList<>();
         listOfReceiptNumbers.add("99");
         listOfReceiptNumbers.add("89");
 
-        List<String> listOfItemNumbers= new ArrayList<>();
+        List<String> listOfItemNumbers = new ArrayList<>();
         listOfItemNumbers.add("99K");
         listOfItemNumbers.add("89P");
 
-        List<String> listOfUpcNumbers= new ArrayList<>();
+        List<String> listOfUpcNumbers = new ArrayList<>();
         listOfItemNumbers.add("9K");
         listOfItemNumbers.add("89P");
 
@@ -105,12 +105,12 @@ public class ReceiveSummaryServiceImplTest {
         query.with(pageable);
 
         ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", 1122, 99, "776", 3680, 0,
-                LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77", "user",  LocalDateTime.now(), 9.0,7.0,
-                "9LLL",0L,0, 9,"LL", 0, "PP",0, 0,"jjj");
+                LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77", "user", LocalDateTime.now(), 9.0, 7.0,
+                "9LLL", 0L, 0, 9, "LL", 0, "PP", 0, 0, "jjj");
 
         ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", 1122, 99, "776", 3680, 0,
-                LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77", "user",  LocalDateTime.now(), 9.0,7.0,
-                "9LLL",0L,0, 9,"LL", 0, "PP",0, 0,"jjj");
+                LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77", "user", LocalDateTime.now(), 9.0, 7.0,
+                "9LLL", 0L, 0, 9, "LL", 0, "PP", 0, 0, "jjj");
 
         List<ReceivingSummaryResponse> content = new ArrayList<>();
         content.add(receivingSummaryResponse);
@@ -131,9 +131,7 @@ public class ReceiveSummaryServiceImplTest {
 
     @Test
     public void updateReceiveSummaryTest() {
-        Integer vendorNumber = 122663;
-        String countryCode = "US";
-        Boolean isWareHouseData=false;
+        Boolean isWareHouseData = false;
         ReceiveSummary receiveSummary = new ReceiveSummary("553683865|999997|6565|0|99|0|0", "553683865",
                 6565, 18, 0, LocalDate.of(1996, 12, 12), LocalTime.of(18, 45, 21),
                 0, 122663, 1111,
@@ -147,8 +145,8 @@ public class ReceiveSummaryServiceImplTest {
         String id = "553683865|999997|6565|0|99|0|0";
         when(mongoTemplate.findById((Mockito.any()), Mockito.any(Class.class), Mockito.anyString())).thenReturn(receiveSummary);
         Mockito.when(receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryRequest)).thenReturn(true);
-      //  Mockito.when(receiveSummaryValidator.validateVendorNumberUpdateSummary(receivingSummaryRequest, vendorNumber, countryCode)).thenReturn(true);
-      //  Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, vendorNumber, countryCode).toString(),receivingSummaryRequest.toString());
+        //  Mockito.when(receiveSummaryValidator.validateVendorNumberUpdateSummary(receivingSummaryRequest, vendorNumber, countryCode)).thenReturn(true);
+        //  Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, vendorNumber, countryCode).toString(),receivingSummaryRequest.toString());
     }
 
     @Test
@@ -164,21 +162,20 @@ public class ReceiveSummaryServiceImplTest {
                 LocalDate.now(), 9.0, 7, 0, 0, LocalDateTime.now(), 0, "999997",
                 "yyyy", LocalDateTime.now(), "99"
                 , 'K', "LLL");
-      //  ReceivingSummaryLineRequest receivingSummaryLineSearch = new ReceivingSummaryLineRequest("0","0",1222,LocalDate.now(),1);
+        //  ReceivingSummaryLineRequest receivingSummaryLineSearch = new ReceivingSummaryLineRequest("0","0",1222,LocalDate.now(),1);
         ReceivingLine receivingLine = new ReceivingLine("112|1804823|8264|18|0|1995-10-17|1995-10-17T18:45:21|122", "4665267",
                 0, 3777, 94493, 0, 0.0, 0.0, "9",
                 89, 12, "1122", 99, 8264, 18,
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
-                0, 1.9, "LL",0);
-        String id ="56HKKL|33383|0|0|99|1998-12-12T18:56:22|2000-12-12T18:56:22";
+                0, 1.9, "LL", 0);
+        ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("553683865", "99999", LocalDate.now(), 0, "A", 0, "9", null);
+        String id = "56HKKL|33383|0|0|99|1998-12-12T18:56:22|2000-12-12T18:56:22";
         String lineId = "56HKKL|33383|0|0|99|2019-06-04|21:08:43.981|0";
-        Mockito.when(mongoTemplate.findById(Mockito.eq(id),Mockito.eq(ReceiveSummary.class),Mockito.eq("receiving-summary"))).thenReturn(receiveSummary);
-        Mockito.when(mongoTemplate.findById(Mockito.eq(lineId),Mockito.eq(ReceivingLine.class),Mockito.eq("receive-line"))).thenReturn(receivingLine);
-      //  Mockito.when(receiveSummaryLineValidator.validateControlType(receivingSummaryLineSearch)).thenReturn(true);
-      //  Mockito.when(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineSearch)).thenReturn(true);
-     //   Mockito.when(receiveSummaryLineValidator.validateVendorNumberUpdateSummary(receivingSummaryLineSearch, vendorNumber, countryCode)).thenReturn(true);
-//        Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineSearch, countryCode,vendorNumber).toString(),receivingSummaryLineSearch.toString());
+        Mockito.when(mongoTemplate.findById(Mockito.eq(id), Mockito.eq(ReceiveSummary.class), Mockito.eq("receiving-summary"))).thenReturn(receiveSummary);
+        Mockito.when(mongoTemplate.findById(Mockito.eq(lineId), Mockito.eq(ReceivingLine.class), Mockito.eq("receive-line"))).thenReturn(receivingLine);
+        Mockito.when(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)).thenReturn(true);
+ //       Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, countryCode),receivingSummaryLineRequest);
     }
 }
 

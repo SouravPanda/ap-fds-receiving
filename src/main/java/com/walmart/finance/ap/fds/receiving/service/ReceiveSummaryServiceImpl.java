@@ -513,22 +513,22 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         }
 
 
-            if (isWareHouseData == false) {
-                id = formulateId(receivingSummaryRequest.getControlNumber(), receivingSummaryRequest.getReceiptNumber(), receivingSummaryRequest.getLocationNumber().toString(), receivingSummaryRequest.getReceiptDate().toString());
-            } else {
-                id = formulateId(receivingSummaryRequest.getControlNumber(), receivingSummaryRequest.getReceiptNumber(), receivingSummaryRequest.getLocationNumber().toString(), "0");
-            }
+        if (isWareHouseData == false) {
+            id = formulateId(receivingSummaryRequest.getControlNumber(), receivingSummaryRequest.getReceiptNumber(), receivingSummaryRequest.getLocationNumber().toString(), receivingSummaryRequest.getReceiptDate().toString());
+        } else {
+            id = formulateId(receivingSummaryRequest.getControlNumber(), receivingSummaryRequest.getReceiptNumber(), receivingSummaryRequest.getLocationNumber().toString(), "0");
+        }
 
-            receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receive-summary");
-            if (receiveSummary == null) {
-                throw new NotFoundException("Receive summary not found for the given id");
-            }
+        receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receive-summary");
+        if (receiveSummary == null) {
+            throw new NotFoundException("Receive summary not found for the given id");
+        }
 
-            receiveSummary.setBusinessStatusCode(receivingSummaryRequest.getBusinessStatusCode().charAt(0));
-            ReceiveSummary commitedRcvSummary = mongoTemplate.save(receiveSummary, "receive-summary");
-            if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
-                publisher.publishEvent(commitedRcvSummary);
-            }
+        receiveSummary.setBusinessStatusCode(receivingSummaryRequest.getBusinessStatusCode().charAt(0));
+        ReceiveSummary commitedRcvSummary = mongoTemplate.save(receiveSummary, "receive-summary");
+        if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
+            publisher.publishEvent(commitedRcvSummary);
+        }
 
         return receivingSummaryRequest;
     }
@@ -546,6 +546,10 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         if (receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest) == false) {
             throw new InvalidValueException("Value of field  businessStatusCode passed is not valid, it should be one among " +
                     "A,C,D,I,M,X,Z");
+        }
+
+        if (receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest) == false) {
+            throw new InvalidValueException("Invalid value, inventoryMatchStatus should be in range 0-9");
         }
 
         if (receivingSummaryLineRequest.getSequenceNumber() == null) {
@@ -609,8 +613,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                         "A,C,D,I,M,X,Z");
             }
 
-            String summaryId;
+            if (receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest) == false) {
+                throw new InvalidValueException("Invalid value, inventoryMatchStatus should be in range 0-9");
+            }
             String lineId;
+            String summaryId;
             if (isWareHouseData == false) {
                 summaryId = formulateId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), receivingSummaryLineRequest.getReceiptDate().toString());
                 lineId = formulateLineId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(),
