@@ -51,11 +51,11 @@ public class ReceivingSummaryResponse {
 //    @NotEmpty
 //    private String associateName;
 
-    @NotEmpty
-    private String authorizedBy;
+//    @NotEmpty
+//    private String authorizedBy;
 
-    @NotEmpty
-    private LocalDateTime authorizedDate;
+//    @NotEmpty
+//    private LocalDateTime authorizedDate;
 
     @NotEmpty
     private Double totalCostAmount;
@@ -66,8 +66,8 @@ public class ReceivingSummaryResponse {
 //    @NotEmpty
 //    private Integer parentReceiptId;
 
-    @NotEmpty
-    private String parentReceiptNumber;
+//    @NotEmpty
+//    private String parentReceiptNumber;
 
     @NotEmpty
     private Long lineCount;
@@ -75,24 +75,24 @@ public class ReceivingSummaryResponse {
     @NotEmpty
     private Integer departmentNumber;
 
-    private Integer supplierNumber;
+//    private Integer supplierNumber;
 
-    @NotEmpty
-    private String parentPurchaseOrderId;
+//    @NotEmpty
+//    private String parentPurchaseOrderId;
 
-    @NotEmpty
-    private  Integer parentTransactionType;
+//    @NotEmpty
+//    private  Integer parentTransactionType;
 
-    @NotEmpty
-    private String parentControlNumber;
+//    @NotEmpty
+//    private String parentControlNumber;
 
-    @NotEmpty
-    private Integer parentLocationNumber;
+//    @NotEmpty
+//    private Integer parentLocationNumber;
 
-    @NotEmpty
-    private Integer parentDivisionNumber;
+//    @NotEmpty
+//    private Integer parentDivisionNumber;
 
-    @NotEmpty
-    private String memo;
+//    @NotEmpty
+//    private String memo;
 
 }

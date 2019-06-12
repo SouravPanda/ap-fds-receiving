@@ -2,6 +2,7 @@ package com.walmart.finance.ap.fds.receiving.converter;
 
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,7 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
 
         ReceivingLineResponse response = new ReceivingLineResponse();
 
-        response.setControlNumber(receivingLine.getReceivingControlNumber());
+//        response.setControlNumber(receivingLine.getReceivingControlNumber());
 
 //        response.setDamaged(" ");
 
@@ -36,27 +37,27 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
         response.setEachRetailAmount(receivingLine.getRetailAmount());
         response.setPackQuantity(receivingLine.getQuantity());
 
-        response.setNumberofCasesReceived(0);
+        response.setNumberofCasesReceived(receivingLine.getReceivedQuantity());
 //        response.setVendorStockNumber(0);
-        response.setBottleDepositAmount(0);
+//        response.setBottleDepositAmount(0);
 
-        response.setPurchaseOrderNumber(receivingLine.getReceivingControlNumber());
-        response.setParentReceiptNumber(Integer.valueOf(receivingLine.getPurchaseOrderReceiveID()));
+//        response.setPurchaseOrderNumber(receivingLine.getReceivingControlNumber());
+//        response.setParentReceiptNumber(Integer.valueOf(receivingLine.getPurchaseOrderReceiveID()));
         response.setPurchaseOrderId(receivingLine.getReceivingControlNumber());
-        if (receivingLine.getUpcNumber() == null) {
+        /*if (receivingLine.getUpcNumber() == null) {
             response.setUpc("0");
         } else {
             response.setUpc(receivingLine.getUpcNumber());
-        }
+        }*/
         // TODO Need to check Item Desc. From Item Service ?
-        response.setItemDescription("NA");
+//        response.setItemDescription("NA");
 
-        response.setVariableWeightInd(" ");
+        response.setVariableWeightInd(receivingLine.getVariableWeightIndicator());
 
         //TODO Need to check  it is present in DB2?
-       response.setUnitOfMeasure("lbs");
+       response.setUnitOfMeasure(receivingLine.getReceivedQuantityUnitOfMeasureCode());
 
-        response.setReceivedWeightQuantity(" ");
+        response.setReceivedWeightQuantity(receivingLine.getReceivedWeightQuantity()== null  ?  null : receivingLine.getReceivedWeightQuantity().toString());
         // TODO default to 99 if not there
 
         if(receivingLine.getTransactionType()==null){
@@ -65,7 +66,7 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
 
             response.setTransactionType(receivingLine.getTransactionType());
         }
-        response.setControlNumber(receivingLine.getReceivingControlNumber());
+//        response.setControlNumber(receivingLine.getReceivingControlNumber());
         response.setLocationNumber(receivingLine.getStoreNumber());
         // TODO default to 0 if not there
         if(receivingLine.getBaseDivisionNumber()==null){
