@@ -18,26 +18,26 @@ public class ReceivingSummaryLineRequest {
 
     @Size(max = 10, min = 1)
     @NotEmpty(message = "Please enter a valid receiptNumber")
-    String receiptNumber;
+    private String receiptNumber;
 
     @Size(max = 10, min = 1)
     @NotEmpty(message = "Please enter a valid controlNumber")
-    String controlNumber;
+    private String controlNumber;
 
     @NotNull(message = "receiptDate cannot be null")
-    LocalDate receiptDate;
+    private LocalDate receiptDate;
 
     @NotNull(message = "locationNumber cannot be null")
-    Integer locationNumber;
+    private Integer locationNumber;
 
     @NotEmpty(message = "Please enter a valid businessStatusCode")
-    String businessStatusCode;
+    private String businessStatusCode;
 
     Integer sequenceNumber;
 
     @NotEmpty(message = "inventoryMatchStatus cannot be null")
-    String inventoryMatchStatus;
+    private String inventoryMatchStatus;
 
-    Meta meta;
+    private Meta meta;
 
 }
