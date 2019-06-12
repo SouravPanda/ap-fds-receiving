@@ -33,7 +33,6 @@ public class ReceivingSummaryRequest {
     @NotNull(message = "locationNumber cannot be null")
     Integer locationNumber;
 
-    @Size(max = 1, min = 1)
     @NotEmpty(message = "Please enter a valid businessStatusCode")
     String businessStatusCode;
 
