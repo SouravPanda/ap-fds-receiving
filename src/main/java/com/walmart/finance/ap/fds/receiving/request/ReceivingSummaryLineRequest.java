@@ -4,14 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,7 +17,7 @@ import java.time.LocalTime;
 @ToString
 public class ReceivingSummaryLineRequest {
 
-   @Size(max = 10, min = 1)
+    @Size(max = 10, min = 1)
     @NotEmpty(message = "Please enter a valid receiptNumber")
     String receiptNumber;
 
@@ -33,15 +31,14 @@ public class ReceivingSummaryLineRequest {
     @NotNull(message = "locationNumber cannot be null")
     Integer locationNumber;
 
-    @Size(max = 1, min = 1)
     @NotEmpty(message = "Please enter a valid businessStatusCode")
     String businessStatusCode;
 
     Integer sequenceNumber;
 
-    @NotNull(message = "inventoryMatchStatus cannot be null")
-
-    Integer inventoryMatchStatus;
+    @Pattern(regexp="[0-9]")
+    @NotEmpty(message = "inventoryMatchStatus cannot be null")
+    String inventoryMatchStatus;
 
     Meta meta;
 

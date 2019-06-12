@@ -24,12 +24,6 @@ public class ReceiveSummaryLineValidator {
 
     }
 
-    public boolean validateInventoryMatchStatus(ReceivingSummaryLineRequest receivingSummaryLineRequest) {
-        if (receivingSummaryLineRequest.getInventoryMatchStatus() >= 0 && receivingSummaryLineRequest.getInventoryMatchStatus() <= 9) {
-            return true;
-        }
-        return false;
-    }
 }
 
 
