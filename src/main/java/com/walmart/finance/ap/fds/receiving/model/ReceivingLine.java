@@ -46,6 +46,7 @@ public class ReceivingLine {
     private Double receivedWeightQuantity;//RECV_WEIGHT_QTY(Column)INITIAL_RECV_ITEM(Table)
     private String receivedQuantityUnitOfMeasureCode;//RECV_QTY_UOM_CODE(Column)INITIAL_RECV_ITEM(Table)
     private Integer inventoryMatchStatus;
+    private String variableWeightIndicator;
 
     @Override
     public String toString() {
@@ -77,7 +78,8 @@ public class ReceivingLine {
                 ", receiveSequenceNumber='" + receiveSequenceNumber + '\'' +
                 ", receivedWeightQuantity='" + receivedWeightQuantity + '\'' +
                 ", receivedQuantityUnitOfMeasureCode='" + receivedQuantityUnitOfMeasureCode + '\'' +
-                ",inventoryMatchStatus='"+inventoryMatchStatus+'\''+
+                ", inventoryMatchStatus='"+inventoryMatchStatus+'\''+
+                ", variableWeightIndicator='"+variableWeightIndicator+'\''+
                 '}';
     }
 }

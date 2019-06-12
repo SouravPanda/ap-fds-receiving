@@ -104,13 +104,31 @@ public class ReceiveSummaryServiceImplTest {
         Pageable pageable = PageRequest.of(pageNbr, pageSize);
         query.with(pageable);
 
+/*
         ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", 1122, 99, "776", 3680, 0,
+<<<<<<< HEAD
                 LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77", "user", LocalDateTime.now(), 9.0, 7.0,
                 "9LLL", 0L, 0, 9, "LL", 0, "PP", 0, 0, "jjj");
 
         ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", 1122, 99, "776", 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77", "user", LocalDateTime.now(), 9.0, 7.0,
                 "9LLL", 0L, 0, 9, "LL", 0, "PP", 0, 0, "jjj");
+=======
+                              LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77", "user",  LocalDateTime.now(), 9.0,7.0,
+                             "9LLL",0L,0, 9,"LL", 0, "PP",0, 0,"jjj");
+        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", 1122, 99, "776", 3680, 0,
+                              LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77", "user",  LocalDateTime.now(), 9.0,7.0,
+                               "9LLL",0L,0, 9,"LL", 0, "PP",0, 0,"jjj");
+*/
+
+
+        ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", 1122, 99, "776", 3680, 0,
+                LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",  9.0,7.0,
+                0L,0);
+
+        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", 1122, 99, "776", 3680, 0,
+                LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77", 9.0,7.0,
+                0L,0);
 
         List<ReceivingSummaryResponse> content = new ArrayList<>();
         content.add(receivingSummaryResponse);
@@ -168,7 +186,7 @@ public class ReceiveSummaryServiceImplTest {
                 89, 12, "1122", 99, 8264, 18,
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
-                0, 1.9, "LL", 0);
+                0, 1.9, "LL", 0,"OO");
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("553683865", "99999", LocalDate.now(), 0, "A", 0, "9", null);
         String id = "56HKKL|33383|0|0|99|1998-12-12T18:56:22|2000-12-12T18:56:22";
         String lineId = "56HKKL|33383|0|0|99|2019-06-04|21:08:43.981|0";

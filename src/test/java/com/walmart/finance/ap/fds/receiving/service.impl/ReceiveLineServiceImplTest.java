@@ -65,12 +65,12 @@ public class ReceiveLineServiceImplTest {
                 89, 12, "1122", 99, 8264, 18,
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
-                0, 1.9, "LL",0);
+                0, 1.9, "LL",0,"");
         ReceivingLine receivingLineAt = new ReceivingLine("0|0|0|0|0|null|null|12", "6778", 0,
                 0, 0, 0, 0.0, 0.0, "0", 0,
                 0, "0KLL", 0, 0, 0, null, null, 12,
                 LocalDateTime.of(1985, 10, 17, 18, 45, 21), 'A', "BKP", "111",
-                0, LocalDate.now(), 0, 1.9, "LL",0);
+                0, LocalDate.now(), 0, 1.9, "LL",0,"");
         listOfContent.add(receivingLine);
         listOfContent.add(receivingLineAt);
 
@@ -81,12 +81,20 @@ public class ReceiveLineServiceImplTest {
         query.addCriteria(criteria);
         Pageable pageable = PageRequest.of(pageNbr, pageSize);
         query.with(pageable);
+/*
         ReceivingLineResponse receivingLineResponse = new ReceivingLineResponse(0, 0, 0, 0, 0, 2.9,
                 1.9, 0, 0, 0, "KKO09", 0, "0",
                 "0", "0", null, null, null, 0, "0", 0, 0);
-        ReceivingLineResponse receivingLineResponseAt = new ReceivingLineResponse(0, 0, 0, 0, 0, 2.9,
+                        ReceivingLineResponse receivingLineResponseAt = new ReceivingLineResponse(0, 0, 0, 0, 0, 2.9,
                 1.9, 0, 0, 0, "KKO09", 0, "0",
                 "0", "0", null, null, null, 0, "0", 0, 0);
+*/
+        ReceivingLineResponse receivingLineResponse = new ReceivingLineResponse(0, 0, 0, 0, 0, 2.9,
+                1.9, 0, 0,"0",
+                null, null, null, 0, 0, 0);
+        ReceivingLineResponse receivingLineResponseAt = new ReceivingLineResponse(0, 0, 0, 0, 0, 2.9,
+                1.9, 0, 0,"0",
+                 null, null, null, 0,  0, 0);
         List<ReceivingLineResponse> content = new ArrayList<>();
         content.add(receivingLineResponse);
         content.add(receivingLineResponseAt);

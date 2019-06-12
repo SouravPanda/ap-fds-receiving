@@ -26,23 +26,23 @@ public class ReceivingSummaryResponseConverter implements Converter<ReceiveSumma
 //        response.setCarrierCode("CRCode");
 //        response.setTrailerNumber(0);
 //        response.setAssociateName(receiveSummary.getUserId());
-        response.setAuthorizedBy(receiveSummary.getUserId());
-        response.setAuthorizedDate(receiveSummary.getCreationDate());
+//        response.setAuthorizedBy(receiveSummary.getUserId());
+//        response.setAuthorizedDate(receiveSummary.getCreationDate());
         //TODO need to add in pipeline code
         response.setTotalCostAmount(receiveSummary.getTotalCostAmount());
         response.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());   //TODO need to add in pipeline code
 
 //        response.setParentReceiptId(Integer.valueOf(receiveSummary.getPoReceiveId()));
 
-        response.setParentReceiptNumber(receiveSummary.getReceivingControlNumber());
+//        response.setParentReceiptNumber(receiveSummary.getReceivingControlNumber());
 
         response.setDepartmentNumber(receiveSummary.getDepartmentNumber());
-        response.setParentPurchaseOrderId(receiveSummary.getReceivingControlNumber());
-        response.setParentTransactionType(receiveSummary.getTransactionType());
-        response.setParentControlNumber(receiveSummary.getReceivingControlNumber());
-        response.setParentLocationNumber(receiveSummary.getStoreNumber());
-        response.setParentDivisionNumber(receiveSummary.getBaseDivisionNumber());
-        response.setMemo("MEMO");
+//        response.setParentPurchaseOrderId(receiveSummary.getReceivingControlNumber());
+//        response.setParentTransactionType(receiveSummary.getTransactionType());
+//        response.setParentControlNumber(receiveSummary.getReceivingControlNumber());
+//        response.setParentLocationNumber(receiveSummary.getStoreNumber());
+//        response.setParentDivisionNumber(receiveSummary.getBaseDivisionNumber());
+//        response.setMemo("MEMO");
         return response;
     }
 }

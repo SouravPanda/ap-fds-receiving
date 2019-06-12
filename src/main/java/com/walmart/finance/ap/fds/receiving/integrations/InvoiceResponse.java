@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-public class InvoiceResponse {
+public class InvoiceResponse{
 
 
     @JsonProperty("invoiceId")
