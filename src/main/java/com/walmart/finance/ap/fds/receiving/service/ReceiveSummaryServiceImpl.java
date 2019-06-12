@@ -549,9 +549,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                     "A,C,D,I,M,X,Z");
         }
 
-        if (receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest) == false) {
-            throw new InvalidValueException("Value of InventoryMatchStatus should be between 0-9");
-        }
         if (receivingSummaryLineRequest.getSequenceNumber() == null) {
             if (isWareHouseData == false) {
                 id = formulateId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), receivingSummaryLineRequest.getReceiptDate().toString());
@@ -597,7 +594,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             //TODO code needs to optimized remove the DB calls in loop
             List<ReceivingLine> receivingLineList = mongoTemplate.find(dynamicQuery, ReceivingLine.class, "receive-line");
             for (ReceivingLine receivingLine : receivingLineList) {
-                receivingLine.setInventoryMatchStatus(receivingSummaryLineRequest.getInventoryMatchStatus());
+                receivingLine.setInventoryMatchStatus(Integer.parseInt(receivingSummaryLineRequest.getInventoryMatchStatus()));
                 commitedRcvLine = mongoTemplate.save(receivingLine, "receive-line");
 
                 if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
@@ -613,9 +610,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                         "A,C,D,I,M,X,Z");
             }
 
-            if (receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest) == false) {
-                throw new InvalidValueException("Value of InventoryMatchStatus should be between 0-9");
-            }
             String summaryId;
             String lineId;
             if (isWareHouseData == false) {
@@ -646,7 +640,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             if (receiveLine == null) {
                 throw new ContentNotFoundException("Receive line not found for the given id ");
             }
-            receiveLine.setInventoryMatchStatus(receivingSummaryLineRequest.getInventoryMatchStatus());
+            receiveLine.setInventoryMatchStatus(Integer.parseInt(receivingSummaryLineRequest.getInventoryMatchStatus()));
             commitedRcvLine = mongoTemplate.save(receiveLine, "receive-line");
             if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
                 publisher.publishEvent(commitedRcvLine);
