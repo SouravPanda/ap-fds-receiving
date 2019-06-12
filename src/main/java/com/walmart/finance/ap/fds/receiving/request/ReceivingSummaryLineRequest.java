@@ -35,7 +35,6 @@ public class ReceivingSummaryLineRequest {
 
     Integer sequenceNumber;
 
-   // @Pattern(regexp="[0-9]")
     @NotEmpty(message = "inventoryMatchStatus cannot be null")
     String inventoryMatchStatus;
 

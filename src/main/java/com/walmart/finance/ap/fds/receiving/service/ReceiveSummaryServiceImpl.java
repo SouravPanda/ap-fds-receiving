@@ -519,7 +519,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         } else {
             id = formulateId(receivingSummaryRequest.getControlNumber(), receivingSummaryRequest.getReceiptNumber(), receivingSummaryRequest.getLocationNumber().toString(), "0");
         }
-        
+
         receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receive-summary");
         if (receiveSummary == null) {
             throw new NotFoundException("Receive summary not found for the given id");

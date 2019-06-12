@@ -25,12 +25,17 @@ public class ReceiveSummaryLineValidator {
     }
 
     public boolean validateInventoryMatchStatus(ReceivingSummaryLineRequest receivingSummaryLineRequest) {
-        if (receivingSummaryLineRequest.getInventoryMatchStatus().contains(".")) {
-            return false;
-        }
-        Integer inv_match_status = Integer.valueOf(receivingSummaryLineRequest.getInventoryMatchStatus());
-        if (inv_match_status >= 0 && inv_match_status <= 9) {
-            return true;
+        try {
+            if (receivingSummaryLineRequest.getInventoryMatchStatus().contains(".")) {
+                return false;
+            }
+            Integer inv_match_status = Integer.valueOf(receivingSummaryLineRequest.getInventoryMatchStatus());
+            if (inv_match_status >= 0 && inv_match_status <= 9) {
+                return true;
+            }
+
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
         }
         return false;
     }
