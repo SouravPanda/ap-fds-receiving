@@ -3,6 +3,7 @@ package com.walmart.finance.ap.fds.receiving.service;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryReqConverter;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
+import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
 import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.integrations.*;
@@ -521,7 +522,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
             receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receive-summary");
             if (receiveSummary == null) {
-                throw new NotFoundException("Receive summary not found for the given id");
+                throw new ContentNotFoundException("Receive summary not found for the given id");
             }
 
             receiveSummary.setBusinessStatusCode(receivingSummaryRequest.getBusinessStatusCode().charAt(0));
@@ -561,7 +562,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             ReceiveSummary receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receive-summary");
 
             if (receiveSummary == null) {
-                throw new NotFoundException("Receive summary not found for the given id");
+                throw new ContentNotFoundException("Receive summary not found for the given id");
             }
 
             receiveSummary.setBusinessStatusCode(receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
@@ -630,7 +631,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             ReceiveSummary receiveSummary = mongoTemplate.findById(summaryId, ReceiveSummary.class, "receive-summary");
 
             if (receiveSummary == null) {
-                throw new NotFoundException("Receive summary not found for the given id");
+                throw new ContentNotFoundException("Receive summary not found for the given id");
             }
 
             receiveSummary.setBusinessStatusCode(receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
@@ -643,7 +644,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             receiveLine = mongoTemplate.findById(lineId, ReceivingLine.class, "receive-line");
 
             if (receiveLine == null) {
-                throw new NotFoundException("Receive line not found for the given id ");
+                throw new ContentNotFoundException("Receive line not found for the given id ");
             }
             receiveLine.setInventoryMatchStatus(receivingSummaryLineRequest.getInventoryMatchStatus());
             commitedRcvLine = mongoTemplate.save(receiveLine, "receive-line");
