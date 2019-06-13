@@ -509,6 +509,8 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     @Override
     @Transactional
     public ReceivingSummaryRequest updateReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest, String countryCode) {
+
+        log.info("unitofWorkid:" + receivingSummaryRequest.getMeta().getUnitofWorkid());
         Boolean isWareHouseData = isWareHouseData(receivingSummaryRequest.getMeta().getSorRoutingCtx().getInvProcAreaCode(), receivingSummaryRequest.getMeta().getSorRoutingCtx().getReplnTypCd(),
                 receivingSummaryRequest.getMeta().getSorRoutingCtx().getLocationCountryCd());
 
@@ -531,7 +533,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
         receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, summaryCollection);
         if (receiveSummary == null) {
-            throw new NotFoundException("Receive summary not found for the given id");
+            throw new ContentNotFoundException("Receive summary not found for the given id");
         }
         receiveSummary.setBusinessStatusCode(receivingSummaryRequest.getBusinessStatusCode().charAt(0));
         ReceiveSummary commitedRcvSummary = mongoTemplate.save(receiveSummary, summaryCollection);
@@ -552,6 +554,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         ReceivingLine commitedRcvLine;
         ReceiveSummary commitedRcvSummary;
         String id;
+
+        log.info("unitofWorkid:" + receivingSummaryLineRequest.getMeta().getUnitofWorkid());
+
         if (receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest) == false) {
             throw new InvalidValueException("Value of field  businessStatusCode passed is not valid, it should be one among " +
                     "A,C,D,I,M,X,Z");

@@ -19,11 +19,9 @@ import java.util.List;
 @AllArgsConstructor
 public class ReceivingSummaryRequest {
 
-    @Size(max = 10, min = 1)
     @NotEmpty(message = "Please enter a valid receiptNumber")
     private String receiptNumber;
 
-    @Size(max = 10, min = 1)
     @NotEmpty(message = "Please enter a valid controlNumber")
     private String controlNumber;
 
