@@ -9,9 +9,12 @@ import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.repository.ReceiveLineDataRepository;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -36,6 +39,12 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
     @Autowired
     MongoTemplate mongoTemplate;
 
+    @Setter
+    @Getter
+    @Value("${azure.db.collection.line}")
+    private String lineCollection;
+
+
     public ReceivingLine saveReceiveLine(ReceivingSummaryLineRequest receivingSummaryLineRequest) {
         ReceivingLine receiveLine = receivingLineRequestConverter.convert(receivingSummaryLineRequest);
         return receiveLineDataRepository.save(receiveLine);
@@ -45,7 +54,7 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
     public List<ReceivingLineResponse> getLineSummary(String purchaseOrderId, String receiptNumber, String transactionType, String controlNumber, String locationNumber, String divisionNumber) {
 
         Query query = searchCriteriaForGet(purchaseOrderId, receiptNumber, transactionType, controlNumber, locationNumber, divisionNumber);
-        List<ReceivingLine> receiveLines = mongoTemplate.find(query.limit(1000), ReceivingLine.class, "receive-line-new");
+        List<ReceivingLine> receiveLines = mongoTemplate.find(query.limit(1000), ReceivingLine.class, lineCollection);
         List<ReceivingLineResponse> responseList;
         if (CollectionUtils.isEmpty(receiveLines)) {
             throw new NotFoundException("Receiving line not found for given search criteria.");

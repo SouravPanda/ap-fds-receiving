@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -68,6 +69,14 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     @Autowired
     private ApplicationEventPublisher publisher;
 
+    @Value("${azure.db.collection.summary}")
+    private String summaryCollection;
+
+    @Value("${azure.db.collection.line}")
+    private String lineCollection;
+
+    @Value("${azure.db.collection.freight}")
+    private String freightCollection;
 
     // TODO validation for incoming against MDM needs to be added later
 
@@ -482,7 +491,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     private List<ReceiveSummary> executeQueryForReceiveSummary(Query query) {
         List<ReceiveSummary> receiveSummaries = new ArrayList<>();
         if (query != null) {
-            receiveSummaries = mongoTemplate.find(query.limit(1000), ReceiveSummary.class, "receive-summary");
+            receiveSummaries = mongoTemplate.find(query.limit(1000), ReceiveSummary.class, summaryCollection);
         }
         return receiveSummaries;
 
@@ -520,12 +529,12 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             id = formulateId(receivingSummaryRequest.getControlNumber(), receivingSummaryRequest.getReceiptNumber(), receivingSummaryRequest.getLocationNumber().toString(), "0");
         }
 
-        receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receive-summary");
+        receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, summaryCollection);
         if (receiveSummary == null) {
             throw new NotFoundException("Receive summary not found for the given id");
         }
         receiveSummary.setBusinessStatusCode(receivingSummaryRequest.getBusinessStatusCode().charAt(0));
-        ReceiveSummary commitedRcvSummary = mongoTemplate.save(receiveSummary, "receive-summary");
+        ReceiveSummary commitedRcvSummary = mongoTemplate.save(receiveSummary, summaryCollection);
         if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
             publisher.publishEvent(commitedRcvSummary);
         }
@@ -559,7 +568,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 id = formulateId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), "0");
             }
 
-            ReceiveSummary receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, "receive-summary");
+            ReceiveSummary receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, summaryCollection);
 
             if (receiveSummary == null) {
                 throw new ContentNotFoundException("Receive summary not found for the given id");
@@ -567,7 +576,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
             receiveSummary.setBusinessStatusCode(receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
 
-            commitedRcvSummary = mongoTemplate.save(receiveSummary, "receive-summary");
+            commitedRcvSummary = mongoTemplate.save(receiveSummary, summaryCollection);
 
             if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
                 publisher.publishEvent(commitedRcvSummary);
@@ -595,10 +604,10 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             }*/
 
             //TODO code needs to optimized remove the DB calls in loop
-            List<ReceivingLine> receivingLineList = mongoTemplate.find(dynamicQuery, ReceivingLine.class, "receive-line");
+            List<ReceivingLine> receivingLineList = mongoTemplate.find(dynamicQuery, ReceivingLine.class, lineCollection);
             for (ReceivingLine receivingLine : receivingLineList) {
                 receivingLine.setInventoryMatchStatus(Integer.parseInt(receivingSummaryLineRequest.getInventoryMatchStatus()));
-                commitedRcvLine = mongoTemplate.save(receivingLine, "receive-line");
+                commitedRcvLine = mongoTemplate.save(receivingLine, lineCollection);
 
                 if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
                     publisher.publishEvent(commitedRcvLine);
@@ -628,7 +637,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                         "0", receivingSummaryLineRequest.getSequenceNumber().toString());
             }
 
-            ReceiveSummary receiveSummary = mongoTemplate.findById(summaryId, ReceiveSummary.class, "receive-summary");
+            ReceiveSummary receiveSummary = mongoTemplate.findById(summaryId, ReceiveSummary.class, summaryCollection);
 
             if (receiveSummary == null) {
                 throw new ContentNotFoundException("Receive summary not found for the given id");
@@ -636,18 +645,18 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
             receiveSummary.setBusinessStatusCode(receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
 
-            commitedRcvSummary = mongoTemplate.save(receiveSummary, "receive-summary");
+            commitedRcvSummary = mongoTemplate.save(receiveSummary, summaryCollection);
 
             if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
                 publisher.publishEvent(commitedRcvSummary);
             }
-            receiveLine = mongoTemplate.findById(lineId, ReceivingLine.class, "receive-line");
+            receiveLine = mongoTemplate.findById(lineId, ReceivingLine.class, lineCollection);
 
             if (receiveLine == null) {
                 throw new ContentNotFoundException("Receive line not found for the given id ");
             }
             receiveLine.setInventoryMatchStatus(Integer.parseInt(receivingSummaryLineRequest.getInventoryMatchStatus()));
-            commitedRcvLine = mongoTemplate.save(receiveLine, "receive-line");
+            commitedRcvLine = mongoTemplate.save(receiveLine, lineCollection);
             if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
                 publisher.publishEvent(commitedRcvLine);
             }
@@ -659,13 +668,13 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     private List<ReceivingLine> executeQueryReceiveline(Query query) {
         List<ReceivingLine> receiveLines = new ArrayList<>();
         if (query != null) {
-            receiveLines = mongoTemplate.find(query, ReceivingLine.class, "receive-line-new");
+            receiveLines = mongoTemplate.find(query, ReceivingLine.class, lineCollection);
         }
         return receiveLines;
     }
 
     private List<FreightResponse> executeQueryReceiveFreight(Query query) {
-        List<FreightResponse> receiveFreights = mongoTemplate.find(query, FreightResponse.class, "receive-freight");
+        List<FreightResponse> receiveFreights = mongoTemplate.find(query, FreightResponse.class, freightCollection);
         return receiveFreights;
     }
 
