@@ -69,13 +69,13 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     @Autowired
     private ApplicationEventPublisher publisher;
 
-    @Value("${azure.db.collection.summary}")
+    @Value("${azure.cosmosdb.collection.summary}")
     private String summaryCollection;
 
-    @Value("${azure.db.collection.line}")
+    @Value("${azure.cosmosdb.collection.line}")
     private String lineCollection;
 
-    @Value("${azure.db.collection.freight}")
+    @Value("${azure.cosmosdb.collection.freight}")
     private String freightCollection;
 
     // TODO validation for incoming against MDM needs to be added later

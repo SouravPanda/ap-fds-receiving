@@ -41,7 +41,7 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
 
     @Setter
     @Getter
-    @Value("${azure.db.collection.line}")
+    @Value("${azure.cosmosdb.collection.line}")
     private String lineCollection;
 
 
