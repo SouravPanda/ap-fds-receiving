@@ -533,7 +533,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
         receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, summaryCollection);
         if (receiveSummary == null) {
-            throw new NotFoundException("Receive summary not found for the given id");
+            throw new ContentNotFoundException("Receive summary not found for the given id");
         }
         receiveSummary.setBusinessStatusCode(receivingSummaryRequest.getBusinessStatusCode().charAt(0));
         ReceiveSummary commitedRcvSummary = mongoTemplate.save(receiveSummary, summaryCollection);
