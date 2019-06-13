@@ -47,6 +47,7 @@ public class ReceiveLineServiceImplTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        receiveLineServiceImpl.setLineCollection("receive-line");
     }
 
     int pageNbr = 1;
