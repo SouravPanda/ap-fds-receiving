@@ -1,4 +1,4 @@
-package com.walmart.finance.ap.fds.receiving.service.impl;
+package com.walmart.finance.ap.fds.receiving.service;
 
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;

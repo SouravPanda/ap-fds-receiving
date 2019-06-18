@@ -26,23 +26,6 @@ public class ReceivingSummaryController {
     private ReceiveSummaryService receiveSummaryService;
 
     /**
-     * Method calls Service class to add stores in Db
-     *
-     * @param
-     * @return
-     */
-    @PostMapping
-    @ApiOperation(value = "API to add new Stores based on the payload")
-    @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
-
-    public ReceiveSummary saveReceiveSummary(@RequestBody ReceivingSummaryRequest receivingSummaryRequest, @PathVariable("countryCode")
-            String countryCode) {
-        return receiveSummaryService.saveReceiveSummary(receivingSummaryRequest);
-
-    }
-
-
-    /**
      * ReceiveSummary
      * Method calls Receive Service to get
      *

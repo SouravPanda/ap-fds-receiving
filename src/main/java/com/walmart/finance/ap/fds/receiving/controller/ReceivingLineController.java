@@ -58,19 +58,4 @@ public class ReceivingLineController {
 
     }
 
-    /**
-     * Method calls Service class to add stores in Db
-     *
-     * @param
-     * @return
-     */
-    @PostMapping
-    @ApiOperation(value = "API to add new Stores based on the payload")
-    @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
-
-    public ReceivingLine saveReceiveLine(@PathVariable("countryCode")
-                                                 String countryCode, @RequestBody ReceivingSummaryLineRequest receivingSummaryLineRequest) {
-        return receiveLineServiceImpl.saveReceiveLine(receivingSummaryLineRequest);
-
-    }
 }
