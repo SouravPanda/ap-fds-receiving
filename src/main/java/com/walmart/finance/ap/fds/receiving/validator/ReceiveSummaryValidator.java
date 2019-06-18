@@ -33,7 +33,7 @@ public class ReceiveSummaryValidator {
     public static final Sort.Direction order = Sort.Direction.DESC;
     boolean verdict = false;
     List<ReceiveSummaryBusinessStat> businessStatList = Arrays.asList(ReceiveSummaryBusinessStat.values());
-    public static final List<Object> comparisonList = new ArrayList<Object>();
+    protected static final List<Object> comparisonList = new ArrayList<Object>();
 
     public void validate(Map<String, String> allRequestParam) {
         comparisonList.add(purchaseOrderNumber);
