@@ -526,7 +526,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
         if (receivingSummaryRequest != null) {
             if (receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryRequest) == false) {
-                throw new InvalidValueException("Value of field  businessStatusCode passed is not valid","it should be one among A,C,D,I,M,X,Z");
+                throw new InvalidValueException("Value of field  businessStatusCode passed is not valid", "it should be one among A,C,D,I,M,X,Z");
             }
         }
 
@@ -539,7 +539,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
         receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, summaryCollection);
         if (receiveSummary == null) {
-            throw new ContentNotFoundException("Receive summary not found for the given id","please enter a valid id");
+            throw new ContentNotFoundException("Receive summary not found for the given id", "please enter a valid id");
         }
         receiveSummary.setBusinessStatusCode(receivingSummaryRequest.getBusinessStatusCode().charAt(0));
         ReceiveSummary commitedRcvSummary = mongoTemplate.save(receiveSummary, summaryCollection);
@@ -569,11 +569,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         log.info("unitofWorkid:" + receivingSummaryLineRequest.getMeta().getUnitofWorkid());
 
         if (receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest) == false) {
-            throw new InvalidValueException("Value of field  businessStatusCode passed is not valid","it should be one among A,C,D,I,M,X,Z");
+            throw new InvalidValueException("Value of field  businessStatusCode passed is not valid", "it should be one among A,C,D,I,M,X,Z");
         }
 
         if (receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest) == false) {
-            throw new InvalidValueException("Invalid value, inventoryMatchStatus","it should be in range 0-9");
+            throw new InvalidValueException("Invalid value, inventoryMatchStatus", "it should be in range 0-9");
         }
 
         if (receivingSummaryLineRequest.getSequenceNumber() == null) {
@@ -586,7 +586,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             ReceiveSummary receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, summaryCollection);
 
             if (receiveSummary == null) {
-                throw new ContentNotFoundException("Receive summary not found for the given id","please enter a valid id");
+                throw new ContentNotFoundException("Receive summary not found for the given id", "please enter a valid id");
             }
 
             receiveSummary.setBusinessStatusCode(receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
@@ -633,11 +633,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         } else {
 
             if (receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest) == false) {
-                throw new InvalidValueException("Value of field  businessStatusCode passed is not valid","it should be one among A,C,D,I,M,X,Z");
+                throw new InvalidValueException("Value of field  businessStatusCode passed is not valid", "it should be one among A,C,D,I,M,X,Z");
             }
 
             if (receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest) == false) {
-                throw new InvalidValueException("Invalid value, inventoryMatchStatus","it should be in range 0-9");
+                throw new InvalidValueException("Invalid value, inventoryMatchStatus", "it should be in range 0-9");
             }
             String lineId;
             String summaryId;
@@ -654,7 +654,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             ReceiveSummary receiveSummary = mongoTemplate.findById(summaryId, ReceiveSummary.class, summaryCollection);
 
             if (receiveSummary == null) {
-                throw new ContentNotFoundException("Receive summary not found for the given id","please enter a valid id");
+                throw new ContentNotFoundException("Receive summary not found for the given id", "please enter a valid id");
             }
 
             receiveSummary.setBusinessStatusCode(receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
@@ -667,7 +667,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             receiveLine = mongoTemplate.findById(lineId, ReceivingLine.class, lineCollection);
 
             if (receiveLine == null) {
-                throw new ContentNotFoundException("Receive line not found for the given id ","please enter a valid id");
+                throw new ContentNotFoundException("Receive line not found for the given id ", "please enter a valid id");
             }
             receiveLine.setInventoryMatchStatus(Integer.parseInt(receivingSummaryLineRequest.getInventoryMatchStatus()));
             commitedRcvLine = mongoTemplate.save(receiveLine, lineCollection);
