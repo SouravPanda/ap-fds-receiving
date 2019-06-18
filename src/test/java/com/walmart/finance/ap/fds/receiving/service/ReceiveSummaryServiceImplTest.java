@@ -1,4 +1,4 @@
-package com.walmart.finance.ap.fds.receiving.service.impl;
+package com.walmart.finance.ap.fds.receiving.service;
 
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
@@ -12,16 +12,18 @@ import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import com.walmart.finance.ap.fds.receiving.request.SorRoutingCtx;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
 import com.walmart.finance.ap.fds.receiving.response.SuccessMessage;
-import com.walmart.finance.ap.fds.receiving.service.ReceiveSummaryServiceImpl;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryLineValidator;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryValidator;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -34,7 +36,8 @@ import java.util.List;
 
 import static org.mockito.Mockito.when;
 
-
+@PrepareForTest(ReceiveSummaryServiceImpl.class)
+@RunWith(PowerMockRunner.class)
 public class ReceiveSummaryServiceImplTest {
 
     @InjectMocks

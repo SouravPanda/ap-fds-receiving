@@ -80,14 +80,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     @Value("${azure.cosmosdb.collection.freight}")
     private String freightCollection;
 
-    // TODO validation for incoming against MDM needs to be added later
-
-    public ReceiveSummary saveReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest) {
-        ReceiveSummary receiveSummary = receivingSummaryReqConverter.convert(receivingSummaryRequest);
-        return receiveDataRepository.save(receiveSummary);
-
-    }
-
     /**
      * Service layer to get the data based on the requested parameters and return pageable response.
      *
@@ -113,8 +105,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     public SuccessMessage getReceiveSummary(String countryCode, String purchaseOrderNumber, String purchaseOrderId, List<String> receiptNumbers, String transactionType, String controlNumber, String locationNumber,
                                             String divisionNumber, String vendorNumber, String departmentNumber, String invoiceId, String invoiceNumber, String receiptDateStart, String receiptDateEnd, List<String> itemNumbers, List<String> upcNumbers) {// Map<String,String> allRequestParam) {
 
-
-        // receiveSummaryValidator.validate(allRequestParam);
         HashMap<String, String> paramMap = checkingNotNullParameters(countryCode, purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
                 divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd);
         List<ReceiveSummary> receiveSummaries;
@@ -138,11 +128,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         //Todo parallel stream performance check
         if (CollectionUtils.isEmpty(receiveSummaries)) {
             throw new NotFoundException("Receiving summary not found for given search criteria.");
-        }
-        /*else if (receiveSummaries.size() > 1000) {
-            throw new SearchCriteriaException("Modify the search criteria as records are more than 1000");
-        } */
-        else {
+        } else {
             responseList = receiveSummaries.stream().map(
                     (t) -> {
                         ReceivingSummaryResponse response = receivingSummaryResponseConverter.convert(t);
