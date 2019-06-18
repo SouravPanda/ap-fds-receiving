@@ -43,20 +43,16 @@ public class ReceiveLineServiceImplTest {
     MongoTemplate mongoTemplate;
 
 
-
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         receiveLineServiceImpl.setLineCollection("receive-line");
     }
 
-    int pageNbr = 1;
-    int pageSize = 1;
-
     @Test
     public void getLineSummaryTest() throws Exception {
 
-       List<String> orderByproperties = new ArrayList<>();
+        List<String> orderByproperties = new ArrayList<>();
         orderByproperties.add("creationDate");
 
 
@@ -66,29 +62,21 @@ public class ReceiveLineServiceImplTest {
                 89, 12, "1122", 99, 8264, 18,
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
-                0, 1.9, "LL",0,"");
+                0, 1.9, "LL", 0, "");
         ReceivingLine receivingLineAt = new ReceivingLine("0|0|0|0|0|null|null|12", "6778", 0,
                 0, 0, 0, 0.0, 0.0, "0", 0,
                 0, "0KLL", 0, 0, 0, null, null, 12,
                 LocalDateTime.of(1985, 10, 17, 18, 45, 21), 'A', "BKP", "111",
-                0, LocalDate.now(), 0, 1.9, "LL",0,"");
+                0, LocalDate.now(), 0, 1.9, "LL", 0, "");
         listOfContent.add(receivingLine);
         listOfContent.add(receivingLineAt);
 
-        Query query = new Query();
-
-        Criteria criteria = Criteria.where("receivingControlNumber").is(466567).and("purchaseOrderReceiveID").is(1).and("transactionType").is(0)
-                .and("baseDivisionNumber").is(44).and("storeNumber").is(112);
-        query.addCriteria(criteria);
-        Pageable pageable = PageRequest.of(pageNbr, pageSize);
-        query.with(pageable);
-
         ReceivingLineResponse receivingLineResponse = new ReceivingLineResponse(0, 0, 0, 0, 0, 2.9,
-                1.9, 0, 0,"0",
+                1.9, 0, 0, "0",
                 null, null, null, 0, 0, 0);
         ReceivingLineResponse receivingLineResponseAt = new ReceivingLineResponse(0, 0, 0, 0, 0, 2.9,
-                1.9, 0, 0,"0",
-                 null, null, null, 0,  0, 0);
+                1.9, 0, 0, "0",
+                null, null, null, 0, 0, 0);
         List<ReceivingLineResponse> content = new ArrayList<>();
         content.add(receivingLineResponse);
         content.add(receivingLineResponseAt);
@@ -96,12 +84,7 @@ public class ReceiveLineServiceImplTest {
         when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.anyString())).thenReturn(listOfContent);
         when(receivingLineResponseConverter.convert(Mockito.any(ReceivingLine.class))).thenReturn(receivingLineResponse);
 
-        PageRequest pageRequest = new PageRequest(1, 1, Sort.unsorted());
-        PageImpl<ReceivingLineResponse> pageImplResponse = new PageImpl(content, pageRequest, 1);
-
-        when(mongoTemplate.count(query, ReceivingLine.class)).thenReturn(2L);
-
-    Assert.assertEquals(receiveLineServiceImpl.getLineSummary("78887","1", "1", "777","87","88"),content);
+        Assert.assertEquals(receiveLineServiceImpl.getLineSummary("78887", "1", "1", "777", "87", "88"), content);
 
     }
 
