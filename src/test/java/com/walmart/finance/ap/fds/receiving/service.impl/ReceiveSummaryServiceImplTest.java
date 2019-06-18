@@ -177,7 +177,7 @@ public class ReceiveSummaryServiceImplTest {
                 "999997", "yyyy", (LocalDateTime.of(2018,10,10,0,40,0)), "99"
                 , 'K', "LLL");
         ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("888", "998", LocalDate.of(2018,10,10),
-                1, "P", meta);
+                1, "A", meta);
         String countryCode = "US";
         String id = "998|888|1|0";
         List<ReceivingSummaryRequest> responseList = new ArrayList<>();
