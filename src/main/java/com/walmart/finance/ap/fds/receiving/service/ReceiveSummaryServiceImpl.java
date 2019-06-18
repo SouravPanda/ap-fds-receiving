@@ -370,9 +370,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             query.addCriteria(criteriaDefinition);
         }
         //TODO : According to conversion with Anurag, this has been commented (29/May/2019)
-        /*if (StringUtils.isNotEmpty(invoiceResponse.getDestStoreNbr())) {
-            query.addCriteria(Criteria.where(ReceiveSummaryParameters.BASEDIVISIONNUMBER.getParameterName()).is(Integer.parseInt(invoiceResponse.getDestDivNbr().trim())));
-        }*/
+
         //TODO  : Commented due to dilemma of 6 digits and 9 digits
         /*   if (StringUtils.isNotEmpty(invoiceResponse.getVendorNumber())) {
             query.addCriteria(Criteria.where(ReceiveSummaryParameters.VENDORNUMBER.getParameterName()).is(Integer.parseInt(invoiceResponse.getVendorNumber().trim())));
@@ -457,12 +455,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             query.addCriteria(criteriaDefinition);
         }
         //TODO final date and final time not present in receive-summary thus commented out
-//        if (receiveSummary.getFinalDate() != null) {
-//            query.addCriteria(Criteria.where(ReceivingLineParameters.FINALDATE.getParameterName()).is(receiveSummary.getFinalDate()));
-//        }
-//        if (receiveSummary.getFinalTime() != null) {
-//            query.addCriteria(Criteria.where(ReceivingLineParameters.FINALTIME.getParameterName()).is(receiveSummary.getFinalTime()));
-//        }
+
         log.info("Query is " + query);
         return executeQueryReceiveline(criteriaDefinition == null ? null : query);
 
@@ -609,14 +602,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 Criteria locationNumberCriteria = Criteria.where(ReceivingLineParameters.STORENUMBER.getParameterName()).is(receivingSummaryLineRequest.getLocationNumber());
                 dynamicQuery.addCriteria(locationNumberCriteria);
             }
-
-            /*if (receivingSummaryLineRequest.getReceiptDate() != null) {
-                if (isWareHouseData == false) {
-                    receiptDateCriteria = Criteria.where("MDSReceiveDate").is(receivingSummaryLineRequest.getReceiptDate());
-                    dynamicQuery.addCriteria(receiptDateCriteria);
-                }
-
-            }*/
 
             //TODO code needs to optimized remove the DB calls in loop
             List<ReceivingLine> receivingLineList = mongoTemplate.find(dynamicQuery, ReceivingLine.class, lineCollection);
