@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,5 +13,5 @@ public class ReceivingError {
 
     private int errorCode;
     private String errorMessage;
-    private LocalDateTime timestamp;
+    private List<ErrorDetails> details;
 }

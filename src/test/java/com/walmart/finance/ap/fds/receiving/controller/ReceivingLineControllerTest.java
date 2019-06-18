@@ -53,15 +53,6 @@ public class ReceivingLineControllerTest {
     @Test
     public void getReceiveLineTest() throws Exception {
 
-/*
-        ReceivingLineResponse receivingLineResponse = new ReceivingLineResponse(0, 0, 0, 0, 0, 2.9,
-                1.9, 0, 0,0,"0", 0, "kk","0","0",
-                "0","0","0", 0, null, 0,0);
-        ReceivingLineResponse receivingLineResponseAt = new ReceivingLineResponse(0, 0, 0, 0, 0, 2.9,
-                1.9, 0, 0,0,"0", 0, "kk","0","0",
-                "0","0","LL90", 99, null, 0,0);
-*/
-
         ReceivingLineResponse receivingLineResponse = new ReceivingLineResponse(0, 0, 0, 0, 0, 2.9,
                 1.9, 0, 0,  "kk",
                 "0","0","0", 0,  0,0);

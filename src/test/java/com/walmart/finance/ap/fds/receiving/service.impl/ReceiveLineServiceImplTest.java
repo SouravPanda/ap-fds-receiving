@@ -82,14 +82,7 @@ public class ReceiveLineServiceImplTest {
         query.addCriteria(criteria);
         Pageable pageable = PageRequest.of(pageNbr, pageSize);
         query.with(pageable);
-/*
-        ReceivingLineResponse receivingLineResponse = new ReceivingLineResponse(0, 0, 0, 0, 0, 2.9,
-                1.9, 0, 0, 0, "KKO09", 0, "0",
-                "0", "0", null, null, null, 0, "0", 0, 0);
-                        ReceivingLineResponse receivingLineResponseAt = new ReceivingLineResponse(0, 0, 0, 0, 0, 2.9,
-                1.9, 0, 0, 0, "KKO09", 0, "0",
-                "0", "0", null, null, null, 0, "0", 0, 0);
-*/
+
         ReceivingLineResponse receivingLineResponse = new ReceivingLineResponse(0, 0, 0, 0, 0, 2.9,
                 1.9, 0, 0,"0",
                 null, null, null, 0, 0, 0);

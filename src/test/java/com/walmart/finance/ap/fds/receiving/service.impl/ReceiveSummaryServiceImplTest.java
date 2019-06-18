@@ -1,14 +1,17 @@
-
-
 package com.walmart.finance.ap.fds.receiving.service.impl;
 
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
+import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
+import com.walmart.finance.ap.fds.receiving.integrations.InvoiceIntegrationService;
+import com.walmart.finance.ap.fds.receiving.integrations.InvoiceResponse;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
+import com.walmart.finance.ap.fds.receiving.request.Meta;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
-import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
+import com.walmart.finance.ap.fds.receiving.request.SorRoutingCtx;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
+import com.walmart.finance.ap.fds.receiving.response.SuccessMessage;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveSummaryServiceImpl;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryLineValidator;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryValidator;
@@ -19,10 +22,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -37,6 +36,7 @@ import static org.mockito.Mockito.when;
 
 
 public class ReceiveSummaryServiceImplTest {
+
     @InjectMocks
     ReceiveSummaryServiceImpl receiveSummaryServiceImpl;
 
@@ -46,12 +46,14 @@ public class ReceiveSummaryServiceImplTest {
     @Mock
     ReceivingSummaryResponseConverter receivingSummaryResponseConverter;
 
-
     @Mock
     ReceiveSummaryValidator receiveSummaryValidator;
 
     @Mock
     ReceiveSummaryLineValidator receiveSummaryLineValidator;
+
+    @Mock
+    InvoiceIntegrationService invoiceIntegrationService;
 
 
     @Before
@@ -59,23 +61,26 @@ public class ReceiveSummaryServiceImplTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    int pageNbr = 1;
-    int pageSize = 1;
-    Query query = new Query();
 
     @Test
     public void getReceiveSummaryTest() {
         ReceiveSummary receiveSummary = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665267",
-                8264, 18, 0, LocalDate.of(1996, 12, 12), LocalTime.of(18, 45, 21), 0, 7688, 1111,
-                0, 0, 'H', 0.0, 1.0, 1, 'P', 2L, 'k', 'L',
+                8264, 18, 0, LocalDate.of(1996, 12, 12),
+                LocalTime.of(18, 45, 21), 0, 7688, 1111,
+                0, 0, 'H', 0.0, 1.0, 1,
+                'P', 2L, 'k', 'L',
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
-                LocalDate.now(), 9.0, 7, 0, 0, LocalDateTime.now(), 0, "JJJ", "yyyy", LocalDateTime.now(), "99"
+                LocalDate.now(), 9.0, 7, 0, 0, LocalDateTime.now(), 0,
+                "JJJ", "yyyy", LocalDateTime.now(), "99"
                 , 'K', "LLL");
         ReceiveSummary receiveSummaryAt = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665207",
-                8064, 18, 0, LocalDate.of(1986, 12, 12), LocalTime.of(18, 45, 21), 0, 9788, 1111,
-                0, 0, 'H', 0.0, 1.0, 1, 'P', 2L, 'k', 'L',
+                8064, 18, 0, LocalDate.of(1986, 12, 12), LocalTime.of(18, 45, 21),
+                0, 9788, 1111,
+                0, 0, 'H', 0.0, 1.0, 1, 'P',
+                2L, 'k', 'L',
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
-                LocalDate.now(), 9.0, 7, 0, 0, LocalDateTime.now(), 0, "JJJ", "UU", LocalDateTime.now(), "99"
+                LocalDate.now(), 9.0, 7, 0, 0, LocalDateTime.now(), 0,
+                "JJJ", "UU", LocalDateTime.now(), "99"
                 , 'K', "IIL");
 
         List listOfContent = new ArrayList<ReceiveSummary>();
@@ -87,114 +92,156 @@ public class ReceiveSummaryServiceImplTest {
         listOfReceiptNumbers.add("89");
 
         List<String> listOfItemNumbers = new ArrayList<>();
-        listOfItemNumbers.add("99K");
-        listOfItemNumbers.add("89P");
+        listOfItemNumbers.add("99");
+        listOfItemNumbers.add("89");
 
         List<String> listOfUpcNumbers = new ArrayList<>();
-        listOfItemNumbers.add("9K");
-        listOfItemNumbers.add("89P");
+        listOfItemNumbers.add("9");
+        listOfItemNumbers.add("89");
 
         Query query = new Query();
-        Criteria criteria = Criteria.where("receivingControlNumber").is(466567).and("baseDivisionNumber").is(0).
-                and("MDSReceiveDate").is(LocalDate.of(1996, 12, 12)).and("transactionType").is(99)
-                .and("storeNumber").is(3680).and("purchaseOrderNumber").is("999").and("poReceiveId").is("87865").and("departmentNumber")
-                .is(0).and("vendorNumber").is(9986);
-        query.addCriteria(criteria);
 
-        Pageable pageable = PageRequest.of(pageNbr, pageSize);
-        query.with(pageable);
+        ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", 1122, 99, "776",
+                3680, 0,
+                LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",
+                9.0, 7.0,
+                0L, 0);
 
-/*
-        ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", 1122, 99, "776", 3680, 0,
-<<<<<<< HEAD
-                LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77", "user", LocalDateTime.now(), 9.0, 7.0,
-                "9LLL", 0L, 0, 9, "LL", 0, "PP", 0, 0, "jjj");
+        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", 1122, 99,
+                "776", 3680, 0,
+                LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77",
+                9.0, 7.0,
+                0L, 0);
 
-        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", 1122, 99, "776", 3680, 0,
-                LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77", "user", LocalDateTime.now(), 9.0, 7.0,
-                "9LLL", 0L, 0, 9, "LL", 0, "PP", 0, 0, "jjj");
-=======
-                              LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77", "user",  LocalDateTime.now(), 9.0,7.0,
-                             "9LLL",0L,0, 9,"LL", 0, "PP",0, 0,"jjj");
-        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", 1122, 99, "776", 3680, 0,
-                              LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77", "user",  LocalDateTime.now(), 9.0,7.0,
-                               "9LLL",0L,0, 9,"LL", 0, "PP",0, 0,"jjj");
-*/
+        FreightResponse freightResponse= new FreightResponse("4665267|1804823|8264|18|18|1995-10-17|18:45:21","0","0");
+        FreightResponse freightResponseAt= new FreightResponse("46652|18048|8264|18|18|1995-10-17|18:45:21","0","0");
 
-
-        ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", 1122, 99, "776", 3680, 0,
-                LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",  9.0,7.0,
-                0L,0);
-
-        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", 1122, 99, "776", 3680, 0,
-                LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77", 9.0,7.0,
-                0L,0);
+        List<FreightResponse> listOfFreight= new ArrayList<>();
+        listOfFreight.add(freightResponse);
+        listOfFreight.add(freightResponseAt);
 
         List<ReceivingSummaryResponse> content = new ArrayList<>();
         content.add(receivingSummaryResponse);
         content.add(receivingSummaryResponseAt);
 
-        when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.anyString())).thenReturn(listOfContent);
+        InvoiceResponse invoiceResponse= new InvoiceResponse("656", "267", "000", "999",
+                "777", "0", "998", "9986", "098");
+
+        InvoiceResponse[] invoiceResponseList = new InvoiceResponse[]{new InvoiceResponse("656", "267", "000", "999",
+                "777", "0", "998", "9986", "098"), new InvoiceResponse("656", "267", "000", "99",
+                "77", "0", "98", "9986", "098")};
+
+        Query dynamicQuery = new Query();
+        Criteria criteriaNew = Criteria.where("purchaseOrderNumber").is("999").and("receivingControlNumber").is("000").and("storeNumber")
+                .is(998).and("departmentNumber").is(98);
+        dynamicQuery.addCriteria(criteriaNew);
+
+        Mockito.when(invoiceIntegrationService.getInvoice(Mockito.any())).thenReturn(invoiceResponseList);
+
         when(receivingSummaryResponseConverter.convert(Mockito.any(ReceiveSummary.class))).thenReturn(receivingSummaryResponse);
 
-        PageRequest pageRequest = new PageRequest(1, 1, Sort.unsorted());
-        PageImpl<ReceivingLineResponse> pageImplResponse = new PageImpl(content, pageRequest, 1);
-
         when(mongoTemplate.count(query, ReceiveSummary.class)).thenReturn(2L);
+        Query mockQuery=Mockito.mock(Query.class);
 
-      /*  Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary("777", "77", "8", listOfReceiptNumbers, "66",
-                "99", "675", "987", "18", "WW8", "776"
-                , "1980-12-12", "1988-12-12", "1990-11-11", listOfItemNumbers, listOfUpcNumbers).toString(), pageImplResponse.toString());*/
+        when(mockQuery.limit(Mockito.anyInt())).thenReturn(mockQuery);
+        when(mongoTemplate.find(Mockito.any(Query.class),Mockito.any(Class.class),Mockito.any())).thenReturn(listOfContent,listOfContent,listOfContent,listOfContent,listOfContent,listOfContent,listOfFreight);
+
+
+        SuccessMessage successMessage = new SuccessMessage();
+        successMessage.setData(content);
+        successMessage.setMessage(true);
+        successMessage.setTimestamp(LocalDateTime.now());
+
+        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary("US", "77", "8", listOfReceiptNumbers, "99",
+                "99", "675", "987", "18", "0", "776"
+                , "1980", "1988-12-12", "1990-11-11", listOfItemNumbers, listOfUpcNumbers).getData(), successMessage.getData().subList(0,1));
     }
 
     @Test
     public void updateReceiveSummaryTest() {
-        Boolean isWareHouseData = false;
-        ReceiveSummary receiveSummary = new ReceiveSummary("553683865|999997|6565|0|99|0|0", "553683865",
-                6565, 18, 0, LocalDate.of(1996, 12, 12), LocalTime.of(18, 45, 21),
+
+        Meta meta = new Meta();
+        SorRoutingCtx sorRoutingCtx = new SorRoutingCtx();
+        sorRoutingCtx.setInvProcAreaCode(36);
+        sorRoutingCtx.setLocationCountryCd("US");
+        sorRoutingCtx.setReplnTypCd("R");
+        meta.setSorRoutingCtx(sorRoutingCtx);
+
+        ReceiveSummary receiveSummary = new ReceiveSummary("998|888|1|0", "888",
+                6565, 18, 0, LocalDate.of(1995, 10, 16), LocalTime.of(18, 30, 00),
                 0, 122663, 1111,
                 0, 0, 'H', 0.0, 1.0, 1, 'P',
                 2L, 'k', 'L',
-                'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
-                LocalDate.now(), 9.0, 7, 0, 0, LocalDateTime.now(), 0,
-                "999997", "yyyy", LocalDateTime.now(), "99"
+                'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.of(1995, 10, 16),
+                LocalDate.of(1995, 10, 16), 9.0, 7, 0, 0, (LocalDateTime.of(2018,10,10,0,40,0)), 0,
+                "999997", "yyyy", (LocalDateTime.of(2018,10,10,0,40,0)), "99"
                 , 'K', "LLL");
-        ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest();
-        String id = "553683865|999997|6565|0|99|0|0";
-        when(mongoTemplate.findById((Mockito.any()), Mockito.any(Class.class), Mockito.anyString())).thenReturn(receiveSummary);
+        ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("888", "998", LocalDate.of(2018,10,10),
+                1, "P", meta);
+        String countryCode = "US";
+        String id = "998|888|1|0";
+        List<ReceivingSummaryRequest> responseList = new ArrayList<>();
+
+        when(mongoTemplate.findById((Mockito.anyString()), Mockito.any(Class.class), Mockito.any())).thenReturn(receiveSummary);
         Mockito.when(receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryRequest)).thenReturn(true);
-        //  Mockito.when(receiveSummaryValidator.validateVendorNumberUpdateSummary(receivingSummaryRequest, vendorNumber, countryCode)).thenReturn(true);
-        //  Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, vendorNumber, countryCode).toString(),receivingSummaryRequest.toString());
+
+        responseList.add(receivingSummaryRequest);
+
+        SuccessMessage successMessage = new SuccessMessage();
+        successMessage.setData(responseList);
+        successMessage.setMessage(true);
+        successMessage.setTimestamp(LocalDateTime.of(2018,10,10,0,40,0));
+
+        Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, countryCode).getData(), successMessage.getData());
     }
 
     @Test
     public void updateReceiveSummaryLineTest() {
-        Integer vendorNumber = 122663;
+
+        Meta meta = new Meta();
+        SorRoutingCtx sorRoutingCtx = new SorRoutingCtx();
+        sorRoutingCtx.setInvProcAreaCode(36);
+        sorRoutingCtx.setLocationCountryCd("US");
+        sorRoutingCtx.setReplnTypCd("R");
+        meta.setSorRoutingCtx(sorRoutingCtx);
+
         String countryCode = "US";
-        ReceiveSummary receiveSummary = new ReceiveSummary("553683865|999997|6565|0|99|0|0", "553683865",
-                6565, 18, 0, LocalDate.of(1996, 12, 12), LocalTime.of(18, 45, 21), 0,
-                122663, 1111,
-                0, 0, 'H', 0.0, 1.0, 1, 'P', 2L,
-                'k', 'L',
-                'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
-                LocalDate.now(), 9.0, 7, 0, 0, LocalDateTime.now(), 0, "999997",
-                "yyyy", LocalDateTime.now(), "99"
+        ReceiveSummary receiveSummary = new ReceiveSummary("9|8|1|0", "8",
+                6565, 18, 0, LocalDate.of(1995, 10, 16), LocalTime.of(18, 30, 00),
+                0, 122663, 1111,
+                0, 0, 'H', 0.0, 1.0, 1, 'P',
+                2L, 'k', 'L',
+                'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.of(1995, 10, 16),
+                LocalDate.of(1995, 10, 16), 9.0, 7, 0, 0, (LocalDateTime.of(2018,10,10,0,40,0)), 0,
+                "999997", "yyyy", (LocalDateTime.of(2018,10,10,0,40,0)), "9"
                 , 'K', "LLL");
-        //  ReceivingSummaryLineRequest receivingSummaryLineSearch = new ReceivingSummaryLineRequest("0","0",1222,LocalDate.now(),1);
-        ReceivingLine receivingLine = new ReceivingLine("112|1804823|8264|18|0|1995-10-17|1995-10-17T18:45:21|122", "4665267",
+
+        ReceivingLine receivingLine = new ReceivingLine("9|8|1|0|1", "8",
                 0, 3777, 94493, 0, 0.0, 0.0, "9",
                 89, 12, "1122", 99, 8264, 18,
-                LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
+                LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 1,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
-                0, 1.9, "LL", 0,"OO");
-        ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("553683865", "99999", LocalDate.now(), 0, "A", 0, "9", null);
-        String id = "56HKKL|33383|0|0|99|1998-12-12T18:56:22|2000-12-12T18:56:22";
-        String lineId = "56HKKL|33383|0|0|99|2019-06-04|21:08:43.981|0";
-        Mockito.when(mongoTemplate.findById(Mockito.eq(id), Mockito.eq(ReceiveSummary.class), Mockito.eq("receiving-summary"))).thenReturn(receiveSummary);
-        Mockito.when(mongoTemplate.findById(Mockito.eq(lineId), Mockito.eq(ReceivingLine.class), Mockito.eq("receive-line"))).thenReturn(receivingLine);
+                0, 1.9, "LL", 9, "OO");
+
+        ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
+                1, "9", meta);
+
         Mockito.when(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)).thenReturn(true);
- //       Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, countryCode),receivingSummaryLineRequest);
+        Mockito.when(receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest)).thenReturn(true);
+
+        when(mongoTemplate.findById((Mockito.anyString()), Mockito.any(Class.class), Mockito.any())).thenReturn(receiveSummary,receivingLine);
+
+        List<ReceivingSummaryLineRequest> responseList = new ArrayList<>();
+        responseList.add(receivingSummaryLineRequest);
+
+        SuccessMessage successMessage = new SuccessMessage();
+        successMessage.setData(responseList);
+        successMessage.setMessage(true);
+        successMessage.setTimestamp(LocalDateTime.of(2018,10,10,0,40,0));
+
+        Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, countryCode).getData(),successMessage.getData());
     }
+
 }
 
 

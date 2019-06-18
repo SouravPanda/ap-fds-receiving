@@ -3,7 +3,6 @@ package com.walmart.finance.ap.fds.receiving.validator;
 import com.walmart.finance.ap.fds.receiving.common.ReceiveSummaryBusinessStat;
 import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
@@ -62,7 +61,7 @@ public class ReceiveSummaryValidator {
                 }
             }
         if (verdict == false)
-            throw new InvalidValueException("Incorrect fields passed");
+            throw new InvalidValueException("Incorrect fields passed","Please check on the fields passed");
     }
 
     public boolean validateBusinessStatUpdateSummary(ReceivingSummaryRequest receivingSummaryRequest) {

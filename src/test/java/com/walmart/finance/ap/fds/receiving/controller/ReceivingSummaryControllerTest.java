@@ -6,7 +6,9 @@ import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
+import com.walmart.finance.ap.fds.receiving.response.SuccessMessage;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveSummaryServiceImpl;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,12 +18,7 @@ import org.mockito.MockitoAnnotations;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -54,8 +51,6 @@ public class ReceivingSummaryControllerTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    int pageNbr = 1;
-    int pageSize = 1;
 
     @Test
     public void getReceiveSummaryTest() throws Exception {
@@ -78,71 +73,73 @@ public class ReceivingSummaryControllerTest {
         listOfContent.add(receiveSummary);
         listOfContent.add(receiveSummaryAt);
 
-        Query query = new Query();
-        Criteria criteria = Criteria.where("receivingControlNumber").is(466567).and("baseDivisionNumber").is(0).
-                and("MDSReceiveDate").is(LocalDate.of(1996, 12, 12)).and("transactionType").is(99)
-                .and("storeNumber").is(3680).and("purchaseOrderNumber").is("999").and("poReceiveId").is("87865").and("departmentNumber")
-                .is(0).and("vendorNumber").is(9986);
-        query.addCriteria(criteria);
-
-        Pageable pageable = PageRequest.of(pageNbr, pageSize);
-        query.with(pageable);
-
- /*       ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", 1122, 99, "776", 3680, 0,
-                LocalDate.of(1986, 12, 12), 'L', 78, "hjhj", "77", "user",  LocalDateTime.now(), 9.0,7.0,
-                "9LLL",0L,0, 9,"LL", 0, "PP",0, 0,"jjj");
-          ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("999778", 10022, 99, "776", 3680, 0,
-                LocalDate.of(1986, 12, 12), 'L', 78, "hjhj", "77", "user",  LocalDateTime.now(), 9.0,7.0,
-                "9LLL",0L,0, 9,"LL", 0, "PP",0, 0,"88");
-
-*/
         ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", 1122, 99, "776", 3680, 0,
-                LocalDate.of(1986, 12, 12), 'L', 78, "hjhj", "77",  9.0,7.0,
-                0L,0);
+                LocalDate.of(1986, 12, 12), 'L', 78, "hjhj", "77", 9.0, 7.0,
+                0L, 0);
 
         ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("999778", 10022, 99, "776", 3680, 0,
-                LocalDate.of(1986, 12, 12), 'L', 78, "hjhj", "77", 9.0,7.0,
-                0L,0);
+                LocalDate.of(1986, 12, 12), 'L', 78, "hjhj", "77", 9.0, 7.0,
+                0L, 0);
 
         List<ReceivingSummaryResponse> content = new ArrayList<>();
         content.add(receivingSummaryResponse);
         content.add(receivingSummaryResponseAt);
 
-        List<String> listOfReceiptNumbers= new ArrayList<>();
+        List<String> listOfReceiptNumbers = new ArrayList<>();
         listOfReceiptNumbers.add("99");
         listOfReceiptNumbers.add("89");
 
-        List<String> listOfItemNumbers= new ArrayList<>();
-        listOfItemNumbers.add("99K");
-        listOfItemNumbers.add("89P");
+        List<String> listOfItemNumbers = new ArrayList<>();
+        listOfItemNumbers.add("99");
+        listOfItemNumbers.add("89");
 
-        List<String> listOfUpcNumbers= new ArrayList<>();
-        listOfItemNumbers.add("9K");
-        listOfItemNumbers.add("89P");
-
-        PageRequest pageRequest = new PageRequest(1, 1, Sort.unsorted());
-        PageImpl<ReceivingSummaryResponse> pageImplResponse = new PageImpl(content, pageRequest, 1);
-
+        List<String> listOfUpcNumbers = new ArrayList<>();
+        listOfItemNumbers.add("9");
+        listOfItemNumbers.add("89");
 
         when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.anyString())).thenReturn(listOfContent);
         when(receivingSummaryResponseConverter.convert(Mockito.any(ReceiveSummary.class))).thenReturn(receivingSummaryResponse);
 
-        Mockito.when(receiveSummaryServiceImpl.getReceiveSummary("777", "77", "8", listOfReceiptNumbers, "66",
+        SuccessMessage successMessage = new SuccessMessage();
+        successMessage.setTimestamp(LocalDateTime.now());
+        successMessage.setMessage(true);
+        successMessage.setData(content);
+
+        Mockito.when(receiveSummaryServiceImpl.getReceiveSummary("US", "77", "8", listOfReceiptNumbers, "66",
                 "99", "675", "987", "18", "WW8", "776"
-                , "1980-12-12", "1988-12-12", "1990-12-12", listOfItemNumbers, listOfUpcNumbers)).thenReturn(content);
+                , "1980", "1988-12-12", "1990-12-12", listOfItemNumbers, listOfUpcNumbers)).thenReturn(successMessage);
+
+        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary("US", "77", "8", listOfReceiptNumbers, "66",
+                "99", "675", "987", "18", "WW8", "776"
+                , "1980", "1988-12-12", "1990-12-12", listOfItemNumbers, listOfUpcNumbers).getData(),successMessage.getData());
 
     }
 
     @Test
-    public void updateSummaryTest(){
-        ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("0","0",LocalDate.now(),0,"A",null);
-        Mockito.when(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest,"US")).thenReturn(receivingSummaryRequest);
+    public void updateSummaryTest() {
+        ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("0", "0", LocalDate.now(), 0, "A", null);
+        List<ReceivingSummaryRequest> responseList = new ArrayList<>();
+        SuccessMessage successMessage = new SuccessMessage();
+        successMessage.setMessage(true);
+        responseList.add(receivingSummaryRequest);
+        successMessage.setData(responseList);
+        successMessage.setTimestamp(LocalDateTime.now());
+        Mockito.when(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, "US")).thenReturn(successMessage);
+        Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest,"US").getData(),successMessage.getData());
+
     }
 
-   @Test
-    public void updateSummaryAndLineTest(){
-        ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("0","0",LocalDate.now(),0,"A",1,"0",null);
-        Mockito.when(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest,"US")).thenReturn(receivingSummaryLineRequest);
+    @Test
+    public void updateSummaryAndLineTest() {
+        ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("0", "0", LocalDate.now(), 0, "A", 1, "0", null);
+        SuccessMessage successMessage = new SuccessMessage();
+        List<ReceivingSummaryLineRequest> responseList = new ArrayList<>();
+        successMessage.setMessage(true);
+        responseList.add(receivingSummaryLineRequest);
+        successMessage.setData(responseList);
+        successMessage.setTimestamp(LocalDateTime.now());
+        Mockito.when(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, "US")).thenReturn(successMessage);
+        Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest,"US").getData(),successMessage.getData());
     }
 }
 
