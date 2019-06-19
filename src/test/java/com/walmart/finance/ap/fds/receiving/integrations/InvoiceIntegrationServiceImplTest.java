@@ -1,30 +1,20 @@
 package com.walmart.finance.ap.fds.receiving.integrations;
 
-import com.google.common.collect.Iterables;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
-import org.apache.commons.lang.ArrayUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
-import javax.ws.rs.PUT;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
 import static org.powermock.api.mockito.PowerMockito.when;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({InvoiceIntegrationServiceImpl.class})
+
 public class InvoiceIntegrationServiceImplTest {
 
     @Mock
