@@ -38,7 +38,7 @@ public class ReceivingSummaryController {
     @ApiOperation(value = "API to add new Stores based on the payload")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Error")})
     public SuccessMessage getReceiveSummary(@PathVariable("countryCode")
-                                                                    String countryCode,
+                                                    String countryCode,
                                             @RequestParam(value = "purchaseOrderNumber", required = false) String purchaseOrderNumber,
                                             @RequestParam(value = "purchaseOrderId", required = false) String purchaseOrderId,
                                             @RequestParam(value = "receiptNumbers", required = false) List<String> receiptNumbers,
@@ -53,15 +53,7 @@ public class ReceivingSummaryController {
                                             @RequestParam(value = "receiptDateStart", required = false) String receiptDateStart,
                                             @RequestParam(value = "receiptDateEnd", required = false) String receiptDateEnd,
                                             @RequestParam(value = "itemNumbers", required = false) List<String> itemNumbers,
-                                            @RequestParam(value = "upcNumbers", required = false) List<String> upcNumbers
-                                                            /*@RequestParam(value = "pageNbr", defaultValue = "0")
-                                                                    Integer pageNbr,
-                                                            @RequestParam(value = "pageSize", defaultValue = "1000")
-                                                                    Integer pageSize,
-                                                            @RequestParam(value = "orderBy", defaultValue = "creationDate")
-                                                                    String orderBy,
-                                                            @RequestParam(value = "order", defaultValue = "DESC")
-                                                                    Sort.Direction order*/) {
+                                            @RequestParam(value = "upcNumbers", required = false) List<String> upcNumbers) {
 
         return receiveSummaryService.getReceiveSummary(countryCode, purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
                 divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd, itemNumbers, upcNumbers);//allRequestParam); , pageNbr, pageSize, orderBy, order
@@ -77,10 +69,8 @@ public class ReceivingSummaryController {
     @ApiOperation(value = "API to update Stores based on the payload")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
     public SuccessMessage updateSummary(@PathVariable("countryCode") String countryCode, @RequestBody @Valid ReceivingSummaryRequest receivingSummaryRequest) {
-        return receiveSummaryService.updateReceiveSummary(receivingSummaryRequest,countryCode);
+        return receiveSummaryService.updateReceiveSummary(receivingSummaryRequest, countryCode);
     }
-
-
 
 
     /**
@@ -93,7 +83,7 @@ public class ReceivingSummaryController {
     @ApiOperation(value = "API to update Stores based on the payload")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
     public SuccessMessage updateSummaryAndLine(@PathVariable("countryCode") String countryCode, @RequestBody @Valid ReceivingSummaryLineRequest receiveSummaryLineRequest) {
-        return receiveSummaryService.updateReceiveSummaryAndLine(receiveSummaryLineRequest,countryCode);
+        return receiveSummaryService.updateReceiveSummaryAndLine(receiveSummaryLineRequest, countryCode);
     }
 
 

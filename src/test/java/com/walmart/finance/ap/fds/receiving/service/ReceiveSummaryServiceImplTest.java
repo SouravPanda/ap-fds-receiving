@@ -1,5 +1,6 @@
 package com.walmart.finance.ap.fds.receiving.service;
 
+import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
 import com.walmart.finance.ap.fds.receiving.integrations.InvoiceIntegrationService;
@@ -32,6 +33,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
@@ -104,6 +106,23 @@ public class ReceiveSummaryServiceImplTest {
 
         Query query = new Query();
 
+        HashMap<String, String> paramMap = new HashMap<>();
+
+        paramMap.put(ReceivingConstants.COUNTRYCODE, "US");
+        paramMap.put(ReceivingConstants.PURCHASEORDERID, "8");
+        paramMap.put(ReceivingConstants.PURCHASEORDERNUMBER, "77");
+        paramMap.put(ReceivingConstants.RECEIPTNUMBER, "1122");
+        paramMap.put(ReceivingConstants.TRANSACTIONTYPE, "99");
+        paramMap.put(ReceivingConstants.CONTROLNUMBER, "99");
+        paramMap.put(ReceivingConstants.LOCATIONNUMBER, "675");
+        paramMap.put(ReceivingConstants.DIVISIONNUMBER, "987");
+        paramMap.put(ReceivingConstants.VENDORNUMBER, "18");
+        paramMap.put(ReceivingConstants.DEPARTMENTNUMBER, "0");
+        paramMap.put(ReceivingConstants.INVOICEID, "776");
+        paramMap.put(ReceivingConstants.INVOICENUMBER, "1980");
+        paramMap.put(ReceivingConstants.RECEIPTDATESTART, "1988-12-12");
+        paramMap.put(ReceivingConstants.RECEIPTDATEEND, "1990-11-11");
+
         ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", 1122, 99, "776",
                 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",
@@ -116,10 +135,10 @@ public class ReceiveSummaryServiceImplTest {
                 9.0, 7.0,
                 0L, 0);
 
-        FreightResponse freightResponse= new FreightResponse("4665267|1804823|8264|18|18|1995-10-17|18:45:21","0","0");
-        FreightResponse freightResponseAt= new FreightResponse("46652|18048|8264|18|18|1995-10-17|18:45:21","0","0");
+        FreightResponse freightResponse = new FreightResponse("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "0", "0");
+        FreightResponse freightResponseAt = new FreightResponse("46652|18048|8264|18|18|1995-10-17|18:45:21", "0", "0");
 
-        List<FreightResponse> listOfFreight= new ArrayList<>();
+        List<FreightResponse> listOfFreight = new ArrayList<>();
         listOfFreight.add(freightResponse);
         listOfFreight.add(freightResponseAt);
 
@@ -127,7 +146,7 @@ public class ReceiveSummaryServiceImplTest {
         content.add(receivingSummaryResponse);
         content.add(receivingSummaryResponseAt);
 
-        InvoiceResponse invoiceResponse= new InvoiceResponse("656", "267", "000", "999",
+        InvoiceResponse invoiceResponse = new InvoiceResponse("656", "267", "000", "999",
                 "777", "0", "998", "9986", "098");
 
         InvoiceResponse[] invoiceResponseList = new InvoiceResponse[]{new InvoiceResponse("656", "267", "000", "999",
@@ -144,10 +163,10 @@ public class ReceiveSummaryServiceImplTest {
         when(receivingSummaryResponseConverter.convert(Mockito.any(ReceiveSummary.class))).thenReturn(receivingSummaryResponse);
 
         when(mongoTemplate.count(query, ReceiveSummary.class)).thenReturn(2L);
-        Query mockQuery=Mockito.mock(Query.class);
+        Query mockQuery = Mockito.mock(Query.class);
 
         when(mockQuery.limit(Mockito.anyInt())).thenReturn(mockQuery);
-        when(mongoTemplate.find(Mockito.any(Query.class),Mockito.any(Class.class),Mockito.any())).thenReturn(listOfContent,listOfContent,listOfContent,listOfContent,listOfContent,listOfContent,listOfFreight);
+        when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.any())).thenReturn(listOfContent, listOfContent, listOfContent, listOfContent, listOfContent, listOfContent, listOfFreight);
 
 
         SuccessMessage successMessage = new SuccessMessage();
@@ -157,7 +176,7 @@ public class ReceiveSummaryServiceImplTest {
 
         Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary("US", "77", "8", listOfReceiptNumbers, "99",
                 "99", "675", "987", "18", "0", "776"
-                , "1980", "1988-12-12", "1990-11-11", listOfItemNumbers, listOfUpcNumbers).getData(), successMessage.getData().subList(0,1));
+                , "1980", "1988-12-12", "1990-11-11", listOfItemNumbers, listOfUpcNumbers).getData(), successMessage.getData().subList(0, 1));
     }
 
     @Test
@@ -176,10 +195,10 @@ public class ReceiveSummaryServiceImplTest {
                 0, 0, 'H', 0.0, 1.0, 1, 'P',
                 2L, 'k', 'L',
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.of(1995, 10, 16),
-                LocalDate.of(1995, 10, 16), 9.0, 7, 0, 0, (LocalDateTime.of(2018,10,10,0,40,0)), 0,
-                "999997", "yyyy", (LocalDateTime.of(2018,10,10,0,40,0)), "99"
+                LocalDate.of(1995, 10, 16), 9.0, 7, 0, 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
+                "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "99"
                 , 'K', "LLL");
-        ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("888", "998", LocalDate.of(2018,10,10),
+        ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("888", "998", LocalDate.of(2018, 10, 10),
                 1, "A", meta);
         String countryCode = "US";
         String id = "998|888|1|0";
@@ -193,7 +212,7 @@ public class ReceiveSummaryServiceImplTest {
         SuccessMessage successMessage = new SuccessMessage();
         successMessage.setData(responseList);
         successMessage.setMessage(true);
-        successMessage.setTimestamp(LocalDateTime.of(2018,10,10,0,40,0));
+        successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
 
         Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, countryCode).getData(), successMessage.getData());
     }
@@ -215,8 +234,8 @@ public class ReceiveSummaryServiceImplTest {
                 0, 0, 'H', 0.0, 1.0, 1, 'P',
                 2L, 'k', 'L',
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.of(1995, 10, 16),
-                LocalDate.of(1995, 10, 16), 9.0, 7, 0, 0, (LocalDateTime.of(2018,10,10,0,40,0)), 0,
-                "999997", "yyyy", (LocalDateTime.of(2018,10,10,0,40,0)), "9"
+                LocalDate.of(1995, 10, 16), 9.0, 7, 0, 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
+                "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "9"
                 , 'K', "LLL");
 
         ReceivingLine receivingLine = new ReceivingLine("9|8|1|0|1", "8",
@@ -232,7 +251,7 @@ public class ReceiveSummaryServiceImplTest {
         Mockito.when(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)).thenReturn(true);
         Mockito.when(receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest)).thenReturn(true);
 
-        when(mongoTemplate.findById((Mockito.anyString()), Mockito.any(Class.class), Mockito.any())).thenReturn(receiveSummary,receivingLine);
+        when(mongoTemplate.findById((Mockito.anyString()), Mockito.any(Class.class), Mockito.any())).thenReturn(receiveSummary, receivingLine);
 
         List<ReceivingSummaryLineRequest> responseList = new ArrayList<>();
         responseList.add(receivingSummaryLineRequest);
@@ -240,9 +259,9 @@ public class ReceiveSummaryServiceImplTest {
         SuccessMessage successMessage = new SuccessMessage();
         successMessage.setData(responseList);
         successMessage.setMessage(true);
-        successMessage.setTimestamp(LocalDateTime.of(2018,10,10,0,40,0));
+        successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
 
-        Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, countryCode).getData(),successMessage.getData());
+        Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, countryCode).getData(), successMessage.getData());
     }
 
 }
