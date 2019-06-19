@@ -34,4 +34,19 @@ public class ReceiveSummaryValidatorTest {
                 1, "A", meta);
         Assert.assertTrue(receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryRequest));
     }
+
+    @Test
+    public void validateBusinessStatUpdateSummaryNegativeTest() {
+
+        Meta meta = new Meta();
+        SorRoutingCtx sorRoutingCtx = new SorRoutingCtx();
+        sorRoutingCtx.setInvProcAreaCode(36);
+        sorRoutingCtx.setLocationCountryCd("US");
+        sorRoutingCtx.setReplnTypCd("R");
+        meta.setSorRoutingCtx(sorRoutingCtx);
+
+        ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("888", "998", LocalDate.of(2018, 10, 10),
+                1, "Y", meta);
+        Assert.assertFalse(receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryRequest));
+    }
 }

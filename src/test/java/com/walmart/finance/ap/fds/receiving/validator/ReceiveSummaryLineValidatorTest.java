@@ -47,5 +47,48 @@ public class ReceiveSummaryLineValidatorTest {
                 1, "9", meta);
         Assert.assertTrue(receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest));
     }
+
+    @Test
+    public void validateBusinessStatUpdateSummaryNegativeTest(){
+        Meta meta = new Meta();
+        SorRoutingCtx sorRoutingCtx = new SorRoutingCtx();
+        sorRoutingCtx.setInvProcAreaCode(36);
+        sorRoutingCtx.setLocationCountryCd("US");
+        sorRoutingCtx.setReplnTypCd("R");
+        meta.setSorRoutingCtx(sorRoutingCtx);
+
+        ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "Y",
+                1, "9", meta);
+        Assert.assertFalse(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest));
+
+    }
+
+    @Test
+    public void validateInventoryMatchStatusValidationTest() {
+        Meta meta = new Meta();
+        SorRoutingCtx sorRoutingCtx = new SorRoutingCtx();
+        sorRoutingCtx.setInvProcAreaCode(36);
+        sorRoutingCtx.setLocationCountryCd("US");
+        sorRoutingCtx.setReplnTypCd("R");
+        meta.setSorRoutingCtx(sorRoutingCtx);
+
+        ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
+                1, "9.", meta);
+        Assert.assertFalse(receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest));
+    }
+
+    @Test
+    public void validateInventoryMatchStatusExceptionTest() {
+        Meta meta = new Meta();
+        SorRoutingCtx sorRoutingCtx = new SorRoutingCtx();
+        sorRoutingCtx.setInvProcAreaCode(36);
+        sorRoutingCtx.setLocationCountryCd("US");
+        sorRoutingCtx.setReplnTypCd("R");
+        meta.setSorRoutingCtx(sorRoutingCtx);
+
+        ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
+                1, "9a", meta);
+        Assert.assertFalse(receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest));
+    }
 }
 
