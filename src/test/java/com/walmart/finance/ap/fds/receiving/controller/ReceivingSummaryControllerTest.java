@@ -1,28 +1,21 @@
 
 package com.walmart.finance.ap.fds.receiving.controller;
 
-import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
-import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
 import com.walmart.finance.ap.fds.receiving.request.Meta;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import com.walmart.finance.ap.fds.receiving.request.SorRoutingCtx;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
 import com.walmart.finance.ap.fds.receiving.response.SuccessMessage;
-import com.walmart.finance.ap.fds.receiving.service.ReceiveSummaryService;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveSummaryServiceImpl;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,7 +24,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,84 +39,12 @@ public class ReceivingSummaryControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private ReceiveSummaryService receiveSummaryService;
+    private ReceiveSummaryServiceImpl receiveSummaryService;
 
-    @Mock
-    private ReceiveSummaryServiceImpl receiveSummaryServiceImpl;
-
-    @Mock
-    MongoTemplate mongoTemplate;
-
-    @Mock
-    ReceivingSummaryResponseConverter receivingSummaryResponseConverter;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-    }
-
-
-    @Test
-    public void getReceiveSummaryTest() throws Exception {
-
-
-        ReceiveSummary receiveSummary = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665267",
-                8264, 18, 0, LocalDate.of(1996, 12, 12), LocalTime.of(18, 45, 21), 0, 7688, 1111,
-                0, 0, 'H', 0.0, 1.0, 1, 'P', 2L, 'k', 'L',
-                'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
-                LocalDate.now(), 9.0, 7, 0, 0, LocalDateTime.now(), 0, "JJJ", "yyyy", LocalDateTime.now(), "99"
-                , 'K', "LLL");
-        ReceiveSummary receiveSummaryAt = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665207",
-                8064, 18, 0, LocalDate.of(1986, 12, 12), LocalTime.of(18, 45, 21), 0, 9788, 1111,
-                0, 0, 'H', 0.0, 1.0, 1, 'P', 2L, 'k', 'L',
-                'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
-                LocalDate.now(), 9.0, 7, 0, 0, LocalDateTime.now(), 0, "JJJ", "UU", LocalDateTime.now(), "99"
-                , 'K', "IIL");
-
-        List listOfContent = new ArrayList<ReceiveSummary>();
-        listOfContent.add(receiveSummary);
-        listOfContent.add(receiveSummaryAt);
-
-        ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", 1122, 99, "776", 3680, 0,
-                LocalDate.of(1986, 12, 12), 'L', 78, "hjhj", "77", 9.0, 7.0,
-                0L, 0);
-
-        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("999778", 10022, 99, "776", 3680, 0,
-                LocalDate.of(1986, 12, 12), 'L', 78, "hjhj", "77", 9.0, 7.0,
-                0L, 0);
-
-        List<ReceivingSummaryResponse> content = new ArrayList<>();
-        content.add(receivingSummaryResponse);
-        content.add(receivingSummaryResponseAt);
-
-        List<String> listOfReceiptNumbers = new ArrayList<>();
-        listOfReceiptNumbers.add("99");
-        listOfReceiptNumbers.add("89");
-
-        List<String> listOfItemNumbers = new ArrayList<>();
-        listOfItemNumbers.add("99");
-        listOfItemNumbers.add("89");
-
-        List<String> listOfUpcNumbers = new ArrayList<>();
-        listOfItemNumbers.add("9");
-        listOfItemNumbers.add("89");
-
-        when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.anyString())).thenReturn(listOfContent);
-        when(receivingSummaryResponseConverter.convert(Mockito.any(ReceiveSummary.class))).thenReturn(receivingSummaryResponse);
-
-        SuccessMessage successMessage = new SuccessMessage();
-        successMessage.setTimestamp(LocalDateTime.now());
-        successMessage.setMessage(true);
-        successMessage.setData(content);
-
-        Mockito.when(receiveSummaryServiceImpl.getReceiveSummary("US", "77", "8", listOfReceiptNumbers, "66",
-                "99", "675", "987", "18", "WW8", "776"
-                , "1980", "1988-12-12", "1990-12-12", listOfItemNumbers, listOfUpcNumbers)).thenReturn(successMessage);
-
-        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary("US", "77", "8", listOfReceiptNumbers, "66",
-                "99", "675", "987", "18", "WW8", "776"
-                , "1980", "1988-12-12", "1990-12-12", listOfItemNumbers, listOfUpcNumbers).getData(), successMessage.getData());
-
     }
 
     @Test
@@ -142,7 +62,7 @@ public class ReceivingSummaryControllerTest {
         responseList.add(receivingSummaryRequest);
         successMessage.setData(responseList);
         successMessage.setTimestamp(LocalDateTime.now());
-        Mockito.when(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, "US")).thenReturn(successMessage);
+        Mockito.when(receiveSummaryService.updateReceiveSummary(receivingSummaryRequest, "US")).thenReturn(successMessage);
         String body = new String("{\n" +
                 "            \"receiptNumber\": \"2\",\n" +
                 "            \"controlNumber\": \"2\",\n" +
@@ -208,7 +128,7 @@ public class ReceivingSummaryControllerTest {
         responseList.add(receivingSummaryLineRequest);
         successMessage.setData(responseList);
         successMessage.setTimestamp(LocalDateTime.now());
-        Mockito.when(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, "US")).thenReturn(successMessage);
+        Mockito.when(receiveSummaryService.updateReceiveSummaryAndLine(receivingSummaryLineRequest, "US")).thenReturn(successMessage);
         String body = new String("{\n" +
                 "            \"receiptNumber\": \"2\",\n" +
                 "            \"controlNumber\": \"2\",\n" +
@@ -266,6 +186,59 @@ public class ReceivingSummaryControllerTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void getReceiveSummary() throws Exception {
+
+        ReceivingSummaryResponse response = new ReceivingSummaryResponse("984003673", 10022, 0, "984003673", 3680,
+                28, LocalDate.of(2019, 01, 03), 'M', 762214, null, "0", 0.0, 0.0,
+                null, 96
+        );
+
+        List<ReceivingSummaryResponse> responseList = new ArrayList<ReceivingSummaryResponse>() {
+            {
+                add(response);
+            }
+        };
+
+        SuccessMessage successMessage = new SuccessMessage(true, LocalDateTime.of(2019, 05, 12, 15, 31, 16), responseList);
+
+        when(receiveSummaryService.getReceiveSummary(Mockito.any(), Mockito.any(), Mockito.any(),
+                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
+                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
+                Mockito.any())).thenReturn(successMessage);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/US/receiving/summary")
+                .param("controlNumber", "984003673")
+                .accept(MediaType.APPLICATION_JSON);
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(content().json(
+                        " {" +
+                                "\"message\": true,\n" +
+                                "\"timestamp\": \"2019-05-12T15:31:16\",\n" +
+                                "\"data\": [{ \n" +
+                                "\"purchaseOrderId\": \"984003673\",\n" +
+                                "\"receiptNumber\": 10022,\n" +
+                                "\"transactionType\": 0,\n" +
+                                "\"controlNumber\": \"984003673\",\n" +
+                                "\"locationNumber\": 3680,\n" +
+                                "\"divisionNumber\": 28,\n" +
+                                "\"receiptDate\": \"2019-01-03\",\n" +
+                                "\"vendorNumber\": 762214,\n" +
+                                "\"carrierCode\": null,\n" +
+                                "\"trailerNumber\": \"0\",\n" +
+                                "\"totalCostAmount\": 0,\n" +
+                                "\"totalRetailAmount\": 0,\n" +
+                                "\"lineCount\": null,\n" +
+                                "\"departmentNumber\": 96\n" +
+                                "}] " +
+                                "}"
+
+                ))
+                .andReturn();
     }
 }
 

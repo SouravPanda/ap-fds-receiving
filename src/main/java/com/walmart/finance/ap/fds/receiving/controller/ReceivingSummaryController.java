@@ -1,9 +1,7 @@
 package com.walmart.finance.ap.fds.receiving.controller;
 
-import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
-import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
 import com.walmart.finance.ap.fds.receiving.response.SuccessMessage;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveSummaryService;
 import io.swagger.annotations.Api;
