@@ -7,13 +7,10 @@ import com.walmart.finance.ap.fds.receiving.service.ReceiveLineServiceImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,8 +26,6 @@ import java.util.List;
 
 import static org.mockito.Mockito.when;
 
-@PrepareForTest(ReceiveLineServiceImpl.class)
-@RunWith(PowerMockRunner.class)
 public class ReceiveLineServiceImplTest {
 
     @InjectMocks

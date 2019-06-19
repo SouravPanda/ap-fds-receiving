@@ -12,7 +12,6 @@ import org.mockito.Spy;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.doThrow;
 
 

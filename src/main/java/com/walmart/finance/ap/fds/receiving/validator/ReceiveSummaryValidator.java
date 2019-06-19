@@ -15,6 +15,7 @@ import java.util.Map;
 public class ReceiveSummaryValidator {
     List<ReceiveSummaryBusinessStat> businessStatList = Arrays.asList(ReceiveSummaryBusinessStat.values());
 
+
     public boolean validateBusinessStatUpdateSummary(ReceivingSummaryRequest receivingSummaryRequest) {
         for (ReceiveSummaryBusinessStat businessStat : businessStatList) {
             if (businessStat.toString().equals(receivingSummaryRequest.getBusinessStatusCode())) {
