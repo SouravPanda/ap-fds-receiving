@@ -14,8 +14,8 @@ import com.walmart.finance.ap.fds.receiving.model.ReceivingLineParameters;
 import com.walmart.finance.ap.fds.receiving.repository.ReceiveSummaryDataRepository;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
+import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
-import com.walmart.finance.ap.fds.receiving.response.SuccessMessage;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryLineValidator;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryValidator;
 import org.apache.commons.collections.CollectionUtils;
@@ -102,8 +102,8 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
      * @return
      */
 
-    public SuccessMessage getReceiveSummary(String countryCode, String purchaseOrderNumber, String purchaseOrderId, List<String> receiptNumbers, String transactionType, String controlNumber, String locationNumber,
-                                            String divisionNumber, String vendorNumber, String departmentNumber, String invoiceId, String invoiceNumber, String receiptDateStart, String receiptDateEnd, List<String> itemNumbers, List<String> upcNumbers) {// Map<String,String> allRequestParam) {
+    public ReceivingResponse getReceiveSummary(String countryCode, String purchaseOrderNumber, String purchaseOrderId, List<String> receiptNumbers, String transactionType, String controlNumber, String locationNumber,
+                                               String divisionNumber, String vendorNumber, String departmentNumber, String invoiceId, String invoiceNumber, String receiptDateStart, String receiptDateEnd, List<String> itemNumbers, List<String> upcNumbers) {// Map<String,String> allRequestParam) {
 
         HashMap<String, String> paramMap = checkingNotNullParameters(countryCode, purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
                 divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd);
@@ -142,7 +142,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                         return response;
                     }
             ).collect(Collectors.toList());
-            SuccessMessage successMessage = new SuccessMessage();
+            ReceivingResponse successMessage = new ReceivingResponse();
             successMessage.setData(responseList);
             successMessage.setMessage(true);
             successMessage.setTimestamp(LocalDateTime.now());
@@ -493,7 +493,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     @Override
     @Transactional
-    public SuccessMessage updateReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest, String countryCode) {
+
+    // Change the name ReceivingResponse to R
+    public ReceivingResponse updateReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest, String countryCode) {
 
         log.info("unitofWorkid:" + receivingSummaryRequest.getMeta().getUnitofWorkid());
         List<ReceivingSummaryRequest> responseList = new ArrayList<>();
@@ -526,7 +528,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             publisher.publishEvent(commitedRcvSummary);
         }
         responseList.add(receivingSummaryRequest);
-        SuccessMessage successMessage = new SuccessMessage();
+        ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setTimestamp(LocalDateTime.now());
         successMessage.setData(responseList);
         successMessage.setMessage(true);
@@ -535,7 +537,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     @Override
     @Transactional
-    public SuccessMessage updateReceiveSummaryAndLine(ReceivingSummaryLineRequest receivingSummaryLineRequest, String countryCode) {
+    public ReceivingResponse updateReceiveSummaryAndLine(ReceivingSummaryLineRequest receivingSummaryLineRequest, String countryCode) {
         Boolean isWareHouseData = isWareHouseData(receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getInvProcAreaCode(), receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getReplnTypCd(),
                 receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getLocationCountryCd());
         Query dynamicQuery = new Query();
@@ -648,7 +650,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
         }
         responseList.add(receivingSummaryLineRequest);
-        SuccessMessage successMessage = new SuccessMessage();
+        ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setMessage(true);
         successMessage.setData(responseList);
         successMessage.setTimestamp(LocalDateTime.now());
