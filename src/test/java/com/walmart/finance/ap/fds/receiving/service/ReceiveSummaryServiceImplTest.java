@@ -421,7 +421,7 @@ public class ReceiveSummaryServiceImplTest {
     }
 
     @Test(expected = InvalidValueException.class)
-    public void updateReceiveSummaryLineNegativeTest() {
+    public void updateReceiveSummaryLineNegativeBusinessStatCodeTest() {
 
         Meta meta = new Meta();
         SorRoutingCtx sorRoutingCtx = new SorRoutingCtx();
@@ -446,7 +446,60 @@ public class ReceiveSummaryServiceImplTest {
                 89, 12, "1122", 99, 8264, 18,
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 1,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
-                0, 1.9, "LL", 9, "OO");
+                0, 1.9, "LL", 10, "OO");
+
+        ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "P",
+                null, "10", meta);
+
+        Meta mockString = Mockito.mock(Meta.class);
+        when(mockString.getUnitofWorkid()).thenReturn("11");
+
+        Mockito.when(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)).thenReturn(false);
+        Mockito.when(receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest)).thenReturn(false);
+
+        when(mongoTemplate.findById((Mockito.anyString()), Mockito.any(Class.class), Mockito.any())).thenReturn(receiveSummary, receivingLine);
+
+        List<ReceivingSummaryLineRequest> responseList = new ArrayList<>();
+        responseList.add(receivingSummaryLineRequest);
+
+        ReceivingResponse successMessage = new ReceivingResponse();
+        successMessage.setData(responseList);
+        successMessage.setMessage(true);
+        successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
+
+        Mockito.when(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)).thenReturn(false);
+
+        receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, "US");
+
+    }
+
+    @Test(expected = InvalidValueException.class)
+    public void updateReceiveSummaryLineNegativeInventoryMatchStatusTest() {
+
+        Meta meta = new Meta();
+        SorRoutingCtx sorRoutingCtx = new SorRoutingCtx();
+        sorRoutingCtx.setInvProcAreaCode(36);
+        sorRoutingCtx.setLocationCountryCd("US");
+        sorRoutingCtx.setReplnTypCd("R");
+        meta.setSorRoutingCtx(sorRoutingCtx);
+
+        String countryCode = "US";
+        ReceiveSummary receiveSummary = new ReceiveSummary("9|8|1|0", "8",
+                6565, 18, 0, LocalDate.of(1995, 10, 16), LocalTime.of(18, 30, 00),
+                0, 122663, 1111,
+                0, 0, 'H', 0.0, 1.0, 1, 'P',
+                2L, 'k', 'L',
+                'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.of(1995, 10, 16),
+                LocalDate.of(1995, 10, 16), 9.0, 7, 0, 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
+                "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "9"
+                , 'K', "LLL");
+
+        ReceivingLine receivingLine = new ReceivingLine("9|8|1|0|1", "8",
+                0, 3777, 94493, 0, 0.0, 0.0, "9",
+                89, 12, "1122", 99, 8264, 18,
+                LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 1,
+                LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
+                0, 1.9, "LL", 10, "OO");
 
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
                 null, "10", meta);
@@ -467,8 +520,8 @@ public class ReceiveSummaryServiceImplTest {
         successMessage.setMessage(true);
         successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
 
-        Mockito.when(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)).thenReturn(false).thenThrow(InvalidValueException.class);
-        Mockito.when(receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest)).thenReturn(false).thenThrow(InvalidValueException.class);
+        Mockito.when(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)).thenReturn(true);
+        Mockito.when(receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest)).thenReturn(false);
 
         receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, "US");
 
