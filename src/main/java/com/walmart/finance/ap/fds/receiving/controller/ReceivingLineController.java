@@ -1,8 +1,6 @@
 
 package com.walmart.finance.ap.fds.receiving.controller;
 
-import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
-import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveLineService;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveLineServiceImpl;
@@ -58,19 +56,4 @@ public class ReceivingLineController {
 
     }
 
-    /**
-     * Method calls Service class to add stores in Db
-     *
-     * @param
-     * @return
-     */
-    @PostMapping
-    @ApiOperation(value = "API to add new Stores based on the payload")
-    @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
-
-    public ReceivingLine saveReceiveLine(@PathVariable("countryCode")
-                                                 String countryCode, @RequestBody ReceivingSummaryLineRequest receivingSummaryLineRequest) {
-        return receiveLineServiceImpl.saveReceiveLine(receivingSummaryLineRequest);
-
-    }
 }

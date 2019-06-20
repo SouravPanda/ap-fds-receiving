@@ -57,6 +57,7 @@ public class InvoiceIntegrationServiceImpl implements InvoiceIntegrationService 
      */
     @Override
     public InvoiceResponse[] getInvoice(HashMap<String, String> paramMap) {
+        log.info("Inside getInvoice method");
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set(ReceivingConstants.WM_CONSUMER, consumerId);
         requestHeaders.set(ReceivingConstants.WMAPIKEY, clientId);

@@ -58,28 +58,11 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
         List<ReceivingLineResponse> responseList;
         if (CollectionUtils.isEmpty(receiveLines)) {
             throw new NotFoundException("Receiving line not found for given search criteria.");
-        } /*else if (receiveLines.size() > 1000) {
-            throw new SearchCriteriaException("Modify the search criteria as records are more than 1000");
-        } */ else {
+        } else {
             responseList = receiveLines.stream().map((t) -> receivingLineResponseConverter.convert(t)).collect(Collectors.toList());
             return responseList;
         }
     }
-
-/*    private Page<ReceivingLineResponse> mapReceivingLineToResponse(Page<ReceivingLine> receiveLinePage) {
-        Page<ReceivingLineResponse> receivingLineResponsePage = receiveLinePage.map(new Function<ReceivingLine, ReceivingLineResponse>() {
-            @Override
-            public ReceivingLineResponse apply(ReceivingLine receiveLine) {
-                return receivingLineResponseConverter.convert(receiveLine);
-            }
-        });
-        return receivingLineResponsePage;
-    }
-
-    private String formulateId(String receivingControlNumber, String poReceiveId, String storeNumber, String baseDivisionNumber, String transactionType, String finalDate, String finalTime, String sequenceNumber) {
-
-        return receivingControlNumber + ReceivingConstants.PIPE_SEPARATOR + poReceiveId + ReceivingConstants.PIPE_SEPARATOR + storeNumber + ReceivingConstants.PIPE_SEPARATOR + baseDivisionNumber + ReceivingConstants.PIPE_SEPARATOR + transactionType + ReceivingConstants.PIPE_SEPARATOR + finalDate + ReceivingConstants.PIPE_SEPARATOR + finalTime + ReceivingConstants.PIPE_SEPARATOR + sequenceNumber;
-    }*/
 
     private Query searchCriteriaForGet(String purchaseOrderId, String receiptNumber, String transactionType, String controlNumber, String locationNumber, String divisionNumber) {
 
