@@ -66,7 +66,7 @@ public class ReceiveSummaryServiceImplTest {
 
 
     @Test
-    public void getReceiveSummaryTest() {
+    public void getReceiveSummaryHappyPathTest() {
         ReceiveSummary receiveSummary = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665267",
                 8264, 18, 0, LocalDate.of(1996, 12, 12),
                 LocalTime.of(18, 45, 21), 0, 7688, 1111,
