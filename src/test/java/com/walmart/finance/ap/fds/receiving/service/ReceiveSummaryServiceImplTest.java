@@ -2,6 +2,7 @@ package com.walmart.finance.ap.fds.receiving.service;
 
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
+import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
 import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
 import com.walmart.finance.ap.fds.receiving.integrations.InvoiceIntegrationService;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @PrepareForTest(ReceiveSummaryServiceImpl.class)
@@ -221,7 +223,7 @@ public class ReceiveSummaryServiceImplTest {
         ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("888", "998", LocalDate.of(2018, 10, 10),
                 1, "A", meta);
 
-        Meta mockString= Mockito.mock(Meta.class);
+        Meta mockString = Mockito.mock(Meta.class);
         when(mockString.getUnitofWorkid()).thenReturn("11");
 
         List<ReceivingSummaryRequest> responseList = new ArrayList<>();
@@ -242,7 +244,7 @@ public class ReceiveSummaryServiceImplTest {
 
     }
 
-    @Test
+    @Test(expected = InvalidValueException.class)
     public void updateReceiveSummaryNegativeBusinessStatusCodeTest() {
 
         ReceiveSummary receiveSummary = new ReceiveSummary("998|888|1|0", "888",
@@ -265,14 +267,37 @@ public class ReceiveSummaryServiceImplTest {
         ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("888", "998", LocalDate.of(2018, 10, 10),
                 1, "P", meta);
 
-        Meta mockString= Mockito.mock(Meta.class);
+        Meta mockString = Mockito.mock(Meta.class);
         when(mockString.getUnitofWorkid()).thenReturn("11");
 
         when(mongoTemplate.findById((Mockito.anyString()), Mockito.any(Class.class), Mockito.any())).thenReturn(receiveSummary);
-        Mockito.when(receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryRequest)).thenReturn(false).thenThrow(InvalidValueException.class);
 
-        Assert.assertEquals(receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryRequest),false);
+        Mockito.when(receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryRequest)).thenReturn(false);
+        receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, "US");
 
+    }
+
+    @Test(expected = ContentNotFoundException.class)
+    public void updateReceiveSummaryContentNotFoundTest() {
+
+        Meta meta = new Meta();
+        SorRoutingCtx sorRoutingCtx = new SorRoutingCtx();
+        sorRoutingCtx.setInvProcAreaCode(30);
+        sorRoutingCtx.setLocationCountryCd("US");
+        sorRoutingCtx.setReplnTypCd("P");
+        meta.setSorRoutingCtx(sorRoutingCtx);
+
+        ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("888", "998", LocalDate.of(2018, 10, 10),
+                1, "A", meta);
+
+        String id = null;
+
+        Meta mockString = Mockito.mock(Meta.class);
+        when(mockString.getUnitofWorkid()).thenReturn("11");
+
+        Mockito.when(receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryRequest)).thenReturn(true);
+
+        receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, "US");
     }
 
     @Test
@@ -322,6 +347,29 @@ public class ReceiveSummaryServiceImplTest {
         Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, countryCode).getData(), successMessage.getData());
     }
 
+    @Test(expected = ContentNotFoundException.class)
+    public void updateReceiveSummaryLineContentNotFoundTest() {
+
+        Meta meta = new Meta();
+        SorRoutingCtx sorRoutingCtx = new SorRoutingCtx();
+        sorRoutingCtx.setInvProcAreaCode(30);
+        sorRoutingCtx.setLocationCountryCd("US");
+        sorRoutingCtx.setReplnTypCd("P");
+        meta.setSorRoutingCtx(sorRoutingCtx);
+
+        ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
+                1, "9", meta);
+
+        Meta mockString = Mockito.mock(Meta.class);
+        when(mockString.getUnitofWorkid()).thenReturn("11");
+
+        Mockito.when(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)).thenReturn(true);
+        Mockito.when(receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest)).thenReturn(true);
+
+        receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, "US");
+
+    }
+
     @Test
     public void updateReceiveSummaryLineElsePathTest() {
 
@@ -353,7 +401,7 @@ public class ReceiveSummaryServiceImplTest {
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
                 null, "9", meta);
 
-        Meta mockString= Mockito.mock(Meta.class);
+        Meta mockString = Mockito.mock(Meta.class);
         when(mockString.getUnitofWorkid()).thenReturn("11");
 
         Mockito.when(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)).thenReturn(true);
@@ -372,7 +420,7 @@ public class ReceiveSummaryServiceImplTest {
         Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, countryCode).getData(), successMessage.getData());
     }
 
-    @Test
+    @Test(expected = InvalidValueException.class)
     public void updateReceiveSummaryLineNegativeTest() {
 
         Meta meta = new Meta();
@@ -403,11 +451,11 @@ public class ReceiveSummaryServiceImplTest {
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
                 null, "10", meta);
 
-        Meta mockString= Mockito.mock(Meta.class);
+        Meta mockString = Mockito.mock(Meta.class);
         when(mockString.getUnitofWorkid()).thenReturn("11");
 
-        Mockito.when(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)).thenReturn(true);
-        Mockito.when(receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest)).thenReturn(true);
+        Mockito.when(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)).thenReturn(false);
+        Mockito.when(receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest)).thenReturn(false);
 
         when(mongoTemplate.findById((Mockito.anyString()), Mockito.any(Class.class), Mockito.any())).thenReturn(receiveSummary, receivingLine);
 
@@ -422,7 +470,8 @@ public class ReceiveSummaryServiceImplTest {
         Mockito.when(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)).thenReturn(false).thenThrow(InvalidValueException.class);
         Mockito.when(receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest)).thenReturn(false).thenThrow(InvalidValueException.class);
 
-        Assert.assertEquals(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest),false);
+        receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, "US");
+
     }
 
 }

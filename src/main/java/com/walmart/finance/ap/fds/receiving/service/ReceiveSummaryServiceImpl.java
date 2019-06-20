@@ -493,8 +493,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     @Override
     @Transactional
-
-    // Change the name ReceivingResponse to R
     public ReceivingResponse updateReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest, String countryCode) {
 
         log.info("unitofWorkid:" + receivingSummaryRequest.getMeta().getUnitofWorkid());
@@ -506,7 +504,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         ReceiveSummary receiveSummary;
 
         if (receivingSummaryRequest != null) {
-            if (receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryRequest) == false) {
+            if (!receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryRequest)) {
                 throw new InvalidValueException("Value of field  businessStatusCode passed is not valid", "it should be one among A,C,D,I,M,X,Z");
             }
         }
@@ -549,11 +547,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
         log.info("unitofWorkid:" + receivingSummaryLineRequest.getMeta().getUnitofWorkid());
 
-        if (receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest) == false) {
+        if (!receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)) {
             throw new InvalidValueException("Value of field  businessStatusCode passed is not valid", "it should be one among A,C,D,I,M,X,Z");
         }
 
-        if (receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest) == false) {
+        if (!receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest)) {
             throw new InvalidValueException("Invalid value, inventoryMatchStatus", "it should be in range 0-9");
         }
 
@@ -605,11 +603,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
         } else {
 
-            if (receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest) == false) {
+            if (!receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)) {
                 throw new InvalidValueException("Value of field  businessStatusCode passed is not valid", "it should be one among A,C,D,I,M,X,Z");
             }
 
-            if (receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest) == false) {
+            if (!receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest)) {
                 throw new InvalidValueException("Invalid value, inventoryMatchStatus", "it should be in range 0-9");
             }
             String lineId;
