@@ -2,6 +2,7 @@ package com.walmart.finance.ap.fds.receiving.service;
 
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
+import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
 import com.walmart.finance.ap.fds.receiving.integrations.InvoiceIntegrationService;
 import com.walmart.finance.ap.fds.receiving.integrations.InvoiceResponse;
@@ -19,10 +20,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -36,7 +34,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @PrepareForTest(ReceiveSummaryServiceImpl.class)
@@ -107,23 +104,6 @@ public class ReceiveSummaryServiceImplTest {
 
         Query query = new Query();
 
-        HashMap<String, String> paramMap = new HashMap<>();
-
-        paramMap.put(ReceivingConstants.COUNTRYCODE, "US");
-        paramMap.put(ReceivingConstants.PURCHASEORDERID, "8");
-        paramMap.put(ReceivingConstants.PURCHASEORDERNUMBER, "77");
-        paramMap.put(ReceivingConstants.RECEIPTNUMBER, "1122");
-        paramMap.put(ReceivingConstants.TRANSACTIONTYPE, "99");
-        paramMap.put(ReceivingConstants.CONTROLNUMBER, "99");
-        paramMap.put(ReceivingConstants.LOCATIONNUMBER, "675");
-        paramMap.put(ReceivingConstants.DIVISIONNUMBER, "987");
-        paramMap.put(ReceivingConstants.VENDORNUMBER, "18");
-        paramMap.put(ReceivingConstants.DEPARTMENTNUMBER, "0");
-        paramMap.put(ReceivingConstants.INVOICEID, "776");
-        paramMap.put(ReceivingConstants.INVOICENUMBER, "1980");
-        paramMap.put(ReceivingConstants.RECEIPTDATESTART, "1988-12-12");
-        paramMap.put(ReceivingConstants.RECEIPTDATEEND, "1990-11-11");
-
         ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", 1122, 99, "776",
                 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",
@@ -181,7 +161,7 @@ public class ReceiveSummaryServiceImplTest {
     }
 
     @Test
-    public void updateReceiveSummaryTest() {
+    public void updateReceiveSummaryHappyPathTest() {
 
         Meta meta = new Meta();
         SorRoutingCtx sorRoutingCtx = new SorRoutingCtx();
@@ -218,8 +198,8 @@ public class ReceiveSummaryServiceImplTest {
         Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, countryCode).getData(), successMessage.getData());
     }
 
- /*   @Test
-    public void updateReceiveSummaryNegativeTest() {
+    @Test
+    public void updateReceiveSummaryElsePathTest() {
 
         ReceiveSummary receiveSummary = new ReceiveSummary("998|888|1|0", "888",
                 6565, 18, 0, LocalDate.of(1995, 10, 16), LocalTime.of(18, 30, 00),
@@ -241,7 +221,8 @@ public class ReceiveSummaryServiceImplTest {
         ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("888", "998", LocalDate.of(2018, 10, 10),
                 1, "A", meta);
 
-        when(receivingSummaryRequest.getMeta().getUnitofWorkid()).thenReturn("11");
+        Meta mockString= Mockito.mock(Meta.class);
+        when(mockString.getUnitofWorkid()).thenReturn("11");
 
         List<ReceivingSummaryRequest> responseList = new ArrayList<>();
 
@@ -284,28 +265,18 @@ public class ReceiveSummaryServiceImplTest {
         ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("888", "998", LocalDate.of(2018, 10, 10),
                 1, "P", meta);
 
-        when(receivingSummaryRequest.getMeta().getUnitofWorkid()).thenReturn("11");
-
-        List<ReceivingSummaryRequest> responseList = new ArrayList<>();
-
-        String countryCode = "US";
+        Meta mockString= Mockito.mock(Meta.class);
+        when(mockString.getUnitofWorkid()).thenReturn("11");
 
         when(mongoTemplate.findById((Mockito.anyString()), Mockito.any(Class.class), Mockito.any())).thenReturn(receiveSummary);
         Mockito.when(receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryRequest)).thenReturn(false).thenThrow(InvalidValueException.class);
 
-        responseList.add(receivingSummaryRequest);
+        Assert.assertEquals(receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryRequest),false);
 
-        ReceivingResponse successMessage = new ReceivingResponse();
-        successMessage.setData(responseList);
-        successMessage.setMessage(true);
-        successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
-
-        Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, countryCode).getData(), successMessage.getData());
-
-    }*/
+    }
 
     @Test
-    public void updateReceiveSummaryLineTest() {
+    public void updateReceiveSummaryLineHappyPathTest() {
 
         Meta meta = new Meta();
         SorRoutingCtx sorRoutingCtx = new SorRoutingCtx();
@@ -349,6 +320,109 @@ public class ReceiveSummaryServiceImplTest {
         successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
 
         Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, countryCode).getData(), successMessage.getData());
+    }
+
+    @Test
+    public void updateReceiveSummaryLineElsePathTest() {
+
+        Meta meta = new Meta();
+        SorRoutingCtx sorRoutingCtx = new SorRoutingCtx();
+        sorRoutingCtx.setInvProcAreaCode(36);
+        sorRoutingCtx.setLocationCountryCd("US");
+        sorRoutingCtx.setReplnTypCd("R");
+        meta.setSorRoutingCtx(sorRoutingCtx);
+
+        String countryCode = "US";
+        ReceiveSummary receiveSummary = new ReceiveSummary("9|8|1|0", "8",
+                6565, 18, 0, LocalDate.of(1995, 10, 16), LocalTime.of(18, 30, 00),
+                0, 122663, 1111,
+                0, 0, 'H', 0.0, 1.0, 1, 'P',
+                2L, 'k', 'L',
+                'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.of(1995, 10, 16),
+                LocalDate.of(1995, 10, 16), 9.0, 7, 0, 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
+                "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "9"
+                , 'K', "LLL");
+
+        ReceivingLine receivingLine = new ReceivingLine("9|8|1|0|1", "8",
+                0, 3777, 94493, 0, 0.0, 0.0, "9",
+                89, 12, "1122", 99, 8264, 18,
+                LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 1,
+                LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
+                0, 1.9, "LL", 9, "OO");
+
+        ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
+                null, "9", meta);
+
+        Meta mockString= Mockito.mock(Meta.class);
+        when(mockString.getUnitofWorkid()).thenReturn("11");
+
+        Mockito.when(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)).thenReturn(true);
+        Mockito.when(receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest)).thenReturn(true);
+
+        when(mongoTemplate.findById((Mockito.anyString()), Mockito.any(Class.class), Mockito.any())).thenReturn(receiveSummary, receivingLine);
+
+        List<ReceivingSummaryLineRequest> responseList = new ArrayList<>();
+        responseList.add(receivingSummaryLineRequest);
+
+        ReceivingResponse successMessage = new ReceivingResponse();
+        successMessage.setData(responseList);
+        successMessage.setMessage(true);
+        successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
+
+        Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, countryCode).getData(), successMessage.getData());
+    }
+
+    @Test
+    public void updateReceiveSummaryLineNegativeTest() {
+
+        Meta meta = new Meta();
+        SorRoutingCtx sorRoutingCtx = new SorRoutingCtx();
+        sorRoutingCtx.setInvProcAreaCode(36);
+        sorRoutingCtx.setLocationCountryCd("US");
+        sorRoutingCtx.setReplnTypCd("R");
+        meta.setSorRoutingCtx(sorRoutingCtx);
+
+        String countryCode = "US";
+        ReceiveSummary receiveSummary = new ReceiveSummary("9|8|1|0", "8",
+                6565, 18, 0, LocalDate.of(1995, 10, 16), LocalTime.of(18, 30, 00),
+                0, 122663, 1111,
+                0, 0, 'H', 0.0, 1.0, 1, 'P',
+                2L, 'k', 'L',
+                'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.of(1995, 10, 16),
+                LocalDate.of(1995, 10, 16), 9.0, 7, 0, 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
+                "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "9"
+                , 'K', "LLL");
+
+        ReceivingLine receivingLine = new ReceivingLine("9|8|1|0|1", "8",
+                0, 3777, 94493, 0, 0.0, 0.0, "9",
+                89, 12, "1122", 99, 8264, 18,
+                LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 1,
+                LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
+                0, 1.9, "LL", 9, "OO");
+
+        ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
+                null, "10", meta);
+
+        Meta mockString= Mockito.mock(Meta.class);
+        when(mockString.getUnitofWorkid()).thenReturn("11");
+
+        Mockito.when(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)).thenReturn(true);
+        Mockito.when(receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest)).thenReturn(true);
+
+        when(mongoTemplate.findById((Mockito.anyString()), Mockito.any(Class.class), Mockito.any())).thenReturn(receiveSummary, receivingLine);
+
+        List<ReceivingSummaryLineRequest> responseList = new ArrayList<>();
+        responseList.add(receivingSummaryLineRequest);
+
+        ReceivingResponse successMessage = new ReceivingResponse();
+        successMessage.setData(responseList);
+        successMessage.setMessage(true);
+        successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
+
+        Mockito.when(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)).thenReturn(false).thenThrow(InvalidValueException.class);
+        Mockito.when(receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest)).thenReturn(false).thenThrow(InvalidValueException.class);
+
+        Assert.assertEquals(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest),false);
     }
 
 }
