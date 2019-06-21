@@ -5,8 +5,8 @@ import com.walmart.finance.ap.fds.receiving.request.Meta;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import com.walmart.finance.ap.fds.receiving.request.SorRoutingCtx;
+import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
-import com.walmart.finance.ap.fds.receiving.response.SuccessMessage;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveSummaryServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,7 +57,7 @@ public class ReceivingSummaryControllerTest {
         meta.setSorRoutingCtx(sorRoutingCtx);
         ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("2", "2", LocalDate.now(), 2, "A", meta);
         List<ReceivingSummaryRequest> responseList = new ArrayList<>();
-        SuccessMessage successMessage = new SuccessMessage();
+        ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setMessage(true);
         responseList.add(receivingSummaryRequest);
         successMessage.setData(responseList);
@@ -122,7 +122,7 @@ public class ReceivingSummaryControllerTest {
     @Test
     public void updateSummaryAndLineTest() {
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("2", "2", LocalDate.now(), 2, "A", 1, "0", null);
-        SuccessMessage successMessage = new SuccessMessage();
+        ReceivingResponse successMessage = new ReceivingResponse();
         List<ReceivingSummaryLineRequest> responseList = new ArrayList<>();
         successMessage.setMessage(true);
         responseList.add(receivingSummaryLineRequest);
@@ -202,7 +202,7 @@ public class ReceivingSummaryControllerTest {
             }
         };
 
-        SuccessMessage successMessage = new SuccessMessage(true, LocalDateTime.of(2019, 05, 12, 15, 31, 16), responseList);
+        ReceivingResponse successMessage = new ReceivingResponse(true, LocalDateTime.of(2019, 05, 12, 15, 31, 16), responseList);
 
         when(receiveSummaryService.getReceiveSummary(Mockito.any(), Mockito.any(), Mockito.any(),
                 Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),

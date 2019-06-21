@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SuccessMessage {
+public class ReceivingResponse {
     private boolean message;
     private LocalDateTime timestamp;
     private List data;
