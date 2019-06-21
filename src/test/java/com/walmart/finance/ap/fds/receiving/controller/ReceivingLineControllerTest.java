@@ -2,6 +2,7 @@
 package com.walmart.finance.ap.fds.receiving.controller;
 
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
+import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveLineServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +18,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import javax.ws.rs.core.MediaType;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,9 +54,13 @@ public class ReceivingLineControllerTest {
                 add(response);
             }
         };
+        ReceivingResponse successMessage= new ReceivingResponse();
+        successMessage.setMessage(true);
+        successMessage.setTimestamp(LocalDateTime.now());
+        successMessage.setData(responseList);
 
         when(receiveLineService.getLineSummary(Mockito.any(), Mockito.any(), Mockito.any(),
-                Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(responseList);
+                Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(successMessage);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/US/receiving/line")

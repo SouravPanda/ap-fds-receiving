@@ -4,11 +4,12 @@ package com.walmart.finance.ap.fds.receiving.service;
 
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineReqConverter;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineResponseConverter;
+import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.repository.ReceiveLineDataRepository;
-import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
+import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.collections.CollectionUtils;
@@ -20,6 +21,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,23 +46,20 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
     @Value("${azure.cosmosdb.collection.line}")
     private String lineCollection;
 
-
-    public ReceivingLine saveReceiveLine(ReceivingSummaryLineRequest receivingSummaryLineRequest) {
-        ReceivingLine receiveLine = receivingLineRequestConverter.convert(receivingSummaryLineRequest);
-        return receiveLineDataRepository.save(receiveLine);
-
-    }
-
-    public List<ReceivingLineResponse> getLineSummary(String purchaseOrderId, String receiptNumber, String transactionType, String controlNumber, String locationNumber, String divisionNumber) {
+    public ReceivingResponse getLineSummary(String purchaseOrderId, String receiptNumber, String transactionType, String controlNumber, String locationNumber, String divisionNumber) {
 
         Query query = searchCriteriaForGet(purchaseOrderId, receiptNumber, transactionType, controlNumber, locationNumber, divisionNumber);
         List<ReceivingLine> receiveLines = mongoTemplate.find(query.limit(1000), ReceivingLine.class, lineCollection);
         List<ReceivingLineResponse> responseList;
         if (CollectionUtils.isEmpty(receiveLines)) {
-            throw new NotFoundException("Receiving line not found for given search criteria.");
+            throw new ContentNotFoundException("Receiving line not found for given search criteria ","please enter valid query parameters");
         } else {
             responseList = receiveLines.stream().map((t) -> receivingLineResponseConverter.convert(t)).collect(Collectors.toList());
-            return responseList;
+            ReceivingResponse successMessage = new ReceivingResponse();
+            successMessage.setTimestamp(LocalDateTime.now());
+            successMessage.setData(responseList);
+            successMessage.setMessage(true);
+            return successMessage;
         }
     }
 
