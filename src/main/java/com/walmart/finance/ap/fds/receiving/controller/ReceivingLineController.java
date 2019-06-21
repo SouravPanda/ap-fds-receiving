@@ -1,9 +1,8 @@
 
 package com.walmart.finance.ap.fds.receiving.controller;
 
-import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
-import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
+import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveLineService;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveLineServiceImpl;
 import io.swagger.annotations.Api;
@@ -38,39 +37,24 @@ public class ReceivingLineController {
     @ApiOperation(value = "API to get new LineSummary based on the payload")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
 
-    public List<ReceivingLineResponse> getReceiveLine(@PathVariable("countryCode")
+    public ReceivingResponse getReceiveLine(@PathVariable("countryCode")
                                                               String countryCode, @RequestParam(value = "purchaseOrderId", required = false) String purchaseOrderId,
-                                                      @RequestParam(value = "receiptNumbers", required = false) String receiptNumbers,
-                                                      @RequestParam(value = "transactionType", required = false) String transactionType,
-                                                      @RequestParam(value = "controlNumber", required = false) String controlNumber,
-                                                      @RequestParam(value = "locationNumber", required = false) String locationNumber,
-                                                      @RequestParam(value = "divisionNumber", required = false) String divisionNumber,
-                                                      @RequestParam(value = "pageNbr", defaultValue = "0")
+                                            @RequestParam(value = "receiptNumbers", required = false) String receiptNumbers,
+                                            @RequestParam(value = "transactionType", required = false) String transactionType,
+                                            @RequestParam(value = "controlNumber", required = false) String controlNumber,
+                                            @RequestParam(value = "locationNumber", required = false) String locationNumber,
+                                            @RequestParam(value = "divisionNumber", required = false) String divisionNumber,
+                                            @RequestParam(value = "pageNbr", defaultValue = "0")
                                                               Integer pageNbr,
-                                                      @RequestParam(value = "pageSize", defaultValue = "1000")
+                                            @RequestParam(value = "pageSize", defaultValue = "1000")
                                                               Integer pageSize,
-                                                      @RequestParam(value = "orderBy", defaultValue = "creationDate")
+                                            @RequestParam(value = "orderBy", defaultValue = "creationDate")
                                                               String orderBy,
-                                                      @RequestParam(value = "order", defaultValue = "DESC")
+                                            @RequestParam(value = "order", defaultValue = "DESC")
                                                               Sort.Direction order) {
 
         return receiveLineService.getLineSummary(purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber, divisionNumber);
 
     }
 
-    /**
-     * Method calls Service class to add stores in Db
-     *
-     * @param
-     * @return
-     */
-    @PostMapping
-    @ApiOperation(value = "API to add new Stores based on the payload")
-    @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
-
-    public ReceivingLine saveReceiveLine(@PathVariable("countryCode")
-                                                 String countryCode, @RequestBody ReceivingSummaryLineRequest receivingSummaryLineRequest) {
-        return receiveLineServiceImpl.saveReceiveLine(receivingSummaryLineRequest);
-
-    }
 }

@@ -21,7 +21,7 @@ public class LocalTimeDeserializer extends JsonDeserializer<LocalTime> {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     @Override
-    public LocalTime deserialize(JsonParser p, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+    public LocalTime deserialize(JsonParser p, DeserializationContext deserializationContext) throws IOException {
         String localTimeString = null;
         if(Objects.nonNull(p)) {
             localTimeString = p.readValueAs(String.class);

@@ -40,7 +40,7 @@ public class ReceivingConstants {
     public static final String VENDORNUMBER = "vendorNumber";
     public static final String DEPARTMENTNUMBER = "departmentNumber";
     public static final String INVOICEID = "invoiceId";
-    public static final String RECEIPTDATEEND = "receiptDateStart";
-    public static final String RECEIPTDATESTART = "receiptDateEnd";
+    public static final String RECEIPTDATEEND = "receiptDateEnd";
+    public static final String RECEIPTDATESTART = "receiptDateStart";
 
 }

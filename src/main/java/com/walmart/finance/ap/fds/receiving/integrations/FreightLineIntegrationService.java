@@ -7,5 +7,5 @@ import java.util.Map;
 
 public interface FreightLineIntegrationService {
 
-    public Map<String, FreightResponse> getFreightLineAPIData(List<ReceiveSummary> summaries);
+    Map<String, FreightResponse> getFreightLineAPIData(List<ReceiveSummary> summaries);
 }
