@@ -22,7 +22,7 @@ public class ReceivingLineResponse {
 //    private Integer vendorStockNumber;
 //    private Integer bottleDepositAmount;
 //    private String damaged;
-//    private String purchaseOrderNumber;
+    private String purchaseOrderNumber;
 //    private Integer parentReceiptNumber;
     private String purchaseOrderId;
 //    private String upc;
@@ -31,8 +31,9 @@ public class ReceivingLineResponse {
     private String variableWeightInd;
     private String receivedWeightQuantity;
     private Integer transactionType;
-//    private String controlNumber;
+    private String controlNumber;
     private Integer locationNumber;
     private Integer divisionNumber;
+    private Double bottleDepositAmount;
 
 }
