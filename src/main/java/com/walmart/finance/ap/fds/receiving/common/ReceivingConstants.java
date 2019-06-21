@@ -22,8 +22,8 @@ public class ReceivingConstants {
     public static final String WM_ENV = "WM_SVC.ENV";
     public static final String WM_SVC_VERSION = "WM_SVC.VERSION";
     public static final String WMAPIKEY = "WMT-API-KEY";
-    public static final String RECEIVESUMMARYWAREHOUSE = "fds-db-dev.test.receive-summary";
-    public static final String RECEIVELINEWAREHOUSE = "fds-db-dev.test.receive-line";
+    public static final String RECEIVESUMMARYWAREHOUSE = "delta-load-wh-receive-summary";
+    public static final String RECEIVELINEWAREHOUSE = "delta-load-wh-receive-line";
     public static final int XSS_FILTER_ORDER = 1;
     public static final int MDC_FILTER_ORDER = 2;
     public static final int LOGGING_FILTER_ORDER = 3;
