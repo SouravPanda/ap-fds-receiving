@@ -2,6 +2,7 @@
 package com.walmart.finance.ap.fds.receiving.controller;
 
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
+import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveLineServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +18,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import javax.ws.rs.core.MediaType;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,17 +46,18 @@ public class ReceivingLineControllerTest {
     public void getReceiveLine() throws Exception {
 
 
-        ReceivingLineResponse response = new ReceivingLineResponse(999997, 0, null, 366404, 2000, 0.0, 0.0, 1, 0, null ,"553683865", "lbs", " ",
-                " ", 99,null, 6565, 0,10.0);
+        ReceivingLineResponse response = new ReceivingLineResponse(999997, 0, null, 366404, 2000, 0.0, 0.0, 1, 0, null, "553683865", "lbs", " ",
+                " ", 99, null, 6565, 0, 10.0);
 
         List<ReceivingLineResponse> responseList = new ArrayList<ReceivingLineResponse>() {
             {
                 add(response);
             }
         };
+        ReceivingResponse successMessage = new ReceivingResponse(true, LocalDateTime.of(2019, 05, 12, 15, 31, 16), responseList);
 
         when(receiveLineService.getLineSummary(Mockito.any(), Mockito.any(), Mockito.any(),
-                Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(responseList);
+                Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(successMessage);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/US/receiving/line")
@@ -66,7 +69,11 @@ public class ReceivingLineControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(
 
-                        "[{" +
+                        " {" +
+                                "\"message\": true,\n" +
+                                "\"timestamp\": \"2019-05-12T15:31:16\",\n" +
+                                "    \"data\": [\n" +
+                                "        {\n" +
                                 "\"receiptNumber\": 999997,\n" +
                                 "\"receiptLineNumber\": 0,\n" +
                                 "\"itemNumber\": null,\n" +
@@ -83,9 +90,9 @@ public class ReceivingLineControllerTest {
                                 "\"transactionType\": 99,\n" +
                                 "\"locationNumber\": 6565,\n" +
                                 "\"divisionNumber\": 0\n" +
-                                "}]"
-
-                ))
+                                "                }\n" +
+                                "    ]\n" +
+                                "}"))
                 .andReturn();
     }
 }

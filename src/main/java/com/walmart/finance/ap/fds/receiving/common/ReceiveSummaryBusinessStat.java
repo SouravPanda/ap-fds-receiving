@@ -12,9 +12,9 @@ public enum ReceiveSummaryBusinessStat {
 
     private String value;
 
-    private ReceiveSummaryBusinessStat(String value)
+    ReceiveSummaryBusinessStat(String value)
     {
         this.value = value;
     }
-};
+}
 

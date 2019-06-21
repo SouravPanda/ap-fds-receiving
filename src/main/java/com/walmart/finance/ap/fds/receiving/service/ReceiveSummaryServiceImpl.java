@@ -485,8 +485,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     private boolean isWareHouseData(Integer invProcAreaCode, String repInTypCd, String locationCountryCd) {
 
         if (StringUtils.isNotEmpty(locationCountryCd) && StringUtils.isNotEmpty(repInTypCd)) {
-            if ((invProcAreaCode == 36 || invProcAreaCode == 30) && (repInTypCd.equals("R") || repInTypCd.equals("U") || repInTypCd.equals("F")) && (locationCountryCd.equals("US")))
-                return true;
+            return (invProcAreaCode == 36 || invProcAreaCode == 30) && (repInTypCd.equals("R") || repInTypCd.equals("U") || repInTypCd.equals("F")) && (locationCountryCd.equals("US"));
         }
         return false;
     }

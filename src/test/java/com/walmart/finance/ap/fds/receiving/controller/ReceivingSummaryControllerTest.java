@@ -63,7 +63,7 @@ public class ReceivingSummaryControllerTest {
         successMessage.setData(responseList);
         successMessage.setTimestamp(LocalDateTime.now());
         Mockito.when(receiveSummaryService.updateReceiveSummary(receivingSummaryRequest, "US")).thenReturn(successMessage);
-        String body = new String("{\n" +
+        String body = "{\n" +
                 "            \"receiptNumber\": \"2\",\n" +
                 "            \"controlNumber\": \"2\",\n" +
                 "            \"receiptDate\": \"2019-04-19\",\n" +
@@ -77,7 +77,7 @@ public class ReceivingSummaryControllerTest {
                 "                    \"locationCountryCd\": \"US\"\n" +
                 "                }\n" +
                 "             }\n" +
-                "}");
+                "}";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .put("/US/receiving/summary")
                 .header("X-FDS-FOUNDATION-API-KEY", "razorbacks")
@@ -129,7 +129,7 @@ public class ReceivingSummaryControllerTest {
         successMessage.setData(responseList);
         successMessage.setTimestamp(LocalDateTime.now());
         Mockito.when(receiveSummaryService.updateReceiveSummaryAndLine(receivingSummaryLineRequest, "US")).thenReturn(successMessage);
-        String body = new String("{\n" +
+        String body = "{\n" +
                 "            \"receiptNumber\": \"2\",\n" +
                 "            \"controlNumber\": \"2\",\n" +
                 "            \"receiptDate\": \"2019-04-19\",\n" +
@@ -144,7 +144,7 @@ public class ReceivingSummaryControllerTest {
                 "                    \"locationCountryCd\": \"US\"\n" +
                 "                }\n" +
                 "             }\n" +
-                "}");
+                "}";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .put("/US/receiving/summary")
                 .header("X-FDS-FOUNDATION-API-KEY", "razorbacks")
