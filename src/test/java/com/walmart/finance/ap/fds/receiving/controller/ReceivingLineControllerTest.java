@@ -46,18 +46,15 @@ public class ReceivingLineControllerTest {
     public void getReceiveLine() throws Exception {
 
 
-        ReceivingLineResponse response = new ReceivingLineResponse(999997, 0, null, 366404, 2000, 0.0, 0.0, 1, 0, null ,"553683865", "lbs", " ",
-                " ", 99,null, 6565, 0,10.0);
+        ReceivingLineResponse response = new ReceivingLineResponse(999997, 0, null, 366404, 2000, 0.0, 0.0, 1, 0, null, "553683865", "lbs", " ",
+                " ", 99, null, 6565, 0, 10.0);
 
         List<ReceivingLineResponse> responseList = new ArrayList<ReceivingLineResponse>() {
             {
                 add(response);
             }
         };
-        ReceivingResponse successMessage= new ReceivingResponse();
-        successMessage.setMessage(true);
-        successMessage.setTimestamp(LocalDateTime.now());
-        successMessage.setData(responseList);
+        ReceivingResponse successMessage = new ReceivingResponse(true, LocalDateTime.of(2019, 05, 12, 15, 31, 16), responseList);
 
         when(receiveLineService.getLineSummary(Mockito.any(), Mockito.any(), Mockito.any(),
                 Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(successMessage);
@@ -72,7 +69,11 @@ public class ReceivingLineControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(
 
-                        "[{" +
+                        " {" +
+                                "\"message\": true,\n" +
+                                "\"timestamp\": \"2019-05-12T15:31:16\",\n" +
+                                "    \"data\": [\n" +
+                                "        {\n" +
                                 "\"receiptNumber\": 999997,\n" +
                                 "\"receiptLineNumber\": 0,\n" +
                                 "\"itemNumber\": null,\n" +
@@ -89,9 +90,9 @@ public class ReceivingLineControllerTest {
                                 "\"transactionType\": 99,\n" +
                                 "\"locationNumber\": 6565,\n" +
                                 "\"divisionNumber\": 0\n" +
-                                "}]"
-
-                ))
+                                "                }\n" +
+                                "    ]\n" +
+                                "}"))
                 .andReturn();
     }
 }

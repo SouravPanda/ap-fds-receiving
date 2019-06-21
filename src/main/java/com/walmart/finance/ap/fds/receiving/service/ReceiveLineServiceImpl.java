@@ -5,7 +5,6 @@ package com.walmart.finance.ap.fds.receiving.service;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineReqConverter;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineResponseConverter;
 import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
-import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.repository.ReceiveLineDataRepository;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;

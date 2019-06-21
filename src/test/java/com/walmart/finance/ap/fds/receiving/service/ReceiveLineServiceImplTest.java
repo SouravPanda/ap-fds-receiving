@@ -3,20 +3,18 @@ package com.walmart.finance.ap.fds.receiving.service;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineResponseConverter;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
-import com.walmart.finance.ap.fds.receiving.service.ReceiveLineServiceImpl;
+import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
 import java.time.LocalDate;
@@ -26,6 +24,8 @@ import java.util.List;
 
 import static org.mockito.Mockito.when;
 
+@PrepareForTest(ReceiveLineServiceImpl.class)
+@RunWith(PowerMockRunner.class)
 public class ReceiveLineServiceImplTest {
 
     @InjectMocks
@@ -37,19 +37,13 @@ public class ReceiveLineServiceImplTest {
     @Mock
     MongoTemplate mongoTemplate;
 
-
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        receiveLineServiceImpl.setLineCollection("receive-line");
     }
 
     @Test
     public void getLineSummaryTest() throws Exception {
-
-        List<String> orderByproperties = new ArrayList<>();
-        orderByproperties.add("creationDate");
-
 
         List listOfContent = new ArrayList<ReceivingLine>();
         ReceivingLine receivingLine = new ReceivingLine("112|1804823|8264|18|0|1995-10-17|1995-10-17T18:45:21|122", "4665267",
@@ -76,10 +70,18 @@ public class ReceiveLineServiceImplTest {
         content.add(receivingLineResponse);
         content.add(receivingLineResponseAt);
 
-        when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.anyString())).thenReturn(listOfContent);
+        ReceivingResponse successMessage = new ReceivingResponse();
+        successMessage.setData(content);
+        successMessage.setMessage(true);
+        successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
+
+        Query mockQuery = Mockito.mock(Query.class);
+
+        when(mockQuery.limit(Mockito.anyInt())).thenReturn(mockQuery);
+        when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.any())).thenReturn(listOfContent);
         when(receivingLineResponseConverter.convert(Mockito.any(ReceivingLine.class))).thenReturn(receivingLineResponse);
 
-        Assert.assertEquals(receiveLineServiceImpl.getLineSummary("78887", "1", "1", "777", "87", "88"), content);
+        Assert.assertEquals(receiveLineServiceImpl.getLineSummary("78887", "1", "1", "777", "87", "88").getData(), successMessage.getData());
 
     }
 
