@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReceivingResponse {
-    private boolean message;
+    private boolean success;
     private LocalDateTime timestamp;
     private List data;
 }
