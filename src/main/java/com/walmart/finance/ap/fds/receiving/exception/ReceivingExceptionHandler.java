@@ -29,9 +29,9 @@ public class ReceivingExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> invalidValueExceptionHandler(
             Exception ex,InvalidValueException e ,WebRequest request) {
         List<ErrorDetails> detailsOfErr = new ArrayList<>();
-            detailsOfErr.add(new ErrorDetails(LocalDateTime.now(),ex.getMessage()+" "+e.getErrorMessage()));
+            detailsOfErr.add(new ErrorDetails(ex.getMessage()+" "+e.getErrorMessage()));
         return new ResponseEntity<>(
-                new ReceivingError(105, ex.getMessage(), detailsOfErr), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+                new ReceivingError(false,LocalDateTime.now(),105, ex.getMessage(), detailsOfErr), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
 
@@ -39,27 +39,27 @@ public class ReceivingExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> contentNotFoundExceptionHandler(
             Exception ex,ContentNotFoundException e,WebRequest request) {
         List<ErrorDetails> detailsOfErr = new ArrayList<>();
-        detailsOfErr.add(new ErrorDetails(LocalDateTime.now(),ex.getMessage()+" "+e.getErrorMessage()));
+        detailsOfErr.add(new ErrorDetails(ex.getMessage()+" "+e.getErrorMessage()));
         return new ResponseEntity<>(
-                new ReceivingError(204, ex.getMessage(), detailsOfErr), new HttpHeaders(), HttpStatus.OK);
+                new ReceivingError(false,LocalDateTime.now(),0, ex.getMessage(), detailsOfErr), new HttpHeaders(), HttpStatus.OK);
     }
 
     @ExceptionHandler({NotFoundException.class})
     public ResponseEntity<Object> notFoundExceptionHandler(
             Exception ex,NotFoundException e, WebRequest request) {
         List<ErrorDetails> detailsOfErr = new ArrayList<>();
-        detailsOfErr.add(new ErrorDetails(LocalDateTime.now(),ex.getMessage()+" "+e.getErrorMessage()));
+        detailsOfErr.add(new ErrorDetails(ex.getMessage()+" "+e.getErrorMessage()));
         return new ResponseEntity<>(
-                new ReceivingError(204, ex.getMessage(), detailsOfErr), new HttpHeaders(), HttpStatus.NO_CONTENT);
+                new ReceivingError(false,LocalDateTime.now(),0, ex.getMessage(), detailsOfErr), new HttpHeaders(), HttpStatus.NO_CONTENT);
     }
 
     @ExceptionHandler({SearchCriteriaException.class})
     public ResponseEntity<Object> searchCriteriaExceptionHandler(
             Exception ex,SearchCriteriaException e, WebRequest request) {
         List<ErrorDetails> detailsOfErr = new ArrayList<>();
-        detailsOfErr.add(new ErrorDetails(LocalDateTime.now(),ex.getMessage()+" "+e.getErrorMessage()));
+        detailsOfErr.add(new ErrorDetails(ex.getMessage()+" "+e.getErrorMessage()));
         return new ResponseEntity<>(
-                new ReceivingError(204, ex.getMessage(), detailsOfErr), new HttpHeaders(), HttpStatus.OK);
+                new ReceivingError(false,LocalDateTime.now(),0, ex.getMessage(), detailsOfErr), new HttpHeaders(), HttpStatus.OK);
     }
 
 }

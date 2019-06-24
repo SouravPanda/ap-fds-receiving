@@ -72,7 +72,7 @@ public class ReceiveLineServiceImplTest {
 
         ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setData(content);
-        successMessage.setMessage(true);
+        successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
 
         Query mockQuery = Mockito.mock(Query.class);

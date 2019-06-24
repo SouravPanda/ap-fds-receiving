@@ -57,7 +57,7 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
             ReceivingResponse successMessage = new ReceivingResponse();
             successMessage.setTimestamp(LocalDateTime.now());
             successMessage.setData(responseList);
-            successMessage.setMessage(true);
+            successMessage.setSuccess(true);
             return successMessage;
         }
     }

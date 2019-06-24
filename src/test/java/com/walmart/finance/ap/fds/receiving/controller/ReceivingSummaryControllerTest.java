@@ -58,7 +58,7 @@ public class ReceivingSummaryControllerTest {
         ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("2", "2", LocalDate.now(), 2, "A", meta);
         List<ReceivingSummaryRequest> responseList = new ArrayList<>();
         ReceivingResponse successMessage = new ReceivingResponse();
-        successMessage.setMessage(true);
+        successMessage.setSuccess(true);
         responseList.add(receivingSummaryRequest);
         successMessage.setData(responseList);
         successMessage.setTimestamp(LocalDateTime.now());
@@ -92,7 +92,7 @@ public class ReceivingSummaryControllerTest {
                     .andExpect(content().json(body))
                     .andExpect(status().isOk())
                     .andExpect(content().json("{\n" +
-                            "    \"message\": true,\n" +
+                            "    \"success\": true,\n" +
                             "    \"timestamp\": \"2019-06-19T14:29:17.812\",\n" +
                             "    \"data\": [\n" +
                             "        {\n" +
@@ -124,7 +124,7 @@ public class ReceivingSummaryControllerTest {
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("2", "2", LocalDate.now(), 2, "A", 1, "0", null);
         ReceivingResponse successMessage = new ReceivingResponse();
         List<ReceivingSummaryLineRequest> responseList = new ArrayList<>();
-        successMessage.setMessage(true);
+        successMessage.setSuccess(true);
         responseList.add(receivingSummaryLineRequest);
         successMessage.setData(responseList);
         successMessage.setTimestamp(LocalDateTime.now());
@@ -159,7 +159,7 @@ public class ReceivingSummaryControllerTest {
                     .andExpect(content().json(body))
                     .andExpect(status().isOk())
                     .andExpect(content().json("{\n" +
-                            "    \"message\": true,\n" +
+                            "    \"success\": true,\n" +
                             "    \"timestamp\": \"2019-06-19T14:29:17.812\",\n" +
                             "    \"data\": [\n" +
                             "        {\n" +
@@ -217,7 +217,7 @@ public class ReceivingSummaryControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(
                         " {" +
-                                "\"message\": true,\n" +
+                                "\"success\": true,\n" +
                                 "\"timestamp\": \"2019-05-12T15:31:16\",\n" +
                                 "\"data\": [{ \n" +
                                 "\"purchaseOrderId\": \"984003673\",\n" +
