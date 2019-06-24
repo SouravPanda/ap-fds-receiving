@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +59,18 @@ public class ReceivingExceptionHandler extends ResponseEntityExceptionHandler {
         detailsOfErr.add(new ErrorDetails(LocalDateTime.now(),ex.getMessage()+" "+e.getErrorMessage()));
         return new ResponseEntity<>(
                 new ReceivingError(204, ex.getMessage(), detailsOfErr), new HttpHeaders(), HttpStatus.OK);
+    }
+
+    @ExceptionHandler({BadRequestException.class})
+    public ResponseEntity<Object> BadRequestExceptionHandler(
+            Exception ex, BadRequestException e, WebRequest request) {
+        List<ErrorDetails> detailsOfErr = new ArrayList<ErrorDetails>() {
+            {
+                add(new ErrorDetails(LocalDateTime.now(), ex.getMessage() + " " + e.getErrorMessage()));
+            }
+        };
+        return new ResponseEntity<>(
+                new ReceivingError(400, ex.getMessage(), detailsOfErr), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
 }
