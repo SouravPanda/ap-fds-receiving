@@ -14,7 +14,5 @@ public class ReceivingError {
 
     private boolean success;
     private LocalDateTime timeStamp;
-    private int errorCode;
-    private String errorMessage;
-    private List<ErrorDetails> details;
+    private List<ErrorDetails> error;
 }

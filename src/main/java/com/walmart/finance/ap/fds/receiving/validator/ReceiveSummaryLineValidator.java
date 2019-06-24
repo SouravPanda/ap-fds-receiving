@@ -1,12 +1,10 @@
 package com.walmart.finance.ap.fds.receiving.validator;
 
 import com.walmart.finance.ap.fds.receiving.common.ReceiveSummaryBusinessStat;
-import com.walmart.finance.ap.fds.receiving.integrations.FreightLineIntegrationServiceImpl;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
