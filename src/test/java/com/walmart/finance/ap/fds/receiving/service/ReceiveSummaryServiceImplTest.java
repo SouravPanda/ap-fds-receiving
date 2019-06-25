@@ -3,6 +3,7 @@ package com.walmart.finance.ap.fds.receiving.service;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
 import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
 import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
+import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
 import com.walmart.finance.ap.fds.receiving.integrations.InvoiceIntegrationService;
 import com.walmart.finance.ap.fds.receiving.integrations.InvoiceResponse;
@@ -161,6 +162,15 @@ public class ReceiveSummaryServiceImplTest {
                 "99", "675", "987", "18", "0", "776"
                 , "1980", "1988-12-12", "1990-11-11", listOfItemNumbers, listOfUpcNumbers).getData(), successMessage.getData().subList(0, 1));
     }
+
+    @Test(expected = NotFoundException.class)
+    public void getReceiveSummaryException() {
+        receiveSummaryServiceImpl.getReceiveSummary(null, null, null, Mockito.anyList(),
+                null, null, null, null, null, null,
+                null, null, null, null, Mockito.anyList(), Mockito.anyList());
+    }
+
+    /**   Update service Unit tests **/
 
     @Test
     public void updateReceiveSummaryHappyPathTest() {

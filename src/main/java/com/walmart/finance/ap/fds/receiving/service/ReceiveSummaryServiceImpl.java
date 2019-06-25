@@ -3,6 +3,7 @@ package com.walmart.finance.ap.fds.receiving.service;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryReqConverter;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
+import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
 import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
@@ -20,6 +21,7 @@ import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryLineValidato
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -104,49 +107,51 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     public ReceivingResponse getReceiveSummary(String countryCode, String purchaseOrderNumber, String purchaseOrderId, List<String> receiptNumbers, String transactionType, String controlNumber, String locationNumber,
                                                String divisionNumber, String vendorNumber, String departmentNumber, String invoiceId, String invoiceNumber, String receiptDateStart, String receiptDateEnd, List<String> itemNumbers, List<String> upcNumbers) {// Map<String,String> allRequestParam) {
-
         HashMap<String, String> paramMap = checkingNotNullParameters(countryCode, purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
                 divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd);
         List<ReceiveSummary> receiveSummaries;
         List<ReceivingSummaryResponse> responseList;
-
-        if (paramMap.containsKey(ReceivingConstants.INVOICENUMBER) || paramMap.containsKey(ReceivingConstants.INVOICEID) || paramMap.containsKey(ReceivingConstants.PURCHASEORDERNUMBER)) {
-            receiveSummaries = getInvoiceFromInvoiceSummary(paramMap);
-            if (paramMap.containsKey((ReceivingConstants.PURCHASEORDERNUMBER)) && receiveSummaries.isEmpty()) {
+        try {
+            if (paramMap.containsKey(ReceivingConstants.INVOICENUMBER) || paramMap.containsKey(ReceivingConstants.INVOICEID) || paramMap.containsKey(ReceivingConstants.PURCHASEORDERNUMBER)) {
+                receiveSummaries = getInvoiceFromInvoiceSummary(paramMap);
+                if (paramMap.containsKey((ReceivingConstants.PURCHASEORDERNUMBER)) && receiveSummaries.isEmpty()) {
+                    receiveSummaries = getSearchCriteriaForGet(paramMap);
+                }
+            } else {
                 receiveSummaries = getSearchCriteriaForGet(paramMap);
             }
-        } else {
-            receiveSummaries = getSearchCriteriaForGet(paramMap);
-        }
-        log.info("Before : size of recesummary list -" + receiveSummaries.size());
-        if (CollectionUtils.isNotEmpty(receiveSummaries) && receiveSummaries.size() > 1000) {
-            receiveSummaries.subList(1000, receiveSummaries.size()).clear();
-        }
-        log.info("After : size of recesummary list -" + receiveSummaries.size());
-        Map<String, AdditionalResponse> responseMap = getLineResponseMap(receiveSummaries, itemNumbers, upcNumbers);
-
-        //Todo parallel stream performance check
-        if (CollectionUtils.isEmpty(receiveSummaries)) {
-            throw new ContentNotFoundException("Receiving summary not found for given search criteria" ,"please enter valid query parameters");
-        } else {
-            responseList = receiveSummaries.stream().map(
-                    (t) -> {
-                        ReceivingSummaryResponse response = receivingSummaryResponseConverter.convert(t);
-                        if (responseMap.get(t.get_id()) != null) {
-                            response.setCarrierCode(responseMap.get(t.get_id()).getCarrierCode());
-                            response.setTrailerNumber(responseMap.get(t.get_id()).getTrailerNumber());
-                            response.setLineCount(responseMap.get(t.get_id()).getLineCount());
-                            response.setTotalCostAmount(responseMap.get(t.get_id()).getTotalCostAmount());
-                            response.setTotalRetailAmount(responseMap.get(t.get_id()).getTotalRetailAmount());
+            log.info("Before : size of recesummary list -" + receiveSummaries.size());
+            if (CollectionUtils.isNotEmpty(receiveSummaries) && receiveSummaries.size() > 1000) {
+                receiveSummaries.subList(1000, receiveSummaries.size()).clear();
+            }
+            log.info("After : size of recesummary list -" + receiveSummaries.size());
+            Map<String, AdditionalResponse> responseMap = getLineResponseMap(receiveSummaries, itemNumbers, upcNumbers);
+            //Todo parallel stream performance check
+            if (CollectionUtils.isEmpty(receiveSummaries)) {
+                throw new NotFoundException("Receiving summary not found for given search criteria", "please enter valid query parameters");
+            } else {
+                responseList = receiveSummaries.stream().map(
+                        (t) -> {
+                            ReceivingSummaryResponse response = receivingSummaryResponseConverter.convert(t);
+                            if (responseMap.get(t.get_id()) != null) {
+                                response.setCarrierCode(responseMap.get(t.get_id()).getCarrierCode());
+                                response.setTrailerNumber(responseMap.get(t.get_id()).getTrailerNumber());
+                                response.setLineCount(responseMap.get(t.get_id()).getLineCount());
+                                response.setTotalCostAmount(responseMap.get(t.get_id()).getTotalCostAmount());
+                                response.setTotalRetailAmount(responseMap.get(t.get_id()).getTotalRetailAmount());
+                            }
+                            return response;
                         }
-                        return response;
-                    }
-            ).collect(Collectors.toList());
-            ReceivingResponse successMessage = new ReceivingResponse();
-            successMessage.setData(responseList);
-            successMessage.setSuccess(true);
-            successMessage.setTimestamp(LocalDateTime.now());
-            return successMessage;
+                ).collect(Collectors.toList());
+                ReceivingResponse successMessage = new ReceivingResponse();
+                successMessage.setData(responseList);
+                successMessage.setSuccess(true);
+                successMessage.setTimestamp(LocalDateTime.now());
+                return successMessage;
+            }
+        } catch (NumberFormatException e) {
+            log.error(ExceptionUtils.getStackTrace(e));//TODO
+            throw new BadRequestException("Data Type is invalid for input values.", "Please enter valid query parameters");
         }
     }
 
@@ -275,12 +280,16 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     }
 
     public LocalDate getDate(String date) {
-        if (null != date && !"null".equals(date)) {
-            DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            return LocalDate.parse(date, formatterDate);
+        try {
+            if (null != date && !"null".equals(date)) {
+                DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                return LocalDate.parse(date, formatterDate);
+            }
+        } catch (DateTimeParseException e) {
+            log.error(ExceptionUtils.getStackTrace(e));
+            throw new BadRequestException("Date format is not correct."+e.getParsedString(), "Please enter valid query parameters");
         }
         return null;
-
     }
     /*******  Search Criteria methods  *********/
 
@@ -470,7 +479,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     /******* receive -freight data fetching   *********/
 
-
     /******* Common Methods  *********/
 
     private List<ReceiveSummary> executeQueryForReceiveSummary(Query query) {
@@ -479,8 +487,26 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             receiveSummaries = mongoTemplate.find(query.limit(1000), ReceiveSummary.class, summaryCollection);
         }
         return receiveSummaries;
-
     }
+
+    private List<ReceivingLine> executeQueryReceiveline(Query query) {
+        List<ReceivingLine> receiveLines = new ArrayList<>();
+        if (query != null) {
+            receiveLines = mongoTemplate.find(query, ReceivingLine.class, lineCollection);
+        }
+        return receiveLines;
+    }
+
+    private List<FreightResponse> executeQueryReceiveFreight(Query query) {
+        List<FreightResponse> receiveFreights = mongoTemplate.find(query, FreightResponse.class, freightCollection);
+        return receiveFreights;
+    }
+
+    private void listToMapConversion(List<ReceiveSummary> receiveSummaries, HashMap<String, ReceiveSummary> receiveSummaryHashMap) {
+        receiveSummaries.stream().forEach((t) -> receiveSummaryHashMap.put(t.get_id(), t));
+    }
+
+    /******* Common Methods  *********/
 
     private boolean isWareHouseData(Integer invProcAreaCode, String repInTypCd, String locationCountryCd) {
 
@@ -653,24 +679,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         successMessage.setTimestamp(LocalDateTime.now());
         return successMessage;
     }
-
-    private List<ReceivingLine> executeQueryReceiveline(Query query) {
-        List<ReceivingLine> receiveLines = new ArrayList<>();
-        if (query != null) {
-            receiveLines = mongoTemplate.find(query, ReceivingLine.class, lineCollection);
-        }
-        return receiveLines;
-    }
-
-    private List<FreightResponse> executeQueryReceiveFreight(Query query) {
-        List<FreightResponse> receiveFreights = mongoTemplate.find(query, FreightResponse.class, freightCollection);
-        return receiveFreights;
-    }
-
-    private void listToMapConversion(List<ReceiveSummary> receiveSummaries, HashMap<String, ReceiveSummary> receiveSummaryHashMap) {
-        receiveSummaries.stream().forEach((t) -> receiveSummaryHashMap.put(t.get_id(), t));
-    }
-
 
 }
 

@@ -104,7 +104,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         }
         ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setData(receivingInfoResponses);
-        successMessage.setMessage(true);
+        successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.now());
         return successMessage;
     }
@@ -200,9 +200,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 criteriaDefinition = Criteria.where(ReceiveSummaryParameters.MDSRECEIVEDATE.getParameterName()).gte(startDate).lte(endDate);
                 query.addCriteria(criteriaDefinition);
             } catch (IllegalArgumentException e) {
-                log.error(ExceptionUtils.getStackTrace(e));
-                throw new BadRequestException("Date format is not correct.", "please enter valid query parameters");
-            } catch (Exception e) {
                 log.error(ExceptionUtils.getStackTrace(e));
                 throw new BadRequestException("Date format is not correct.", "please enter valid query parameters");
             }
