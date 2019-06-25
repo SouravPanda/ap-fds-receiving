@@ -77,7 +77,7 @@ public class ReceivingInfoControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(
                         " {" +
-                                "\"message\": true,\n" +
+                                "\"success\": true,\n" +
                                 "\"timestamp\": \"2019-05-12T15:31:16\",\n" +
                                 " \"data\": \n" +
                                 "[{" +
