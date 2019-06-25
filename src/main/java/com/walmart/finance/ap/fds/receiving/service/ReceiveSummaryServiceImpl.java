@@ -287,7 +287,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             }
         } catch (DateTimeParseException e) {
             log.error(ExceptionUtils.getStackTrace(e));
-            throw new BadRequestException("Date format is not correct."+e.getParsedString(), "Please enter valid query parameters");
+            throw new BadRequestException("Date format is not correct.", "Please enter valid query parameters");
         }
         return null;
     }
