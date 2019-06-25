@@ -17,48 +17,53 @@ public class ReceivingExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({FieldValidationException.class})
     public ResponseEntity<Object> fieldValidation(
-            Exception ex, WebRequest request) {
-
+            Exception ex, FieldValidationException e, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getMessage() + " " + e.getMessage());
+        ErrorDetails detailsOfErr = new ErrorDetails(105, ex.getMessage(), details);
         return new ResponseEntity<>(
-                new FieldValidationError((FieldValidationException) ex), new HttpHeaders(), HttpStatus.OK);
+                new ReceivingError(false, LocalDateTime.now(), detailsOfErr), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
 
     @ExceptionHandler({InvalidValueException.class})
     public ResponseEntity<Object> invalidValueExceptionHandler(
-            Exception ex,InvalidValueException e ,WebRequest request) {
-        List<ErrorDetails> detailsOfErr = new ArrayList<>();
-            detailsOfErr.add(new ErrorDetails(LocalDateTime.now(),ex.getMessage()+" "+e.getErrorMessage()));
+            Exception ex, InvalidValueException e, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getMessage() + " " + e.getErrorMessage());
+        ErrorDetails detailsOfErr = new ErrorDetails(105, ex.getMessage(), details);
         return new ResponseEntity<>(
-                new ReceivingError(105, ex.getMessage(), detailsOfErr), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+                new ReceivingError(false, LocalDateTime.now(), detailsOfErr), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
 
     @ExceptionHandler({ContentNotFoundException.class})
     public ResponseEntity<Object> contentNotFoundExceptionHandler(
-            Exception ex,ContentNotFoundException e,WebRequest request) {
-        List<ErrorDetails> detailsOfErr = new ArrayList<>();
-        detailsOfErr.add(new ErrorDetails(LocalDateTime.now(),ex.getMessage()+" "+e.getErrorMessage()));
+            Exception ex, ContentNotFoundException e, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getMessage() + " " + e.getErrorMessage());
+        ErrorDetails detailsOfErr = new ErrorDetails(0, ex.getMessage(), details);
         return new ResponseEntity<>(
-                new ReceivingError(204, ex.getMessage(), detailsOfErr), new HttpHeaders(), HttpStatus.OK);
+                new ReceivingError(false, LocalDateTime.now(), detailsOfErr), new HttpHeaders(), HttpStatus.OK);
     }
 
     @ExceptionHandler({NotFoundException.class})
     public ResponseEntity<Object> notFoundExceptionHandler(
-            Exception ex,NotFoundException e, WebRequest request) {
-        List<ErrorDetails> detailsOfErr = new ArrayList<>();
-        detailsOfErr.add(new ErrorDetails(LocalDateTime.now(),ex.getMessage()+" "+e.getErrorMessage()));
+            Exception ex, NotFoundException e, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getMessage() + " " + e.getErrorMessage());
+        ErrorDetails detailsOfErr = new ErrorDetails(0, ex.getMessage(), details);
         return new ResponseEntity<>(
-                new ReceivingError(204, ex.getMessage(), detailsOfErr), new HttpHeaders(), HttpStatus.NO_CONTENT);
+                new ReceivingError(false, LocalDateTime.now(), detailsOfErr), new HttpHeaders(), HttpStatus.NO_CONTENT);
     }
 
     @ExceptionHandler({SearchCriteriaException.class})
     public ResponseEntity<Object> searchCriteriaExceptionHandler(
-            Exception ex,SearchCriteriaException e, WebRequest request) {
-        List<ErrorDetails> detailsOfErr = new ArrayList<>();
-        detailsOfErr.add(new ErrorDetails(LocalDateTime.now(),ex.getMessage()+" "+e.getErrorMessage()));
+            Exception ex, SearchCriteriaException e, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        ErrorDetails detailsOfErr = new ErrorDetails(0, ex.getMessage(), details);
         return new ResponseEntity<>(
-                new ReceivingError(204, ex.getMessage(), detailsOfErr), new HttpHeaders(), HttpStatus.OK);
+                new ReceivingError(false, LocalDateTime.now(), detailsOfErr), new HttpHeaders(), HttpStatus.OK);
     }
 
     @ExceptionHandler({BadRequestException.class})

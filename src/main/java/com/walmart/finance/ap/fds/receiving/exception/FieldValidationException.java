@@ -10,11 +10,11 @@ public class FieldValidationException extends RuntimeException {
 
     private final String message;
 
-    public FieldValidationException(String message, String errorCode, String fieldName) {
+    public FieldValidationException(String message, String errorMessage,String errorCode, String fieldName) {
         super(message);
         this.errorCode = errorCode;
+        this.message=errorMessage;
         this.fieldName = fieldName;
-        this.message = message;
     }
 
     public String getFieldName() {

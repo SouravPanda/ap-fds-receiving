@@ -127,7 +127,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
         //Todo parallel stream performance check
         if (CollectionUtils.isEmpty(receiveSummaries)) {
-            throw new NotFoundException("Receiving summary not found for given search criteria.");
+            throw new ContentNotFoundException("Receiving summary not found for given search criteria" ,"please enter valid query parameters");
         } else {
             responseList = receiveSummaries.stream().map(
                     (t) -> {
@@ -144,7 +144,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             ).collect(Collectors.toList());
             ReceivingResponse successMessage = new ReceivingResponse();
             successMessage.setData(responseList);
-            successMessage.setMessage(true);
+            successMessage.setSuccess(true);
             successMessage.setTimestamp(LocalDateTime.now());
             return successMessage;
         }
@@ -528,7 +528,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setTimestamp(LocalDateTime.now());
         successMessage.setData(responseList);
-        successMessage.setMessage(true);
+        successMessage.setSuccess(true);
         return successMessage;
     }
 
@@ -648,7 +648,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         }
         responseList.add(receivingSummaryLineRequest);
         ReceivingResponse successMessage = new ReceivingResponse();
-        successMessage.setMessage(true);
+        successMessage.setSuccess(true);
         successMessage.setData(responseList);
         successMessage.setTimestamp(LocalDateTime.now());
         return successMessage;

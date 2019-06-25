@@ -154,7 +154,7 @@ public class ReceiveSummaryServiceImplTest {
 
         ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setData(content);
-        successMessage.setMessage(true);
+        successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.now());
 
         Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary("US", "77", "8", listOfReceiptNumbers, "99",
@@ -194,7 +194,7 @@ public class ReceiveSummaryServiceImplTest {
 
         ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setData(responseList);
-        successMessage.setMessage(true);
+        successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
 
         Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, countryCode).getData(), successMessage.getData());
@@ -237,7 +237,7 @@ public class ReceiveSummaryServiceImplTest {
 
         ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setData(responseList);
-        successMessage.setMessage(true);
+        successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
 
         Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, countryCode).getData(), successMessage.getData());
@@ -341,7 +341,7 @@ public class ReceiveSummaryServiceImplTest {
 
         ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setData(responseList);
-        successMessage.setMessage(true);
+        successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
 
         Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, countryCode).getData(), successMessage.getData());
@@ -414,7 +414,7 @@ public class ReceiveSummaryServiceImplTest {
 
         ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setData(responseList);
-        successMessage.setMessage(true);
+        successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
 
         Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, countryCode).getData(), successMessage.getData());
@@ -464,7 +464,7 @@ public class ReceiveSummaryServiceImplTest {
 
         ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setData(responseList);
-        successMessage.setMessage(true);
+        successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
 
         Mockito.when(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)).thenReturn(false);
@@ -517,7 +517,7 @@ public class ReceiveSummaryServiceImplTest {
 
         ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setData(responseList);
-        successMessage.setMessage(true);
+        successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
 
         Mockito.when(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)).thenReturn(true);
