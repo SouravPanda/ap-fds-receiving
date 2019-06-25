@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.context.annotation.PropertySource;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -14,32 +15,33 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Data
 @ToString
+@PropertySource("application.properties")
 public class ReceivingSummaryLineRequest {
 
     @Valid
-    @NotEmpty(message = "{validation.receiptNumber.notEmpty}")
+    @NotEmpty(message = "Please enter a valid receiptNumber")
     private String receiptNumber;
 
     @Valid
-    @NotEmpty(message = "{validation.controlNumber.notEmpty}")
+    @NotEmpty(message = "Please enter a valid controlNumber")
     private String controlNumber;
 
     @Valid
-    @NotNull(message = "{validation.receiptDate.notEmpty}")
+    @NotNull(message = "Please enter a valid receiptDate")
     private LocalDate receiptDate;
 
     @Valid
-    @NotNull(message = "{validation.locationNumber.notEmpty}")
+    @NotNull(message = "Please enter a valid locationNumber")
     private Integer locationNumber;
 
     @Valid
-    @NotEmpty(message = "{validation.businessStatusCode.notEmpty}")
+    @NotEmpty(message = "Please enter a valid businessStatusCode")
     private String businessStatusCode;
 
     Integer sequenceNumber;
 
     @Valid
-    @NotEmpty(message = "{validation.inventoryMatchStatus.notEmpty}")
+    @NotEmpty(message = "Please enter a valid inventoryMatchStatus")
     private String inventoryMatchStatus;
 
     private Meta meta;

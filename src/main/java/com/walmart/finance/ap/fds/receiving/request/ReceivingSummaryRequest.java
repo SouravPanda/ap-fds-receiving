@@ -3,20 +3,17 @@ package com.walmart.finance.ap.fds.receiving.request;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Range;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@PropertySource("application.properties")
 public class ReceivingSummaryRequest {
 
     @NotEmpty(message = "Please enter a valid receiptNumber")
@@ -25,10 +22,10 @@ public class ReceivingSummaryRequest {
     @NotEmpty(message = "Please enter a valid controlNumber")
     private String controlNumber;
 
-    @NotNull(message = "receiptDate cannot be null")
+    @NotNull(message = "Please enter a valid receiptDate")
     private LocalDate receiptDate;
 
-    @NotNull(message = "locationNumber cannot be null")
+    @NotNull(message = "Please enter a valid locationNumber")
     private Integer locationNumber;
 
     @NotEmpty(message = "Please enter a valid businessStatusCode")
