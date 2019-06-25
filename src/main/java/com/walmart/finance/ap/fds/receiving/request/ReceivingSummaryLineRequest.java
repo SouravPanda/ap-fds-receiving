@@ -4,36 +4,44 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.context.annotation.PropertySource;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @ToString
+@PropertySource("application.properties")
 public class ReceivingSummaryLineRequest {
 
-    @NotEmpty(message = "Please enter a valid receiptNumber")
+    @Valid
+    @NotEmpty(message = "Missing mandatory parameter,please enter a valid receiptNumber")
     private String receiptNumber;
 
-    @NotEmpty(message = "Please enter a valid controlNumber")
+    @Valid
+    @NotEmpty(message = "Missing mandatory parameter,please enter a valid controlNumber")
     private String controlNumber;
 
-    @NotNull(message = "receiptDate cannot be null")
+    @Valid
+    @NotNull(message = "Missing mandatory parameter,please enter a valid receiptDate")
     private LocalDate receiptDate;
 
-    @NotNull(message = "locationNumber cannot be null")
+    @Valid
+    @NotNull(message = "Missing mandatory parameter,please enter a valid locationNumber")
     private Integer locationNumber;
 
-    @NotEmpty(message = "Please enter a valid businessStatusCode")
+    @Valid
+    @NotEmpty(message = "Missing mandatory parameter,please enter a valid businessStatusCode")
     private String businessStatusCode;
 
     Integer sequenceNumber;
 
-    @NotEmpty(message = "inventoryMatchStatus cannot be null")
+    @Valid
+    @NotEmpty(message = "Please enter a valid inventoryMatchStatus")
     private String inventoryMatchStatus;
 
     private Meta meta;
