@@ -19,23 +19,23 @@ import java.time.LocalDate;
 public class ReceivingSummaryLineRequest {
 
     @Valid
-    @NotEmpty(message = "Please enter a valid receiptNumber")
+    @NotEmpty(message = "Missing mandatory parameter,please enter a valid receiptNumber")
     private String receiptNumber;
 
     @Valid
-    @NotEmpty(message = "Please enter a valid controlNumber")
+    @NotEmpty(message = "Missing mandatory parameter,please enter a valid controlNumber")
     private String controlNumber;
 
     @Valid
-    @NotNull(message = "Please enter a valid receiptDate")
+    @NotNull(message = "Missing mandatory parameter,please enter a valid receiptDate")
     private LocalDate receiptDate;
 
     @Valid
-    @NotNull(message = "Please enter a valid locationNumber")
+    @NotNull(message = "Missing mandatory parameter,please enter a valid locationNumber")
     private Integer locationNumber;
 
     @Valid
-    @NotEmpty(message = "Please enter a valid businessStatusCode")
+    @NotEmpty(message = "Missing mandatory parameter,please enter a valid businessStatusCode")
     private String businessStatusCode;
 
     Integer sequenceNumber;
