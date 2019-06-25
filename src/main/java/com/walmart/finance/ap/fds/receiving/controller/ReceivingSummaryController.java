@@ -9,8 +9,10 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -36,7 +38,7 @@ public class ReceivingSummaryController {
     @ApiOperation(value = "API to add new Stores based on the payload")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Error")})
     public ReceivingResponse getReceiveSummary(@PathVariable("countryCode")
-                                                    String countryCode,
+                                                       String countryCode,
                                                @RequestParam(value = "purchaseOrderNumber", required = false) String purchaseOrderNumber,
                                                @RequestParam(value = "purchaseOrderId", required = false) String purchaseOrderId,
                                                @RequestParam(value = "receiptNumbers", required = false) List<String> receiptNumbers,
@@ -80,10 +82,9 @@ public class ReceivingSummaryController {
     @PutMapping("/line")
     @ApiOperation(value = "API to update Stores based on the payload")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
-    public ReceivingResponse updateSummaryAndLine(@PathVariable("countryCode") String countryCode, @RequestBody @Valid ReceivingSummaryLineRequest receiveSummaryLineRequest) {
+    public ReceivingResponse updateSummaryAndLine(@PathVariable("countryCode") String countryCode, @RequestBody @Valid ReceivingSummaryLineRequest receiveSummaryLineRequest){
         return receiveSummaryService.updateReceiveSummaryAndLine(receiveSummaryLineRequest, countryCode);
     }
-
 
 }
 

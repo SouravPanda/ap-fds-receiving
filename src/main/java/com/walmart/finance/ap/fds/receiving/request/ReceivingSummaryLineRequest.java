@@ -5,9 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @NoArgsConstructor
@@ -16,24 +16,30 @@ import java.time.LocalDate;
 @ToString
 public class ReceivingSummaryLineRequest {
 
-    @NotEmpty(message = "Please enter a valid receiptNumber")
+    @Valid
+    @NotEmpty(message = "{validation.receiptNumber.notEmpty}")
     private String receiptNumber;
 
-    @NotEmpty(message = "Please enter a valid controlNumber")
+    @Valid
+    @NotEmpty(message = "{validation.controlNumber.notEmpty}")
     private String controlNumber;
 
-    @NotNull(message = "receiptDate cannot be null")
+    @Valid
+    @NotNull(message = "{validation.receiptDate.notEmpty}")
     private LocalDate receiptDate;
 
-    @NotNull(message = "locationNumber cannot be null")
+    @Valid
+    @NotNull(message = "{validation.locationNumber.notEmpty}")
     private Integer locationNumber;
 
-    @NotEmpty(message = "Please enter a valid businessStatusCode")
+    @Valid
+    @NotEmpty(message = "{validation.businessStatusCode.notEmpty}")
     private String businessStatusCode;
 
     Integer sequenceNumber;
 
-    @NotEmpty(message = "inventoryMatchStatus cannot be null")
+    @Valid
+    @NotEmpty(message = "{validation.inventoryMatchStatus.notEmpty}")
     private String inventoryMatchStatus;
 
     private Meta meta;

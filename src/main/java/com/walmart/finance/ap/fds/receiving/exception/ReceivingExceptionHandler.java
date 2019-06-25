@@ -3,16 +3,22 @@ package com.walmart.finance.ap.fds.receiving.exception;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.validation.ConstraintViolationException;
+import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestControllerAdvice
+@ControllerAdvice
+@Validated
 public class ReceivingExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({FieldValidationException.class})
@@ -64,6 +70,15 @@ public class ReceivingExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorDetails detailsOfErr = new ErrorDetails(0, ex.getMessage(), details);
         return new ResponseEntity<>(
                 new ReceivingError(false, LocalDateTime.now(), detailsOfErr), new HttpHeaders(), HttpStatus.OK);
+    }
+
+    @ExceptionHandler({ConstraintViolationException.class})
+    public ResponseEntity<Object> constraintViolationExceptionHandler(
+            Exception ex, ConstraintViolationException e,  WebRequest request) {
+        List<String> details = new ArrayList<>();
+        ErrorDetails detailsOfErr = new ErrorDetails(104, ex.getMessage(), details);
+        return new ResponseEntity<>(
+                new ReceivingError(false, LocalDateTime.now(), detailsOfErr), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
 }
