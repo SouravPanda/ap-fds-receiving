@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 /**
@@ -58,7 +60,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     @Autowired
     FinancialTxnIntegrationService financialTxnIntegrationService;
 
-    private Map<String, String> queryParamMap;
+    private ConcurrentMap<String, String> queryParamMap;
 
     /**
      * @param countryCode
@@ -94,8 +96,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 || queryParamMap.containsKey(ReceivingInfoQueryParamName.INVOICENUMBER.getQueryParamName())
                 || queryParamMap.containsKey(ReceivingInfoQueryParamName.PURCHASEORDERID.getQueryParamName())
                 || queryParamMap.containsKey(ReceivingInfoQueryParamName.PURCHASEORDERNUMBER.getQueryParamName())) {
-            FinancialTxnResponse[] financialTxnResponseArray = financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap);
-            receivingInfoResponses = getDataForFinancialTxn(financialTxnResponseArray, receiptNumbers, itemNumbers, upcNumbers);
+            FinancialTxnResponse[] financialTxnResponses = financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap);
+            receivingInfoResponses = getDataForFinancialTxn(financialTxnResponses, receiptNumbers, itemNumbers, upcNumbers);
         } else {
             receivingInfoResponses = getDataFromReceiveDB(receiptNumbers, itemNumbers, upcNumbers);
         }
@@ -126,6 +128,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         return receivingInfoResponses;
     }
 
+    //TODO : query based on id
     private Query getQueryForFinancialTxn(FinancialTxnResponse financialTxnResponse) {
         Query query = new Query();
         CriteriaDefinition criteriaDefinition = null;
@@ -211,8 +214,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     /*************************** General Methods ***********************************/
     //TODO : Place all the parameters in map after null check.
-    private Map<String, String> notNullParamMap(String countryCode, String invoiceId, String invoiceNumber, String purchaseOrderNumber, String purchaseOrderId, String transactionType, String controlNumber, String locationNumber, String divisionNumber, String vendorNumber, String departmentNumber, String receiptDateStart, String receiptDateEnd, String lineNumberFlag) {
-        queryParamMap = new HashMap<>();
+    private ConcurrentMap<String, String> notNullParamMap(String countryCode, String invoiceId, String invoiceNumber, String purchaseOrderNumber, String purchaseOrderId, String transactionType, String controlNumber, String locationNumber, String divisionNumber, String vendorNumber, String departmentNumber, String receiptDateStart, String receiptDateEnd, String lineNumberFlag) {
+        queryParamMap = new ConcurrentHashMap<>();
         if (StringUtils.isNotEmpty(countryCode)) {
             queryParamMap.put(ReceivingInfoQueryParamName.COUNTRYCODE.getQueryParamName(), countryCode);
         }
