@@ -1,10 +1,9 @@
 
 package com.walmart.finance.ap.fds.receiving.service;
 
-
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineReqConverter;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineResponseConverter;
-import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
+import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.repository.ReceiveLineDataRepository;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
@@ -51,7 +50,7 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
         List<ReceivingLine> receiveLines = mongoTemplate.find(query.limit(1000), ReceivingLine.class, lineCollection);
         List<ReceivingLineResponse> responseList;
         if (CollectionUtils.isEmpty(receiveLines)) {
-            throw new ContentNotFoundException("Receiving line not found for given search criteria ","please enter valid query parameters");
+            throw new NotFoundException("Receiving line not found for given search criteria ","please enter valid query parameters");
         } else {
             responseList = receiveLines.stream().map((t) -> receivingLineResponseConverter.convert(t)).collect(Collectors.toList());
             ReceivingResponse successMessage = new ReceivingResponse();
