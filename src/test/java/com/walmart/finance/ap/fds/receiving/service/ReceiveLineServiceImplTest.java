@@ -1,6 +1,7 @@
 package com.walmart.finance.ap.fds.receiving.service;
 
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineResponseConverter;
+import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
@@ -83,6 +84,12 @@ public class ReceiveLineServiceImplTest {
 
         Assert.assertEquals(receiveLineServiceImpl.getLineSummary("78887", "1", "1", "777", "87", "88").getData(), successMessage.getData());
 
+    }
+
+    @Test(expected = BadRequestException.class)
+    public void getLineSummaryNumberFormatException() {
+        receiveLineServiceImpl.getLineSummary(null, null, null, null,
+                "null", null);
     }
 
 }
