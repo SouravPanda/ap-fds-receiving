@@ -128,7 +128,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         return receivingInfoResponses;
     }
 
-    //TODO : query based on id
     private Query getQueryForFinancialTxn(FinancialTxnResponse financialTxnResponse) {
         Query query = new Query();
         CriteriaDefinition criteriaDefinition = null;
@@ -213,7 +212,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     /*************************** Normal-Flow : END ***************************/
 
     /*************************** General Methods ***********************************/
-    //TODO : Place all the parameters in map after null check.
     private ConcurrentMap<String, String> notNullParamMap(String countryCode, String invoiceId, String invoiceNumber, String purchaseOrderNumber, String purchaseOrderId, String transactionType, String controlNumber, String locationNumber, String divisionNumber, String vendorNumber, String departmentNumber, String receiptDateStart, String receiptDateEnd, String lineNumberFlag) {
         queryParamMap = new ConcurrentHashMap<>();
         if (StringUtils.isNotEmpty(countryCode)) {
@@ -345,7 +343,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     /******* receive-freight data   *********/
 
     /*************************** Conversion Methods ***********************************/
-    //TODO : If data is not present in FTxn then set from receive summary. With necessary null check.
     private ReceivingInfoResponse convertsionToReceivingInfo(ReceiveSummary receiveSummary, FinancialTxnResponse financialTxnResponse, List<ReceivingLine> lineResponseList, List<FreightResponse> freightResponseList) {
         ReceivingInfoResponse receivingInfoResponse = new ReceivingInfoResponse();
         if (financialTxnResponse != null) {
