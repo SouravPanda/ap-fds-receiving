@@ -47,7 +47,7 @@ public class ReceivingExceptionHandler extends ResponseEntityExceptionHandler {
         details.add(ex.getMessage() + " " + e.getErrorMessage());
         ErrorDetails detailsOfErr = new ErrorDetails(0, ex.getMessage(), details);
         return new ResponseEntity<>(
-                new ReceivingError(false, LocalDateTime.now(), detailsOfErr), new HttpHeaders(), HttpStatus.OK);
+                new ReceivingError(false, LocalDateTime.now(), detailsOfErr), new HttpHeaders(), HttpStatus.NO_CONTENT);
     }
 
     @ExceptionHandler({NotFoundException.class})
