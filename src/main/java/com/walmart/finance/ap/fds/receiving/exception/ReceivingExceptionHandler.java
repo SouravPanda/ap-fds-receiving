@@ -89,7 +89,7 @@ public class ReceivingExceptionHandler extends ResponseEntityExceptionHandler {
         int length=details.size();
         String addOn = "as it(they) is(are) a mandatory field/fields.";
         details.add(addOn);
-        ErrorDetails detailsOfErr = new ErrorDetails(103, details.subList(0,length).toString().replaceAll("]",""), details);
+        ErrorDetails detailsOfErr = new ErrorDetails(103, details.subList(0,length).toString(), details);
         return new ResponseEntity<Object>(
                 new ReceivingError(false, LocalDateTime.now(), detailsOfErr), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
