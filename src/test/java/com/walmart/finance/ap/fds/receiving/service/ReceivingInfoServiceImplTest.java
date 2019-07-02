@@ -4,6 +4,7 @@ import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.integrations.FinancialTxnIntegrationServiceImpl;
 import com.walmart.finance.ap.fds.receiving.integrations.FinancialTxnResponse;
+import com.walmart.finance.ap.fds.receiving.integrations.FinancialTxnResponseData;
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
@@ -50,9 +51,10 @@ public class ReceivingInfoServiceImplTest {
     @Test
     public void getSevice() {
         /* Financial Txn mocking */
-        FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(123, 164680544, "10441", 6302, 2222, 0, 9.0, 0, "99987");
-        FinancialTxnResponse[] financialTxnResponses = {financialTxnResponse};
-        when(financialTxnIntegrationService.getFinancialTxnDetails(Mockito.anyMap())).thenReturn(financialTxnResponses);
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302, 2222, 0, 9.0, 0, "99987");
+        List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
+        financialTxnResponseDataList.add(financialTxnResponseData);
+        when(financialTxnIntegrationService.getFinancialTxnDetails(Mockito.anyMap())).thenReturn(financialTxnResponseDataList);
 
         /* MongoTemplate mocking */
         List<ReceiveSummary> receiveSummaries = new ArrayList<ReceiveSummary>() {
@@ -126,9 +128,10 @@ public class ReceivingInfoServiceImplTest {
     public void getSeviceWithLineResponse() {
 
         /* Financial Txn mocking */
-        FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(123, 164680544, "10441", 6302, 2222, 0, 9.0, 0, "99987");
-        FinancialTxnResponse[] financialTxnResponses = {financialTxnResponse};
-        when(financialTxnIntegrationService.getFinancialTxnDetails(Mockito.anyMap())).thenReturn(financialTxnResponses);
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302, 2222, 0, 9.0, 0, "99987");
+        List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
+        financialTxnResponseDataList.add(financialTxnResponseData);
+        when(financialTxnIntegrationService.getFinancialTxnDetails(Mockito.anyMap())).thenReturn(financialTxnResponseDataList);
 
         /* MongoTemplate mocking */
         List<ReceiveSummary> receiveSummaries = new ArrayList<ReceiveSummary>() {
@@ -359,7 +362,6 @@ public class ReceivingInfoServiceImplTest {
                     add("3777");
                 }},
                 null, "2019-03-44", "2019-03-15", "N");
-//        compareResults(receivingInfoResponses, result);
     }
 
     /**

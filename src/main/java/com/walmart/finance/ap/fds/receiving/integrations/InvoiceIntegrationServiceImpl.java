@@ -5,6 +5,7 @@ import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class InvoiceIntegrationServiceImpl implements InvoiceIntegrationService {
@@ -50,24 +52,24 @@ public class InvoiceIntegrationServiceImpl implements InvoiceIntegrationService 
     private RestTemplate restTemplate;
 
     /**
-     * Method makes an call to in Invoice Summary Api and return the array of InvoiceResponse.
+     * Method makes an call to in Invoice Summary Api and return the array of InvoiceResponseData.
      *
      * @param paramMap
      * @return
      */
     @Override
-    public InvoiceResponse[] getInvoice(HashMap<String, String> paramMap) {
+    public List<InvoiceResponseData> getInvoice(HashMap<String, String> paramMap) {
         log.info("Inside getInvoice method");
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set(ReceivingConstants.WM_CONSUMER, consumerId);
         requestHeaders.set(ReceivingConstants.WMAPIKEY, clientId);
         HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
 
-        InvoiceResponse[] invoiceResponseArray = null;
+        List<InvoiceResponseData> invoiceResponseDataList = null;
         String url = makeInvoiceURL(paramMap);
-        ResponseEntity<InvoiceResponse[]> response = null;
+        ResponseEntity<InvoiceResponse> response = null;
         try {
-            response = restTemplate.exchange(url, HttpMethod.GET, entity, InvoiceResponse[].class);
+            response = restTemplate.exchange(url, HttpMethod.GET, entity, InvoiceResponse.class);
         } catch (HttpStatusCodeException e) {
             log.error(ExceptionUtils.getStackTrace(e));
             if (!paramMap.containsKey(ReceivingConstants.PURCHASEORDERNUMBER)) {
@@ -75,10 +77,10 @@ public class InvoiceIntegrationServiceImpl implements InvoiceIntegrationService 
             }
         }
 
-        if (response != null && response.getBody() != null && response.getBody().length > 0) {
-            invoiceResponseArray = response.getBody();
+        if (response != null && response.getBody() != null && CollectionUtils.isNotEmpty(response.getBody().getInvoiceResponseDataList()) ) {
+            invoiceResponseDataList = response.getBody().getInvoiceResponseDataList();
         }
-        return invoiceResponseArray;
+        return invoiceResponseDataList;
     }
 
     // TODO Need to check country code.

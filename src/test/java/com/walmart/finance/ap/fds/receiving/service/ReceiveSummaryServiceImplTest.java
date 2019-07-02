@@ -7,7 +7,7 @@ import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
 import com.walmart.finance.ap.fds.receiving.integrations.InvoiceIntegrationService;
-import com.walmart.finance.ap.fds.receiving.integrations.InvoiceResponse;
+import com.walmart.finance.ap.fds.receiving.integrations.InvoiceResponseData;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.request.Meta;
@@ -131,19 +131,20 @@ public class ReceiveSummaryServiceImplTest {
         content.add(receivingSummaryResponse);
         content.add(receivingSummaryResponseAt);
 
-        InvoiceResponse invoiceResponse = new InvoiceResponse("656", "267", "000", "999",
+        InvoiceResponseData invoiceResponseData = new InvoiceResponseData("656", "267", "000", "999",
                 "777", "0", "998", "9986", "098");
-
-        InvoiceResponse[] invoiceResponseList = new InvoiceResponse[]{new InvoiceResponse("656", "267", "000", "999",
-                "777", "0", "998", "9986", "098"), new InvoiceResponse("656", "267", "000", "99",
-                "77", "0", "98", "9986", "098")};
+        List<InvoiceResponseData> invoiceResponseDataList = new ArrayList<>();
+        invoiceResponseDataList.add(new InvoiceResponseData("656", "267", "000", "999",
+                "777", "0", "998", "9986", "098"));
+        invoiceResponseDataList.add(new InvoiceResponseData("656", "267", "000", "99",
+                "77", "0", "98", "9986", "098"));
 
         Query dynamicQuery = new Query();
         Criteria criteriaNew = Criteria.where("purchaseOrderNumber").is("999").and("receivingControlNumber").is("000").and("storeNumber")
                 .is(998).and("departmentNumber").is(98);
         dynamicQuery.addCriteria(criteriaNew);
 
-        Mockito.when(invoiceIntegrationService.getInvoice(Mockito.any())).thenReturn(invoiceResponseList);
+        Mockito.when(invoiceIntegrationService.getInvoice(Mockito.any())).thenReturn(invoiceResponseDataList);
 
         when(receivingSummaryResponseConverter.convert(Mockito.any(ReceiveSummary.class))).thenReturn(receivingSummaryResponse);
 

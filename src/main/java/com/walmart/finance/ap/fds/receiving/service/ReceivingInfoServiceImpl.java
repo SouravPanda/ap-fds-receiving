@@ -4,7 +4,7 @@ import com.walmart.finance.ap.fds.receiving.common.ReceivingInfoQueryParamName;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.integrations.FinancialTxnIntegrationService;
-import com.walmart.finance.ap.fds.receiving.integrations.FinancialTxnResponse;
+import com.walmart.finance.ap.fds.receiving.integrations.FinancialTxnResponseData;
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryParameters;
@@ -31,7 +31,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -96,8 +95,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 || queryParamMap.containsKey(ReceivingInfoQueryParamName.INVOICENUMBER.getQueryParamName())
                 || queryParamMap.containsKey(ReceivingInfoQueryParamName.PURCHASEORDERID.getQueryParamName())
                 || queryParamMap.containsKey(ReceivingInfoQueryParamName.PURCHASEORDERNUMBER.getQueryParamName())) {
-            FinancialTxnResponse[] financialTxnResponses = financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap);
-            receivingInfoResponses = getDataForFinancialTxn(financialTxnResponses, receiptNumbers, itemNumbers, upcNumbers);
+            List<FinancialTxnResponseData> financialTxnResponseDataList = financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap);
+            receivingInfoResponses = getDataForFinancialTxn(financialTxnResponseDataList, receiptNumbers, itemNumbers, upcNumbers);
         } else {
             receivingInfoResponses = getDataFromReceiveDB(receiptNumbers, itemNumbers, upcNumbers);
         }
@@ -113,34 +112,34 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     /*************************** Financial-Txn Logic : START ***************************/
     //TODO : receiptNumbers is not being used here. Add with proper use case.
-    private List<ReceivingInfoResponse> getDataForFinancialTxn(FinancialTxnResponse[] financialTxnResponseArray, List<String> receiptNumbers, List<String> itemNumbers, List<String> upcNumbers) {
+    private List<ReceivingInfoResponse> getDataForFinancialTxn(List<FinancialTxnResponseData> financialTxnResponseDataArray, List<String> receiptNumbers, List<String> itemNumbers, List<String> upcNumbers) {
         List<ReceivingInfoResponse> receivingInfoResponses = new ArrayList<>();
-        for (FinancialTxnResponse financialTxnResponse : financialTxnResponseArray) {
-            Query query = getQueryForFinancialTxn(financialTxnResponse);
+        for (FinancialTxnResponseData financialTxnResponseData : financialTxnResponseDataArray) {
+            Query query = getQueryForFinancialTxn(financialTxnResponseData);
             List<ReceiveSummary> summaryList = executeQueryInSummary(query);
             for (ReceiveSummary receiveSummary : summaryList) {
                 List<ReceivingLine> lineResponseList = getLineResponse(receiveSummary, itemNumbers, upcNumbers);
                 List<FreightResponse> freightResponseList = getFreightResponse(receiveSummary);
-                ReceivingInfoResponse receivingInfoResponse = convertsionToReceivingInfo(receiveSummary, financialTxnResponse, lineResponseList, freightResponseList);
+                ReceivingInfoResponse receivingInfoResponse = convertsionToReceivingInfo(receiveSummary, financialTxnResponseData, lineResponseList, freightResponseList);
                 receivingInfoResponses.add(receivingInfoResponse);
             }
         }
         return receivingInfoResponses;
     }
 
-    private Query getQueryForFinancialTxn(FinancialTxnResponse financialTxnResponse) {
+    private Query getQueryForFinancialTxn(FinancialTxnResponseData financialTxnResponseData) {
         Query query = new Query();
         CriteriaDefinition criteriaDefinition = null;
-        if (StringUtils.isNotEmpty(financialTxnResponse.getPoReceiveId())) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.PORECEIVEID.getParameterName()).is(financialTxnResponse.getPoReceiveId());
+        if (StringUtils.isNotEmpty(financialTxnResponseData.getPoReceiveId())) {
+            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.PORECEIVEID.getParameterName()).is(financialTxnResponseData.getPoReceiveId());
             query.addCriteria(criteriaDefinition);
         }
-        if (financialTxnResponse.getReceivingControlNumber() != 0) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(financialTxnResponse.getReceivingControlNumber().toString());
+        if (financialTxnResponseData.getReceivingControlNumber() != 0) {
+            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(financialTxnResponseData.getReceivingControlNumber().toString());
             query.addCriteria(criteriaDefinition);
         }
-        if (financialTxnResponse.getStoreNumber() != 0) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.STORENUMBER.getParameterName()).is(financialTxnResponse.getStoreNumber());
+        if (financialTxnResponseData.getStoreNumber() != 0) {
+            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.STORENUMBER.getParameterName()).is(financialTxnResponseData.getStoreNumber());
             query.addCriteria(criteriaDefinition);
         }
         log.info("Query is " + query);
@@ -343,17 +342,17 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     /******* receive-freight data   *********/
 
     /*************************** Conversion Methods ***********************************/
-    private ReceivingInfoResponse convertsionToReceivingInfo(ReceiveSummary receiveSummary, FinancialTxnResponse financialTxnResponse, List<ReceivingLine> lineResponseList, List<FreightResponse> freightResponseList) {
+    private ReceivingInfoResponse convertsionToReceivingInfo(ReceiveSummary receiveSummary, FinancialTxnResponseData financialTxnResponseData, List<ReceivingLine> lineResponseList, List<FreightResponse> freightResponseList) {
         ReceivingInfoResponse receivingInfoResponse = new ReceivingInfoResponse();
-        if (financialTxnResponse != null) {
-            receivingInfoResponse.setPurchaseOrderId(StringUtils.isNotEmpty(financialTxnResponse.getPoNumber()) ? financialTxnResponse.getPoNumber() : receiveSummary.getPurchaseOrderNumber());
-            receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(financialTxnResponse.getPoReceiveId()) ? Integer.parseInt(financialTxnResponse.getPoReceiveId()) : StringUtils.isNotEmpty(receiveSummary.getPoReceiveId()) ? Integer.parseInt(receiveSummary.getPoReceiveId()) : 0);
-            receivingInfoResponse.setControlNumber(financialTxnResponse.getReceivingControlNumber() != null ? financialTxnResponse.getReceivingControlNumber().toString() : receiveSummary.getReceivingControlNumber());
-            receivingInfoResponse.setLocationNumber(financialTxnResponse.getStoreNumber() != null ? financialTxnResponse.getStoreNumber() : receiveSummary.getStoreNumber());
-            receivingInfoResponse.setDivisionNumber(financialTxnResponse.getBaseDivisionNumber() != null ? financialTxnResponse.getBaseDivisionNumber() : receiveSummary.getBaseDivisionNumber());
-            receivingInfoResponse.setVendorNumber(financialTxnResponse.getVendorNumber() != null ? financialTxnResponse.getVendorNumber() : receiveSummary.getVendorNumber());
-            receivingInfoResponse.setTotalCostAmount(financialTxnResponse.getTotalCostAmount() != null ? financialTxnResponse.getTotalCostAmount() : receiveSummary.getTotalCostAmount());
-            receivingInfoResponse.setDepartmentNumber(financialTxnResponse.getDepartmentNumber() != null ? financialTxnResponse.getDepartmentNumber() : receiveSummary.getDepartmentNumber());
+        if (financialTxnResponseData != null) {
+            receivingInfoResponse.setPurchaseOrderId(StringUtils.isNotEmpty(financialTxnResponseData.getPoNumber()) ? financialTxnResponseData.getPoNumber() : receiveSummary.getPurchaseOrderNumber());
+            receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(financialTxnResponseData.getPoReceiveId()) ? Integer.parseInt(financialTxnResponseData.getPoReceiveId()) : StringUtils.isNotEmpty(receiveSummary.getPoReceiveId()) ? Integer.parseInt(receiveSummary.getPoReceiveId()) : 0);
+            receivingInfoResponse.setControlNumber(financialTxnResponseData.getReceivingControlNumber() != null ? financialTxnResponseData.getReceivingControlNumber().toString() : receiveSummary.getReceivingControlNumber());
+            receivingInfoResponse.setLocationNumber(financialTxnResponseData.getStoreNumber() != null ? financialTxnResponseData.getStoreNumber() : receiveSummary.getStoreNumber());
+            receivingInfoResponse.setDivisionNumber(financialTxnResponseData.getBaseDivisionNumber() != null ? financialTxnResponseData.getBaseDivisionNumber() : receiveSummary.getBaseDivisionNumber());
+            receivingInfoResponse.setVendorNumber(financialTxnResponseData.getVendorNumber() != null ? financialTxnResponseData.getVendorNumber() : receiveSummary.getVendorNumber());
+            receivingInfoResponse.setTotalCostAmount(financialTxnResponseData.getTotalCostAmount() != null ? financialTxnResponseData.getTotalCostAmount() : receiveSummary.getTotalCostAmount());
+            receivingInfoResponse.setDepartmentNumber(financialTxnResponseData.getDepartmentNumber() != null ? financialTxnResponseData.getDepartmentNumber() : receiveSummary.getDepartmentNumber());
         } else {
             receivingInfoResponse.setPurchaseOrderId(receiveSummary.getPurchaseOrderNumber());
             receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getPoReceiveId()) ? Integer.parseInt(receiveSummary.getPoReceiveId()) : 0);
