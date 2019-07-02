@@ -13,7 +13,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -38,61 +40,69 @@ public class FinancialTxnIntegrationServiceImplTest {
 
     @Test
     public void getFinancialTxnDetails() {
-        FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(123, 164680544, "10441", 6302, 2222, 0, 9.0, 0, "99987");
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302, 2222, 0, 9.0, 0, "99987");
         Map<String, String> queryParamMap = new HashMap<String, String>() {
             {
                 put(ReceivingInfoQueryParamName.COUNTRYCODE.getQueryParamName(), "US");
                 put(ReceivingInfoQueryParamName.INVOICEID.getQueryParamName(), "639050495");
             }
         };
-        FinancialTxnResponse[] financialTxnResponses = {financialTxnResponse};
+        List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
+        financialTxnResponseDataList.add(financialTxnResponseData);
+        FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(financialTxnResponseDataList);
         String url = "https://api.dev.wal-mart.com/bofap/dev/bofap/US/invoice/financial/transaction/invoiceId/639050495";
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
         requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
         HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
-        ResponseEntity<FinancialTxnResponse[]> response = new ResponseEntity<>(financialTxnResponses, HttpStatus.OK);
-        when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse[].class)).thenReturn(response);
-        assertArrayEquals(financialTxnResponses, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
+        ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
+        when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
+        compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
     }
 
     @Test(expected = NotFoundException.class)
     public void getFinancialTxnDetailsNotFoundException() {
-        FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(123, 164680544, "10441", 6302, 2222, 0, 9.0, 0, "99987");
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302, 2222, 0, 9.0, 0, "99987");
         Map<String, String> queryParamMap = new HashMap<String, String>() {
             {
                 put(ReceivingInfoQueryParamName.COUNTRYCODE.getQueryParamName(), "US");
                 put(ReceivingInfoQueryParamName.INVOICEID.getQueryParamName(), "639050495");
             }
         };
-        FinancialTxnResponse[] financialTxnResponses = {financialTxnResponse};
+        List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
+        financialTxnResponseDataList.add(financialTxnResponseData);
         String url = "https://api.dev.wal-mart.com/bofap/dev/bofap/US/invoice/financial/transaction/invoiceId/639050495";
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
         requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
         HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
         HttpStatusCodeException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND);
-        when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse[].class)).thenThrow(exception);
-        assertArrayEquals(financialTxnResponses, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
+        when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenThrow(exception);
+        compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
     }
 
     @Test(expected = NotFoundException.class)
     public void getFinancialTxnDetailsResponseNullCheck() {
-        FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(123, 164680544, "10441", 6302, 2222, 0, 9.0, 0, "99987");
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302, 2222, 0, 9.0, 0, "99987");
         Map<String, String> queryParamMap = new HashMap<String, String>() {
             {
                 put(ReceivingInfoQueryParamName.COUNTRYCODE.getQueryParamName(), "US");
                 put(ReceivingInfoQueryParamName.INVOICEID.getQueryParamName(), "639050495");
             }
         };
-        FinancialTxnResponse[] financialTxnResponses = {financialTxnResponse};
+        List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
+        financialTxnResponseDataList.add(financialTxnResponseData);
         String url = "https://api.dev.wal-mart.com/bofap/dev/bofap/US/invoice/financial/transaction/invoiceId/639050495";
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
         requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
         HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
-        ResponseEntity<FinancialTxnResponse[]> response = null;
-        when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse[].class)).thenReturn(response);
-        assertArrayEquals(financialTxnResponses, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
+        ResponseEntity<FinancialTxnResponse> response = null;
+        when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
+        compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
+    }
+
+    private void compareResults(List<FinancialTxnResponseData> receivingInfoResponses, List<FinancialTxnResponseData> result) {
+        org.assertj.core.api.Assertions.assertThat(receivingInfoResponses.get(0)).isEqualToComparingFieldByFieldRecursively(result.get(0));
     }
 }
