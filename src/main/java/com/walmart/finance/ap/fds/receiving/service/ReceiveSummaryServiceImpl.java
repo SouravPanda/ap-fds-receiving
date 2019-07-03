@@ -208,10 +208,14 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         return paramMap;
     }
 
-    private String formulateId(String controlNumber, String receiptNumber, String locationNumber, String receiptDate) {
+/*    private String formulateId(String controlNumber, String receiptNumber, String locationNumber, String receiptDate) {
         return controlNumber + ReceivingConstants.PIPE_SEPARATOR + receiptNumber + ReceivingConstants.PIPE_SEPARATOR + locationNumber + ReceivingConstants.PIPE_SEPARATOR + receiptDate;
 
-    }
+    }*/
+private String formulateId(String receivingControlNumber, String poReceiveId, String locationNumber, String MDSReceiveDate) {
+    return receivingControlNumber + ReceivingConstants.PIPE_SEPARATOR + poReceiveId + ReceivingConstants.PIPE_SEPARATOR + locationNumber + ReceivingConstants.PIPE_SEPARATOR + MDSReceiveDate;
+
+}
 
     /*******  Search Criteria methods  *********/
 
