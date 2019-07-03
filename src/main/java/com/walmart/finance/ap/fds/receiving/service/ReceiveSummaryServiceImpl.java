@@ -384,17 +384,15 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     /******* receive -line data fetching   *********/
 
-    List<Criteria> criteriaList = new ArrayList<>();
-
+    private List<Criteria> criteriaList = new ArrayList<>();
     private Map<String, AdditionalResponse> getLineResponseMap(List<ReceiveSummary> receiveSummaries, List<String> itemNumbers, List<String> upcNumbers) {
         Map<String, AdditionalResponse> lineResponseMap = new HashMap<>();
         Query query = null;
         Iterator<ReceiveSummary> receiveSummaryIterator = receiveSummaries.iterator();
-        while (receiveSummaryIterator.hasNext()) {
-            ReceiveSummary receiveSummary = receiveSummaryIterator.next();
+        for(ReceiveSummary receiveSummary : receiveSummaries){
             queryForLineResponse(receiveSummary, itemNumbers, upcNumbers);
-            query = new Query(new Criteria().orOperator(criteriaList.toArray(new Criteria[criteriaList.size()])));
         }
+        query = new Query(new Criteria().orOperator(criteriaList.toArray(new Criteria[criteriaList.size()])));
         log.info("query: " + query);
 
         //This list will contain all the lines
@@ -402,20 +400,19 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
         //This will have receipt number as a key and List of Lines as values
         Map<String, List<ReceivingLine>> receivingLineMap = new HashMap<>();
-
-        for (int i = 0; i < lineResponseList.size(); i++) {
-            String receivingLineId = lineResponseList.get(i).get_id();
+        for(ReceivingLine receivingLine : lineResponseList){
+            String receivingLineId = receivingLine.get_id();
             int lastIndex = receivingLineId.lastIndexOf("|");
 
             //All the lines are grouped according to Id of summary
-            if (receivingLineMap.containsKey(lineResponseList.get(i).get_id().substring(0, lastIndex))) {
-                List<ReceivingLine> lineList = receivingLineMap.get(lineResponseList.get(i).get_id().substring(0, lastIndex));
-                lineList.add(lineResponseList.get(i));
-                receivingLineMap.put(lineResponseList.get(i).get_id().substring(0, lastIndex), lineList);
+            if (receivingLineMap.containsKey(receivingLine.get_id().substring(0, lastIndex))) {
+                List<ReceivingLine> lineList = receivingLineMap.get(receivingLine.get_id().substring(0, lastIndex));
+                lineList.add(receivingLine);
+                receivingLineMap.put(receivingLine.get_id().substring(0, lastIndex), lineList);
             } else {
                 List<ReceivingLine> lineList = new ArrayList<ReceivingLine>();
-                lineList.add(lineResponseList.get(i));
-                receivingLineMap.put(lineResponseList.get(i).get_id().substring(0, lastIndex), lineList);
+                lineList.add(receivingLine);
+                receivingLineMap.put(receivingLine.get_id().substring(0, lastIndex), lineList);
             }
         }
         Iterator<ReceiveSummary> iterator = receiveSummaries.iterator();
