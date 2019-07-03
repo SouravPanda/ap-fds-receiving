@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Data
 @ToString
-@Document(collection="receiving-line-new")
-public class ReceivingLine {
+@Document
+public class ReceivingLine   {
 
     private static final String separator = "|";
     private String _id;
