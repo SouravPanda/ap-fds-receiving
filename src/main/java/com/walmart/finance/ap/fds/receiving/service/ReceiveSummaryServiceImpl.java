@@ -384,23 +384,54 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     /******* receive -line data fetching   *********/
 
+    List<Criteria> criteriaList = new ArrayList<>();
+
     private Map<String, AdditionalResponse> getLineResponseMap(List<ReceiveSummary> receiveSummaries, List<String> itemNumbers, List<String> upcNumbers) {
         Map<String, AdditionalResponse> lineResponseMap = new HashMap<>();
+        Query query = null;
+        Iterator<ReceiveSummary> receiveSummaryIterator = receiveSummaries.iterator();
+        while (receiveSummaryIterator.hasNext()) {
+            ReceiveSummary receiveSummary = receiveSummaryIterator.next();
+            queryForLineResponse(receiveSummary, itemNumbers, upcNumbers);
+            query = new Query(new Criteria().orOperator(criteriaList.toArray(new Criteria[criteriaList.size()])));
+        }
+        log.info("query: " + query);
 
+        //This list will contain all the lines
+        List<ReceivingLine> lineResponseList = executeQueryReceiveline(criteriaList == null ? null : query);
+
+        //This will have receipt number as a key and List of Lines as values
+        Map<String, List<ReceivingLine>> receivingLineMap = new HashMap<>();
+
+        for (int i = 0; i < lineResponseList.size(); i++) {
+            String receivingLineId = lineResponseList.get(i).get_id();
+            int lastIndex = receivingLineId.lastIndexOf("|");
+
+            //All the lines are grouped according to Id of summary
+            if (receivingLineMap.containsKey(lineResponseList.get(i).get_id().substring(0, lastIndex))) {
+                List<ReceivingLine> lineList = receivingLineMap.get(lineResponseList.get(i).get_id().substring(0, lastIndex));
+                lineList.add(lineResponseList.get(i));
+                receivingLineMap.put(lineResponseList.get(i).get_id().substring(0, lastIndex), lineList);
+            } else {
+                List<ReceivingLine> lineList = new ArrayList<ReceivingLine>();
+                lineList.add(lineResponseList.get(i));
+                receivingLineMap.put(lineResponseList.get(i).get_id().substring(0, lastIndex), lineList);
+            }
+        }
         Iterator<ReceiveSummary> iterator = receiveSummaries.iterator();
         while (iterator.hasNext()) {
             ReceiveSummary receiveSummary = iterator.next();
             AdditionalResponse response = new AdditionalResponse();
-            List<ReceivingLine> lineResponseList = queryForLineResponse(receiveSummary, itemNumbers, upcNumbers);
-            if (CollectionUtils.isNotEmpty(lineResponseList)) {
+            if (receivingLineMap.containsKey(receiveSummary.get_id())) {
+                List<ReceivingLine> lineList = receivingLineMap.get(receiveSummary.get_id());
                 if (receiveSummary.getTypeIndicator().equals("W")) {
-                    response.setTotalCostAmount(lineResponseList.stream().mapToDouble((t) -> t.getReceivedQuantity() * t.getCostAmount()).sum());
-                    response.setTotalRetailAmount(lineResponseList.stream().mapToDouble((t) -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
+                    response.setTotalCostAmount(lineList.stream().mapToDouble((t) -> t.getReceivedQuantity() * t.getCostAmount()).sum());
+                    response.setTotalRetailAmount(lineList.stream().mapToDouble((t) -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
                 } else {
                     response.setTotalCostAmount(receiveSummary.getTotalCostAmount());
                     response.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());
                 }
-                response.setLineCount(new Long(lineResponseList.size()));
+                response.setLineCount((long) lineList.size());
                 getFreightResponse(receiveSummary, response);
                 lineResponseMap.put(receiveSummary.get_id(), response);
             } else if (CollectionUtils.isNotEmpty(itemNumbers) || CollectionUtils.isNotEmpty(upcNumbers)) {
@@ -415,45 +446,30 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         return lineResponseMap;
     }
 
-
-    //TODO When receive-summary id is included in receive-line, modify this query.
-    private List<ReceivingLine> queryForLineResponse(ReceiveSummary receiveSummary, List<String> itemNumbers, List<String> upcNumbers) {
-
-        Query query = new Query();
-        CriteriaDefinition criteriaDefinition = null;
+    private void queryForLineResponse(ReceiveSummary receiveSummary, List<String> itemNumbers, List<String> upcNumbers) {
+        Criteria criteriaDefinition = new Criteria();
         if (StringUtils.isNotEmpty(receiveSummary.getReceivingControlNumber())) {
-            criteriaDefinition = Criteria.where(ReceivingLineParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(receiveSummary.getReceivingControlNumber().trim());
-            query.addCriteria(criteriaDefinition);
+            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(receiveSummary.getReceivingControlNumber().trim());
         }
         if (StringUtils.isNotEmpty(receiveSummary.getPoReceiveId())) {
-            criteriaDefinition = Criteria.where(ReceivingLineParameters.PORECEIVEID.getParameterName()).is(receiveSummary.getPoReceiveId().trim());
-            query.addCriteria(criteriaDefinition);
+            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.PORECEIVEID.getParameterName()).is(receiveSummary.getPoReceiveId().trim());
         }
         if (receiveSummary.getStoreNumber() != null) {
-            criteriaDefinition = Criteria.where(ReceivingLineParameters.STORENUMBER.getParameterName()).is(receiveSummary.getStoreNumber());
-            query.addCriteria(criteriaDefinition);
+            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.STORENUMBER.getParameterName()).is(receiveSummary.getStoreNumber());
         }
         if (receiveSummary.getBaseDivisionNumber() != null) {
-            criteriaDefinition = Criteria.where(ReceivingLineParameters.BASEDIVISIONNUMBER.getParameterName()).is(receiveSummary.getBaseDivisionNumber());
-            query.addCriteria(criteriaDefinition);
+            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.BASEDIVISIONNUMBER.getParameterName()).is(receiveSummary.getBaseDivisionNumber());
         }
         if (receiveSummary.getTransactionType() != null) {
-            criteriaDefinition = Criteria.where(ReceivingLineParameters.TRANSACTIONTYPE.getParameterName()).is(receiveSummary.getTransactionType());
-            query.addCriteria(criteriaDefinition);
+            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.TRANSACTIONTYPE.getParameterName()).is(receiveSummary.getTransactionType());
         }
         if (CollectionUtils.isNotEmpty(itemNumbers)) {
-            criteriaDefinition = Criteria.where(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Integer::parseInt).collect(Collectors.toList()));
-            query.addCriteria(criteriaDefinition);
+            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Integer::parseInt).collect(Collectors.toList()));
         }
         if (CollectionUtils.isNotEmpty(upcNumbers)) {
-            criteriaDefinition = Criteria.where(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(upcNumbers);
-            query.addCriteria(criteriaDefinition);
+            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(upcNumbers);
         }
-        //TODO final date and final time not present in receive-summary thus commented out
-
-        log.info("Query is " + query);
-        return executeQueryReceiveline(criteriaDefinition == null ? null : query);
-
+        criteriaList.add(criteriaDefinition);
     }
     /******* receive -line data fetching   *********/
 
@@ -518,7 +534,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     @Override
     @Transactional
-    public ReceivingResponse updateReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest, String countryCode){
+    public ReceivingResponse updateReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest, String countryCode) {
 
         log.info("unitofWorkid:" + receivingSummaryRequest.getMeta().getUnitofWorkid());
         List<ReceivingSummaryRequest> responseList = new ArrayList<>();
