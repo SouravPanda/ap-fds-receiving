@@ -298,70 +298,70 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     private List<ReceiveSummary> getInvoiceFromInvoiceSummary(HashMap<String, String> paramMap) {
         log.info("Inside getInvoiceFromInvoiceSummary method");
-        InvoiceResponse[] invoiceResponseList = invoiceIntegrationService.getInvoice(paramMap);
+        List<InvoiceResponseData> invoiceResponseDataList = invoiceIntegrationService.getInvoice(paramMap);
         HashMap<String, ReceiveSummary> receiveSummaryHashMap = new HashMap<>();
-        if (invoiceResponseList != null && invoiceResponseList.length > 0) {
-            for (InvoiceResponse invoiceResponse : invoiceResponseList) {
-                listToMapConversion(callRecvSmryAllAttributes(invoiceResponse), receiveSummaryHashMap);
-                listToMapConversion(callRecvSmryByPOId(invoiceResponse), receiveSummaryHashMap);
-                listToMapConversion(callRecvSmryByInvoiceNum(invoiceResponse), receiveSummaryHashMap);
+        if (CollectionUtils.isNotEmpty(invoiceResponseDataList)) {
+            for (InvoiceResponseData invoiceResponseData : invoiceResponseDataList) {
+                listToMapConversion(callRecvSmryAllAttributes(invoiceResponseData), receiveSummaryHashMap);
+                listToMapConversion(callRecvSmryByPOId(invoiceResponseData), receiveSummaryHashMap);
+                listToMapConversion(callRecvSmryByInvoiceNum(invoiceResponseData), receiveSummaryHashMap);
             }
         }
         return receiveSummaryHashMap.values().stream().collect(Collectors.toList());
 
     }
 
-    private List<ReceiveSummary> callRecvSmryByInvoiceNum(InvoiceResponse invoiceResponse) {
-        Query query = queryRecvSmryByInvoiceNum(invoiceResponse);
+    private List<ReceiveSummary> callRecvSmryByInvoiceNum(InvoiceResponseData invoiceResponseData) {
+        Query query = queryRecvSmryByInvoiceNum(invoiceResponseData);
         return executeQueryForReceiveSummary(query);
     }
 
-    private Query queryRecvSmryByInvoiceNum(InvoiceResponse invoiceResponse) {
+    private Query queryRecvSmryByInvoiceNum(InvoiceResponseData invoiceResponseData) {
         Query query = null;
-        if (StringUtils.isNotEmpty(invoiceResponse.getInvoiceNumber())) {
+        if (StringUtils.isNotEmpty(invoiceResponseData.getInvoiceNumber())) {
             query = new Query();
-            query.addCriteria(Criteria.where(ReceiveSummaryParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponse.getInvoiceNumber().trim()));
+            query.addCriteria(Criteria.where(ReceiveSummaryParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponseData.getInvoiceNumber().trim()));
             query.addCriteria(Criteria.where(ReceiveSummaryParameters.TRANSACTIONTYPE.getParameterName()).is(1));
         }
         log.info("query: " + query);
         return query;
     }
 
-    private List<ReceiveSummary> callRecvSmryByPOId(InvoiceResponse invoiceResponse) {
-        Query query = queryRecvSmryByPOId(invoiceResponse);
+    private List<ReceiveSummary> callRecvSmryByPOId(InvoiceResponseData invoiceResponseData) {
+        Query query = queryRecvSmryByPOId(invoiceResponseData);
         return executeQueryForReceiveSummary(query);
     }
 
-    private Query queryRecvSmryByPOId(InvoiceResponse invoiceResponse) {
+    private Query queryRecvSmryByPOId(InvoiceResponseData invoiceResponseData) {
         Query query = null;
-        if (StringUtils.isNotEmpty(invoiceResponse.getPurchaseOrderNumber())) {
+        if (StringUtils.isNotEmpty(invoiceResponseData.getPurchaseOrderNumber())) {
             query = new Query();
-            query.addCriteria(Criteria.where(ReceiveSummaryParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponse.getPurchaseOrderNumber().trim()));
+            query.addCriteria(Criteria.where(ReceiveSummaryParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponseData.getPurchaseOrderNumber().trim()));
             query.addCriteria(Criteria.where(ReceiveSummaryParameters.TRANSACTIONTYPE.getParameterName()).is(0));
         }
         log.info("query: " + query);
         return query;
     }
 
-    private List<ReceiveSummary> callRecvSmryAllAttributes(InvoiceResponse invoiceResponse) {
-        Query query = queryRecvSmryAllAttributes(invoiceResponse);
+    private List<ReceiveSummary> callRecvSmryAllAttributes(InvoiceResponseData invoiceResponseData) {
+        Query query = queryRecvSmryAllAttributes(invoiceResponseData);
         return executeQueryForReceiveSummary(query);
     }
 
     // TODO       addCriteria( "x", invoiceResponse.getReceivingNum(),query);
-    private Query queryRecvSmryAllAttributes(InvoiceResponse invoiceResponse) {
+    private Query queryRecvSmryAllAttributes(InvoiceResponseData invoiceResponseData) {
         Query query = new Query();
         CriteriaDefinition criteriaDefinition = null;
-        if (StringUtils.isNotEmpty(invoiceResponse.getPurchaseOrderNumber())) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.PURCHASEORDERNUMBER.getParameterName()).is(invoiceResponse.getPurchaseOrderNumber().trim());
+        if (StringUtils.isNotEmpty(invoiceResponseData.getPurchaseOrderNumber())) {
+            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.PURCHASEORDERNUMBER.getParameterName()).is(invoiceResponseData.getPurchaseOrderNumber().trim());
             query.addCriteria(criteriaDefinition);
         }
-        if (StringUtils.isNotEmpty(invoiceResponse.getPurchaseOrderId())) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponse.getPurchaseOrderId().trim());
+        if (StringUtils.isNotEmpty(invoiceResponseData.getPurchaseOrderId())) {
+            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponseData.getPurchaseOrderId().trim());
             query.addCriteria(criteriaDefinition);
         }
-        if (StringUtils.isNotEmpty(invoiceResponse.getDestDivNbr())) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.STORENUMBER.getParameterName()).is(Integer.parseInt(invoiceResponse.getDestStoreNbr().trim()));
+        if (StringUtils.isNotEmpty(invoiceResponseData.getDestDivNbr())) {
+            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.STORENUMBER.getParameterName()).is(Integer.parseInt(invoiceResponseData.getDestStoreNbr().trim()));
             query.addCriteria(criteriaDefinition);
         }
         //TODO : According to conversion with Anurag, this has been commented (29/May/2019)
@@ -370,8 +370,8 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         /*   if (StringUtils.isNotEmpty(invoiceResponse.getVendorNumber())) {
             query.addCriteria(Criteria.where(ReceiveSummaryParameters.VENDORNUMBER.getParameterName()).is(Integer.parseInt(invoiceResponse.getVendorNumber().trim())));
         }*/
-        if (StringUtils.isNotEmpty(invoiceResponse.getInvoiceDeptNumber())) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.DEPARTMENTNUMBER.getParameterName()).is(Integer.parseInt(invoiceResponse.getInvoiceDeptNumber().trim()));
+        if (StringUtils.isNotEmpty(invoiceResponseData.getInvoiceDeptNumber())) {
+            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.DEPARTMENTNUMBER.getParameterName()).is(Integer.parseInt(invoiceResponseData.getInvoiceDeptNumber().trim()));
             query.addCriteria(criteriaDefinition);
         }
         log.info("query: " + query);
