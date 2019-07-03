@@ -384,21 +384,17 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     /******* receive -line data fetching   *********/
 
-    private List<Criteria> criteriaList = new ArrayList<>();
     private Map<String, AdditionalResponse> getLineResponseMap(List<ReceiveSummary> receiveSummaries, List<String> itemNumbers, List<String> upcNumbers) {
         Map<String, AdditionalResponse> lineResponseMap = new HashMap<>();
         Query query = null;
-        Iterator<ReceiveSummary> receiveSummaryIterator = receiveSummaries.iterator();
+        List<Criteria> criteriaList = new ArrayList<>();
         for(ReceiveSummary receiveSummary : receiveSummaries){
-            queryForLineResponse(receiveSummary, itemNumbers, upcNumbers);
+            criteriaList.add(queryForLineResponse(receiveSummary, itemNumbers, upcNumbers));
         }
         query = new Query(new Criteria().orOperator(criteriaList.toArray(new Criteria[criteriaList.size()])));
         log.info("query: " + query);
-
-        //This list will contain all the lines
         List<ReceivingLine> lineResponseList = executeQueryReceiveline(criteriaList == null ? null : query);
 
-        //This will have receipt number as a key and List of Lines as values
         Map<String, List<ReceivingLine>> receivingLineMap = new HashMap<>();
         for(ReceivingLine receivingLine : lineResponseList){
             String receivingLineId = receivingLine.get_id();
@@ -410,7 +406,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 lineList.add(receivingLine);
                 receivingLineMap.put(receivingLine.get_id().substring(0, lastIndex), lineList);
             } else {
-                List<ReceivingLine> lineList = new ArrayList<ReceivingLine>();
+                List<ReceivingLine> lineList = new ArrayList<>();
                 lineList.add(receivingLine);
                 receivingLineMap.put(receivingLine.get_id().substring(0, lastIndex), lineList);
             }
@@ -443,7 +439,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         return lineResponseMap;
     }
 
-    private void queryForLineResponse(ReceiveSummary receiveSummary, List<String> itemNumbers, List<String> upcNumbers) {
+    private Criteria queryForLineResponse(ReceiveSummary receiveSummary, List<String> itemNumbers, List<String> upcNumbers) {
         Criteria criteriaDefinition = new Criteria();
         if (StringUtils.isNotEmpty(receiveSummary.getReceivingControlNumber())) {
             criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(receiveSummary.getReceivingControlNumber().trim());
@@ -466,7 +462,8 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         if (CollectionUtils.isNotEmpty(upcNumbers)) {
             criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(upcNumbers);
         }
-        criteriaList.add(criteriaDefinition);
+//        criteriaList.add(criteriaDefinition);
+        return criteriaDefinition;
     }
     /******* receive -line data fetching   *********/
 
