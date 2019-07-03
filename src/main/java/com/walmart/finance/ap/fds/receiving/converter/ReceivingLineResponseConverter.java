@@ -1,8 +1,7 @@
 package com.walmart.finance.ap.fds.receiving.converter;
 
-import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
-import org.apache.commons.lang.StringUtils;
+import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 

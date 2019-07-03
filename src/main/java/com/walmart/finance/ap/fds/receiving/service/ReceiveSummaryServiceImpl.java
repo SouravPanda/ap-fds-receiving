@@ -131,7 +131,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 throw new NotFoundException("Receiving summary not found for given search criteria", "please enter valid query parameters");
             } else {
                 responseList = receiveSummaries.stream().map(
-                        (t) -> {
+                        t -> {
                             ReceivingSummaryResponse response = receivingSummaryResponseConverter.convert(t);
                             if (responseMap.get(t.get_id()) != null) {
                                 response.setCarrierCode(responseMap.get(t.get_id()).getCarrierCode());
@@ -418,8 +418,8 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             if (receivingLineMap.containsKey(receiveSummary.get_id())) {
                 List<ReceivingLine> lineList = receivingLineMap.get(receiveSummary.get_id());
                 if (receiveSummary.getTypeIndicator().equals("W")) {
-                    response.setTotalCostAmount(lineList.stream().mapToDouble((t) -> t.getReceivedQuantity() * t.getCostAmount()).sum());
-                    response.setTotalRetailAmount(lineList.stream().mapToDouble((t) -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
+                    response.setTotalCostAmount(lineResponseList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount()).sum());
+                    response.setTotalRetailAmount(lineResponseList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
                 } else {
                     response.setTotalCostAmount(receiveSummary.getTotalCostAmount());
                     response.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());
@@ -508,12 +508,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     }
 
     private List<FreightResponse> executeQueryReceiveFreight(Query query) {
-        List<FreightResponse> receiveFreights = mongoTemplate.find(query, FreightResponse.class, freightCollection);
-        return receiveFreights;
+        return mongoTemplate.find(query, FreightResponse.class, freightCollection);
     }
 
     private void listToMapConversion(List<ReceiveSummary> receiveSummaries, HashMap<String, ReceiveSummary> receiveSummaryHashMap) {
-        receiveSummaries.stream().forEach((t) -> receiveSummaryHashMap.put(t.get_id(), t));
+        receiveSummaries.stream().forEach(t -> receiveSummaryHashMap.put(t.get_id(), t));
     }
 
     /******* Common Methods  *********/

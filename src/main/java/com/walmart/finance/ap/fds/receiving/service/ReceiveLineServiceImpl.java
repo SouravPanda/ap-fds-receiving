@@ -57,7 +57,7 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
             if (CollectionUtils.isEmpty(receiveLines)) {
                 throw new NotFoundException("Receiving line not found for given search criteria ", "please enter valid query parameters");
             } else {
-                responseList = receiveLines.stream().map((t) -> receivingLineResponseConverter.convert(t)).collect(Collectors.toList());
+                responseList = receiveLines.stream().map(t -> receivingLineResponseConverter.convert(t)).collect(Collectors.toList());
                 ReceivingResponse successMessage = new ReceivingResponse();
                 successMessage.setTimestamp(LocalDateTime.now());
                 successMessage.setData(responseList);
@@ -71,7 +71,6 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
     }
 
     private Query searchCriteriaForGet(String purchaseOrderId, String receiptNumber, String transactionType, String controlNumber, String locationNumber, String divisionNumber) {
-
         Query dynamicQuery = new Query();
         if (StringUtils.isNotEmpty(purchaseOrderId) || (StringUtils.isNotEmpty(controlNumber))) {
             if (StringUtils.isNotEmpty(purchaseOrderId)) {
@@ -90,7 +89,6 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
             Criteria transactionTypeCriteria = Criteria.where("transactionType").is(Integer.valueOf(transactionType));
             dynamicQuery.addCriteria(transactionTypeCriteria);
         }
-
         if (StringUtils.isNotEmpty(divisionNumber)) {
             Criteria divisionNumberCriteria = Criteria.where("baseDivisionNumber").is(Integer.valueOf(divisionNumber));
             dynamicQuery.addCriteria(divisionNumberCriteria);
@@ -99,7 +97,6 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
             Criteria locationNumberCriteria = Criteria.where("storeNumber").is(Integer.valueOf(locationNumber));
             dynamicQuery.addCriteria(locationNumberCriteria);
         }
-
         return dynamicQuery;
     }
 }
