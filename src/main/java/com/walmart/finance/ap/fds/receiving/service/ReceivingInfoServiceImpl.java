@@ -142,7 +142,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             criteriaDefinition = Criteria.where(ReceiveSummaryParameters.STORENUMBER.getParameterName()).is(financialTxnResponseData.getStoreNumber());
             query.addCriteria(criteriaDefinition);
         }
-        log.info("Query is " + query);
+        log.info("getQueryForFinancialTxn :: Query is " + query);
         return criteriaDefinition == null ? null : query;
     }
     /*************************** Financial-Txn Logic : END ***************************/
@@ -205,7 +205,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 throw new BadRequestException("Date format is not correct.", "please enter valid query parameters");
             }
         }
-        log.info("Query is " + query);
+        log.info("getSummaryQuery :: Query is " + query);
         return criteriaDefinition == null ? null : query;
     }
     /*************************** Normal-Flow : END ***************************/
@@ -321,7 +321,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             criteriaDefinition = Criteria.where(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(upcNumbers);
             query.addCriteria(criteriaDefinition);
         }
-        log.info("Query is " + query);
+        log.info("queryForLineResponse :: Query is " + query);
         return executeQueryInLine(criteriaDefinition == null ? null : query);
     }
     /******* receive-line data   *********/
@@ -345,7 +345,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     private ReceivingInfoResponse convertsionToReceivingInfo(ReceiveSummary receiveSummary, FinancialTxnResponseData financialTxnResponseData, List<ReceivingLine> lineResponseList, List<FreightResponse> freightResponseList) {
         ReceivingInfoResponse receivingInfoResponse = new ReceivingInfoResponse();
         if (financialTxnResponseData != null) {
-            receivingInfoResponse.setPurchaseOrderId(StringUtils.isNotEmpty(financialTxnResponseData.getPoNumber()) ? financialTxnResponseData.getPoNumber() : receiveSummary.getPurchaseOrderNumber());
+            receivingInfoResponse.setPurchaseOrderId(StringUtils.isNotEmpty(financialTxnResponseData.getPoNumber()) ? financialTxnResponseData.getPoNumber() : receiveSummary.getReceivingControlNumber());
             receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(financialTxnResponseData.getPoReceiveId()) ? Integer.parseInt(financialTxnResponseData.getPoReceiveId()) : StringUtils.isNotEmpty(receiveSummary.getPoReceiveId()) ? Integer.parseInt(receiveSummary.getPoReceiveId()) : 0);
             receivingInfoResponse.setControlNumber(financialTxnResponseData.getReceivingControlNumber() != null ? financialTxnResponseData.getReceivingControlNumber().toString() : receiveSummary.getReceivingControlNumber());
             receivingInfoResponse.setLocationNumber(financialTxnResponseData.getStoreNumber() != null ? financialTxnResponseData.getStoreNumber() : receiveSummary.getStoreNumber());
@@ -354,7 +354,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             receivingInfoResponse.setTotalCostAmount(financialTxnResponseData.getTotalCostAmount() != null ? financialTxnResponseData.getTotalCostAmount() : receiveSummary.getTotalCostAmount());
             receivingInfoResponse.setDepartmentNumber(financialTxnResponseData.getDepartmentNumber() != null ? financialTxnResponseData.getDepartmentNumber() : receiveSummary.getDepartmentNumber());
         } else {
-            receivingInfoResponse.setPurchaseOrderId(receiveSummary.getPurchaseOrderNumber());
+            receivingInfoResponse.setPurchaseOrderId(receiveSummary.getReceivingControlNumber());
             receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getPoReceiveId()) ? Integer.parseInt(receiveSummary.getPoReceiveId()) : 0);
             receivingInfoResponse.setControlNumber(receiveSummary.getReceivingControlNumber());
             receivingInfoResponse.setLocationNumber(receiveSummary.getStoreNumber());
