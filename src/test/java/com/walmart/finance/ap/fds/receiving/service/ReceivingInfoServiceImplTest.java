@@ -51,7 +51,7 @@ public class ReceivingInfoServiceImplTest {
     @Test
     public void getSevice() {
         /* Financial Txn mocking */
-        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302, 2222, 0, 9.0, 0, "99987");
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302, 2222, 0, 9.0, 7777, "99987");
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
         when(financialTxnIntegrationService.getFinancialTxnDetails(Mockito.anyMap())).thenReturn(financialTxnResponseDataList);
@@ -93,24 +93,13 @@ public class ReceivingInfoServiceImplTest {
         when(mongoTemplate.find(Mockito.any(Query.class), eq(FreightResponse.class), Mockito.any())).thenReturn(freightResponses);
 
         /* Receiving Info Response Creation */
-        List<ReceivingInfoLineResponse> receivingInfoLineResponses = new ArrayList<ReceivingInfoLineResponse>() {
-            {
-                add(new ReceivingInfoLineResponse(
-                        4665267, 10, 3777, 94493,
-                        7, 30.0, 40.0, 6,
-                        7, "12", "LL",
-                        "ww", "1.9", 99,
-                        8264, 18, "89", "9", 10.0
-                ));
-            }
-        };
         List<ReceivingInfoResponse> receivingInfoResponses = new ArrayList<ReceivingInfoResponse>() {
             {
                 add(new ReceivingInfoResponse("99987", 10441,
                         99, "164680544", 6302, 0,
                         LocalDate.of(2019, 03, 14), 'A', 2222,
                         "ARFW", "972035", 9.0, 99.0,
-                        new Long(1), 0, null));
+                        new Long(1), 77, null));
             }
         };
 
@@ -128,7 +117,7 @@ public class ReceivingInfoServiceImplTest {
     public void getSeviceWithLineResponse() {
 
         /* Financial Txn mocking */
-        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302, 2222, 0, 9.0, 0, "99987");
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302, 2222, 0, 9.0, null, "99987");
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
         when(financialTxnIntegrationService.getFinancialTxnDetails(Mockito.anyMap())).thenReturn(financialTxnResponseDataList);

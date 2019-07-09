@@ -33,7 +33,6 @@ public class FinancialTxnResponseData {
     @JsonProperty("txnCostAmt")
     private Double totalCostAmount;
 
-    // Take first 2 digit of this as department Number
     @JsonProperty("vendorDeptNbr")
     private Integer departmentNumber;
 

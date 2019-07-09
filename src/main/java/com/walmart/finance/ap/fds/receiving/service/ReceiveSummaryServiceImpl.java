@@ -507,6 +507,7 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
     }
 
     private List<ReceivingLine> executeQueryReceiveline(Query query) {
+        List<ReceivingLine> receiveLines = new ArrayList<>();
         if (query != null) {
             receiveLines = mongoTemplate.find(query, ReceivingLine.class, lineCollection);
         }
