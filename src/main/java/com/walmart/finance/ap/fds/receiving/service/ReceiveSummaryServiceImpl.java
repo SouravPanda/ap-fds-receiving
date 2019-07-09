@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.CriteriaDefinition;
@@ -390,17 +391,17 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
 
     private Map<String, AdditionalResponse> getLineResponseMap(List<ReceiveSummary> receiveSummaries, List<String> itemNumbers, List<String> upcNumbers) {
         Map<String, AdditionalResponse> lineResponseMap = new HashMap<>();
-        Query query = null;
+        List<ReceivingLine> lineResponseList = new LinkedList<>();
         List<Criteria> criteriaList = new ArrayList<>();
-        for(ReceiveSummary receiveSummary : receiveSummaries){
+        for (ReceiveSummary receiveSummary : receiveSummaries) {
             criteriaList.add(queryForLineResponse(receiveSummary, itemNumbers, upcNumbers));
         }
-        if(criteriaList.size()>0) {
-            query = new Query(new Criteria().orOperator(criteriaList.toArray(new Criteria[criteriaList.size()])));
+        if (CollectionUtils.isNotEmpty(criteriaList)) {
+            Query query = new Query(new Criteria().orOperator(criteriaList.toArray(new Criteria[criteriaList.size()])));
+            query.with(new Sort(Sort.Direction.ASC,"_id"));
+            log.info("query: " + query);
+            lineResponseList = executeQueryReceiveline(CollectionUtils.isNotEmpty(criteriaList) ? null : query);
         }
-        log.info("query: " + query);
-        List<ReceivingLine> lineResponseList = executeQueryReceiveline(criteriaList == null ? null : query);
-
         Map<String, List<ReceivingLine>> receivingLineMap = new HashMap<>();
 
         for(ReceivingLine receivingLine : lineResponseList){
@@ -469,7 +470,7 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
         if (CollectionUtils.isNotEmpty(upcNumbers)) {
             criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(upcNumbers);
         }
-        return criteriaDefinition;
+        return criteriaDefinition != null ? criteriaDefinition : null ;
     }
     /******* receive -line data fetching   *********/
 
@@ -506,7 +507,6 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
     }
 
     private List<ReceivingLine> executeQueryReceiveline(Query query) {
-        List<ReceivingLine> receiveLines = new ArrayList<>();
         if (query != null) {
             receiveLines = mongoTemplate.find(query, ReceivingLine.class, lineCollection);
         }
