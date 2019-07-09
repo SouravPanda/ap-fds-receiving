@@ -16,10 +16,6 @@ public class MongoConfig {
     @Value("${spring.data.mongodb.database}")
     private String databaseName;
 
-    @Getter
-    @Value("${azure.cosmosdb.collection.line}")
-    private String lineCollection;
-
     @Bean
     public MongoClient mongoClient() {
         return new MongoClient(new MongoClientURI(mongoURI));
