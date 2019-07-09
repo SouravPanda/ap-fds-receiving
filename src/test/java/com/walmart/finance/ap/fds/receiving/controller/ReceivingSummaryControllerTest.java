@@ -146,7 +146,7 @@ public class ReceivingSummaryControllerTest {
                 "             }\n" +
                 "}";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .put("/US/receiving/summary")
+                .put("/US/receiving/line")
                 .header("X-FDS-FOUNDATION-API-KEY", "razorbacks")
                 .header("Content-Type", "application/json")
                 .header("X-IBM-Client-Secret", "rK7xP5iW4uV0gI4mA0dM8yQ3dV8tW2hG6nB8uA5mY1kA4sQ8oB")
