@@ -391,11 +391,14 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         for(ReceiveSummary receiveSummary : receiveSummaries){
             criteriaList.add(queryForLineResponse(receiveSummary, itemNumbers, upcNumbers));
         }
-        query = new Query(new Criteria().orOperator(criteriaList.toArray(new Criteria[criteriaList.size()])));
+        if(criteriaList.size()>0) {
+            query = new Query(new Criteria().orOperator(criteriaList.toArray(new Criteria[criteriaList.size()])));
+        }
         log.info("query: " + query);
         List<ReceivingLine> lineResponseList = executeQueryReceiveline(criteriaList == null ? null : query);
 
         Map<String, List<ReceivingLine>> receivingLineMap = new HashMap<>();
+
         for(ReceivingLine receivingLine : lineResponseList){
             String receivingLineId = receivingLine.get_id();
             int lastIndex = receivingLineId.lastIndexOf("|");
@@ -462,7 +465,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         if (CollectionUtils.isNotEmpty(upcNumbers)) {
             criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(upcNumbers);
         }
-//        criteriaList.add(criteriaDefinition);
         return criteriaDefinition;
     }
     /******* receive -line data fetching   *********/

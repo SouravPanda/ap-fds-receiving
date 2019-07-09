@@ -112,7 +112,7 @@ public class ReceiveSummaryServiceImplTest {
                 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",
                 9.0, 7.0,
-                0L, 0);
+                1L, 0);
 
         ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", 1122, 99,
                 "776", 3680, 0,
@@ -139,6 +139,10 @@ public class ReceiveSummaryServiceImplTest {
         invoiceResponseDataList.add(new InvoiceResponseData("656", "267", "000", "99",
                 "77", "0", "98", "9986", "098"));
 
+        ReceivingLine receivingLine = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0, 0,0, 0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null,null, 2, null, 'W', "DB2", null, 2, null, 1, 0.0, null, null, null);
+        List<ReceivingLine> listOfReceiveLines = new ArrayList<>();
+        listOfReceiveLines.add(receivingLine);
+
         Query dynamicQuery = new Query();
         Criteria criteriaNew = Criteria.where("purchaseOrderNumber").is("999").and("receivingControlNumber").is("000").and("storeNumber")
                 .is(998).and("departmentNumber").is(98);
@@ -152,7 +156,7 @@ public class ReceiveSummaryServiceImplTest {
         Query mockQuery = Mockito.mock(Query.class);
 
         when(mockQuery.limit(Mockito.anyInt())).thenReturn(mockQuery);
-        when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.any())).thenReturn(listOfContent, listOfContent, listOfContent, listOfContent, listOfContent, listOfContent, listOfFreight);
+        when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.any())).thenReturn(listOfContent, listOfContent, listOfContent, listOfContent, listOfContent, listOfContent, listOfReceiveLines, listOfFreight);
 
 
         ReceivingResponse successMessage = new ReceivingResponse();
