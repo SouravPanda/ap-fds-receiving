@@ -398,9 +398,9 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
         }
         if (CollectionUtils.isNotEmpty(criteriaList)) {
             Query query = new Query(new Criteria().orOperator(criteriaList.toArray(new Criteria[criteriaList.size()])));
-            query.with(new Sort(Sort.Direction.ASC,"_id"));
+//            query.with(new Sort(Sort.Direction.ASC,"_id"));
             log.info("query: " + query);
-            lineResponseList = executeQueryReceiveline(CollectionUtils.isNotEmpty(criteriaList) ? null : query);
+            lineResponseList = executeQueryReceiveline(query);
         }
         Map<String, List<ReceivingLine>> receivingLineMap = new HashMap<>();
 
