@@ -223,8 +223,11 @@ public class ReceiveSummaryServiceImplTest {
         content.add(receivingSummaryResponseAt);
 
         ReceivingLine receivingLine = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0, 0,0, 0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null,null, 2, null, 'W', "DB2", null, 2, null, 1, 0.0, null, null, null);
+        ReceivingLine receivingLineAt = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|1", "JJJ", 0, 0,0, 0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null,null, 2, null, 'W', "DB2", null, 2, null, 1, 0.0, null, null, null);
+
         List<ReceivingLine> listOfReceiveLines = new ArrayList<>();
         listOfReceiveLines.add(receivingLine);
+        listOfReceiveLines.add(receivingLineAt);
 
         Query dynamicQuery = new Query();
         Criteria criteriaNew = Criteria.where("purchaseOrderNumber").is("999").and("receivingControlNumber").is("000").and("storeNumber")
