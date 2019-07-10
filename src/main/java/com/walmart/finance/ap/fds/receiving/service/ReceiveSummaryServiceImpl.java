@@ -403,27 +403,24 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
 
         Map<String, List<ReceivingLine>> receivingLineMap = new HashMap<>();
 
+        //Grouping lines according to PurchaseOrderReceiveID
         for(ReceivingLine receivingLine : lineResponseList){
-            String receivingLineId = receivingLine.get_id();
-            int lastIndex = receivingLineId.lastIndexOf("|");
-
-            //All the lines are grouped according to Id of summary
-            if (receivingLineMap.containsKey(receivingLine.get_id().substring(0, lastIndex))) {
-                List<ReceivingLine> lineList = receivingLineMap.get(receivingLine.get_id().substring(0, lastIndex));
+            if (receivingLineMap.containsKey(receivingLine.getPurchaseOrderReceiveID())) {
+                List<ReceivingLine> lineList = receivingLineMap.get(receivingLine.getPurchaseOrderReceiveID());
                 lineList.add(receivingLine);
-                receivingLineMap.put(receivingLine.get_id().substring(0, lastIndex), lineList);
+                receivingLineMap.put(receivingLine.getPurchaseOrderReceiveID(), lineList);
             } else {
                 List<ReceivingLine> lineList = new ArrayList<>();
                 lineList.add(receivingLine);
-                receivingLineMap.put(receivingLine.get_id().substring(0, lastIndex), lineList);
+                receivingLineMap.put(receivingLine.getPurchaseOrderReceiveID(), lineList);
             }
         }
         Iterator<ReceiveSummary> iterator = receiveSummaries.iterator();
         while (iterator.hasNext()) {
             ReceiveSummary receiveSummary = iterator.next();
             AdditionalResponse response = new AdditionalResponse();
-            if (receivingLineMap.containsKey(receiveSummary.get_id())) {
-                List<ReceivingLine> lineList = receivingLineMap.get(receiveSummary.get_id());
+            if (receivingLineMap.containsKey(receiveSummary.getPoReceiveId())) {
+                List<ReceivingLine> lineList = receivingLineMap.get(receiveSummary.getPoReceiveId());
                 if (receiveSummary.getTypeIndicator().equals("W")) {
                     response.setTotalCostAmount(lineResponseList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount()).sum());
                     response.setTotalRetailAmount(lineResponseList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
