@@ -352,7 +352,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             receivingInfoResponse.setDivisionNumber(financialTxnResponseData.getBaseDivisionNumber() != null ? financialTxnResponseData.getBaseDivisionNumber() : receiveSummary.getBaseDivisionNumber());
             receivingInfoResponse.setVendorNumber(financialTxnResponseData.getVendorNumber() != null ? financialTxnResponseData.getVendorNumber() : receiveSummary.getVendorNumber());
             receivingInfoResponse.setTotalCostAmount(financialTxnResponseData.getTotalCostAmount() != null ? financialTxnResponseData.getTotalCostAmount() : receiveSummary.getTotalCostAmount());
-            receivingInfoResponse.setDepartmentNumber(financialTxnResponseData.getDepartmentNumber() != null ? financialTxnResponseData.getDepartmentNumber() : receiveSummary.getDepartmentNumber());
+            receivingInfoResponse.setDepartmentNumber(financialTxnResponseData.getDepartmentNumber() != null ? Integer.parseInt(Integer.toString(financialTxnResponseData.getDepartmentNumber()).substring(0, 2)) : receiveSummary.getDepartmentNumber());
         } else {
             receivingInfoResponse.setPurchaseOrderId(receiveSummary.getReceivingControlNumber());
             receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getPoReceiveId()) ? Integer.parseInt(receiveSummary.getPoReceiveId()) : 0);
