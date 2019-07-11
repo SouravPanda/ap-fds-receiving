@@ -38,7 +38,7 @@ public class ReceivingSummaryLineRequest {
     @NotEmpty(message = "Missing mandatory parameter,please enter a valid businessStatusCode")
     private String businessStatusCode;
 
-    Integer sequenceNumber;
+    Integer lineSequenceNumber;
 
     @Valid
     @NotEmpty(message = "Please enter a valid inventoryMatchStatus")
