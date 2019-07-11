@@ -114,7 +114,8 @@ public class ReceiveSummary {
 
     //RPR_DATE
     //To be checked, not present in search or response
-    private LocalDate MDSReceiveDate;
+    //private LocalDate MDSReceiveDate;
+    private LocalDate dateReceived;
 
     //To be checked, not present in search or response
     private LocalDate receiveProcessDate;
@@ -191,7 +192,7 @@ public class ReceiveSummary {
                 ", freeAstrayIndicator='" + freeAstrayIndicator + '\'' +
                 ", freightConslIndicator='" + freightConslIndicator + '\'' +
                 ", initialReceiveTimestamp='" + initialReceiveTimestamp + '\'' +
-                ", MDSReceiveDate='" + MDSReceiveDate + '\'' +
+                ", MDSReceiveDate='" + dateReceived + '\'' +
                 ", receiveProcessDate='" + receiveProcessDate + '\'' +
                 ", receiveWeightQuantity='" + receiveWeightQuantity + '\'' +
                 ", sequenceNumber='" + sequenceNumber + '\'' +
