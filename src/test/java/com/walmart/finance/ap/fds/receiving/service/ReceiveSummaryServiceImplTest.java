@@ -197,8 +197,6 @@ public class ReceiveSummaryServiceImplTest {
         listOfItemNumbers.add("9");
         listOfItemNumbers.add("89");
 
-        Query query = new Query();
-
         ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", 1122, 99, "776",
                 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",
@@ -238,7 +236,7 @@ public class ReceiveSummaryServiceImplTest {
 
         when(receivingSummaryResponseConverter.convert(Mockito.any(ReceiveSummary.class))).thenReturn(receivingSummaryResponse);
 
-        when(mongoTemplate.count(query, ReceiveSummary.class)).thenReturn(2L);
+        when(mongoTemplate.count(dynamicQuery, ReceiveSummary.class)).thenReturn(2L);
         Query mockQuery = Mockito.mock(Query.class);
 
         when(mockQuery.limit(Mockito.anyInt())).thenReturn(mockQuery);
@@ -283,8 +281,6 @@ public class ReceiveSummaryServiceImplTest {
         listOfItemNumbers.add("9");
         listOfItemNumbers.add("89");
 
-        Query query = new Query();
-
         ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", 1122, 99, "776",
                 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",
@@ -322,7 +318,7 @@ public class ReceiveSummaryServiceImplTest {
 
         when(receivingSummaryResponseConverter.convert(Mockito.any(ReceiveSummary.class))).thenReturn(receivingSummaryResponse);
 
-        when(mongoTemplate.count(query, ReceiveSummary.class)).thenReturn(2L);
+        when(mongoTemplate.count(dynamicQuery, ReceiveSummary.class)).thenReturn(2L);
         Query mockQuery = Mockito.mock(Query.class);
 
         when(mockQuery.limit(Mockito.anyInt())).thenReturn(mockQuery);
