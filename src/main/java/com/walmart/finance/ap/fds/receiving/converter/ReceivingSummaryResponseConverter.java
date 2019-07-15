@@ -20,7 +20,7 @@ public class ReceivingSummaryResponseConverter implements Converter<ReceiveSumma
         response.setControlNumber(receiveSummary.getReceivingControlNumber());
         response.setLocationNumber(receiveSummary.getStoreNumber());
         response.setDivisionNumber(receiveSummary.getBaseDivisionNumber());
-        response.setReceiptDate(receiveSummary.getMDSReceiveDate()); // TODO will change once  Receipt_Date is available : changed to MDSReceivedate
+        response.setReceiptDate(receiveSummary.getDateReceived()); // TODO will change once  Receipt_Date is available : changed to MDSReceivedate
         response.setReceiptStatus(receiveSummary.getBusinessStatusCode()); //   TODO will change once  TOTAL_MATCH_IND is available
         response.setVendorNumber(receiveSummary.getVendorNumber());
 //        response.setCarrierCode("CRCode");

@@ -156,8 +156,8 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         }
     }
 
-    private String formulateLineId(String receivingControlNumber, String poReceiveId, String storeNumber, String receiptDate, String sequenceNumber) {
-        return receivingControlNumber + ReceivingConstants.PIPE_SEPARATOR + poReceiveId + ReceivingConstants.PIPE_SEPARATOR + storeNumber + ReceivingConstants.PIPE_SEPARATOR + receiptDate + ReceivingConstants.PIPE_SEPARATOR + sequenceNumber;
+    private String formulateLineId(String receivingControlNumber, String poReceiveId, String storeNumber, String receiptDate, String lineSequenceNumber) {
+        return receivingControlNumber + ReceivingConstants.PIPE_SEPARATOR + poReceiveId + ReceivingConstants.PIPE_SEPARATOR + storeNumber + ReceivingConstants.PIPE_SEPARATOR + receiptDate + ReceivingConstants.PIPE_SEPARATOR + lineSequenceNumber;
     }
 
     private HashMap<String, String> checkingNotNullParameters(String countryCode, String purchaseOrderNumber, String purchaseOrderId, List<String> receiptNumber, String transactionType, String controlNumber, String locationNumber, String divisionNumber,
@@ -593,7 +593,7 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
             throw new InvalidValueException("Invalid value, inventoryMatchStatus", "it should be in range 0-9");
         }
 
-        if (receivingSummaryLineRequest.getSequenceNumber() == null) {
+        if (receivingSummaryLineRequest.getLineSequenceNumber() == null) {
             if (isWareHouseData == false) {
                 id = formulateId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), receivingSummaryLineRequest.getReceiptDate().toString());
             } else {
@@ -653,11 +653,11 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
             if (isWareHouseData == false) {
                 summaryId = formulateId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), receivingSummaryLineRequest.getReceiptDate().toString());
                 lineId = formulateLineId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(),
-                        receivingSummaryLineRequest.getReceiptDate().toString(), receivingSummaryLineRequest.getSequenceNumber().toString());
+                        receivingSummaryLineRequest.getReceiptDate().toString(), receivingSummaryLineRequest.getLineSequenceNumber().toString());
             } else {
                 summaryId = formulateId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), "0");
                 lineId = formulateLineId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(),
-                        "0", receivingSummaryLineRequest.getSequenceNumber().toString());
+                        "0", receivingSummaryLineRequest.getLineSequenceNumber().toString());
             }
 
             ReceiveSummary receiveSummary = mongoTemplate.findById(summaryId, ReceiveSummary.class, summaryCollection);

@@ -364,7 +364,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             receivingInfoResponse.setDepartmentNumber(receiveSummary.getDepartmentNumber());
         }
         receivingInfoResponse.setTransactionType(receiveSummary.getTransactionType());
-        receivingInfoResponse.setReceiptDate(receiveSummary.getMDSReceiveDate());
+        receivingInfoResponse.setReceiptDate(receiveSummary.getDateReceived());
         receivingInfoResponse.setReceiptStatus(receiveSummary.getBusinessStatusCode());
         receivingInfoResponse.setCarrierCode(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getCarrierCode() : null);
         receivingInfoResponse.setTrailerNumber(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getTrailerNbr() : null);
