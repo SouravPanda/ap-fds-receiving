@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.CriteriaDefinition;
@@ -228,16 +227,14 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
 
     private Query searchCriteriaForGet(HashMap<String, String> paramMap) {
         Query dynamicQuery = new Query();
+        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.CONTROLNUMBER))) {
+            Criteria controlNumberCriteria = Criteria.where(ReceiveSummaryParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.CONTROLNUMBER));
+            dynamicQuery.addCriteria(controlNumberCriteria);
+        }
 
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.CONTROLNUMBER)) || StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.PURCHASEORDERID))) {
-
-            if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.CONTROLNUMBER))) {
-                Criteria controlNumberCriteria = Criteria.where(ReceiveSummaryParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.CONTROLNUMBER));
-                dynamicQuery.addCriteria(controlNumberCriteria);
-            } else {
-                Criteria purchaseOrderIdCriteria = Criteria.where(ReceiveSummaryParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.PURCHASEORDERID));
-                dynamicQuery.addCriteria(purchaseOrderIdCriteria);
-            }
+        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.PURCHASEORDERID))) {
+            Criteria purchaseOrderIdCriteria = Criteria.where(ReceiveSummaryParameters.PURCHASEORDERID.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.PURCHASEORDERID)));
+            dynamicQuery.addCriteria(purchaseOrderIdCriteria);
         }
 
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.DIVISIONNUMBER))) {
@@ -246,7 +243,7 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
         }
 
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTDATESTART)) && StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTDATEEND))) {
-            Criteria mdsReceiveDateCriteria = Criteria.where(ReceiveSummaryParameters.MDSRECEIVEDATE.getParameterName()).gte(getDate(paramMap.get(ReceivingConstants.RECEIPTDATESTART))).lte(getDate(paramMap.get(ReceivingConstants.RECEIPTDATEEND)));
+            Criteria mdsReceiveDateCriteria = Criteria.where(ReceiveSummaryParameters.DATERECEIVED.getParameterName()).gte(getDate(paramMap.get(ReceivingConstants.RECEIPTDATESTART))).lte(getDate(paramMap.get(ReceivingConstants.RECEIPTDATEEND)));
             dynamicQuery.addCriteria(mdsReceiveDateCriteria);
         }
 
@@ -266,7 +263,7 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
         }
 
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTNUMBER))) {
-            Criteria poReceiveIdCriteria = Criteria.where(ReceiveSummaryParameters.PORECEIVEID.getParameterName()).is(paramMap.get(ReceivingConstants.RECEIPTNUMBER));
+            Criteria poReceiveIdCriteria = Criteria.where(ReceiveSummaryParameters.RECEIVEID.getParameterName()).is(paramMap.get(ReceivingConstants.RECEIPTNUMBER));
             dynamicQuery.addCriteria(poReceiveIdCriteria);
         }
 
@@ -420,8 +417,8 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
         while (iterator.hasNext()) {
             ReceiveSummary receiveSummary = iterator.next();
             AdditionalResponse response = new AdditionalResponse();
-            if (receivingLineMap.containsKey(receiveSummary.getPoReceiveId())) {
-                List<ReceivingLine> lineList = receivingLineMap.get(receiveSummary.getPoReceiveId());
+            if (receivingLineMap.containsKey(receiveSummary.getReceiveId())) {
+                List<ReceivingLine> lineList = receivingLineMap.get(receiveSummary.getReceiveId());
                 if (receiveSummary.getTypeIndicator().equals("W")) {
                     response.setTotalCostAmount(lineResponseList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount()).sum());
                     response.setTotalRetailAmount(lineResponseList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
@@ -449,8 +446,8 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
         if (StringUtils.isNotEmpty(receiveSummary.getReceivingControlNumber())) {
             criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(receiveSummary.getReceivingControlNumber().trim());
         }
-        if (StringUtils.isNotEmpty(receiveSummary.getPoReceiveId())) {
-            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.PORECEIVEID.getParameterName()).is(receiveSummary.getPoReceiveId().trim());
+        if (StringUtils.isNotEmpty(receiveSummary.getReceiveId())) {
+            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.PORECEIVEID.getParameterName()).is(receiveSummary.getReceiveId().trim());
         }
         if (receiveSummary.getStoreNumber() != null) {
             criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.STORENUMBER.getParameterName()).is(receiveSummary.getStoreNumber());

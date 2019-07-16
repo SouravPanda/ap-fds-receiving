@@ -131,7 +131,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         Query query = new Query();
         CriteriaDefinition criteriaDefinition = null;
         if (StringUtils.isNotEmpty(financialTxnResponseData.getPoReceiveId())) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.PORECEIVEID.getParameterName()).is(financialTxnResponseData.getPoReceiveId());
+            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.RECEIVEID.getParameterName()).is(financialTxnResponseData.getPoReceiveId());
             query.addCriteria(criteriaDefinition);
         }
         if (financialTxnResponseData.getReceivingControlNumber() != 0) {
@@ -165,7 +165,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         Query query = new Query();
         CriteriaDefinition criteriaDefinition = null;
         if (CollectionUtils.isNotEmpty(receiptNumbers)) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.PORECEIVEID.getParameterName()).in(receiptNumbers);
+            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.RECEIVEID.getParameterName()).in(receiptNumbers);
             query.addCriteria(criteriaDefinition);
         }
         if (StringUtils.isNotEmpty(queryParamMap.get(ReceivingInfoQueryParamName.CONTROLNUMBER.getQueryParamName()))) {
@@ -198,7 +198,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTimeParser();
                 DateTime startDate = dateTimeFormatter.parseDateTime(queryParamMap.get(ReceivingInfoQueryParamName.RECEIPTDATESTART.getQueryParamName()));
                 DateTime endDate = dateTimeFormatter.parseDateTime(queryParamMap.get(ReceivingInfoQueryParamName.RECEIPTDATEEND.getQueryParamName()));
-                criteriaDefinition = Criteria.where(ReceiveSummaryParameters.MDSRECEIVEDATE.getParameterName()).gte(startDate).lte(endDate);
+                criteriaDefinition = Criteria.where(ReceiveSummaryParameters.DATERECEIVED.getParameterName()).gte(startDate).lte(endDate);
                 query.addCriteria(criteriaDefinition);
             } catch (IllegalArgumentException e) {
                 log.error(ExceptionUtils.getStackTrace(e));
@@ -297,8 +297,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             criteriaDefinition = Criteria.where(ReceivingLineParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(receiveSummary.getReceivingControlNumber().trim());
             query.addCriteria(criteriaDefinition);
         }
-        if (StringUtils.isNotEmpty(receiveSummary.getPoReceiveId())) {
-            criteriaDefinition = Criteria.where(ReceivingLineParameters.PORECEIVEID.getParameterName()).is(receiveSummary.getPoReceiveId().trim());
+        if (StringUtils.isNotEmpty(receiveSummary.getReceiveId())) {
+            criteriaDefinition = Criteria.where(ReceivingLineParameters.PORECEIVEID.getParameterName()).is(receiveSummary.getReceiveId().trim());
             query.addCriteria(criteriaDefinition);
         }
         if (receiveSummary.getStoreNumber() != null) {
@@ -346,7 +346,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         ReceivingInfoResponse receivingInfoResponse = new ReceivingInfoResponse();
         if (financialTxnResponseData != null) {
             receivingInfoResponse.setPurchaseOrderId(StringUtils.isNotEmpty(financialTxnResponseData.getPoNumber()) ? financialTxnResponseData.getPoNumber() : receiveSummary.getReceivingControlNumber());
-            receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(financialTxnResponseData.getPoReceiveId()) ? Integer.parseInt(financialTxnResponseData.getPoReceiveId()) : StringUtils.isNotEmpty(receiveSummary.getPoReceiveId()) ? Integer.parseInt(receiveSummary.getPoReceiveId()) : 0);
+            receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(financialTxnResponseData.getPoReceiveId()) ? Integer.parseInt(financialTxnResponseData.getPoReceiveId()) : StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ? Integer.parseInt(receiveSummary.getReceiveId()) : 0);
             receivingInfoResponse.setControlNumber(financialTxnResponseData.getReceivingControlNumber() != null ? financialTxnResponseData.getReceivingControlNumber().toString() : receiveSummary.getReceivingControlNumber());
             receivingInfoResponse.setLocationNumber(financialTxnResponseData.getStoreNumber() != null ? financialTxnResponseData.getStoreNumber() : receiveSummary.getStoreNumber());
             receivingInfoResponse.setDivisionNumber(financialTxnResponseData.getBaseDivisionNumber() != null ? financialTxnResponseData.getBaseDivisionNumber() : receiveSummary.getBaseDivisionNumber());
@@ -355,7 +355,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             receivingInfoResponse.setDepartmentNumber(financialTxnResponseData.getDepartmentNumber() != null ? Integer.parseInt(Integer.toString(financialTxnResponseData.getDepartmentNumber()).substring(0, 2)) : receiveSummary.getDepartmentNumber());
         } else {
             receivingInfoResponse.setPurchaseOrderId(receiveSummary.getReceivingControlNumber());
-            receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getPoReceiveId()) ? Integer.parseInt(receiveSummary.getPoReceiveId()) : 0);
+            receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ? Integer.parseInt(receiveSummary.getReceiveId()) : 0);
             receivingInfoResponse.setControlNumber(receiveSummary.getReceivingControlNumber());
             receivingInfoResponse.setLocationNumber(receiveSummary.getStoreNumber());
             receivingInfoResponse.setDivisionNumber(receiveSummary.getBaseDivisionNumber());

@@ -12,8 +12,8 @@ envs:
       MAVEN_GROUP_ID: ''
       MAVEN_ARTIFACT_ID: ''
       GIT_REVISION: ''
-      devAcrName: 'fdsacrregistrydev.azurecr.io' #here goes your container registry name
-      devAcrCred: '59d21f97-b2a4-4856-8ec1-561cd7c5ed2f'
+      devAcrName: 'apfsregistrydev.azurecr.io' #here goes your container registry name
+      devAcrCred: 'c1f34f31-f988-49d1-b32a-a20de27cd559'
       releaseAcrName: 'apfsregistryrelease.azurecr.io' #here goes your container registry name
       releaseAcrCred: 'da462fd4-c11d-476b-9255-cd085d4de03e' #here goes your looper credential for the container registry
 flows:
@@ -37,7 +37,8 @@ flows:
             push: true
             dockerfile: 'Dockerfile'
             creds:
-              fdsacrregistrydev.azurecr.io: '${devAcrCred}'
+              apfsregistrydev.azurecr.io: '${devAcrCred}'
+              fdsregistryrelease.azurecr.io: '${releaseAcrCred}'
   build_img_dev:
     - shell: echo "build_img_dev"
     - node(docker-daemon):
@@ -47,7 +48,7 @@ flows:
             push: false
             dockerfile: 'Dockerfile'
             creds:
-              fdsacrregistrydev.azurecr.io: '${devAcrCred}'
+              fdsregistrydev.azurecr.io: '${devAcrCred}'
   Build-Deploy-Dev:
     try:
       - dir(sourcecode):
