@@ -8,7 +8,7 @@ public enum ReceivingLineParameters {
 
     ID("_id"),
     RECEIVINGCONTROLNUMBER("receivingControlNumber"),
-    PORECEIVEID("purchaseOrderReceiveID")  ,
+    RECEIVEID("receiveId")  ,
     STORENUMBER("storeNumber"),
     BASEDIVISIONNUMBER("baseDivisionNumber"),
     TRANSACTIONTYPE("transactionType"),

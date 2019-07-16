@@ -298,7 +298,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             query.addCriteria(criteriaDefinition);
         }
         if (StringUtils.isNotEmpty(receiveSummary.getReceiveId())) {
-            criteriaDefinition = Criteria.where(ReceivingLineParameters.PORECEIVEID.getParameterName()).is(receiveSummary.getReceiveId().trim());
+            criteriaDefinition = Criteria.where(ReceivingLineParameters.RECEIVEID.getParameterName()).is(receiveSummary.getReceiveId().trim());
             query.addCriteria(criteriaDefinition);
         }
         if (receiveSummary.getStoreNumber() != null) {
@@ -379,7 +379,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     private ReceivingInfoLineResponse convertToLineResponse(ReceivingLine receivingLine) {
         ReceivingInfoLineResponse response = new ReceivingInfoLineResponse();
-        response.setReceiptNumber(Integer.valueOf(receivingLine.getPurchaseOrderReceiveID()));
+        response.setReceiptNumber(Integer.valueOf(receivingLine.getReceiveId()));
         response.setReceiptLineNumber(receivingLine.getLineNumber() == null ? 0 : receivingLine.getLineNumber());
         response.setItemNumber(receivingLine.getItemNumber());
         response.setVendorNumber(receivingLine.getVendorNumber());

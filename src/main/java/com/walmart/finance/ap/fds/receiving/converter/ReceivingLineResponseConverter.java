@@ -23,7 +23,7 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
             response.setDivisionNumber(receivingLine.getBaseDivisionNumber());
         }
         response.setEachCostAmount(receivingLine.getCostAmount());
-        response.setReceiptNumber(Integer.valueOf(receivingLine.getPurchaseOrderReceiveID()));
+        response.setReceiptNumber(Integer.valueOf(receivingLine.getReceiveId()));
         if(receivingLine.getLineNumber()==null){
             response.setReceiptLineNumber(0) ;
         } else {
@@ -41,7 +41,7 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
 //        response.setBottleDepositAmount(0);
 
         response.setPurchaseOrderNumber(receivingLine.getReceivingControlNumber());
-//        response.setParentReceiptNumber(Integer.valueOf(receivingLine.getPurchaseOrderReceiveID()));
+//        response.setParentReceiptNumber(Integer.valueOf(receivingLine.getReceiveId()));
         response.setPurchaseOrderId(receivingLine.getReceivingControlNumber());
         /*if (receivingLine.getUpcNumber() == null) {
             response.setUpc("0");

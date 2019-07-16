@@ -403,14 +403,14 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
 
         //Grouping lines according to PurchaseOrderReceiveID
         for(ReceivingLine receivingLine : lineResponseList){
-            if (receivingLineMap.containsKey(receivingLine.getPurchaseOrderReceiveID())) {
-                List<ReceivingLine> lineList = receivingLineMap.get(receivingLine.getPurchaseOrderReceiveID());
+            if (receivingLineMap.containsKey(receivingLine.getReceiveId())) {
+                List<ReceivingLine> lineList = receivingLineMap.get(receivingLine.getReceiveId());
                 lineList.add(receivingLine);
-                receivingLineMap.put(receivingLine.getPurchaseOrderReceiveID(), lineList);
+                receivingLineMap.put(receivingLine.getReceiveId(), lineList);
             } else {
                 List<ReceivingLine> lineList = new ArrayList<>();
                 lineList.add(receivingLine);
-                receivingLineMap.put(receivingLine.getPurchaseOrderReceiveID(), lineList);
+                receivingLineMap.put(receivingLine.getReceiveId(), lineList);
             }
         }
         Iterator<ReceiveSummary> iterator = receiveSummaries.iterator();
@@ -447,7 +447,7 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
             criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(receiveSummary.getReceivingControlNumber().trim());
         }
         if (StringUtils.isNotEmpty(receiveSummary.getReceiveId())) {
-            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.PORECEIVEID.getParameterName()).is(receiveSummary.getReceiveId().trim());
+            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.RECEIVEID.getParameterName()).is(receiveSummary.getReceiveId().trim());
         }
         if (receiveSummary.getStoreNumber() != null) {
             criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.STORENUMBER.getParameterName()).is(receiveSummary.getStoreNumber());
@@ -616,7 +616,7 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
                 dynamicQuery.addCriteria(purchaseOrderIdCriteria);
             }
             if (receivingSummaryLineRequest.getReceiptNumber() != null) {
-                Criteria receiptNumberCriteria = Criteria.where(ReceivingLineParameters.PORECEIVEID.getParameterName()).is(receivingSummaryLineRequest.getReceiptNumber());
+                Criteria receiptNumberCriteria = Criteria.where(ReceivingLineParameters.RECEIVEID.getParameterName()).is(receivingSummaryLineRequest.getReceiptNumber());
                 dynamicQuery.addCriteria(receiptNumberCriteria);
             }
             if (receivingSummaryLineRequest.getLocationNumber() != null) {

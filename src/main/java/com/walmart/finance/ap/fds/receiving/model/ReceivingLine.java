@@ -17,7 +17,7 @@ public class ReceivingLine   {
 
     private static final String separator = "|";
     private String _id;
-    private String purchaseOrderReceiveID;     //BASE_DIV_NBR + RPR_DATE(month) + RPR_SEQ_NBR from BKRM_PROC_XMIT_HDR
+    private String receiveId;     //BASE_DIV_NBR + RPR_DATE(month) + RPR_SEQ_NBR from BKRM_PROC_XMIT_HDR
     private Integer lineNumber;     //BKRM_PROC_XMIT_DTL.LINE_NBR
     private Integer itemNumber;     //BKRM_PROC_XMIT_DTL.ITEM_NBR
     private Integer vendorNumber;   //BKRM_PROC_XMIT_HDR.ORIG_DEST_ID
@@ -41,7 +41,7 @@ public class ReceivingLine   {
     private String writeIndicator; //
     private String purchaseOrderNumber; // PO_NBR_XREF/P1A_KEY(warehouse) :BKRM_PROC_XMAT_HDR/CONTROL_NBR(store)
     private Integer quantity;   // PO_LINE_VALUE.PACK_QTY
-    private LocalDate dateReceived;//RPR_DATE
+    private LocalDate receivingDate;//RPR_DATE
     private Integer receiveSequenceNumber;// RPR_SEQ_NBR
     private Double receivedWeightQuantity;//RECV_WEIGHT_QTY(Column)INITIAL_RECV_ITEM(Table)
     private String receivedQuantityUnitOfMeasureCode;//RECV_QTY_UOM_CODE(Column)INITIAL_RECV_ITEM(Table)
@@ -52,7 +52,7 @@ public class ReceivingLine   {
     public String toString() {
         return "ReceivingLine{" +
                 "id='" + _id + '\'' +
-                ", purchaseOrderReceiveID='" + purchaseOrderReceiveID + '\'' +
+                ", receiveId='" + receiveId + '\'' +
                 ", lineNumber='" + lineNumber + '\'' +
                 ", itemNumber='" + itemNumber + '\'' +
                 ", vendorNumber='" + vendorNumber + '\'' +
@@ -74,7 +74,7 @@ public class ReceivingLine   {
                 ", writeIndicator='" + writeIndicator + '\'' +
                 ", purchaseOrderNumber='" + purchaseOrderNumber + '\'' +
                 ", quantity='" + quantity + '\'' +
-                ", MDSReceiveDate='" + dateReceived + '\'' +
+                ", receivingDate='" + receivingDate + '\'' +
                 ", receiveSequenceNumber='" + receiveSequenceNumber + '\'' +
                 ", receivedWeightQuantity='" + receivedWeightQuantity + '\'' +
                 ", receivedQuantityUnitOfMeasureCode='" + receivedQuantityUnitOfMeasureCode + '\'' +
