@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping(value = "{countryCode}/receiving/line")
 @Api(value = "RESTful APIs for Receiving Line ")
