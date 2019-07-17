@@ -81,7 +81,7 @@ public class ReceivingInfoServiceImplTest {
                         89, 12, "1122", 99, 8264, 18,
                         LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                         LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 6, LocalDate.now(),
-                        0, 1.9, "LL", 0, "ww"));
+                        0, 1.9, "LL", 0, "ww", null));
             }
         };
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(receivingLines);
@@ -147,7 +147,7 @@ public class ReceivingInfoServiceImplTest {
                         89, 12, "1122", 99, 8264, 18,
                         LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                         LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "89", 6, LocalDate.now(),
-                        0, 1.9, "LL", 0, "ww"));
+                        0, 1.9, "LL", 0, "ww", null));
             }
         };
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(receivingLines);
@@ -166,7 +166,7 @@ public class ReceivingInfoServiceImplTest {
                         7, 30.0, 40.0, 6,
                         7, "12", "LL",
                         "ww", "1.9", 99,
-                        8264, 18, "89", "9", 10.0
+                        8264, 18, "89", "9", 10.0,null
                 ));
             }
         };
@@ -222,7 +222,7 @@ public class ReceivingInfoServiceImplTest {
                         89, 12, "1122", 99, 8264, 18,
                         LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                         LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "89", 6, LocalDate.now(),
-                        0, 1.9, "LL", 0, "ww"));
+                        0, 1.9, "LL", 0, "ww", null));
             }
         };
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(receivingLines);
@@ -241,7 +241,7 @@ public class ReceivingInfoServiceImplTest {
                         7, 30.0, 40.0, 6,
                         7, "12", "LL",
                         "ww", "1.9", 99,
-                        8264, 18, "89", "9", 10.0
+                        8264, 18, "89", "9", 10.0, null
                 ));
             }
         };
@@ -299,7 +299,7 @@ public class ReceivingInfoServiceImplTest {
                         89, 12, "1122", 99, 8264, 18,
                         LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                         LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "89", 6, LocalDate.now(),
-                        0, 1.9, "LL", 0, "ww"));
+                        0, 1.9, "LL", 0, "ww", null));
             }
         };
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(receivingLines);
@@ -313,7 +313,7 @@ public class ReceivingInfoServiceImplTest {
                         7, 30.0, 40.0, 6,
                         7, "12", "LL",
                         "ww", "1.9", 99,
-                        8264, 18, "89", "9", 10.0
+                        8264, 18, "89", "9", 10.0, null
                 ));
             }
         };

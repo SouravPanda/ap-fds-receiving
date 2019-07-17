@@ -1,5 +1,8 @@
 package com.walmart.finance.ap.fds.receiving.service;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingInfoQueryParamName;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
@@ -10,6 +13,7 @@ import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryParameters;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLineParameters;
+import com.walmart.finance.ap.fds.receiving.response.ReceiveMDSResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingInfoLineResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingInfoResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
@@ -60,6 +64,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     FinancialTxnIntegrationService financialTxnIntegrationService;
 
     private ConcurrentMap<String, String> queryParamMap;
+
+    Gson gson = new Gson();
 
     /**
      * @param countryCode
@@ -399,6 +405,18 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         response.setPurchaseOrderNumber(receivingLine.getPurchaseOrderNumber());
         response.setControlNumber(receivingLine.getReceivingControlNumber());
         response.setBottleDepositAmount(10.00);
+        if (StringUtils.isNotEmpty(receivingLine.getMerchandises())) {
+            JsonObject jsonObject = gson.fromJson(receivingLine.getMerchandises(), JsonObject.class);
+            response.setMerchandises(new ArrayList<>());
+            for (Map.Entry<String, JsonElement> jsonElementEntry : jsonObject.entrySet()) {
+                JsonObject innerJsonObject = (JsonObject) jsonElementEntry.getValue();
+                ReceiveMDSResponse receiveMDSResponse = new ReceiveMDSResponse(
+                        innerJsonObject.get("mdseConditionCode").getAsInt(),
+                        innerJsonObject.get("mdseQuantity").getAsInt(),
+                        innerJsonObject.get("mdseQuantityUnitOfMeasureCode").getAsString());
+                response.getMerchandises().add(receiveMDSResponse);
+            }
+        }
         return response;
     }
     /*************************** Conversion Methods ***********************************/

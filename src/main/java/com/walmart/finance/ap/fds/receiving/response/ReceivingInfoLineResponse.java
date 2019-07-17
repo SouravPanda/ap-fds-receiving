@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 /**
  * Response Structure for Receiving Info
  */
@@ -32,5 +34,7 @@ public class ReceivingInfoLineResponse {
     private String purchaseOrderNumber;
     private String controlNumber;
     private Double bottleDepositAmount;
+    private List<ReceiveMDSResponse> merchandises;
+
 
 }

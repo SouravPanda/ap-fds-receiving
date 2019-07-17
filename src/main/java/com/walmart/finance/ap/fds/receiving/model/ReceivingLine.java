@@ -47,6 +47,7 @@ public class ReceivingLine   {
     private String receivedQuantityUnitOfMeasureCode;//RECV_QTY_UOM_CODE(Column)INITIAL_RECV_ITEM(Table)
     private Integer inventoryMatchStatus;
     private String variableWeightIndicator;
+    private String merchandises;
 
     @Override
     public String toString() {
