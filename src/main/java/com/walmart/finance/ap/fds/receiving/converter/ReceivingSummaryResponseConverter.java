@@ -42,6 +42,7 @@ public class ReceivingSummaryResponseConverter implements Converter<ReceiveSumma
 //        response.setParentLocationNumber(receiveSummary.getStoreNumber());
 //        response.setParentDivisionNumber(receiveSummary.getBaseDivisionNumber());
 //        response.setMemo("MEMO");
+        response.setControlSequenceNumber(receiveSummary.getControlSequenceNumber());
         return response;
     }
 }

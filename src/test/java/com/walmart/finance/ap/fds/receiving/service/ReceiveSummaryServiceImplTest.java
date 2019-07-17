@@ -112,13 +112,13 @@ public class ReceiveSummaryServiceImplTest {
                 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",
                 9.0, 7.0,
-                1L, 0);
+                1L, 0,0);
 
         ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", 1122, 99,
                 "776", 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77",
                 9.0, 7.0,
-                0L, 0);
+                0L, 0,0);
 
         FreightResponse freightResponse = new FreightResponse("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "0", "0");
         FreightResponse freightResponseAt = new FreightResponse("46652|18048|8264|18|18|1995-10-17|18:45:21", "0", "0");
@@ -201,13 +201,13 @@ public class ReceiveSummaryServiceImplTest {
                 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",
                 9.0, 7.0,
-                0L, 0);
+                0L, 0,0);
 
         ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", 1122, 99,
                 "776", 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77",
                 9.0, 7.0,
-                0L, 0);
+                0L, 0,0);
 
         FreightResponse freightResponse = new FreightResponse("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "0", "0");
         FreightResponse freightResponseAt = new FreightResponse("46652|18048|8264|18|18|1995-10-17|18:45:21", "0", "0");
@@ -285,13 +285,13 @@ public class ReceiveSummaryServiceImplTest {
                 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",
                 9.0, 7.0,
-                0L, 0);
+                0L, 0,0);
 
         ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", 1122, 99,
                 "776", 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77",
                 9.0, 7.0,
-                0L, 0);
+                0L, 0,0);
 
         FreightResponse freightResponse = new FreightResponse("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "0", "0");
         FreightResponse freightResponseAt = new FreightResponse("46652|18048|8264|18|18|1995-10-17|18:45:21", "0", "0");

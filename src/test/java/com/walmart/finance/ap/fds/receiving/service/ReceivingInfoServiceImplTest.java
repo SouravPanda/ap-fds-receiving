@@ -99,7 +99,7 @@ public class ReceivingInfoServiceImplTest {
                         99, "164680544", 6302, 0,
                         LocalDate.of(2019, 03, 14), 'A', 2222,
                         "ARFW", "972035", 9.0, 99.0,
-                        new Long(1), 77, null));
+                        new Long(1), 77, 0, null));
             }
         };
 
@@ -176,7 +176,7 @@ public class ReceivingInfoServiceImplTest {
                         99, "164680544", 6302, 0,
                         LocalDate.of(2019, 03, 14), 'A', 2222,
                         "ARFW", "972035", 9.0, 99.0,
-                        new Long(1), 0, receivingInfoLineResponses));
+                        new Long(1), 0, 0, receivingInfoLineResponses));
             }
         };
 
@@ -251,7 +251,7 @@ public class ReceivingInfoServiceImplTest {
                         99, "4665267", 8264, 18,
                         LocalDate.of(2019, 03, 14), 'A', 7688,
                         "ARFW", "972035", 90.0, 99.0,
-                        new Long(1), 0, null));
+                        new Long(1), 0, 0, null));
             }
         };
 
@@ -323,7 +323,7 @@ public class ReceivingInfoServiceImplTest {
                         99, "4665267", 8264, 18,
                         LocalDate.of(2019, 03, 14), 'A', 7688,
                         null, null, 90.0, 99.0,
-                        new Long(1), 0, receivingInfoLineResponses));
+                        new Long(1), 0, 0, receivingInfoLineResponses));
             }
         };
 

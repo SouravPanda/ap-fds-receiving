@@ -370,6 +370,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponse.setTrailerNumber(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getTrailerNbr() : null);
         receivingInfoResponse.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());
         receivingInfoResponse.setLineCount(new Long(lineResponseList.size()));
+        receivingInfoResponse.setControlSequenceNumber(receiveSummary.getControlSequenceNumber());
         if (queryParamMap.get(ReceivingInfoQueryParamName.LINENUMBERFLAG.getQueryParamName()).equalsIgnoreCase("Y")) {
             List<ReceivingInfoLineResponse> lineInfoList = lineResponseList.stream().map((t) -> convertToLineResponse(t)).collect(Collectors.toList());
             receivingInfoResponse.setReceivingInfoLineResponses(lineInfoList);

@@ -115,7 +115,6 @@ public class ReceivingSummaryControllerTest {
                             "    ]\n" +
                             "}"))
                     .andReturn();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -192,7 +191,6 @@ public class ReceivingSummaryControllerTest {
                             "    ]\n" +
                             "}"))
                     .andReturn();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -200,25 +198,20 @@ public class ReceivingSummaryControllerTest {
 
     @Test
     public void getReceiveSummary() throws Exception {
-
         ReceivingSummaryResponse response = new ReceivingSummaryResponse("984003673", 10022, 0, "984003673", 3680,
                 28, LocalDate.of(2019, 01, 03), 'M', 762214, null, "0", 0.0, 0.0,
-                null, 96
+                null, 96, 0
         );
-
         List<ReceivingSummaryResponse> responseList = new ArrayList<ReceivingSummaryResponse>() {
             {
                 add(response);
             }
         };
-
         ReceivingResponse successMessage = new ReceivingResponse(true, LocalDateTime.of(2019, 05, 12, 15, 31, 16), responseList);
-
         when(receiveSummaryService.getReceiveSummary(Mockito.any(), Mockito.any(), Mockito.any(),
                 Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
                 Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
                 Mockito.any())).thenReturn(successMessage);
-
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/US/receiving/summary")
                 .param("controlNumber", "984003673")
@@ -246,7 +239,6 @@ public class ReceivingSummaryControllerTest {
                                 "\"departmentNumber\": 96\n" +
                                 "}] " +
                                 "}"
-
                 ))
                 .andReturn();
     }

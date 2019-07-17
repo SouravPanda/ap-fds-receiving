@@ -48,6 +48,8 @@ public class ReceivingInfoResponse {
 
     private Integer departmentNumber;
 
+    private Integer controlSequenceNumber;
+
     @JsonProperty("receivingLine")
     List<ReceivingInfoLineResponse> receivingInfoLineResponses;
 }
