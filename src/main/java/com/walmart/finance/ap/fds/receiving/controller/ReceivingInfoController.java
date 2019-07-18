@@ -45,4 +45,5 @@ public class ReceivingInfoController {
         return receivingInfoService.getSevice(countryCode, invoiceId, invoiceNumber, purchaseOrderNumber, purchaseOrderId
                 , receiptNumbers, transactionType, controlNumber, locationNumber, divisionNumber, vendorNumber, departmentNumber, itemNumbers, upcNumbers, receiptDateStart, receiptDateEnd, lineNumberFlag);
     }
+    
 }
