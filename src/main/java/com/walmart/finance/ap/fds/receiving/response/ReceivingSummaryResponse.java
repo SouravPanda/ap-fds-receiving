@@ -95,4 +95,6 @@ public class ReceivingSummaryResponse {
 //    @NotEmpty
 //    private String memo;
 
+    private Integer controlSequenceNumber;
+
 }

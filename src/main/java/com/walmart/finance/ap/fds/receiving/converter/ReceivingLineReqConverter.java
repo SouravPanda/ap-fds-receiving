@@ -13,7 +13,7 @@ public class ReceivingLineReqConverter implements Converter<ReceivingSummaryLine
     @Override
     public ReceivingLine convert(ReceivingSummaryLineRequest receivingLineRequest) {
 
-        String id = receivingLineRequest.getControlNumber() + separator + receivingLineRequest.getReceiptNumber() + separator + receivingLineRequest.getLocationNumber() + separator+ receivingLineRequest.getReceiptDate() + separator + receivingLineRequest.getSequenceNumber();
+        String id = receivingLineRequest.getControlNumber() + separator + receivingLineRequest.getReceiptNumber() + separator + receivingLineRequest.getLocationNumber() + separator+ receivingLineRequest.getReceiptDate() + separator + receivingLineRequest.getLineSequenceNumber();
         ReceivingLine receivingLine = new ReceivingLine();
         return receivingLine;
     }

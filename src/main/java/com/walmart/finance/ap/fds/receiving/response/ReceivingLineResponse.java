@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -35,5 +37,5 @@ public class ReceivingLineResponse {
     private Integer locationNumber;
     private Integer divisionNumber;
     private Double bottleDepositAmount;
-
+    private List<ReceiveMDSResponse> merchandises;
 }

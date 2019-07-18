@@ -1,7 +1,6 @@
 
 package com.walmart.finance.ap.fds.receiving.controller;
 
-import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveLineService;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveLineServiceImpl;
@@ -12,8 +11,6 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 
 @RestController

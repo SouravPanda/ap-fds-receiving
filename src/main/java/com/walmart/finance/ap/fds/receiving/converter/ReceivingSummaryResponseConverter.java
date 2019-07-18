@@ -2,10 +2,9 @@ package com.walmart.finance.ap.fds.receiving.converter;
 
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDate;
 
 @Component
 public class ReceivingSummaryResponseConverter implements Converter<ReceiveSummary, ReceivingSummaryResponse> {
@@ -15,12 +14,12 @@ public class ReceivingSummaryResponseConverter implements Converter<ReceiveSumma
 
         ReceivingSummaryResponse response = new ReceivingSummaryResponse();
         response.setPurchaseOrderId(receiveSummary.getReceivingControlNumber());
-        response.setReceiptNumber(Integer.valueOf(receiveSummary.getPoReceiveId()));
+        response.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ? Integer.valueOf(receiveSummary.getReceiveId()) : 0);
         response.setTransactionType(receiveSummary.getTransactionType());
         response.setControlNumber(receiveSummary.getReceivingControlNumber());
         response.setLocationNumber(receiveSummary.getStoreNumber());
         response.setDivisionNumber(receiveSummary.getBaseDivisionNumber());
-        response.setReceiptDate(receiveSummary.getMDSReceiveDate()); // TODO will change once  Receipt_Date is available : changed to MDSReceivedate
+        response.setReceiptDate(receiveSummary.getDateReceived()); // TODO will change once  Receipt_Date is available : changed to MDSReceivedate
         response.setReceiptStatus(receiveSummary.getBusinessStatusCode()); //   TODO will change once  TOTAL_MATCH_IND is available
         response.setVendorNumber(receiveSummary.getVendorNumber());
 //        response.setCarrierCode("CRCode");
@@ -32,7 +31,7 @@ public class ReceivingSummaryResponseConverter implements Converter<ReceiveSumma
         response.setTotalCostAmount(receiveSummary.getTotalCostAmount());
         response.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());   //TODO need to add in pipeline code
 
-//        response.setParentReceiptId(Integer.valueOf(receiveSummary.getPoReceiveId()));
+//        response.setParentReceiptId(Integer.valueOf(receiveSummary.getReceiveId()));
 
 //        response.setParentReceiptNumber(receiveSummary.getReceivingControlNumber());
 
@@ -43,6 +42,7 @@ public class ReceivingSummaryResponseConverter implements Converter<ReceiveSumma
 //        response.setParentLocationNumber(receiveSummary.getStoreNumber());
 //        response.setParentDivisionNumber(receiveSummary.getBaseDivisionNumber());
 //        response.setMemo("MEMO");
+        response.setControlSequenceNumber(receiveSummary.getControlSequenceNumber());
         return response;
     }
 }

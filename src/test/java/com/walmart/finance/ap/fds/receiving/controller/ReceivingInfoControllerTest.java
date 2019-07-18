@@ -39,7 +39,7 @@ public class ReceivingInfoControllerTest {
         ReceivingInfoResponse response = new ReceivingInfoResponse("99987", 10441, 99,
                 "164680544", 6302, 0, LocalDate.of(2019, 03, 14),
                 'A', 2222, null, null, 9.0, 99.0,
-                new Long(0), 0, null);
+                new Long(0), 0, 0, null);
         List<ReceivingInfoResponse> list = new ArrayList<ReceivingInfoResponse>() {
             {
                 add(response);

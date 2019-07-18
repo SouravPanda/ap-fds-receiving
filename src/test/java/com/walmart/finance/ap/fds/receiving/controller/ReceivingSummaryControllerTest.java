@@ -11,12 +11,15 @@ import com.walmart.finance.ap.fds.receiving.service.ReceiveSummaryServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
@@ -40,7 +43,6 @@ public class ReceivingSummaryControllerTest {
 
     @MockBean
     private ReceiveSummaryServiceImpl receiveSummaryService;
-
 
     @Before
     public void setup() {
@@ -113,7 +115,6 @@ public class ReceivingSummaryControllerTest {
                             "    ]\n" +
                             "}"))
                     .andReturn();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -121,7 +122,14 @@ public class ReceivingSummaryControllerTest {
 
     @Test
     public void updateSummaryAndLineTest() {
-        ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("2", "2", LocalDate.now(), 2, "A", 1, "0", null);
+        Meta meta = new Meta();
+        SorRoutingCtx sorRoutingCtx = new SorRoutingCtx();
+        sorRoutingCtx.setInvProcAreaCode(36);
+        sorRoutingCtx.setLocationCountryCd("US");
+        sorRoutingCtx.setReplnTypCd("R");
+        meta.setSorRoutingCtx(sorRoutingCtx);
+        ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("2", "2", LocalDate.now(), 2,
+                "A", 1, "9", meta);
         ReceivingResponse successMessage = new ReceivingResponse();
         List<ReceivingSummaryLineRequest> responseList = new ArrayList<>();
         successMessage.setSuccess(true);
@@ -130,23 +138,24 @@ public class ReceivingSummaryControllerTest {
         successMessage.setTimestamp(LocalDateTime.now());
         Mockito.when(receiveSummaryService.updateReceiveSummaryAndLine(receivingSummaryLineRequest, "US")).thenReturn(successMessage);
         String body = "{\n" +
-                "            \"receiptNumber\": \"2\",\n" +
-                "            \"controlNumber\": \"2\",\n" +
-                "            \"receiptDate\": \"2019-04-19\",\n" +
-                "            \"locationNumber\": 2,\n" +
-                "            \"businessStatusCode\": \"A\",\n" +
-                "            \"inventoryMatchStatus\": \"9\",\n" +
-                "            \"meta\": {\n" +
-                "                \"unitofWorkid\": null,\n" +
-                "                \"sorRoutingCtx\": {\n" +
-                "                    \"replnTypCd\": null,\n" +
-                "                    \"invProcAreaCode\": 36,\n" +
-                "                    \"locationCountryCd\": \"US\"\n" +
-                "                }\n" +
-                "             }\n" +
+                "\"receiptNumber\" : \"999997\",\n" +
+                "\"controlNumber\": \"553683865\",\n" +
+                "\"receiptDate\": \"2019-05-12\",\n" +
+                "\"locationNumber\":\"6565\",\n" +
+                "\"businessStatusCode\": \"A\",\n" +
+                "\"inventoryMatchStatus\":\"0\",\n" +
+                "\"sequenceNumber\": \"4\",\n" +
+                "\"meta\": {\n" +
+                "    \"unitOfWorkId\": \"12122\",\n" +
+                "    \"sorRoutingCtx\": {\n" +
+                "        \"replnTypCd\": \"R\",\n" +
+                "        \"invProcAreaCode\": 30,\n" +
+                "        \"locationCountryCd\": \"US\"\n" +
+                "                     }\n" +
+                "       }\n" +
                 "}";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .put("/US/receiving/summary")
+                .put("/US/receiving/summary/line")
                 .header("X-FDS-FOUNDATION-API-KEY", "razorbacks")
                 .header("Content-Type", "application/json")
                 .header("X-IBM-Client-Secret", "rK7xP5iW4uV0gI4mA0dM8yQ3dV8tW2hG6nB8uA5mY1kA4sQ8oB")
@@ -157,24 +166,24 @@ public class ReceivingSummaryControllerTest {
         try {
             mockMvc.perform(requestBuilder)
                     .andExpect(content().json(body))
-                    .andExpect(status().isOk())
+                    .andExpect(status().isAccepted())
                     .andExpect(content().json("{\n" +
                             "    \"success\": true,\n" +
-                            "    \"timestamp\": \"2019-06-19T14:29:17.812\",\n" +
+                            "    \"timestamp\": \"2019-07-12T12:54:52.604\",\n" +
                             "    \"data\": [\n" +
                             "        {\n" +
-                            "            \"receiptNumber\": \"2\",\n" +
-                            "            \"controlNumber\": \"2\",\n" +
-                            "            \"receiptDate\": \"2019-04-19\",\n" +
-                            "            \"locationNumber\": 2,\n" +
+                            "            \"receiptNumber\": \"999997\",\n" +
+                            "            \"controlNumber\": \"553683865\",\n" +
+                            "            \"receiptDate\": \"2019-05-12\",\n" +
+                            "            \"locationNumber\": 6565,\n" +
                             "            \"businessStatusCode\": \"A\",\n" +
-                            "            \"inventoryMatchStatus\": \"9\",\n" +
-                            "            \"sequenceNumber\": \"null\",\n" +
+                            "            \"lineSequenceNumber\": null,\n" +
+                            "            \"inventoryMatchStatus\": \"0\",\n" +
                             "            \"meta\": {\n" +
                             "                \"unitofWorkid\": null,\n" +
                             "                \"sorRoutingCtx\": {\n" +
-                            "                    \"replnTypCd\": null,\n" +
-                            "                    \"invProcAreaCode\": 36,\n" +
+                            "                    \"replnTypCd\": \"R\",\n" +
+                            "                    \"invProcAreaCode\": 30,\n" +
                             "                    \"locationCountryCd\": \"US\"\n" +
                             "                }\n" +
                             "            }\n" +
@@ -182,7 +191,6 @@ public class ReceivingSummaryControllerTest {
                             "    ]\n" +
                             "}"))
                     .andReturn();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -190,25 +198,20 @@ public class ReceivingSummaryControllerTest {
 
     @Test
     public void getReceiveSummary() throws Exception {
-
         ReceivingSummaryResponse response = new ReceivingSummaryResponse("984003673", 10022, 0, "984003673", 3680,
                 28, LocalDate.of(2019, 01, 03), 'M', 762214, null, "0", 0.0, 0.0,
-                null, 96
+                null, 96, 0
         );
-
         List<ReceivingSummaryResponse> responseList = new ArrayList<ReceivingSummaryResponse>() {
             {
                 add(response);
             }
         };
-
         ReceivingResponse successMessage = new ReceivingResponse(true, LocalDateTime.of(2019, 05, 12, 15, 31, 16), responseList);
-
         when(receiveSummaryService.getReceiveSummary(Mockito.any(), Mockito.any(), Mockito.any(),
                 Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
                 Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
                 Mockito.any())).thenReturn(successMessage);
-
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/US/receiving/summary")
                 .param("controlNumber", "984003673")
@@ -236,7 +239,6 @@ public class ReceivingSummaryControllerTest {
                                 "\"departmentNumber\": 96\n" +
                                 "}] " +
                                 "}"
-
                 ))
                 .andReturn();
     }
