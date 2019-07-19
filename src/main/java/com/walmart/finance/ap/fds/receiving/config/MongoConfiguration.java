@@ -20,12 +20,15 @@ public class MongoConfiguration extends AbstractMongoConfiguration {
     @Value("${spring.data.mongodb.database}")
     private String databaseName;
 
+    @Value("${spring.data.mongodb.maxIdleTime}")
+    private String maxIdleTime;
+
 
     @Override
     public MongoClient mongoClient() {
         LOG.debug("country is {} ",System.getenv("COUNTRY_NAME"));
         MongoClientOptions.Builder optionsBuilder = new MongoClientOptions.Builder();
-        optionsBuilder.maxConnectionIdleTime(600000);
+        optionsBuilder.maxConnectionIdleTime(Integer.valueOf(maxIdleTime));
         LOG.debug("mongo uri {}",mongoURI);
         MongoClientURI uri = new MongoClientURI(mongoURI, optionsBuilder);
         return  new MongoClient (uri);
