@@ -23,7 +23,7 @@ public class MongoConfiguration extends AbstractMongoConfiguration {
 
     @Override
     public MongoClient mongoClient() {
-        LOG.debug("domain name is {} and country is {} ", System.getenv("SPRING_DOMAIN_NAME"),System.getenv("COUNTRY_NAME"));
+        LOG.debug("country is {} ",System.getenv("COUNTRY_NAME"));
         MongoClientOptions.Builder optionsBuilder = new MongoClientOptions.Builder();
         optionsBuilder.maxConnectionIdleTime(600000);
         LOG.debug("mongo uri {}",mongoURI);
