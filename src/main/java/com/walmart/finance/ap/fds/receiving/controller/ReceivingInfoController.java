@@ -42,8 +42,8 @@ public class ReceivingInfoController {
             , @RequestParam(value = "receiptDateStart", required = false) String receiptDateStart
             , @RequestParam(value = "receiptDateEnd", required = false) String receiptDateEnd
             , @RequestParam(value = "lineNumberFlag", required = false, defaultValue = "N") String lineNumberFlag) {
-        ReceivingResponse receivingInfoResponses = receivingInfoService.getSevice(countryCode, invoiceId, invoiceNumber, purchaseOrderNumber, purchaseOrderId
+        return receivingInfoService.getSevice(countryCode, invoiceId, invoiceNumber, purchaseOrderNumber, purchaseOrderId
                 , receiptNumbers, transactionType, controlNumber, locationNumber, divisionNumber, vendorNumber, departmentNumber, itemNumbers, upcNumbers, receiptDateStart, receiptDateEnd, lineNumberFlag);
-        return receivingInfoResponses;
     }
+    
 }

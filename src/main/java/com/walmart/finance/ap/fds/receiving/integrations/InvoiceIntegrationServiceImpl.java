@@ -88,7 +88,7 @@ public class InvoiceIntegrationServiceImpl implements InvoiceIntegrationService 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(invoicebaseUrl + paramMap.get(ReceivingConstants.COUNTRYCODE) + invoiceBaseEndpoint);
         paramMap.entrySet()
                 .stream()
-                .filter((t) -> Enums.getIfPresent(InvoiceQueryParameters.class, t.getKey()).isPresent())
+                .filter(t -> Enums.getIfPresent(InvoiceQueryParameters.class, t.getKey()).isPresent())
                 .forEach(y -> builder.queryParam(InvoiceQueryParameters.valueOf(y.getKey()).toString(), y.getValue()));
         return builder.toUriString();
     }

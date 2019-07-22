@@ -1,5 +1,8 @@
 package com.walmart.finance.ap.fds.receiving.service;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingInfoQueryParamName;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
@@ -10,6 +13,7 @@ import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryParameters;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLineParameters;
+import com.walmart.finance.ap.fds.receiving.response.ReceiveMDSResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingInfoLineResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingInfoResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
@@ -60,6 +64,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     FinancialTxnIntegrationService financialTxnIntegrationService;
 
     private ConcurrentMap<String, String> queryParamMap;
+
+    Gson gson = new Gson();
 
     /**
      * @param countryCode
@@ -131,7 +137,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         Query query = new Query();
         CriteriaDefinition criteriaDefinition = null;
         if (StringUtils.isNotEmpty(financialTxnResponseData.getPoReceiveId())) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.PORECEIVEID.getParameterName()).is(financialTxnResponseData.getPoReceiveId());
+            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.RECEIVEID.getParameterName()).is(financialTxnResponseData.getPoReceiveId());
             query.addCriteria(criteriaDefinition);
         }
         if (financialTxnResponseData.getReceivingControlNumber() != 0) {
@@ -142,7 +148,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             criteriaDefinition = Criteria.where(ReceiveSummaryParameters.STORENUMBER.getParameterName()).is(financialTxnResponseData.getStoreNumber());
             query.addCriteria(criteriaDefinition);
         }
-        log.info("Query is " + query);
+        log.info("getQueryForFinancialTxn :: Query is " + query);
         return criteriaDefinition == null ? null : query;
     }
     /*************************** Financial-Txn Logic : END ***************************/
@@ -165,7 +171,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         Query query = new Query();
         CriteriaDefinition criteriaDefinition = null;
         if (CollectionUtils.isNotEmpty(receiptNumbers)) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.PORECEIVEID.getParameterName()).in(receiptNumbers);
+            criteriaDefinition = Criteria.where(ReceiveSummaryParameters.RECEIVEID.getParameterName()).in(receiptNumbers);
             query.addCriteria(criteriaDefinition);
         }
         if (StringUtils.isNotEmpty(queryParamMap.get(ReceivingInfoQueryParamName.CONTROLNUMBER.getQueryParamName()))) {
@@ -198,14 +204,14 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTimeParser();
                 DateTime startDate = dateTimeFormatter.parseDateTime(queryParamMap.get(ReceivingInfoQueryParamName.RECEIPTDATESTART.getQueryParamName()));
                 DateTime endDate = dateTimeFormatter.parseDateTime(queryParamMap.get(ReceivingInfoQueryParamName.RECEIPTDATEEND.getQueryParamName()));
-                criteriaDefinition = Criteria.where(ReceiveSummaryParameters.MDSRECEIVEDATE.getParameterName()).gte(startDate).lte(endDate);
+                criteriaDefinition = Criteria.where(ReceiveSummaryParameters.DATERECEIVED.getParameterName()).gte(startDate).lte(endDate);
                 query.addCriteria(criteriaDefinition);
             } catch (IllegalArgumentException e) {
                 log.error(ExceptionUtils.getStackTrace(e));
                 throw new BadRequestException("Date format is not correct.", "please enter valid query parameters");
             }
         }
-        log.info("Query is " + query);
+        log.info("getSummaryQuery :: Query is " + query);
         return criteriaDefinition == null ? null : query;
     }
     /*************************** Normal-Flow : END ***************************/
@@ -297,8 +303,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             criteriaDefinition = Criteria.where(ReceivingLineParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(receiveSummary.getReceivingControlNumber().trim());
             query.addCriteria(criteriaDefinition);
         }
-        if (StringUtils.isNotEmpty(receiveSummary.getPoReceiveId())) {
-            criteriaDefinition = Criteria.where(ReceivingLineParameters.PORECEIVEID.getParameterName()).is(receiveSummary.getPoReceiveId().trim());
+        if (StringUtils.isNotEmpty(receiveSummary.getReceiveId())) {
+            criteriaDefinition = Criteria.where(ReceivingLineParameters.RECEIVEID.getParameterName()).is(receiveSummary.getReceiveId().trim());
             query.addCriteria(criteriaDefinition);
         }
         if (receiveSummary.getStoreNumber() != null) {
@@ -321,7 +327,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             criteriaDefinition = Criteria.where(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(upcNumbers);
             query.addCriteria(criteriaDefinition);
         }
-        log.info("Query is " + query);
+        log.info("queryForLineResponse :: Query is " + query);
         return executeQueryInLine(criteriaDefinition == null ? null : query);
     }
     /******* receive-line data   *********/
@@ -345,17 +351,17 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     private ReceivingInfoResponse convertsionToReceivingInfo(ReceiveSummary receiveSummary, FinancialTxnResponseData financialTxnResponseData, List<ReceivingLine> lineResponseList, List<FreightResponse> freightResponseList) {
         ReceivingInfoResponse receivingInfoResponse = new ReceivingInfoResponse();
         if (financialTxnResponseData != null) {
-            receivingInfoResponse.setPurchaseOrderId(StringUtils.isNotEmpty(financialTxnResponseData.getPoNumber()) ? financialTxnResponseData.getPoNumber() : receiveSummary.getPurchaseOrderNumber());
-            receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(financialTxnResponseData.getPoReceiveId()) ? Integer.parseInt(financialTxnResponseData.getPoReceiveId()) : StringUtils.isNotEmpty(receiveSummary.getPoReceiveId()) ? Integer.parseInt(receiveSummary.getPoReceiveId()) : 0);
+            receivingInfoResponse.setPurchaseOrderId(StringUtils.isNotEmpty(financialTxnResponseData.getPoNumber()) ? financialTxnResponseData.getPoNumber() : receiveSummary.getReceivingControlNumber());
+            receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(financialTxnResponseData.getPoReceiveId()) ? Long.valueOf(financialTxnResponseData.getPoReceiveId()) : StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ? Integer.parseInt(receiveSummary.getReceiveId()) : 0);
             receivingInfoResponse.setControlNumber(financialTxnResponseData.getReceivingControlNumber() != null ? financialTxnResponseData.getReceivingControlNumber().toString() : receiveSummary.getReceivingControlNumber());
             receivingInfoResponse.setLocationNumber(financialTxnResponseData.getStoreNumber() != null ? financialTxnResponseData.getStoreNumber() : receiveSummary.getStoreNumber());
             receivingInfoResponse.setDivisionNumber(financialTxnResponseData.getBaseDivisionNumber() != null ? financialTxnResponseData.getBaseDivisionNumber() : receiveSummary.getBaseDivisionNumber());
             receivingInfoResponse.setVendorNumber(financialTxnResponseData.getVendorNumber() != null ? financialTxnResponseData.getVendorNumber() : receiveSummary.getVendorNumber());
             receivingInfoResponse.setTotalCostAmount(financialTxnResponseData.getTotalCostAmount() != null ? financialTxnResponseData.getTotalCostAmount() : receiveSummary.getTotalCostAmount());
-            receivingInfoResponse.setDepartmentNumber(financialTxnResponseData.getDepartmentNumber() != null ? financialTxnResponseData.getDepartmentNumber() : receiveSummary.getDepartmentNumber());
+            receivingInfoResponse.setDepartmentNumber(financialTxnResponseData.getDepartmentNumber() != null ? Integer.parseInt(Integer.toString(financialTxnResponseData.getDepartmentNumber()).substring(0, 2)) : receiveSummary.getDepartmentNumber());
         } else {
-            receivingInfoResponse.setPurchaseOrderId(receiveSummary.getPurchaseOrderNumber());
-            receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getPoReceiveId()) ? Integer.parseInt(receiveSummary.getPoReceiveId()) : 0);
+            receivingInfoResponse.setPurchaseOrderId(receiveSummary.getReceivingControlNumber());
+            receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ? Long.valueOf(receiveSummary.getReceiveId()) : 0);
             receivingInfoResponse.setControlNumber(receiveSummary.getReceivingControlNumber());
             receivingInfoResponse.setLocationNumber(receiveSummary.getStoreNumber());
             receivingInfoResponse.setDivisionNumber(receiveSummary.getBaseDivisionNumber());
@@ -370,6 +376,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponse.setTrailerNumber(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getTrailerNbr() : null);
         receivingInfoResponse.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());
         receivingInfoResponse.setLineCount(new Long(lineResponseList.size()));
+        receivingInfoResponse.setControlSequenceNumber(receiveSummary.getControlSequenceNumber());
         if (queryParamMap.get(ReceivingInfoQueryParamName.LINENUMBERFLAG.getQueryParamName()).equalsIgnoreCase("Y")) {
             List<ReceivingInfoLineResponse> lineInfoList = lineResponseList.stream().map((t) -> convertToLineResponse(t)).collect(Collectors.toList());
             receivingInfoResponse.setReceivingInfoLineResponses(lineInfoList);
@@ -379,7 +386,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     private ReceivingInfoLineResponse convertToLineResponse(ReceivingLine receivingLine) {
         ReceivingInfoLineResponse response = new ReceivingInfoLineResponse();
-        response.setReceiptNumber(Integer.valueOf(receivingLine.getPurchaseOrderReceiveID()));
+        response.setReceiptNumber(Long.valueOf(receivingLine.getReceiveId()));
         response.setReceiptLineNumber(receivingLine.getLineNumber() == null ? 0 : receivingLine.getLineNumber());
         response.setItemNumber(receivingLine.getItemNumber());
         response.setVendorNumber(receivingLine.getVendorNumber());
@@ -398,6 +405,18 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         response.setPurchaseOrderNumber(receivingLine.getPurchaseOrderNumber());
         response.setControlNumber(receivingLine.getReceivingControlNumber());
         response.setBottleDepositAmount(10.00);
+        if (StringUtils.isNotEmpty(receivingLine.getMerchandises())) {
+            JsonObject jsonObject = gson.fromJson(receivingLine.getMerchandises(), JsonObject.class);
+            response.setMerchandises(new ArrayList<>());
+            for (Map.Entry<String, JsonElement> jsonElementEntry : jsonObject.entrySet()) {
+                JsonObject innerJsonObject = (JsonObject) jsonElementEntry.getValue();
+                ReceiveMDSResponse receiveMDSResponse = new ReceiveMDSResponse(
+                        innerJsonObject.get("mdseConditionCode").getAsInt(),
+                        innerJsonObject.get("mdseQuantity").getAsInt(),
+                        innerJsonObject.get("mdseQuantityUnitOfMeasureCode").getAsString());
+                response.getMerchandises().add(receiveMDSResponse);
+            }
+        }
         return response;
     }
     /*************************** Conversion Methods ***********************************/

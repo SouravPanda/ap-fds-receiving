@@ -14,7 +14,7 @@ import java.time.LocalTime;
 @Setter
 @ToString
 @NoArgsConstructor
-@Document(collection = "receiving-summary")
+@Document
 public class ReceiveSummary {
     @Id
     private String _id;
@@ -84,7 +84,7 @@ public class ReceiveSummary {
 
 
     // Default value zero(s)
-    private Integer freightBillId;
+//    private Integer freightBillId;
 
     // Default value should be blank
     //To be checked, not present in search or response
@@ -110,7 +110,7 @@ public class ReceiveSummary {
 
     //RECV_TIMESTAMP
     //To be checked, not present in search or response
-    private LocalDateTime initialReceiveTimestamp;
+    private LocalDateTime receiveTimestamp;
 
     //RPR_DATE
     //To be checked, not present in search or response
@@ -143,7 +143,7 @@ public class ReceiveSummary {
     // BASE_DIV_NBR + RPR_DATE(month) + RPR_SEQ_NBR
     @NotEmpty
     //To be checked
-    private String poReceiveId;//  receiptNumber //Long
+    private String receiveId;//  receiptNumber //Long
 
 
 
@@ -166,13 +166,15 @@ public class ReceiveSummary {
 //To be checked, not present in search or response
     private String writeIndicator;
 
+    private Long purchaseOrderId ;
+
 
     @Override
     public String toString() {
         return "ReceiveSummary{" +
                 "receivingControlNumber=" + receivingControlNumber +
                 ", storeNumber=" + storeNumber +
-                ", poReceiveId=" + poReceiveId +
+                ", receiveId=" + receiveId +
                 ", businessStatusCode=" + businessStatusCode +
                 ", _id='" + _id + '\'' +
                 ", transactionType='" + transactionType + '\'' +
@@ -186,13 +188,13 @@ public class ReceiveSummary {
                 ", matchIndicator='" + matchIndicator + '\'' +
                 ", totalCostAmount='" + totalCostAmount + '\'' +
                 ", totalRetailAmount='" + totalRetailAmount + '\'' +
-                ", freightBillId='" + freightBillId + '\'' +
+//                ", freightBillId='" + freightBillId + '\'' +
                 ", freightBillExpandID='" + freightBillExpandID + '\'' +
                 ", claimPendingIndicator='" + claimPendingIndicator + '\'' +
                 ", freeAstrayIndicator='" + freeAstrayIndicator + '\'' +
                 ", freightConslIndicator='" + freightConslIndicator + '\'' +
-                ", initialReceiveTimestamp='" + initialReceiveTimestamp + '\'' +
-                ", MDSReceiveDate='" + dateReceived + '\'' +
+                ", receiveTimestamp='" + receiveTimestamp + '\'' +
+                ", dateReceived ='" + dateReceived + '\'' +
                 ", receiveProcessDate='" + receiveProcessDate + '\'' +
                 ", receiveWeightQuantity='" + receiveWeightQuantity + '\'' +
                 ", sequenceNumber='" + sequenceNumber + '\'' +
@@ -206,6 +208,7 @@ public class ReceiveSummary {
                 ", purchaseOrderNumber='" + purchaseOrderNumber + '\'' +
                 ", typeIndicator='" + typeIndicator + '\'' +
                 ", writeIndicator='" + writeIndicator + '\'' +
+                ", purchaseOrderId='" + purchaseOrderId + '\'' +
                 '}';
     }
 }

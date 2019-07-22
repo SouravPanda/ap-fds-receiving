@@ -1,13 +1,22 @@
 package com.walmart.finance.ap.fds.receiving.converter;
 
-import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
+import com.walmart.finance.ap.fds.receiving.response.ReceiveMDSResponse;
+import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 @Component
 public class ReceivingLineResponseConverter implements Converter<ReceivingLine, ReceivingLineResponse> {
+
+    Gson gson = new Gson();
 
     @Override
     public ReceivingLineResponse convert(ReceivingLine receivingLine) {
@@ -24,7 +33,7 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
             response.setDivisionNumber(receivingLine.getBaseDivisionNumber());
         }
         response.setEachCostAmount(receivingLine.getCostAmount());
-        response.setReceiptNumber(Integer.valueOf(receivingLine.getPurchaseOrderReceiveID()));
+        response.setReceiptNumber(Long.valueOf(receivingLine.getReceiveId()));
         if(receivingLine.getLineNumber()==null){
             response.setReceiptLineNumber(0) ;
         } else {
@@ -42,8 +51,8 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
 //        response.setBottleDepositAmount(0);
 
         response.setPurchaseOrderNumber(receivingLine.getReceivingControlNumber());
-//        response.setParentReceiptNumber(Integer.valueOf(receivingLine.getPurchaseOrderReceiveID()));
-        response.setPurchaseOrderId(receivingLine.getReceivingControlNumber());
+//        response.setParentReceiptNumber(Integer.valueOf(receivingLine.getReceiveId()));
+        response.setPurchaseOrderId(receivingLine.getPurchaseOrderId()== null ? "0" : receivingLine.getPurchaseOrderId().toString());
         /*if (receivingLine.getUpcNumber() == null) {
             response.setUpc("0");
         } else {
@@ -76,6 +85,18 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
             response.setDivisionNumber(receivingLine.getBaseDivisionNumber());
         }
         response.setBottleDepositAmount(10.0);
+        if(StringUtils.isNotEmpty(receivingLine.getMerchandises())){
+            JsonObject jsonObject = gson.fromJson(receivingLine.getMerchandises(), JsonObject.class);
+            response.setMerchandises(new ArrayList<>());
+            for (Map.Entry<String, JsonElement> jsonElementEntry : jsonObject.entrySet()) {
+                JsonObject innerJsonObject = (JsonObject) jsonElementEntry.getValue();
+                ReceiveMDSResponse receiveMDSResponse = new ReceiveMDSResponse(
+                        innerJsonObject.get("mdseConditionCode").getAsInt(),
+                        innerJsonObject.get("mdseQuantity").getAsInt(),
+                        innerJsonObject.get("mdseQuantityUnitOfMeasureCode").getAsString());
+                response.getMerchandises().add(receiveMDSResponse);
+            }
+        }
         return response;
     }
 }

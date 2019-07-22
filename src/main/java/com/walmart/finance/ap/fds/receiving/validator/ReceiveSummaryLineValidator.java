@@ -32,8 +32,8 @@ public class ReceiveSummaryLineValidator {
             if (receivingSummaryLineRequest.getInventoryMatchStatus().contains(".")) {
                 return false;
             }
-            Integer inv_match_status = Integer.valueOf(receivingSummaryLineRequest.getInventoryMatchStatus());
-            if (inv_match_status >= 0 && inv_match_status <= 9) {
+            Integer invMatchStatus = Integer.valueOf(receivingSummaryLineRequest.getInventoryMatchStatus());
+            if (invMatchStatus >= 0 && invMatchStatus <= 9) {
                 return true;
             }
 

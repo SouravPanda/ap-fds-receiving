@@ -90,5 +90,12 @@ public class ReceiveSummaryLineValidatorTest {
                 1, "9a", meta);
         Assert.assertFalse(receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest));
     }
+
+    @Test
+    public void validateInventoryMatchStatusNumberFormatException() {
+        ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest();
+        receivingSummaryLineRequest.setInventoryMatchStatus("abc");
+        receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest);
+    }
 }
 

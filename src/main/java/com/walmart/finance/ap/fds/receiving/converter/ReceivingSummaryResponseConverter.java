@@ -2,10 +2,9 @@ package com.walmart.finance.ap.fds.receiving.converter;
 
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDate;
 
 @Component
 public class ReceivingSummaryResponseConverter implements Converter<ReceiveSummary, ReceivingSummaryResponse> {
@@ -14,8 +13,8 @@ public class ReceivingSummaryResponseConverter implements Converter<ReceiveSumma
     public ReceivingSummaryResponse convert(ReceiveSummary receiveSummary) {
 
         ReceivingSummaryResponse response = new ReceivingSummaryResponse();
-        response.setPurchaseOrderId(receiveSummary.getReceivingControlNumber());
-        response.setReceiptNumber(Integer.valueOf(receiveSummary.getPoReceiveId()));
+        response.setPurchaseOrderId(receiveSummary.getPurchaseOrderId() == null ? "0" : receiveSummary.getPurchaseOrderId().toString());
+        response.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ? Long.valueOf(receiveSummary.getReceiveId()) : 0);
         response.setTransactionType(receiveSummary.getTransactionType());
         response.setControlNumber(receiveSummary.getReceivingControlNumber());
         response.setLocationNumber(receiveSummary.getStoreNumber());
@@ -32,7 +31,7 @@ public class ReceivingSummaryResponseConverter implements Converter<ReceiveSumma
         response.setTotalCostAmount(receiveSummary.getTotalCostAmount());
         response.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());   //TODO need to add in pipeline code
 
-//        response.setParentReceiptId(Integer.valueOf(receiveSummary.getPoReceiveId()));
+//        response.setParentReceiptId(Integer.valueOf(receiveSummary.getReceiveId()));
 
 //        response.setParentReceiptNumber(receiveSummary.getReceivingControlNumber());
 
@@ -43,6 +42,7 @@ public class ReceivingSummaryResponseConverter implements Converter<ReceiveSumma
 //        response.setParentLocationNumber(receiveSummary.getStoreNumber());
 //        response.setParentDivisionNumber(receiveSummary.getBaseDivisionNumber());
 //        response.setMemo("MEMO");
+        response.setControlSequenceNumber(receiveSummary.getControlSequenceNumber());
         return response;
     }
 }
