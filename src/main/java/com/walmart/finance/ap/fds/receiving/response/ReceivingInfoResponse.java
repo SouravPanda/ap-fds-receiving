@@ -20,7 +20,7 @@ public class ReceivingInfoResponse {
 
     private String purchaseOrderId;
 
-    private Integer receiptNumber;
+    private Long receiptNumber;
 
     private Integer transactionType;
 

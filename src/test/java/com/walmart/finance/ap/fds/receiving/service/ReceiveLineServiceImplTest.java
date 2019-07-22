@@ -52,18 +52,18 @@ public class ReceiveLineServiceImplTest {
                 89, 12, "1122", 99, 8264, 18,
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
-                0, 1.9, "LL", 0, "", null);
+                0, 1.9, "LL", 0, "", null,new Long(0));
         ReceivingLine receivingLineAt = new ReceivingLine("0|0|0|0|0|null|null|12", "6778", 0,
                 0, 0, 0, 0.0, 0.0, "0", 0,
                 0, "0KLL", 0, 0, 0, null, null, 12,
                 LocalDateTime.of(1985, 10, 17, 18, 45, 21), 'A', "BKP", "111",
-                0, LocalDate.now(), 0, 1.9, "LL", 0, "", null);
+                0, LocalDate.now(), 0, 1.9, "LL", 0, "", null,new Long(0));
         listOfContent.add(receivingLine);
         listOfContent.add(receivingLineAt);
-        ReceivingLineResponse receivingLineResponse = new ReceivingLineResponse(0, 0, 0, 0, 0, 2.9,
+        ReceivingLineResponse receivingLineResponse = new ReceivingLineResponse(new Long(0), 0, 0, 0, 0, 2.9,
                 1.9, 0, 0, null, "0",
                 null, null, null, 0, null, 0, 0, 10.0, null);
-        ReceivingLineResponse receivingLineResponseAt = new ReceivingLineResponse(0, 0, 0, 0, 0, 2.9,
+        ReceivingLineResponse receivingLineResponseAt = new ReceivingLineResponse(new Long(0), 0, 0, 0, 0, 2.9,
                 1.9, 0, 0, null, "0",
                 null, null, null, 0, null, 0, 0, 10.0, null);
         List<ReceivingLineResponse> content = new ArrayList<>();

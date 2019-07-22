@@ -34,7 +34,7 @@ public class ProducerTest {
     @Test(expected = Exception.class)
     public void sendReceiveSummary() {
 
-        ReceiveSummary receiveSummary = new ReceiveSummary("abc","2",2,2,2,null,null,2,2,2,2,2,'A',0.0,0.0,'A',2L,'A','A','A',null,null,null,0.0,2,2,2,null,2,"2","A",null,"A",'A',"A");
+        ReceiveSummary receiveSummary = new ReceiveSummary("abc","2",2,2,2,null,null,2,2,2,2,2,'A',0.0,0.0,'A',2L,'A','A','A',null,null,null,0.0,2,2,2,null,2,"2","A",null,"A",'A',"A",new Long(0));
         producer.sendReceiveSummary(receiveSummary,"fds-db-dev.test.receive-summary");
         doThrow(new Exception()).when(producer).sendReceiveSummary(receiveSummary,"fds-db-dev.test.receive-summary");
     }
