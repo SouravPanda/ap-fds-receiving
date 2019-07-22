@@ -1,6 +1,6 @@
 FROM hub.docker.prod.walmart.com/library/openjdk:8
 RUN mkdir certificate
-ADD target/ap-fds-receive-2.1.49-SNAPSHOT.jar  /receive-service.jar
+ADD target/ap-fds-receive-2.1.54-SNAPSHOT.jar  /receive-service.jar
 ADD ./api.wal-mart.com.crt certificate/clientauthentication.crt
 ADD ./api.qa.wal-mart.com.crt certificate/clientauthenticationqa.crt
 
