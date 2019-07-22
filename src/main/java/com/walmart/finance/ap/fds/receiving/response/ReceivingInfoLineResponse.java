@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 @Getter
 public class ReceivingInfoLineResponse {
-    private Integer receiptNumber;
+    private Long receiptNumber;
     private Integer receiptLineNumber;
     private Integer itemNumber;
     private Integer vendorNumber;

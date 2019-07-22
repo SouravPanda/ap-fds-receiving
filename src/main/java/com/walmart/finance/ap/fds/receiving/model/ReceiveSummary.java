@@ -166,6 +166,8 @@ public class ReceiveSummary {
 //To be checked, not present in search or response
     private String writeIndicator;
 
+    private Long purchaseOrderId ;
+
 
     @Override
     public String toString() {
@@ -206,6 +208,7 @@ public class ReceiveSummary {
                 ", purchaseOrderNumber='" + purchaseOrderNumber + '\'' +
                 ", typeIndicator='" + typeIndicator + '\'' +
                 ", writeIndicator='" + writeIndicator + '\'' +
+                ", purchaseOrderId='" + purchaseOrderId + '\'' +
                 '}';
     }
 }

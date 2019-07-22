@@ -48,6 +48,7 @@ public class ReceivingLine   {
     private Integer inventoryMatchStatus;
     private String variableWeightIndicator;
     private String merchandises;
+    private Long purchaseOrderId;
 
     @Override
     public String toString() {
@@ -81,6 +82,8 @@ public class ReceivingLine   {
                 ", receivedQuantityUnitOfMeasureCode='" + receivedQuantityUnitOfMeasureCode + '\'' +
                 ", inventoryMatchStatus='"+inventoryMatchStatus+'\''+
                 ", variableWeightIndicator='"+variableWeightIndicator+'\''+
+                ", purchaseOrderId='"+purchaseOrderId+'\''+
                 '}';
+
     }
 }

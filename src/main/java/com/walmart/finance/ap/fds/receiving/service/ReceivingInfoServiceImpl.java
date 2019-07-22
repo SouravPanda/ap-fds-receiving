@@ -352,7 +352,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         ReceivingInfoResponse receivingInfoResponse = new ReceivingInfoResponse();
         if (financialTxnResponseData != null) {
             receivingInfoResponse.setPurchaseOrderId(StringUtils.isNotEmpty(financialTxnResponseData.getPoNumber()) ? financialTxnResponseData.getPoNumber() : receiveSummary.getReceivingControlNumber());
-            receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(financialTxnResponseData.getPoReceiveId()) ? Integer.parseInt(financialTxnResponseData.getPoReceiveId()) : StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ? Integer.parseInt(receiveSummary.getReceiveId()) : 0);
+            receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(financialTxnResponseData.getPoReceiveId()) ? Long.valueOf(financialTxnResponseData.getPoReceiveId()) : StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ? Integer.parseInt(receiveSummary.getReceiveId()) : 0);
             receivingInfoResponse.setControlNumber(financialTxnResponseData.getReceivingControlNumber() != null ? financialTxnResponseData.getReceivingControlNumber().toString() : receiveSummary.getReceivingControlNumber());
             receivingInfoResponse.setLocationNumber(financialTxnResponseData.getStoreNumber() != null ? financialTxnResponseData.getStoreNumber() : receiveSummary.getStoreNumber());
             receivingInfoResponse.setDivisionNumber(financialTxnResponseData.getBaseDivisionNumber() != null ? financialTxnResponseData.getBaseDivisionNumber() : receiveSummary.getBaseDivisionNumber());
@@ -361,7 +361,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             receivingInfoResponse.setDepartmentNumber(financialTxnResponseData.getDepartmentNumber() != null ? Integer.parseInt(Integer.toString(financialTxnResponseData.getDepartmentNumber()).substring(0, 2)) : receiveSummary.getDepartmentNumber());
         } else {
             receivingInfoResponse.setPurchaseOrderId(receiveSummary.getReceivingControlNumber());
-            receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ? Integer.parseInt(receiveSummary.getReceiveId()) : 0);
+            receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ? Long.valueOf(receiveSummary.getReceiveId()) : 0);
             receivingInfoResponse.setControlNumber(receiveSummary.getReceivingControlNumber());
             receivingInfoResponse.setLocationNumber(receiveSummary.getStoreNumber());
             receivingInfoResponse.setDivisionNumber(receiveSummary.getBaseDivisionNumber());
@@ -386,7 +386,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     private ReceivingInfoLineResponse convertToLineResponse(ReceivingLine receivingLine) {
         ReceivingInfoLineResponse response = new ReceivingInfoLineResponse();
-        response.setReceiptNumber(Integer.valueOf(receivingLine.getReceiveId()));
+        response.setReceiptNumber(Long.valueOf(receivingLine.getReceiveId()));
         response.setReceiptLineNumber(receivingLine.getLineNumber() == null ? 0 : receivingLine.getLineNumber());
         response.setItemNumber(receivingLine.getItemNumber());
         response.setVendorNumber(receivingLine.getVendorNumber());
