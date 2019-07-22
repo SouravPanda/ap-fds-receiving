@@ -621,16 +621,16 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
             //TODO code needs to optimized remove the DB calls in loop
             List<ReceivingLine> receivingLineList = mongoTemplate.find(dynamicQuery, ReceivingLine.class, lineCollection);
 
+            List<ReceivingLine> receivingLines =new ArrayList<>();
+
             for (ReceivingLine receivingLine : receivingLineList) {
                 receivingLine.setInventoryMatchStatus(Integer.parseInt(receivingSummaryLineRequest.getInventoryMatchStatus()));
-                commitedRcvLine = mongoTemplate.save(receivingLine, lineCollection);
+                receivingLines.add(receivingLine);
 
-                if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
-                    summaryLineList.add(commitedRcvLine);
-                }
             }
+            List<ReceivingLine> commitedReceivingLines=mongoTemplate.save(receivingLines, lineCollection);
+            summaryLineList.addAll(commitedReceivingLines);
             publisher.publishEvent(summaryLineList);
-
 
         } else {
             String lineId;
