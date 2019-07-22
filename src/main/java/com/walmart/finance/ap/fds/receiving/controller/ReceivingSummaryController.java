@@ -13,10 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import java.util.List;
-
 
 @RestController
 @RequestMapping(value = "{countryCode}/receiving/summary")
@@ -55,7 +53,6 @@ public class ReceivingSummaryController {
                                                @RequestParam(value = "receiptDateEnd", required = false) String receiptDateEnd,
                                                @RequestParam(value = "itemNumbers", required = false) List<String> itemNumbers,
                                                @RequestParam(value = "upcNumbers", required = false) List<String> upcNumbers) {
-
         return receiveSummaryService.getReceiveSummary(countryCode, purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
                 divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd, itemNumbers, upcNumbers);//allRequestParam); , pageNbr, pageSize, orderBy, order
     }
@@ -71,9 +68,8 @@ public class ReceivingSummaryController {
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
     public ResponseEntity<ReceivingResponse> updateSummary(@PathVariable("countryCode") String countryCode, @RequestBody @Valid ReceivingSummaryRequest receivingSummaryRequest) {
         ReceivingResponse receivingResponse = receiveSummaryService.updateReceiveSummary(receivingSummaryRequest, countryCode);
-        return new ResponseEntity<ReceivingResponse>(receivingResponse, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(receivingResponse, HttpStatus.ACCEPTED);
     }
-
 
     /**
      * Method calls Service class to add stores in Db
@@ -86,8 +82,7 @@ public class ReceivingSummaryController {
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
     public ResponseEntity<ReceivingResponse> updateSummaryAndLine(@PathVariable("countryCode") String countryCode, @RequestBody @Valid ReceivingSummaryLineRequest receiveSummaryLineRequest) {
         ReceivingResponse receivingResponse = receiveSummaryService.updateReceiveSummaryAndLine(receiveSummaryLineRequest, countryCode);
-        return new ResponseEntity<ReceivingResponse>(receivingResponse, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(receivingResponse, HttpStatus.ACCEPTED);
     }
-
 }
 

@@ -20,7 +20,7 @@ public class ReceivingInfoResponse {
 
     private String purchaseOrderId;
 
-    private Integer receiptNumber;
+    private Long receiptNumber;
 
     private Integer transactionType;
 
@@ -47,6 +47,8 @@ public class ReceivingInfoResponse {
     private Long lineCount;
 
     private Integer departmentNumber;
+
+    private Integer controlSequenceNumber;
 
     @JsonProperty("receivingLine")
     List<ReceivingInfoLineResponse> receivingInfoLineResponses;

@@ -5,12 +5,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @ToString
 public class ReceivingLineResponse {
-    private Integer receiptNumber;
+    private Long receiptNumber;
     private Integer receiptLineNumber;
     private Integer itemNumber;
     private Integer vendorNumber;
@@ -35,5 +37,5 @@ public class ReceivingLineResponse {
     private Integer locationNumber;
     private Integer divisionNumber;
     private Double bottleDepositAmount;
-
+    private List<ReceiveMDSResponse> merchandises;
 }

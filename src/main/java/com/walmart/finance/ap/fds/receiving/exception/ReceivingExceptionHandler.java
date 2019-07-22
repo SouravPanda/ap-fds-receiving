@@ -97,11 +97,8 @@ public class ReceivingExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({BadRequestException.class})
     public ResponseEntity<Object> BadRequestExceptionHandler(
             Exception ex, BadRequestException e, WebRequest request) {
-        List<String> details = new ArrayList<String>() {
-            {
-                add(ex.getMessage() + " " + e.getErrorMessage());
-            }
-        };
+        List<String> details = new ArrayList<>();
+        details.add(ex.getMessage() + " " + e.getErrorMessage());
         ErrorDetails errorDetails = new ErrorDetails(105, ex.getMessage(), details);
         return new ResponseEntity<>(
                 new ReceivingError(false, LocalDateTime.now(), errorDetails), new HttpHeaders(), HttpStatus.BAD_REQUEST);

@@ -46,8 +46,8 @@ public class ReceivingLineControllerTest {
     public void getReceiveLine() throws Exception {
 
 
-        ReceivingLineResponse response = new ReceivingLineResponse(999997, 0, null, 366404, 2000, 0.0, 0.0, 1, 0, null, "553683865", "lbs", " ",
-                " ", 99, null, 6565, 0, 10.0);
+        ReceivingLineResponse response = new ReceivingLineResponse(new Long(999997), 0, null, 366404, 2000, 0.0, 0.0, 1, 0, null, "553683865", "lbs", " ",
+                " ", 99, null, 6565, 0, 10.0,null);
 
         List<ReceivingLineResponse> responseList = new ArrayList<ReceivingLineResponse>() {
             {
