@@ -12,6 +12,9 @@ import org.mockito.Spy;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.mockito.Mockito.doThrow;
 
 
@@ -41,11 +44,13 @@ public class ProducerTest {
 
     @Test(expected = Exception.class)
     public void sendReceiveLine() {
+        List receivingLineList = new ArrayList();
         ReceivingLine receiveLine = new ReceivingLine();
         receiveLine.setPurchasedOrderId(345);
         receiveLine.setBaseDivisionNumber(34);
         receiveLine.set_id("3243434|998945|48545");
-        producer.sendReceiveLine(receiveLine,"fds-db-dev.test.receive-summary");
-        doThrow(new Exception()).when(producer).sendReceiveLine(receiveLine,"fds-db-dev.test.receive-summary");
+        receivingLineList.add(receiveLine);
+        producer.sendReceiveLine(receivingLineList,"fds-db-dev.test.receive-summary");
+        doThrow(new Exception()).when(producer).sendReceiveLine(receivingLineList,"fds-db-dev.test.receive-summary");
     }
 }

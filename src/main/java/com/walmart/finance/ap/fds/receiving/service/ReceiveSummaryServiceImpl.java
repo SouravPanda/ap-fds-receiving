@@ -573,7 +573,7 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
         ReceiveSummary commitedRcvSummary;
         String id;
         List<ReceivingSummaryLineRequest> responseList = new ArrayList<>();
-
+        List summaryLineList = new ArrayList();
         log.info("unitofWorkid:" + receivingSummaryLineRequest.getMeta().getUnitofWorkid());
 
         if (!receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)) {
@@ -602,7 +602,7 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
             commitedRcvSummary = mongoTemplate.save(receiveSummary, summaryCollection);
 
             if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
-                publisher.publishEvent(commitedRcvSummary);
+                summaryLineList.add(commitedRcvSummary);
             }
 
             if (receivingSummaryLineRequest.getControlNumber() != null) {
@@ -620,25 +620,19 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
 
             //TODO code needs to optimized remove the DB calls in loop
             List<ReceivingLine> receivingLineList = mongoTemplate.find(dynamicQuery, ReceivingLine.class, lineCollection);
+
             for (ReceivingLine receivingLine : receivingLineList) {
                 receivingLine.setInventoryMatchStatus(Integer.parseInt(receivingSummaryLineRequest.getInventoryMatchStatus()));
                 commitedRcvLine = mongoTemplate.save(receivingLine, lineCollection);
 
                 if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
-                    publisher.publishEvent(commitedRcvLine);
+                    summaryLineList.add(commitedRcvLine);
                 }
             }
+            publisher.publishEvent(summaryLineList);
 
 
         } else {
-
-            if (!receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)) {
-                throw new InvalidValueException("Value of field  businessStatusCode passed is not valid", "it should be one among A,C,D,I,M,X,Z");
-            }
-
-            if (!receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest)) {
-                throw new InvalidValueException("Invalid value, inventoryMatchStatus", "it should be in range 0-9");
-            }
             String lineId;
             String summaryId;
             if (isWareHouseData == false) {
@@ -662,7 +656,7 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
             commitedRcvSummary = mongoTemplate.save(receiveSummary, summaryCollection);
 
             if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
-                publisher.publishEvent(commitedRcvSummary);
+                summaryLineList.add(commitedRcvSummary);
             }
             receiveLine = mongoTemplate.findById(lineId, ReceivingLine.class, lineCollection);
 
@@ -672,9 +666,10 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
             receiveLine.setInventoryMatchStatus(Integer.parseInt(receivingSummaryLineRequest.getInventoryMatchStatus()));
             commitedRcvLine = mongoTemplate.save(receiveLine, lineCollection);
             if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
-                publisher.publishEvent(commitedRcvLine);
+                summaryLineList.add(commitedRcvLine);
             }
 
+            publisher.publishEvent(summaryLineList);
         }
         responseList.add(receivingSummaryLineRequest);
         ReceivingResponse successMessage = new ReceivingResponse();
