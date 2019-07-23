@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
-public enum ReceiveSummaryParameters {
+public enum ReceiveSummaryCosmosDBParameters {
 
     ID("_id"),
     RECEIVINGCONTROLNUMBER("receivingControlNumber"),
@@ -27,7 +27,7 @@ public enum ReceiveSummaryParameters {
     FREEASTRAYINDICATOR("freeAstrayIndicator"),
     FREIGHTCONSLINDICATOR("freightConslIndicator"),
     RECEIVETIMESTAMP("receiveTimestamp"),
-    DATERECEIVED("dateReceived"),
+    RECEIVINGDATE("receivingDate"),
     RECEIVEPROCESSDATE("receiveProcessDate"),
     RECEIVEWEIGHTQUANTITY("receiveWeightQuantity"),
     SEQUENCENUMBER("sequenceNumber"),

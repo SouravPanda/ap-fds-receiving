@@ -5,5 +5,5 @@ import java.util.Map;
 
 public interface FinancialTxnIntegrationService {
 
-    List<FinancialTxnResponseData> getFinancialTxnDetails(Map<String, String> queryParamMap);
+    List<FinancialTxnResponseData> getFinancialTxnDetails(Map<String, String> allRequestParams);
 }
