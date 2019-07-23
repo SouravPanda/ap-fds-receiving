@@ -52,12 +52,12 @@ public class ReceiveLineServiceImplTest {
                 89, 12, "1122", 99, 8264, 18,
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
-                0, 1.9, "LL", 0, "", null,new Long(0));
+                0, 1.9, "LL", 0, "", null,null,null,null,null,null,null);
         ReceivingLine receivingLineAt = new ReceivingLine("0|0|0|0|0|null|null|12", "6778", 0,
                 0, 0, 0, 0.0, 0.0, "0", 0,
                 0, "0KLL", 0, 0, 0, null, null, 12,
                 LocalDateTime.of(1985, 10, 17, 18, 45, 21), 'A', "BKP", "111",
-                0, LocalDate.now(), 0, 1.9, "LL", 0, "", null,new Long(0));
+                0, LocalDate.now(), 0, 1.9, "LL", 0, "", null, null, null, null, null, null, null);
         listOfContent.add(receivingLine);
         listOfContent.add(receivingLineAt);
         ReceivingLineResponse receivingLineResponse = new ReceivingLineResponse(new Long(0), 0, 0, 0, 0, 2.9,
@@ -79,6 +79,7 @@ public class ReceiveLineServiceImplTest {
         when(receivingLineResponseConverter.convert(Mockito.any(ReceivingLine.class))).thenReturn(receivingLineResponse);
         Assert.assertEquals(receiveLineServiceImpl.getLineSummary("78887", "1", "1", "777", "87", "88").getData(), successMessage.getData());
     }
+
 
     @Test(expected = BadRequestException.class)
     public void getLineSummaryNumberFormatException() {
