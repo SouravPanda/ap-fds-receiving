@@ -69,14 +69,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     @Override
     public ReceivingResponse getInfoSeviceData(Map<String, String> allRequestParams) {
         List<ReceivingInfoResponse> receivingInfoResponses;
-        try {
             // First Fin Txn + Cosmos
             List<FinancialTxnResponseData> financialTxnResponseDataList = financialTxnIntegrationService.getFinancialTxnDetails(allRequestParams);
             receivingInfoResponses = getDataForFinancialTxn(financialTxnResponseDataList, allRequestParams);
-        } catch (NumberFormatException e) {
-            log.error(ExceptionUtils.getStackTrace(e));
-            throw new BadRequestException("Data Type is invalid for input values.", "Please enter valid query parameters");
-        }
         if (CollectionUtils.isEmpty(receivingInfoResponses)) {
             throw new NotFoundException("Receiving data not found for given search criteria.", "please enter valid query parameters");
         }
