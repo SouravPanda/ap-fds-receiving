@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
@@ -67,16 +68,16 @@ import java.util.concurrent.TimeUnit;
          */
 
         @Async
-        public void sendReceiveLine(ReceivingLine recvLine, String topic) {
+        public void sendReceiveLine(List recvLineSummary, String topic) {
 
 
             try {
                 ObjectMapper obj= new ObjectMapper();
-                String writeToTopic=obj.writeValueAsString(recvLine);
+                String writeToTopic=obj.writeValueAsString(recvLineSummary);
                 SendResult<String, String> result = this.kafkaTemplate.send(topic, writeToTopic).get(10, TimeUnit.SECONDS);
                 log.info("Successfully produced" + writeToTopic + "RESULT DETAILS: DESTINATION EVENT HUB TOPIC" + result.getRecordMetadata().topic() + "DESTINATION EVENT HUB OFFSET" + result.getRecordMetadata().offset() + "RESULT PARTITION" + result.getRecordMetadata().partition());
             } catch (Exception e) {
-                log.error("Error Processing the details from producer side :" + e.getMessage() + e.fillInStackTrace() + e.getStackTrace() + "Value" + recvLine.toString());
+                log.error("Error Processing the details from producer side :" + e.getMessage() + e.fillInStackTrace() + e.getStackTrace() + "Value" + recvLineSummary.toString());
             }
 
 

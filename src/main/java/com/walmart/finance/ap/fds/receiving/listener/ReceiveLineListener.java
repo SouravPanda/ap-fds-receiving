@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import java.util.List;
+
 @Component
 public class ReceiveLineListener {
 
@@ -15,7 +17,7 @@ public class ReceiveLineListener {
     private Producer producer;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void onReceiveLineCommit(ReceivingLine event)
+    public void onReceiveLineCommit(List event)
     {
 
         producer.sendReceiveLine(event, ReceivingConstants.RECEIVELINEWAREHOUSE);
