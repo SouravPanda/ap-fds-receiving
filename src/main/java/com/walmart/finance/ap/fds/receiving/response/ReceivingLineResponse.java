@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @ToString
 public class ReceivingLineResponse {
-    private Integer receiptNumber;
+    private Long receiptNumber;
     private Integer receiptLineNumber;
     private Integer itemNumber;
     private Integer vendorNumber;

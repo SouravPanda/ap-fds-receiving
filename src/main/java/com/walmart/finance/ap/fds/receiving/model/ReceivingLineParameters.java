@@ -8,17 +8,17 @@ public enum ReceivingLineParameters {
 
     ID("_id"),
     RECEIVINGCONTROLNUMBER("receivingControlNumber"),
-    RECEIVEID("receiveId")  ,
+    RECEIVEID("receiveId"),
     STORENUMBER("storeNumber"),
     BASEDIVISIONNUMBER("baseDivisionNumber"),
     TRANSACTIONTYPE("transactionType"),
     FINALDATE("finalDate"),
     FINALTIME("finalTime"),
     ITEMNUMBER("itemNumber"),
-    UPCNUMBER("upcNumber")
-    ;
+    UPCNUMBER("upcNumber"),
+    PURCHASEORDERID("purchaseOrderId"),
+    SUMMARYREFERENCE("summaryReference");
 
     @Getter
     private String parameterName;
-
 }

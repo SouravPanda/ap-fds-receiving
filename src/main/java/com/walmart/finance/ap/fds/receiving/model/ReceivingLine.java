@@ -48,6 +48,12 @@ public class ReceivingLine   {
     private Integer inventoryMatchStatus;
     private String variableWeightIndicator;
     private String merchandises;
+    private Integer lineSequenceNumber;
+    private String bottleDepositFlag;
+    private String itemDescription;
+    private Integer costMultiple;
+    private Integer purchaseOrderId;
+    private String summaryReference;
 
     @Override
     public String toString() {
@@ -81,6 +87,13 @@ public class ReceivingLine   {
                 ", receivedQuantityUnitOfMeasureCode='" + receivedQuantityUnitOfMeasureCode + '\'' +
                 ", inventoryMatchStatus='"+inventoryMatchStatus+'\''+
                 ", variableWeightIndicator='"+variableWeightIndicator+'\''+
+                ", lineSequenceNumber='"+lineSequenceNumber+'\''+
+                ", bottleDepositFlag='"+bottleDepositFlag+'\''+
+                ", itemDescription='"+itemDescription+'\''+
+                ", costMultiple='"+costMultiple+'\''+
+                ", purchaseOrderId='"+purchaseOrderId+'\''+
+                ", summaryReference='"+summaryReference+'\''+
                 '}';
+
     }
 }

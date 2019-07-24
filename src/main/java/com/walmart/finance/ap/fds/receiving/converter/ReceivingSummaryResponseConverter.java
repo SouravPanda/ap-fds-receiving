@@ -13,13 +13,13 @@ public class ReceivingSummaryResponseConverter implements Converter<ReceiveSumma
     public ReceivingSummaryResponse convert(ReceiveSummary receiveSummary) {
 
         ReceivingSummaryResponse response = new ReceivingSummaryResponse();
-        response.setPurchaseOrderId(receiveSummary.getReceivingControlNumber());
-        response.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ? Integer.valueOf(receiveSummary.getReceiveId()) : 0);
+        response.setPurchaseOrderId(receiveSummary.getPurchaseOrderId() == null ? "0" : receiveSummary.getPurchaseOrderId().toString());
+        response.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ? Long.valueOf(receiveSummary.getReceiveId()) : 0);
         response.setTransactionType(receiveSummary.getTransactionType());
         response.setControlNumber(receiveSummary.getReceivingControlNumber());
         response.setLocationNumber(receiveSummary.getStoreNumber());
         response.setDivisionNumber(receiveSummary.getBaseDivisionNumber());
-        response.setReceiptDate(receiveSummary.getDateReceived()); // TODO will change once  Receipt_Date is available : changed to MDSReceivedate
+        response.setReceiptDate(receiveSummary.getReceivingDate()); // TODO will change once  Receipt_Date is available : changed to MDSReceivedate
         response.setReceiptStatus(receiveSummary.getBusinessStatusCode()); //   TODO will change once  TOTAL_MATCH_IND is available
         response.setVendorNumber(receiveSummary.getVendorNumber());
 //        response.setCarrierCode("CRCode");

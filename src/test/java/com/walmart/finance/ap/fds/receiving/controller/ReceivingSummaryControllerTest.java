@@ -198,7 +198,7 @@ public class ReceivingSummaryControllerTest {
 
     @Test
     public void getReceiveSummary() throws Exception {
-        ReceivingSummaryResponse response = new ReceivingSummaryResponse("984003673", 10022, 0, "984003673", 3680,
+        ReceivingSummaryResponse response = new ReceivingSummaryResponse("984003673", new Long(10022), 0, "984003673", 3680,
                 28, LocalDate.of(2019, 01, 03), 'M', 762214, null, "0", 0.0, 0.0,
                 null, 96, 0
         );
