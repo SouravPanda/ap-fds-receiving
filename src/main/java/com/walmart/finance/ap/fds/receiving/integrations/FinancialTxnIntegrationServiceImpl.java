@@ -118,8 +118,8 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
         allRequestParamsClone.entrySet()
                 .stream()
-                .filter(t -> Enums.getIfPresent(FinancialTxnRequestQueryParameters.class, t.getKey()).isPresent())
-                .forEach(y -> builder.queryParam(FinancialTxnRequestQueryParameters.valueOf(y.getKey()).toString(), y.getValue()));
+                .filter(t -> Enums.getIfPresent(FinancialTxnRequestQueryParameters.class, t.getKey().toUpperCase()).isPresent())
+                .forEach(y -> builder.queryParam(FinancialTxnRequestQueryParameters.valueOf(y.getKey().toUpperCase()).getFinTxnRequestQueryParam(), y.getValue()));
         return builder.toUriString();
     }
 }
