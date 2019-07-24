@@ -634,12 +634,12 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
             String lineId;
             for (ReceivingLine receivingLine : receivingLineList) {
                 lineId = receivingLine.get_id();
-                query = new Query();
+                Query queryForLine = new Query();
                 update = new Update();
-                query.addCriteria(Criteria.where("storeNumber").is(receivingSummaryLineRequest.getLocationNumber()));
-                query.addCriteria(Criteria.where("_id").is(lineId));
+                queryForLine.addCriteria(Criteria.where("storeNumber").is(receivingSummaryLineRequest.getLocationNumber()));
+                queryForLine.addCriteria(Criteria.where("_id").is(lineId));
                 update.set("inventoryMatchStatus",Integer.parseInt(receivingSummaryLineRequest.getInventoryMatchStatus()));
-                commitedRcvLine = mongoTemplate.findAndModify(query,update,ReceivingLine.class,lineCollection);
+                commitedRcvLine = mongoTemplate.findAndModify(queryForLine,update,ReceivingLine.class,lineCollection);
                 if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
                     summaryLineList.add(commitedRcvLine);
                 }
