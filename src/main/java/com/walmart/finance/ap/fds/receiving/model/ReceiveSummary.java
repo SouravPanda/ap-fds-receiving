@@ -72,7 +72,7 @@ public class ReceiveSummary {
 
     // TOTAL_MATCH_IND
     @NotEmpty
-    private char matchIndicator;
+    private String matchIndicator;
 
 
     // TOTAL_COST_AMT
@@ -115,7 +115,7 @@ public class ReceiveSummary {
     //RPR_DATE
     //To be checked, not present in search or response
     //private LocalDate MDSReceiveDate;
-    private LocalDate dateReceived;
+    private LocalDate receivingDate;
 
     //To be checked, not present in search or response
     private LocalDate receiveProcessDate;
@@ -166,8 +166,9 @@ public class ReceiveSummary {
 //To be checked, not present in search or response
     private String writeIndicator;
 
-    private Long purchaseOrderId ;
+    private Double bottleDepositAmount;
 
+    private Integer purchaseOrderId ;
 
     @Override
     public String toString() {
@@ -194,7 +195,7 @@ public class ReceiveSummary {
                 ", freeAstrayIndicator='" + freeAstrayIndicator + '\'' +
                 ", freightConslIndicator='" + freightConslIndicator + '\'' +
                 ", receiveTimestamp='" + receiveTimestamp + '\'' +
-                ", dateReceived ='" + dateReceived + '\'' +
+                ", receivingDate ='" + receivingDate + '\'' +
                 ", receiveProcessDate='" + receiveProcessDate + '\'' +
                 ", receiveWeightQuantity='" + receiveWeightQuantity + '\'' +
                 ", sequenceNumber='" + sequenceNumber + '\'' +
@@ -208,6 +209,7 @@ public class ReceiveSummary {
                 ", purchaseOrderNumber='" + purchaseOrderNumber + '\'' +
                 ", typeIndicator='" + typeIndicator + '\'' +
                 ", writeIndicator='" + writeIndicator + '\'' +
+                ", bottleDepositAmount='" + bottleDepositAmount + '\'' +
                 ", purchaseOrderId='" + purchaseOrderId + '\'' +
                 '}';
     }

@@ -1,8 +1,9 @@
 package com.walmart.finance.ap.fds.receiving.integrations;
 
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
-import com.walmart.finance.ap.fds.receiving.common.ReceivingInfoQueryParamName;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
+import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestCombinations;
+import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -13,12 +14,13 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.Mockito.when;
 
 public class FinancialTxnIntegrationServiceImplTest {
@@ -34,17 +36,22 @@ public class FinancialTxnIntegrationServiceImplTest {
         MockitoAnnotations.initMocks(this);
         financialTxnIntegrationService.setClientId("2c47c821-72b9-48cb-89b0-ea97d8fbb250");
         financialTxnIntegrationService.setConsumerId("lJ3hR4wL3nI7wH2qI4vI5cS2lF2bU3kH4dR4kI8yX0oL5jC2wW");
-        financialTxnIntegrationService.setFinancialTxnBaseEndpoint("/invoice/financial/transaction/invoiceId/");
+        financialTxnIntegrationService.setFinancialTxnBaseEndpoint("/invoice/financial/transaction/");
         financialTxnIntegrationService.setFinancialTxnBaseUrl("https://api.dev.wal-mart.com/bofap/dev/bofap/");
     }
 
     @Test
     public void getFinancialTxnDetails() {
-        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302, 2222, 0, 9.0, 0, "99987");
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
+                2222, 0, 9.0, 0, "99987",
+                "USER", null, "VendorName",
+                "1234", 1828926897, "1828926897", "Memo", 1223,
+                null, "164680544", null);
         Map<String, String> queryParamMap = new HashMap<String, String>() {
             {
-                put(ReceivingInfoQueryParamName.COUNTRYCODE.getQueryParamName(), "US");
-                put(ReceivingInfoQueryParamName.INVOICEID.getQueryParamName(), "639050495");
+                put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "US");
+                put(ReceivingInfoRequestQueryParameters.INVOICEID.getQueryParam(), "639050495");
+                put("scenario", ReceivingInfoRequestCombinations.INVOICEID.name());
             }
         };
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
@@ -62,16 +69,23 @@ public class FinancialTxnIntegrationServiceImplTest {
 
     @Test(expected = NotFoundException.class)
     public void getFinancialTxnDetailsNotFoundException() {
-        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302, 2222, 0, 9.0, 0, "99987");
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
+                2222, 0, 9.0, 0, "99987"
+                , "USER",null, "VendorName", "1234",
+                1828926897, "1828926897", "Memo", 1223, null,
+                "164680544", null);
         Map<String, String> queryParamMap = new HashMap<String, String>() {
             {
-                put(ReceivingInfoQueryParamName.COUNTRYCODE.getQueryParamName(), "US");
-                put(ReceivingInfoQueryParamName.INVOICEID.getQueryParamName(), "639050495");
+                put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "2222");
+                put(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam(), "639050495");
+                put(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam(), "99987");
+                put(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam(), "1828926897");
+                put("scenario", ReceivingInfoRequestCombinations.INVOICEID.name());
             }
         };
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
-        String url = "https://api.dev.wal-mart.com/bofap/dev/bofap/US/invoice/financial/transaction/invoiceId/639050495";
+        String url = "https://api.dev.wal-mart.com/bofap/dev/bofap/US/invoice/financial/transaction/vendorNumber/2222/poNumber/99987/invoiceNumber/1828926897";
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
         requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
@@ -83,16 +97,23 @@ public class FinancialTxnIntegrationServiceImplTest {
 
     @Test(expected = NotFoundException.class)
     public void getFinancialTxnDetailsResponseNullCheck() {
-        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302, 2222, 0, 9.0, 0, "99987");
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
+                2222, 0, 9.0, 0, "99987", "USER",
+                null, "VendorName", "1234", 1828926897,
+                "1828926897", "Memo", 1223, null, "164680544", null);
         Map<String, String> queryParamMap = new HashMap<String, String>() {
             {
-                put(ReceivingInfoQueryParamName.COUNTRYCODE.getQueryParamName(), "US");
-                put(ReceivingInfoQueryParamName.INVOICEID.getQueryParamName(), "639050495");
+                put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "US");
+                put(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam(), "639050495");
+                put(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam(), "99987");
+                put(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam(), "6302");
+                put(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam(), "1828926897");
+                put("scenario", ReceivingInfoRequestCombinations.INVOICEID.name());
             }
         };
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
-        String url = "https://api.dev.wal-mart.com/bofap/dev/bofap/US/invoice/financial/transaction/invoiceId/639050495";
+        String url = "https://api.dev.wal-mart.com/bofap/dev/bofap/US/invoice/financial/transaction/vendorNumber/2222/poNumber/99987/storeNumber/6302?invoiceNumber=1828926897";
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
         requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
