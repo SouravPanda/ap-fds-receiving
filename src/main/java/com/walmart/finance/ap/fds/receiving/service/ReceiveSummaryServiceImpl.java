@@ -1,5 +1,6 @@
 package com.walmart.finance.ap.fds.receiving.service;
 
+
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryReqConverter;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
@@ -31,6 +32,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -550,13 +552,16 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
         } else {
             id = formulateId(receivingSummaryRequest.getControlNumber(), receivingSummaryRequest.getReceiptNumber(), receivingSummaryRequest.getLocationNumber().toString(), "0");
         }
-
-        receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, summaryCollection);
-        if (receiveSummary == null) {
+        Query dynamicQuery = new Query();
+        dynamicQuery.addCriteria(Criteria.where("_id").is(id));
+        dynamicQuery.addCriteria(Criteria.where("storeNumber").is(receivingSummaryRequest.getLocationNumber()));
+        Update update = new Update();
+        update.set("businessStatusCode",receivingSummaryRequest.getBusinessStatusCode().charAt(0));
+        ReceiveSummary commitedRcvSummary = mongoTemplate.findAndModify(dynamicQuery,update,ReceiveSummary.class,summaryCollection);
+        if (commitedRcvSummary == null) {
             throw new ContentNotFoundException("Receive summary not found for the given id", "please enter a valid id");
         }
-        receiveSummary.setBusinessStatusCode(receivingSummaryRequest.getBusinessStatusCode().charAt(0));
-        ReceiveSummary commitedRcvSummary = mongoTemplate.save(receiveSummary, summaryCollection);
+
         if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
             publisher.publishEvent(commitedRcvSummary);
         }
@@ -574,7 +579,6 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
         Boolean isWareHouseData = isWareHouseData(receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getInvProcAreaCode(), receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getReplnTypCd(),
                 receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getLocationCountryCd());
         Query dynamicQuery = new Query();
-        ReceivingLine receiveLine;
         ReceivingLine commitedRcvLine;
         ReceiveSummary commitedRcvSummary;
         String id;
@@ -597,15 +601,16 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
                 id = formulateId(receivingSummaryLineRequest.getControlNumber(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), "0");
             }
 
-            ReceiveSummary receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, summaryCollection);
-
-            if (receiveSummary == null) {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("_id").is(id));
+            query.addCriteria(Criteria.where("storeNumber").is(receivingSummaryLineRequest.getLocationNumber()));
+            Update update = new Update();
+            update.set("businessStatusCode",receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
+            commitedRcvSummary = mongoTemplate.findAndModify(query,update,ReceiveSummary.class,summaryCollection);
+            if (commitedRcvSummary == null) {
                 throw new ContentNotFoundException("Receive summary not found for the given id", "please enter a valid id");
             }
 
-            receiveSummary.setBusinessStatusCode(receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
-
-            commitedRcvSummary = mongoTemplate.save(receiveSummary, summaryCollection);
 
             if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
                 summaryLineList.add(commitedRcvSummary);
@@ -626,16 +631,19 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
 
             //TODO code needs to optimized remove the DB calls in loop
             List<ReceivingLine> receivingLineList = mongoTemplate.find(dynamicQuery, ReceivingLine.class, lineCollection);
-
-            List<ReceivingLine> receivingLines =new ArrayList<>();
-
+            String lineId;
             for (ReceivingLine receivingLine : receivingLineList) {
-                receivingLine.setInventoryMatchStatus(Integer.parseInt(receivingSummaryLineRequest.getInventoryMatchStatus()));
-                receivingLines.add(receivingLine);
-
+                lineId = receivingLine.get_id();
+                query = new Query();
+                update = new Update();
+                query.addCriteria(Criteria.where("storeNumber").is(receivingSummaryLineRequest.getLocationNumber()));
+                query.addCriteria(Criteria.where("_id").is(lineId));
+                update.set("inventoryMatchStatus",Integer.parseInt(receivingSummaryLineRequest.getInventoryMatchStatus()));
+                commitedRcvLine = mongoTemplate.findAndModify(query,update,ReceivingLine.class,lineCollection);
+                if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
+                    summaryLineList.add(commitedRcvLine);
+                }
             }
-            List<ReceivingLine> commitedReceivingLines=mongoTemplate.save(receivingLines, lineCollection);
-            summaryLineList.addAll(commitedReceivingLines);
             publisher.publishEvent(summaryLineList);
 
         } else {
@@ -651,26 +659,28 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
                         "0", receivingSummaryLineRequest.getLineSequenceNumber().toString());
             }
 
-            ReceiveSummary receiveSummary = mongoTemplate.findById(summaryId, ReceiveSummary.class, summaryCollection);
-
-            if (receiveSummary == null) {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("_id").is(summaryId));
+            query.addCriteria(Criteria.where("storeNumber").is(receivingSummaryLineRequest.getLocationNumber()));
+            Update update = new Update();
+            update.set("businessStatusCode",receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
+            commitedRcvSummary = mongoTemplate.findAndModify(query,update,ReceiveSummary.class,summaryCollection);
+            if (commitedRcvSummary == null) {
                 throw new ContentNotFoundException("Receive summary not found for the given id", "please enter a valid id");
             }
-
-            receiveSummary.setBusinessStatusCode(receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
-
-            commitedRcvSummary = mongoTemplate.save(receiveSummary, summaryCollection);
-
             if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
                 summaryLineList.add(commitedRcvSummary);
             }
-            receiveLine = mongoTemplate.findById(lineId, ReceivingLine.class, lineCollection);
 
-            if (receiveLine == null) {
+            query = new Query();
+            query.addCriteria(Criteria.where("_id").is(lineId));
+            query.addCriteria(Criteria.where("storeNumber").is(receivingSummaryLineRequest.getLocationNumber()));
+            update = new Update();
+            update.set("inventoryMatchStatus",Integer.parseInt(receivingSummaryLineRequest.getInventoryMatchStatus()));
+            commitedRcvLine = mongoTemplate.findAndModify(query,update,ReceivingLine.class,lineCollection);
+            if (commitedRcvLine == null) {
                 throw new ContentNotFoundException("Receive line not found for the given id ", "please enter a valid id");
             }
-            receiveLine.setInventoryMatchStatus(Integer.parseInt(receivingSummaryLineRequest.getInventoryMatchStatus()));
-            commitedRcvLine = mongoTemplate.save(receiveLine, lineCollection);
             if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
                 summaryLineList.add(commitedRcvLine);
             }
