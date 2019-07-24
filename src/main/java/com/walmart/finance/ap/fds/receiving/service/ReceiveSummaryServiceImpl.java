@@ -538,7 +538,6 @@ private String formulateId(String receivingControlNumber, String poReceiveId, St
                 receivingSummaryRequest.getMeta().getSorRoutingCtx().getLocationCountryCd());
 
         String id;
-        ReceiveSummary receiveSummary;
 
         if (receivingSummaryRequest != null) {
             if (!receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryRequest)) {
