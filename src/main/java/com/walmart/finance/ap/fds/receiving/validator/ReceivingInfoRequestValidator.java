@@ -51,6 +51,17 @@ public class ReceivingInfoRequestValidator {
                 allRequestParams.put("scenario", ReceivingInfoRequestCombinations.VENDORNUMBER_PURCHASEORDERID.name());
             }
         }
+        if (!allRequestParams.containsKey("scenario") && allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
+                && allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam())
+                && allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam())) {
+            if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam())) {
+                allRequestParams.put("scenario", ReceivingInfoRequestCombinations.LOCATIONNUMBER_PURCHASEORDERNUMBER_RECEIPTDATESTART_RECEIPTDATEEND.name());
+            } else if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam())) {
+                allRequestParams.put("scenario", ReceivingInfoRequestCombinations.LOCATIONNUMBER_INVOICENUMBER_RECEIPTDATESTART_RECEIPTDATEEND.name());
+            } else if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())) {
+                allRequestParams.put("scenario", ReceivingInfoRequestCombinations.LOCATIONNUMBER_VENDORNUMBER_RECEIPTDATESTART_RECEIPTDATEEND.name());
+            }
+        }
 //        if (!allRequestParams.containsKey("scenario") && allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())) {
 //            if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.CONTROLNUMBER.getQueryParam())) {
 //                if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()) ||
