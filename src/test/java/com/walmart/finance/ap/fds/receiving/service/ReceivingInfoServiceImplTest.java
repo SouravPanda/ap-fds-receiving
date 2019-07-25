@@ -53,12 +53,11 @@ public class ReceivingInfoServiceImplTest {
         // Financial Txn mocking
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 999403403, "30006", 3669,
                 495742, 1, 9.0, 7777, "99987", "USER",
-                null,"USER","1223",1828926897,"000000004147570","Memo",
-                3669,null,"999403403",null);
+                null, "USER", "1223", 1828926897, "000000004147570", "Memo",
+                3669, null, "999403403", null);
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
         when(financialTxnIntegrationService.getFinancialTxnDetails(Mockito.anyMap())).thenReturn(financialTxnResponseDataList);
-
         // MongoTemplate mocking
         ReceiveSummary receiveSummary = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21",
                 "4665267", 3669, 18, 99,
@@ -72,7 +71,12 @@ public class ReceivingInfoServiceImplTest {
                 0, LocalDateTime.now(), 0, "0000030006", "yyyy",
                 LocalDateTime.now(), "4665267"
                 , 'K', "LLL", 0.0, 999403403);
-        when(mongoTemplate.findById(Mockito.anyString(), eq(ReceiveSummary.class), Mockito.any())).thenReturn(receiveSummary);
+        when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(
+                new ArrayList<ReceiveSummary>() {
+                    {
+                        add(receiveSummary);
+                    }
+                });
         List<ReceivingLine> receivingLines = new ArrayList<ReceivingLine>() {
             {
                 add(new ReceivingLine("999403403|0000030006|3669|2019-06-19|1", "0000030006",
@@ -94,18 +98,18 @@ public class ReceivingInfoServiceImplTest {
 // Receiving Info Response Creation
         List<ReceivingInfoResponse> receivingInfoResponses = new ArrayList<ReceivingInfoResponse>() {
             {
-                add(new ReceivingInfoResponse("USER",null, "ARFW",
-                        "4665267",7777,99,1,new Long(1),3669,
-                        999403403,LocalDate.of(2019, 03, 14),new Long(30006),
-                        "A",0.0,99.0,"972035",495742,"Memo",
-                        0.0,0,"USER","1223",
-                        3669,null,"999403403",1828926897,
-                        "000000004147570",null));
+                add(new ReceivingInfoResponse("USER", null, "ARFW",
+                        "4665267", 7777, 99, 1, new Long(1), 3669,
+                        999403403, LocalDate.of(2019, 03, 14), new Long(30006),
+                        "A", 0.0, 99.0, "972035", 495742, "Memo",
+                        0.0, 0, "USER", "1223",
+                        3669, null, "999403403", 1828926897,
+                        "000000004147570", null));
             }
         };
 // Testing method
         Map<String, String> allRequestParams = new HashMap<>();
-        allRequestParams.put("scenario",ReceivingInfoRequestCombinations.INVOICEID.name());
+        allRequestParams.put("scenario", ReceivingInfoRequestCombinations.INVOICEID.name());
         ReceivingResponse result = receivingInfoService.getInfoSeviceData(allRequestParams);
         compareResults(receivingInfoResponses, result.getData());
     }
@@ -119,8 +123,8 @@ public class ReceivingInfoServiceImplTest {
         // Financial Txn mocking
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 999403403, "30006", 3669,
                 495742, 1, 9.0, 7777, "99987", "USER",
-                null,"USER","1223",1828926897,"000000004147570","Memo",
-                3669,null,"999403403",null);
+                null, "USER", "1223", 1828926897, "000000004147570", "Memo",
+                3669, null, "999403403", null);
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
         when(financialTxnIntegrationService.getFinancialTxnDetails(Mockito.anyMap())).thenReturn(financialTxnResponseDataList);
@@ -137,10 +141,14 @@ public class ReceivingInfoServiceImplTest {
                 0, LocalDateTime.now(), 0, "0000030006", "yyyy",
                 LocalDateTime.now(), "4665267"
                 , 'K', "LLL", 0.0, 999403403);
-        when(mongoTemplate.findById(Mockito.anyString(), eq(ReceiveSummary.class), Mockito.any())).thenReturn(receiveSummary);
+        when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(new ArrayList<ReceiveSummary>(){
+            {
+                add(receiveSummary);
+            }
+        });
         List<ReceivingLine> receivingLines = new ArrayList<ReceivingLine>() {
             {
-                add(new ReceivingLine( "999403403|0000030006|3669|2019-06-19|1", "0000030006",
+                add(new ReceivingLine("999403403|0000030006|3669|2019-06-19|1", "0000030006",
                         10, 3777, 94493, 7, 30.0, 40.0, "9",
                         89, 12, "1122", 99, 3669, 18,
                         LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
@@ -160,26 +168,26 @@ public class ReceivingInfoServiceImplTest {
         List<ReceivingInfoLineResponse> receivingInfoLineResponses = new ArrayList<ReceivingInfoLineResponse>() {
             {
                 add(new ReceivingInfoLineResponse(new Long(30006), 1, 3777, 7, 30.0,
-                        40.0,7,6,
+                        40.0, 7, 6,
                         "N", "1122",
-                        "NSW CRASH TRNF","LL","ww",1,"1.9",null
+                        "NSW CRASH TRNF", "LL", "ww", 1, "1.9", null
                 ));
             }
         };
         List<ReceivingInfoResponse> receivingInfoResponses = new ArrayList<ReceivingInfoResponse>() {
             {
-                add(new ReceivingInfoResponse("USER",null, "ARFW",
-                        "4665267",7777,99,1,new Long(1),3669,
-                        999403403,LocalDate.of(2019, 03, 14),new Long(30006),
-                        "A",0.0,99.0,"972035",495742,"Memo",
-                        0.0,0,"USER","1223",
-                        3669,null,"999403403",1828926897,
+                add(new ReceivingInfoResponse("USER", null, "ARFW",
+                        "4665267", 7777, 99, 1, new Long(1), 3669,
+                        999403403, LocalDate.of(2019, 03, 14), new Long(30006),
+                        "A", 0.0, 99.0, "972035", 495742, "Memo",
+                        0.0, 0, "USER", "1223",
+                        3669, null, "999403403", 1828926897,
                         "000000004147570", receivingInfoLineResponses));
             }
         };
         // Testing method
         Map<String, String> allRequestParams = new HashMap<>();
-        allRequestParams.put("scenario",ReceivingInfoRequestCombinations.INVOICEID.name());
+        allRequestParams.put("scenario", ReceivingInfoRequestCombinations.INVOICEID.name());
         allRequestParams.put(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam(), "Y");
         ReceivingResponse result = receivingInfoService.getInfoSeviceData(allRequestParams);
         compareResults(receivingInfoResponses, result.getData());
@@ -188,7 +196,6 @@ public class ReceivingInfoServiceImplTest {
     private void compareResults(List<ReceivingInfoResponse> receivingInfoResponses, List<ReceivingInfoResponse> result) {
         org.assertj.core.api.Assertions.assertThat(receivingInfoResponses.get(0)).isEqualToComparingFieldByFieldRecursively(result.get(0));
     }
-
 
     /**
      * No Financial Txn + Date format exception
