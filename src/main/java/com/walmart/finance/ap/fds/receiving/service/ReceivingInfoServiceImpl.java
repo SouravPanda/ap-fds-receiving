@@ -110,11 +110,11 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 CriteriaDefinition criteriaDefinition = null;
 
         if (StringUtils.isNotEmpty(id)) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.ID.getParameterName()).in(id);
+            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.ID.getParameterName()).is(id);
             query.addCriteria(criteriaDefinition);
         }
         if (financialTxnResponseData.getStoreNumber() != null) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.STORENUMBER.getParameterName()).in(financialTxnResponseData.getStoreNumber());
+            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.STORENUMBER.getParameterName()).is(financialTxnResponseData.getStoreNumber());
             query.addCriteria(criteriaDefinition);
         }
         if(StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()))
