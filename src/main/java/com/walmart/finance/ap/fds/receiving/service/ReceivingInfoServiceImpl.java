@@ -10,6 +10,7 @@ import com.walmart.finance.ap.fds.receiving.integrations.FinancialTxnIntegration
 import com.walmart.finance.ap.fds.receiving.integrations.FinancialTxnResponseData;
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
+import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryCosmosDBParameters;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLineParameters;
 import com.walmart.finance.ap.fds.receiving.response.ReceiveMDSResponse;
@@ -30,9 +31,13 @@ import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -58,7 +63,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     @Autowired
     FinancialTxnIntegrationService financialTxnIntegrationService;
-//    private ConcurrentMap<String, String> queryParamMap;
 
     Gson gson = new Gson();
 
@@ -68,10 +72,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
      */
     @Override
     public ReceivingResponse getInfoSeviceData(Map<String, String> allRequestParams) {
-        List<ReceivingInfoResponse> receivingInfoResponses;
             // First Fin Txn + Cosmos
             List<FinancialTxnResponseData> financialTxnResponseDataList = financialTxnIntegrationService.getFinancialTxnDetails(allRequestParams);
-            receivingInfoResponses = getDataForFinancialTxn(financialTxnResponseDataList, allRequestParams);
+        List<ReceivingInfoResponse>  receivingInfoResponses = getDataForFinancialTxn(financialTxnResponseDataList, allRequestParams);
         if (CollectionUtils.isEmpty(receivingInfoResponses)) {
             throw new NotFoundException("Receiving data not found for given search criteria.", "please enter valid query parameters");
         }
@@ -86,95 +89,65 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     private List<ReceivingInfoResponse> getDataForFinancialTxn(List<FinancialTxnResponseData> financialTxnResponseDataArray, Map<String, String> allRequestParams) {
         List<ReceivingInfoResponse> receivingInfoResponses = new ArrayList<>();
         for (FinancialTxnResponseData financialTxnResponseData : financialTxnResponseDataArray) {
-            ReceiveSummary receiveSummary = getSummaryData(financialTxnResponseData);
-            if(receiveSummary != null)
+            List<ReceiveSummary> receiveSummaries = getSummaryData(financialTxnResponseData,allRequestParams);
+            if(CollectionUtils.isNotEmpty(receiveSummaries))
             {
-                List<ReceivingLine> lineResponseList = getLineData(receiveSummary, allRequestParams);
-                List<FreightResponse> freightResponseList = getFreightData(receiveSummary);
-                ReceivingInfoResponse receivingInfoResponse = convertsionToReceivingInfo(receiveSummary, financialTxnResponseData, lineResponseList, freightResponseList, allRequestParams);
+                List<ReceivingLine> lineResponseList = getLineData(receiveSummaries.get(0), allRequestParams);
+                List<FreightResponse> freightResponseList = getFreightData(receiveSummaries.get(0));
+                ReceivingInfoResponse receivingInfoResponse = convertsionToReceivingInfo(receiveSummaries.get(0), financialTxnResponseData, lineResponseList, freightResponseList, allRequestParams);
                 receivingInfoResponses.add(receivingInfoResponse);
             }
         }
         return receivingInfoResponses;
     }
 
-    private ReceiveSummary getSummaryData(FinancialTxnResponseData financialTxnResponseData) {
+    private List<ReceiveSummary> getSummaryData(FinancialTxnResponseData financialTxnResponseData, Map<String, String> allRequestParams) {
         String id = (financialTxnResponseData.getPurchaseOrderId() == null ? 0 : financialTxnResponseData.getPurchaseOrderId()) + ReceivingConstants.PIPE_SEPARATOR
                 + (StringUtils.isEmpty(financialTxnResponseData.getReceiveId()) ? "0" : financialTxnResponseData.getReceiveId()) + ReceivingConstants.PIPE_SEPARATOR
                 + (financialTxnResponseData.getStoreNumber() == null ? 0 : financialTxnResponseData.getStoreNumber()) + ReceivingConstants.PIPE_SEPARATOR
                 + (financialTxnResponseData.getReceivingDate() == null ? "0" : financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
-        ReceiveSummary receiveSummary = mongoTemplate.findById(id, ReceiveSummary.class, summaryCollection);
-        return receiveSummary; //executeQueryInSummary(query);
+                Query query = new Query();
+                CriteriaDefinition criteriaDefinition = null;
+
+        if (StringUtils.isNotEmpty(id)) {
+            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.ID.getParameterName()).is(id);
+            query.addCriteria(criteriaDefinition);
+        }
+        if (financialTxnResponseData.getStoreNumber() != null) {
+            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.STORENUMBER.getParameterName()).is(financialTxnResponseData.getStoreNumber());
+            query.addCriteria(criteriaDefinition);
+        }
+        if(StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()))
+            && StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam())))
+        {
+            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGDATE.getParameterName()).
+                    gte(getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()))).
+                    lte(getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam())));
+            query.addCriteria(criteriaDefinition);
+        }
+        log.info("queryForSummaryResponse :: Query is " + query);
+        return executeQueryInSummary(query);
+    }
+    private LocalDate getDate(String date) {
+        try {
+            if (null != date && !"null".equals(date)) {
+                DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                return LocalDate.parse(date, formatterDate);
+            }
+        } catch (DateTimeParseException e) {
+            log.error(ExceptionUtils.getStackTrace(e));
+            throw new BadRequestException("Date format is not correct.", "Please enter valid query parameters");
+        }
+        return null;
     }
     /*************************** Financial-Txn Logic : END ***************************/
-    /*************************** Normal-Flow : START ***************************/
-//    private List<ReceivingInfoResponse> getDataFromReceiveDB(List<String> receiptNumbers, List<String> itemNumbers, List<String> upcNumbers) {
-//        List<ReceivingInfoResponse> receivingInfoResponses = new ArrayList<>();
-//        Query query = getSummaryQuery(queryParamMap, receiptNumbers);
-//        List<ReceiveSummary> receiveSummaryList = executeQueryInSummary(query);
-//        for (ReceiveSummary receiveSummary : receiveSummaryList) {
-//            List<ReceivingLine> lineResponseList = getLineData(receiveSummary, itemNumbers, upcNumbers);
-//            List<FreightResponse> freightResponseList = getFreightData(receiveSummary);
-//            ReceivingInfoResponse receivingInfoResponse = convertsionToReceivingInfo(receiveSummary, null, lineResponseList, freightResponseList, allRequestParams);
-//            receivingInfoResponses.add(receivingInfoResponse);
-//        }
-//        return receivingInfoResponses;
-//    }
-//    private Query getSummaryQuery(Map<String, String> queryParamMap, List<String> receiptNumbers) {
-//        Query query = new Query();
-//        CriteriaDefinition criteriaDefinition = null;
-//        if (CollectionUtils.isNotEmpty(receiptNumbers)) {
-//            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVEID.getParameterName()).in(receiptNumbers);
-//            query.addCriteria(criteriaDefinition);
-//        }
-//        if (StringUtils.isNotEmpty(queryParamMap.get(ReceivingInfoRequestQueryParameters.CONTROLNUMBER.getQueryParam()))) {
-//            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(queryParamMap.get(ReceivingInfoRequestQueryParameters.CONTROLNUMBER.getQueryParam()));
-//            query.addCriteria(criteriaDefinition);
-//        }
-//        if (StringUtils.isNotEmpty(queryParamMap.get(ReceivingInfoRequestQueryParameters.TRANSACTIONTYPE.getQueryParam()))) {
-//            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.TRANSACTIONTYPE.getParameterName()).is(queryParamMap.get(ReceivingInfoRequestQueryParameters.TRANSACTIONTYPE.getQueryParam()));
-//            query.addCriteria(criteriaDefinition);
-//        }
-//        if (StringUtils.isNotEmpty(queryParamMap.get(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam()))) {
-//            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.STORENUMBER.getParameterName()).is(queryParamMap.get(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam()));
-//            query.addCriteria(criteriaDefinition);
-//        }
-//        if (StringUtils.isNotEmpty(queryParamMap.get(ReceivingInfoRequestQueryParameters.DIVISIONNUMBER.getQueryParam()))) {
-//            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.BASEDIVISIONNUMBER.getParameterName()).is(queryParamMap.get(ReceivingInfoRequestQueryParameters.DIVISIONNUMBER.getQueryParam()));
-//            query.addCriteria(criteriaDefinition);
-//        }
-//        if (StringUtils.isNotEmpty(queryParamMap.get(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam()))) {
-//            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.VENDORNUMBER.getParameterName()).is(queryParamMap.get(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam()));
-//            query.addCriteria(criteriaDefinition);
-//        }
-//        if (StringUtils.isNotEmpty(queryParamMap.get(ReceivingInfoRequestQueryParameters.DEPARTMENTNUMBER.getQueryParam()))) {
-//            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.DEPARTMENTNUMBER.getParameterName()).is(queryParamMap.get(ReceivingInfoRequestQueryParameters.DEPARTMENTNUMBER.getQueryParam()));
-//            query.addCriteria(criteriaDefinition);
-//        }
-//        if (StringUtils.isNotEmpty(queryParamMap.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()))
-//                && StringUtils.isNotEmpty(queryParamMap.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()))) {
-//            try {
-//                DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTimeParser();
-//                DateTime startDate = dateTimeFormatter.parseDateTime(queryParamMap.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()));
-//                DateTime endDate = dateTimeFormatter.parseDateTime(queryParamMap.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()));
-//                criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGDATE.getParameterName()).gte(startDate).lte(endDate);
-//                query.addCriteria(criteriaDefinition);
-//            } catch (IllegalArgumentException e) {
-//                log.error(ExceptionUtils.getStackTrace(e));
-//                throw new BadRequestException("Date format is not correct.", "please enter valid query parameters");
-//            }
-//        }
-//        log.info("getSummaryQuery :: Query is " + query);
-//        return criteriaDefinition == null ? null : query;
-//    }
-    /*************************** Normal-Flow : END ***************************/
 
     /*************************** General Methods ***********************************/
 
     private List<ReceiveSummary> executeQueryInSummary(Query query) {
         List<ReceiveSummary> receiveSummaries = new ArrayList<>();
         if (query != null) {
-            ReceiveSummary receiveSummary = mongoTemplate.findById(query, ReceiveSummary.class, summaryCollection);
+             receiveSummaries = mongoTemplate.find(query.limit(1000), ReceiveSummary.class, summaryCollection);
         }
         return receiveSummaries;
     }
@@ -188,7 +161,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     }
 
     private List<FreightResponse> executeQueryInFreight(Query query) {
-        List<FreightResponse> receiveFreights = null;
+        List<FreightResponse> receiveFreights = new ArrayList<>();
         if (query != null) {
             receiveFreights = mongoTemplate.find(query.limit(1000), FreightResponse.class, freightCollection);
         }
@@ -200,8 +173,25 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     private List<ReceivingLine> getLineData(ReceiveSummary receiveSummary, Map<String, String> allRequestParams) {
         Query query = new Query();
         CriteriaDefinition criteriaDefinition = null;
-        if (StringUtils.isNotEmpty(receiveSummary.get_id())) {
+        if (StringUtils.isNotEmpty(receiveSummary.get_id()))
+        {
             criteriaDefinition = Criteria.where(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).is(receiveSummary.get_id());
+            query.addCriteria(criteriaDefinition);
+        }
+        if(receiveSummary.getStoreNumber() != null)
+        {
+            criteriaDefinition = Criteria.where(ReceivingLineParameters.STORENUMBER.getParameterName()).is(receiveSummary.getStoreNumber());
+            query.addCriteria(criteriaDefinition);
+        }
+        if(StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam())))
+        {
+            List<String> itemNumbers = Arrays.asList(allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()).split(","));
+            criteriaDefinition = Criteria.where(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Integer::parseInt).collect(Collectors.toList()));
+            query.addCriteria(criteriaDefinition);
+        }
+        if(StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam())))
+        {
+            criteriaDefinition = Criteria.where(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(Arrays.asList(allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()).split(",")));
             query.addCriteria(criteriaDefinition);
         }
         log.info("queryForLineResponse :: Query is " + query);
@@ -240,7 +230,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             receivingInfoResponse.setInvoiceId(financialTxnResponseData.getInvoiceId());
             receivingInfoResponse.setInvoiceNumber(financialTxnResponseData.getInvoiceNumber());
         }
-        receivingInfoResponse.setLineCount(new Long(lineResponseList.size()));
+        receivingInfoResponse.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ? new Long(lineResponseList.size()): 0);
         receivingInfoResponse.setCarrierCode(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getCarrierCode() : null);
         receivingInfoResponse.setTrailerNumber(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getTrailerNbr() : null);
         receivingInfoResponse.setControlNumber(receiveSummary.getReceivingControlNumber());
@@ -264,7 +254,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     private ReceivingInfoLineResponse convertToLineResponse(ReceivingLine receivingLine) {
         ReceivingInfoLineResponse response = new ReceivingInfoLineResponse();
-        response.setReceiptNumber(Long.valueOf(receivingLine.getReceiveId()));
+        response.setReceiptNumber(StringUtils.isNotEmpty(receivingLine.getReceiveId()) ? Long.valueOf(receivingLine.getReceiveId()) : 0);
         response.setReceiptLineNumber(receivingLine.getLineSequenceNumber());
         response.setItemNumber(receivingLine.getItemNumber());
         response.setQuantity(receivingLine.getReceivedQuantity());
@@ -294,4 +284,5 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         return response;
     }
     /*************************** Conversion Methods ***********************************/
+
 }
