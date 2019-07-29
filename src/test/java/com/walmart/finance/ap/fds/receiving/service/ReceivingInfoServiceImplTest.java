@@ -223,33 +223,33 @@ public class ReceivingInfoServiceImplTest {
 
                     {
                         add(new com.walmart.finance.ap.fds.receiving.integrations.InvoiceFinDelNoteChangeLogs(
-                                new Date(119, 04, 28), "User1234", "Del1234", "OrgDel123"));
+                                null, "User1234", "Del1234", "OrgDel123"));
                     }
                 };
         List<com.walmart.finance.ap.fds.receiving.integrations.InvoiceFinTransProcessLogs> invoiceFinTransProcessLogs =
                 new ArrayList<com.walmart.finance.ap.fds.receiving.integrations.InvoiceFinTransProcessLogs>() {
                     {
                         add(new com.walmart.finance.ap.fds.receiving.integrations.InvoiceFinTransProcessLogs(
-                                null, null, 10, new Date(119, 4, 28), "ID123"));
+                                null, null, 10, null, "ID123"));
                     }
                 };
         List<com.walmart.finance.ap.fds.receiving.integrations.InvoiceFinTransAdjustLogs> invoiceFinTransAdjustLogs =
                 new ArrayList<com.walmart.finance.ap.fds.receiving.integrations.InvoiceFinTransAdjustLogs>() {
                     {
                         add(new com.walmart.finance.ap.fds.receiving.integrations.InvoiceFinTransAdjustLogs(
-                                10, 10.05, new Date(119, 4, 28), "Change123",
-                                new Date(118, 11, 24), 20.02, new Date(118, 10, 24), new Date(118, 10, 25)));
+                                10, 10.05, null, "Change123",
+                                null, 20.02, null,null));
                     }
                 };
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(724201901, 972515962, "110950", 6479,
                 397646, 18, -5743.12, 640, "6854748957", "ID123",
-                new Date(119, 4, 28), "PEPSI MIDAMERICA", "1223", 97166785, "1832721624", null,
-                null, null, null, new Date(119, 5, 12)
-                , 538, 1, 0, "US", new Date(119, 6, 25), null, 0, "del123",
-                new Date(118, 11, 24), null, "N", invoiceFinDelNoteChangeLogs, invoiceFinTransAdjustLogs
-                , invoiceFinTransProcessLogs, null, 640, 7, 6479, 6479, 64, 20, new Date(118, 10, 24),
-                10, null, "SOE", new Date(118, 10, 25), "6854748957"
-                , 0.0, 0, "0", 0.0, 0.0, 0, 1, "PO RECEIVINGS", new Date(119, 6, 25));
+                null, "PEPSI MIDAMERICA", "1223", 97166785, "1832721624", null,
+                null, null, null, null
+                , 538, 1, 0, "US", null, null, 0, "del123",
+                null, null, "N", invoiceFinDelNoteChangeLogs, invoiceFinTransAdjustLogs
+                , invoiceFinTransProcessLogs, null, 640, 7, 6479, 6479, 64, 20, null,
+                10, null, "SOE", null, "6854748957"
+                , 0.0, 0, "0", 0.0, 0.0, 0, 1, "PO RECEIVINGS", null);
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
         when(financialTxnIntegrationService.getFinancialTxnDetails(Mockito.anyMap())).thenReturn(financialTxnResponseDataList);
@@ -311,21 +311,21 @@ public class ReceivingInfoServiceImplTest {
         };
         List<com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransProcessLogs> invoiceFinTransProcessLogsResponse = new ArrayList<com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransProcessLogs>(){
             {
-                add(new com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransProcessLogs(null,null,10,LocalDate.of(2019,05,27),"ID123"));
+                add(new com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransProcessLogs(null,null,10,null,"ID123"));
             }
         };
         List<com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransAdjustLogs> invoiceFinTransAdjustLogsResponse = new ArrayList<com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransAdjustLogs>(){
             {
-                add(new com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransAdjustLogs(10,10.05,LocalDate.of(2019,05,27),"Change123",
-                        LocalDate.of(2018,12,23),20.02,LocalDate.of(2018,11,23),LocalDate.of(2018,11,24)));
+                add(new com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransAdjustLogs(10,10.05,null,"Change123",
+                        null,20.02,null,null));
             }
         };
         List<com.walmart.finance.ap.fds.receiving.response.InvoiceFinDelNoteChangeLogs> invoiceFinDelNoteChangeLogsResponse = new ArrayList<com.walmart.finance.ap.fds.receiving.response.InvoiceFinDelNoteChangeLogs>(){
             {
-                add(new com.walmart.finance.ap.fds.receiving.response.InvoiceFinDelNoteChangeLogs(LocalDate.of(2019,05,27),"User1234","Del1234","OrgDel123"));
+                add(new com.walmart.finance.ap.fds.receiving.response.InvoiceFinDelNoteChangeLogs(null,"User1234","Del1234","OrgDel123"));
             }
         };
-        ReceivingInfoResponseV1 response = new ReceivingInfoResponseV1("ID123", LocalDate.of(2019, 05, 27), null,
+        ReceivingInfoResponseV1 response = new ReceivingInfoResponseV1("ID123", null, null,
                 "0.0", 640, 99, 18, new Long(1), 6479,
                 972515962, LocalDate.of(2019, 01, 01), new Long(110950),
                 "A", 0.0, 0.0, null, 397646, null,
@@ -333,7 +333,7 @@ public class ReceivingInfoServiceImplTest {
                 null, null, null, 97166785,
                 "1832721624",724201901,0 ,null,"6854748957","US",
                 1,0.0,-5743.12,0.0,0.0,640
-                ,LocalDate.of(2018,11,23),LocalDate.of(2018,12,23),"6854748957",LocalDate.of(2018,11,24),0,538,
+                ,null,null,"6854748957",null,0,538,
                 0,0,0,"del123",6479,
                 7,6479,20,64,640,"N",
                 null,10,
