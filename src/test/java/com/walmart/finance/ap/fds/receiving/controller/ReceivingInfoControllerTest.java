@@ -182,7 +182,7 @@ public class ReceivingInfoControllerTest {
         ReceivingResponse successMessage = new ReceivingResponse(true, LocalDateTime.of(2019, 05, 12, 15, 31, 16), list);
         when(receivingInfoService.getInfoSeviceDataV1(Mockito.anyMap())).thenReturn(successMessage);
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get("/US/receiving/info/V1")
+                .get("/US/receiving/info/v1")
                 .param("invoiceId", "97166785")
                 .param("lineNumberFlag", "Y")
                 .accept(MediaType.APPLICATION_JSON);
