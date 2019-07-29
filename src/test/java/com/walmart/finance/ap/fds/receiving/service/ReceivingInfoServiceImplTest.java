@@ -70,7 +70,7 @@ public class ReceivingInfoServiceImplTest {
                 LocalDate.now(), 9.0, 7, 0,
                 0, LocalDateTime.now(), 0, "0000030006", "yyyy",
                 LocalDateTime.now(), "4665267"
-                , 'K', "LLL", 0.0, 999403403);
+                , 'K', "LLL", 0.0, 999403403,null,null,null);
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(
                 new ArrayList<ReceiveSummary>() {
                     {
@@ -85,7 +85,7 @@ public class ReceivingInfoServiceImplTest {
                         LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                         LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 6, LocalDate.now(),
                         0, 1.9, "LL", 0, "ww",
-                        null, 1, "N", "NSW CRASH TRNF", 1, 999403403, "999403403|0000030006|3669|0"));
+                        null, 1, "N", "NSW CRASH TRNF", 1, 999403403, "999403403|0000030006|3669|0",null,null,null));
             }
         };
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(receivingLines);
@@ -140,7 +140,7 @@ public class ReceivingInfoServiceImplTest {
                 LocalDate.now(), 9.0, 7, 0,
                 0, LocalDateTime.now(), 0, "0000030006", "yyyy",
                 LocalDateTime.now(), "4665267"
-                , 'K', "LLL", 0.0, 999403403);
+                , 'K', "LLL", 0.0, 999403403,null,null,null);
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(new ArrayList<ReceiveSummary>(){
             {
                 add(receiveSummary);
@@ -154,7 +154,7 @@ public class ReceivingInfoServiceImplTest {
                         LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                         LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 6, LocalDate.now(),
                         0, 1.9, "LL", 0, "ww",
-                        null, 1, "N", "NSW CRASH TRNF", 1, 999403403, "999403403|0000030006|3669|0"));
+                        null, 1, "N", "NSW CRASH TRNF", 1, 999403403, "999403403|0000030006|3669|0",null,null,null));
             }
         };
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(receivingLines);

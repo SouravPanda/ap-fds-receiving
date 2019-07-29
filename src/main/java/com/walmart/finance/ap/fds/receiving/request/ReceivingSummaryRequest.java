@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -19,8 +20,8 @@ public class ReceivingSummaryRequest {
     @NotEmpty(message = "Missing mandatory parameter,please enter a valid receiptNumber")
     private String receiptNumber;
 
-    @NotEmpty(message = "Missing mandatory parameter,please enter a valid controlNumber")
-    private String controlNumber;
+    @NotEmpty(message = "Missing mandatory parameter,please enter a valid purchaseOrderId")
+    private String purchaseOrderId;
 
     @NotNull(message = "Missing mandatory parameter,please enter a valid receiptDate")
     private LocalDate receiptDate;
@@ -31,6 +32,7 @@ public class ReceivingSummaryRequest {
     @NotEmpty(message = "Missing mandatory parameter,please enter a valid businessStatusCode")
     private String businessStatusCode;
 
+    @Valid
     private Meta meta;
 
 }

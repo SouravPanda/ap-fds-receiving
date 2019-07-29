@@ -170,48 +170,9 @@ public class ReceiveSummary {
 
     private Integer purchaseOrderId ;
 
-    @Override
-    public String toString() {
-        return "ReceiveSummary{" +
-                "receivingControlNumber=" + receivingControlNumber +
-                ", storeNumber=" + storeNumber +
-                ", receiveId=" + receiveId +
-                ", businessStatusCode=" + businessStatusCode +
-                ", _id='" + _id + '\'' +
-                ", transactionType='" + transactionType + '\'' +
-                ", finalDate='" + finalDate + '\'' +
-                ", finalTime='" + finalTime + '\'' +
-                ", controlType='" + controlType + '\'' +
-                ", vendorNumber='" + vendorNumber + '\'' +
-                ", accountNumber='" + accountNumber + '\'' +
-                ", controlSequenceNumber='" + controlSequenceNumber + '\'' +
-                ", receiveSequenceNumber='" + receiveSequenceNumber + '\'' +
-                ", matchIndicator='" + matchIndicator + '\'' +
-                ", totalCostAmount='" + totalCostAmount + '\'' +
-                ", totalRetailAmount='" + totalRetailAmount + '\'' +
-//                ", freightBillId='" + freightBillId + '\'' +
-                ", freightBillExpandID='" + freightBillExpandID + '\'' +
-                ", claimPendingIndicator='" + claimPendingIndicator + '\'' +
-                ", freeAstrayIndicator='" + freeAstrayIndicator + '\'' +
-                ", freightConslIndicator='" + freightConslIndicator + '\'' +
-                ", receiveTimestamp='" + receiveTimestamp + '\'' +
-                ", receivingDate ='" + receivingDate + '\'' +
-                ", receiveProcessDate='" + receiveProcessDate + '\'' +
-                ", receiveWeightQuantity='" + receiveWeightQuantity + '\'' +
-                ", sequenceNumber='" + sequenceNumber + '\'' +
-                ", departmentNumber='" + departmentNumber + '\'' +
-                ", casesReceived='" + casesReceived + '\'' +
-                ", finalizedLoadTimestamp='" + finalizedLoadTimestamp + '\'' +
-                ", finalizedSequenceNumber='" + finalizedSequenceNumber + '\'' +
-                ", baseDivisionNumber='" + baseDivisionNumber + '\'' +
-                ", userId='" + userId + '\'' +
-                ", creationDate='" + creationDate + '\'' +
-                ", purchaseOrderNumber='" + purchaseOrderNumber + '\'' +
-                ", typeIndicator='" + typeIndicator + '\'' +
-                ", writeIndicator='" + writeIndicator + '\'' +
-                ", bottleDepositAmount='" + bottleDepositAmount + '\'' +
-                ", purchaseOrderId='" + purchaseOrderId + '\'' +
-                '}';
-    }
+    private String dataSyncStatus;
+    private LocalDateTime creationTimestamp;
+    private LocalDateTime lastUpdatedDate;
+
 }
 
