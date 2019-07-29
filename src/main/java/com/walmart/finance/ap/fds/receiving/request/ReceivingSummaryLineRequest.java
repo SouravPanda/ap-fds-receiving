@@ -23,8 +23,8 @@ public class ReceivingSummaryLineRequest {
     private String receiptNumber;
 
     @Valid
-    @NotEmpty(message = "Missing mandatory parameter,please enter a valid controlNumber")
-    private String controlNumber;
+    @NotEmpty(message = "Missing mandatory parameter,please enter a valid purchaseOrderId")
+    private String purchaseOrderId;
 
     @Valid
     @NotNull(message = "Missing mandatory parameter,please enter a valid receiptDate")
@@ -38,12 +38,13 @@ public class ReceivingSummaryLineRequest {
     @NotEmpty(message = "Missing mandatory parameter,please enter a valid businessStatusCode")
     private String businessStatusCode;
 
-    Integer lineSequenceNumber;
+    Integer receiptLineNumber;
 
     @Valid
     @NotEmpty(message = "Please enter a valid inventoryMatchStatus")
     private String inventoryMatchStatus;
 
+    @Valid
     private Meta meta;
 
 }

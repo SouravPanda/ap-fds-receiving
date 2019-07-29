@@ -54,46 +54,7 @@ public class ReceivingLine   {
     private Integer costMultiple;
     private Integer purchaseOrderId;
     private String summaryReference;
-
-    @Override
-    public String toString() {
-        return "ReceivingLine{" +
-                "id='" + _id + '\'' +
-                ", receiveId='" + receiveId + '\'' +
-                ", lineNumber='" + lineNumber + '\'' +
-                ", itemNumber='" + itemNumber + '\'' +
-                ", vendorNumber='" + vendorNumber + '\'' +
-                ", receivedQuantity='" + receivedQuantity + '\'' +
-                ", costAmount='" + costAmount + '\'' +
-                ", retailAmount='" + retailAmount + '\'' +
-                ", receivingControlNumber='" + receivingControlNumber + '\'' +
-                ", purchaseReceiptNumber='" + purchaseReceiptNumber + '\'' +
-                ", purchasedOrderId='" + purchasedOrderId + '\'' +
-                ", upcNumber='" + upcNumber + '\'' +
-                ", transactionType='" + transactionType + '\'' +
-                ", storeNumber='" + storeNumber + '\'' +
-                ", baseDivisionNumber='" + baseDivisionNumber + '\'' +
-                ", finalDate='" + finalDate + '\'' +
-                ", finalTime='" + finalTime + '\'' +
-                ", sequenceNumber='" + sequenceNumber + '\'' +
-                ", creationDate='" + creationDate + '\'' +
-                ", typeIndicator='" + typeIndicator + '\'' +
-                ", writeIndicator='" + writeIndicator + '\'' +
-                ", purchaseOrderNumber='" + purchaseOrderNumber + '\'' +
-                ", quantity='" + quantity + '\'' +
-                ", receivingDate='" + receivingDate + '\'' +
-                ", receiveSequenceNumber='" + receiveSequenceNumber + '\'' +
-                ", receivedWeightQuantity='" + receivedWeightQuantity + '\'' +
-                ", receivedQuantityUnitOfMeasureCode='" + receivedQuantityUnitOfMeasureCode + '\'' +
-                ", inventoryMatchStatus='"+inventoryMatchStatus+'\''+
-                ", variableWeightIndicator='"+variableWeightIndicator+'\''+
-                ", lineSequenceNumber='"+lineSequenceNumber+'\''+
-                ", bottleDepositFlag='"+bottleDepositFlag+'\''+
-                ", itemDescription='"+itemDescription+'\''+
-                ", costMultiple='"+costMultiple+'\''+
-                ", purchaseOrderId='"+purchaseOrderId+'\''+
-                ", summaryReference='"+summaryReference+'\''+
-                '}';
-
-    }
+    private String dataSyncStatus;
+    private LocalDateTime creationTimestamp;
+    private LocalDateTime lastUpdatedDate;
 }
