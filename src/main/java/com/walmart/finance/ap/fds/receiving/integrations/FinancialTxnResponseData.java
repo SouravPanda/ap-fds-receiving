@@ -6,9 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -75,4 +74,76 @@ public class FinancialTxnResponseData {
 
     @JsonProperty("receivingDate")
     private Date receivingDate;
+
+    private Integer accountNbr;
+
+    private Integer apCompanyId;
+
+    private Integer claimNbr;
+
+    private String countryCode;
+
+    private Date createdDate;
+
+    private String dataSyncStatus;
+
+    private Integer deductTypeCode;
+
+    private String deliveryNoteId;
+
+    private Date dueDate;
+
+    private Integer f6ASeqNbr;
+
+    private String grocinvoiceInd;
+
+    private List<InvoiceFinDelNoteChangeLogs> invoiceFinDelNoteChangeLogs;
+
+    private List<InvoiceFinTransAdjustLogs> invoiceFinTransAdjustLogs;
+
+    private List<InvoiceFinTransProcessLogs> invoiceFinTransProcessLogs;
+
+    private Date matchDate;
+
+    private Integer offsetAccountNbr;
+
+    private Integer origDivNbr;
+
+    private Integer origStoreNbr;
+
+    private Integer poDcNbr;
+
+    private Integer poDeptNbr;
+
+    private Integer poTypeCode;
+
+    private Date postDate;
+
+    private Integer processStatusCode;
+
+    private String receivingType;
+
+    private String sourceInfo;
+
+    private Date transactionDate;
+
+    private String transactionNbr;
+
+    private Double txnAllowanceAmt;
+
+    private Integer txnBatchNbr;
+
+    private String txnControlNbr;
+
+    private Double txnDiscountAmt;
+
+    private Double txnRetailAmt;
+
+    private Integer txnSeqNbr;
+
+    private Integer txnTypeCode;
+
+    private String txnTypeDesc;
+
+    private Date updateDate;
 }

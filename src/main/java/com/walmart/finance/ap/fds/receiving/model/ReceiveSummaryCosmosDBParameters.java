@@ -38,7 +38,7 @@ public enum ReceiveSummaryCosmosDBParameters {
     RECEIVEID("receiveId"),
     USERID("userId"),
     CREATIONDATE("creationDate"),
-    PURCHASEORDERNUMBER("purchaseOrderNumber"),
+    PURCHASEORDERNUMBER("poNumber"),
     TYPEINDICATOR("typeIndicator"),
     WRITEINDICATOR("writeIndicator"),
     PURCHASEORDERID("purchaseOrderId");

@@ -46,7 +46,11 @@ public class FinancialTxnIntegrationServiceImplTest {
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
                 "1234", 1828926897, "1828926897", "Memo", 1223,
-                null, "164680544", null);
+                null, "164680544", null
+                ,null,null,null,null,null,null,null,null,null,null,null,null,null
+                ,null,null,null,null,null,null,null,null,null,null,null,null,null,null
+                ,null,null,null,null,null,null,null,null,null);
+
         Map<String, String> queryParamMap = new HashMap<String, String>() {
             {
                 put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "US");
@@ -73,7 +77,10 @@ public class FinancialTxnIntegrationServiceImplTest {
                 2222, 0, 9.0, 0, "99987"
                 , "USER",null, "VendorName", "1234",
                 1828926897, "1828926897", "Memo", 1223, null,
-                "164680544", null);
+                "164680544", null,
+                null,null,null,null,null,null,null,null,null,null,null,null,null
+                ,null,null,null,null,null,null,null,null,null,null,null,null,null,null
+                ,null,null,null,null,null,null,null,null,null);
         Map<String, String> queryParamMap = new HashMap<String, String>() {
             {
                 put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "2222");
@@ -100,7 +107,11 @@ public class FinancialTxnIntegrationServiceImplTest {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987", "USER",
                 null, "VendorName", "1234", 1828926897,
-                "1828926897", "Memo", 1223, null, "164680544", null);
+                "1828926897", "Memo", 1223, null, "164680544", null
+                ,null,null,null,null,null,null,null,null,null,null,null,null,null
+                ,null,null,null,null,null,null,null,null,null,null,null,null,null,null
+                ,null,null,null,null,null,null,null,null,null);
+
         Map<String, String> queryParamMap = new HashMap<String, String>() {
             {
                 put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "US");

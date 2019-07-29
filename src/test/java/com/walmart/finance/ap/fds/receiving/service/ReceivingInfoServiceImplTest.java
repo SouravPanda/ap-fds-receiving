@@ -6,9 +6,7 @@ import com.walmart.finance.ap.fds.receiving.integrations.FinancialTxnResponseDat
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
-import com.walmart.finance.ap.fds.receiving.response.ReceivingInfoLineResponse;
-import com.walmart.finance.ap.fds.receiving.response.ReceivingInfoResponse;
-import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
+import com.walmart.finance.ap.fds.receiving.response.*;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestCombinations;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import org.junit.Before;
@@ -54,7 +52,10 @@ public class ReceivingInfoServiceImplTest {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 999403403, "30006", 3669,
                 495742, 1, 9.0, 7777, "99987", "USER",
                 null, "USER", "1223", 1828926897, "000000004147570", "Memo",
-                3669, null, "999403403", null);
+                3669, null, "999403403", null
+                , null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null);
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
         when(financialTxnIntegrationService.getFinancialTxnDetails(Mockito.anyMap())).thenReturn(financialTxnResponseDataList);
@@ -124,7 +125,10 @@ public class ReceivingInfoServiceImplTest {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 999403403, "30006", 3669,
                 495742, 1, 9.0, 7777, "99987", "USER",
                 null, "USER", "1223", 1828926897, "000000004147570", "Memo",
-                3669, null, "999403403", null);
+                3669, null, "999403403", null
+                , null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null);
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
         when(financialTxnIntegrationService.getFinancialTxnDetails(Mockito.anyMap())).thenReturn(financialTxnResponseDataList);
@@ -141,7 +145,7 @@ public class ReceivingInfoServiceImplTest {
                 0, LocalDateTime.now(), 0, "0000030006", "yyyy",
                 LocalDateTime.now(), "4665267"
                 , 'K', "LLL", 0.0, 999403403,null,null,null);
-        when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(new ArrayList<ReceiveSummary>(){
+        when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(new ArrayList<ReceiveSummary>() {
             {
                 add(receiveSummary);
             }
@@ -197,6 +201,9 @@ public class ReceivingInfoServiceImplTest {
         org.assertj.core.api.Assertions.assertThat(receivingInfoResponses.get(0)).isEqualToComparingFieldByFieldRecursively(result.get(0));
     }
 
+    private void compareResultsV1(List<ReceivingInfoResponseV1> receivingInfoResponses, List<ReceivingInfoResponse> result) {
+        org.assertj.core.api.Assertions.assertThat(receivingInfoResponses.get(0)).isEqualToComparingFieldByFieldRecursively(result.get(0));
+    }
     /**
      * No Financial Txn + Date format exception
      */
@@ -207,5 +214,141 @@ public class ReceivingInfoServiceImplTest {
         Map<String, String> allRequestParams = new HashMap<>();
         allRequestParams.put("scenario", ReceivingInfoRequestCombinations.INVOICEID.name());
         ReceivingResponse result = receivingInfoService.getInfoSeviceData(allRequestParams);
+    }
+
+    @Test
+    public void getInfoSeviceDataV1() {
+        List<com.walmart.finance.ap.fds.receiving.integrations.InvoiceFinDelNoteChangeLogs> invoiceFinDelNoteChangeLogs =
+                new ArrayList<com.walmart.finance.ap.fds.receiving.integrations.InvoiceFinDelNoteChangeLogs>() {
+
+                    {
+                        add(new com.walmart.finance.ap.fds.receiving.integrations.InvoiceFinDelNoteChangeLogs(
+                                null, "User1234", "Del1234", "OrgDel123"));
+                    }
+                };
+        List<com.walmart.finance.ap.fds.receiving.integrations.InvoiceFinTransProcessLogs> invoiceFinTransProcessLogs =
+                new ArrayList<com.walmart.finance.ap.fds.receiving.integrations.InvoiceFinTransProcessLogs>() {
+                    {
+                        add(new com.walmart.finance.ap.fds.receiving.integrations.InvoiceFinTransProcessLogs(
+                                null, null, 10, null, "ID123"));
+                    }
+                };
+        List<com.walmart.finance.ap.fds.receiving.integrations.InvoiceFinTransAdjustLogs> invoiceFinTransAdjustLogs =
+                new ArrayList<com.walmart.finance.ap.fds.receiving.integrations.InvoiceFinTransAdjustLogs>() {
+                    {
+                        add(new com.walmart.finance.ap.fds.receiving.integrations.InvoiceFinTransAdjustLogs(
+                                10, 10.05, null, "Change123",
+                                null, 20.02, null,null));
+                    }
+                };
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(724201901, 972515962, "110950", 6479,
+                397646, 18, -5743.12, 640, "6854748957", "ID123",
+                null, "PEPSI MIDAMERICA", "1223", 97166785, "1832721624", null,
+                null, null, null, null
+                , 538, 1, 0, "US", null, null, 0, "del123",
+                null, null, "N", invoiceFinDelNoteChangeLogs, invoiceFinTransAdjustLogs
+                , invoiceFinTransProcessLogs, null, 640, 7, 6479, 6479, 64, 20, null,
+                10, null, "SOE", null, "6854748957"
+                , 0.0, 0, "0", 0.0, 0.0, 0, 1, "PO RECEIVINGS", null);
+        List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
+        financialTxnResponseDataList.add(financialTxnResponseData);
+        when(financialTxnIntegrationService.getFinancialTxnDetails(Mockito.anyMap())).thenReturn(financialTxnResponseDataList);
+        // MongoTemplate mocking
+        ReceiveSummary receiveSummary = new ReceiveSummary("972515962|110950|6479|2019-06-11",
+                "0.0", 6479, 0, 99,
+                LocalDate.of(1970, 01, 01), LocalTime.of(05, 30, 00),
+                null, 50500, 0, 0, null,
+                "", 0.0, 0.0, 'A',
+                null, ' ', ' ',
+                ' ', LocalDateTime.of(2019, 06, 02, 17, 30,
+                00), LocalDate.of(2019, 01, 01),
+                LocalDate.of(2019,06,02), 0.0, null, null,
+                0, null, null, "110950", null,
+                null, null
+                , 'S', null, 0.0, 972515962,null,null,null);
+        when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(new ArrayList<ReceiveSummary>() {
+            {
+                add(receiveSummary);
+            }
+        });
+        List<ReceivingLine> receivingLines = new ArrayList<ReceivingLine>() {
+            {
+                add(new ReceivingLine("972515962|110950|6479|2019-06-11|2", "110950",
+                        1, 575486609, 495742, 2, 30.0, 30.09, null,
+                        null, null, "0000047875883989", 0, 6479, 1,
+                        LocalDate.of(2019, 06, 20), LocalDateTime.of(2019, 07, 14, 16, 50, 17), null,
+                        null, 'W', "DB2", null, 0, LocalDate.of(2019,06,11),
+                        null, 0.0, null, null, "",
+                        "{ \"1\" : { \"mdseConditionCode\" : 1.0, \"mdseQuantity\" : 350.0, \"mdseQuantityUnitOfMeasureCode\" : \"01\" }, \"2\" : { \"mdseConditionCode\" : 2.0, \"mdseQuantity\" : 400.0, \"mdseQuantityUnitOfMeasureCode\" : \"02\" } }",
+                        2, "N", "NSW CRASH TRNF", 1, 972515962, "972515962|110950|6479|2019-06-11",null,null,null));
+            }
+        };
+        when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(receivingLines);
+        List<FreightResponse> freightResponses = new ArrayList<FreightResponse>() {
+            {
+                add(new FreightResponse(null, null, null));
+            }
+        };
+        when(mongoTemplate.find(Mockito.any(Query.class), eq(FreightResponse.class), Mockito.any())).thenReturn(freightResponses);
+        // Receiving Info Response Creation
+
+        List<ReceiveMDSResponse> merchandises = new ArrayList<ReceiveMDSResponse>(){
+            {
+                add(new ReceiveMDSResponse(1,350,"01"));
+                add(new ReceiveMDSResponse(2,400,"02"));
+            }
+        };
+        ReceivingInfoLineResponse receivingInfoLineResponse = new ReceivingInfoLineResponse(new Long(110950), 2, 575486609,
+                2, 30.0,
+                30.09, 2, 0,
+                "N", "0000047875883989",
+                "NSW CRASH TRNF", null, "", 1, "0.0", merchandises);
+
+        List<ReceivingInfoLineResponse> lineResponses = new ArrayList<ReceivingInfoLineResponse>() {
+            {
+                add(receivingInfoLineResponse);
+            }
+        };
+        List<com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransProcessLogs> invoiceFinTransProcessLogsResponse = new ArrayList<com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransProcessLogs>(){
+            {
+                add(new com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransProcessLogs(null,null,10,null,"ID123"));
+            }
+        };
+        List<com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransAdjustLogs> invoiceFinTransAdjustLogsResponse = new ArrayList<com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransAdjustLogs>(){
+            {
+                add(new com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransAdjustLogs(10,10.05,null,"Change123",
+                        null,20.02,null,null));
+            }
+        };
+        List<com.walmart.finance.ap.fds.receiving.response.InvoiceFinDelNoteChangeLogs> invoiceFinDelNoteChangeLogsResponse = new ArrayList<com.walmart.finance.ap.fds.receiving.response.InvoiceFinDelNoteChangeLogs>(){
+            {
+                add(new com.walmart.finance.ap.fds.receiving.response.InvoiceFinDelNoteChangeLogs(null,"User1234","Del1234","OrgDel123"));
+            }
+        };
+        ReceivingInfoResponseV1 response = new ReceivingInfoResponseV1("ID123", null, null,
+                "0.0", 640, 99, 18, new Long(1), 6479,
+                972515962, LocalDate.of(2019, 01, 01), new Long(110950),
+                "A", 0.0, 0.0, null, 397646, null,
+                0.0, 0, "PEPSI MIDAMERICA", "1223",
+                null, null, null, 97166785,
+                "1832721624",724201901,0 ,null,"6854748957","US",
+                1,0.0,-5743.12,0.0,0.0,640
+                ,null,null,"6854748957",null,0,538,
+                0,0,0,"del123",6479,
+                7,6479,20,64,640,"N",
+                null,10,
+                invoiceFinTransProcessLogsResponse,invoiceFinTransAdjustLogsResponse,invoiceFinDelNoteChangeLogsResponse,lineResponses);
+        List<ReceivingInfoResponseV1> list = new ArrayList<ReceivingInfoResponseV1>() {
+            {
+                add(response);
+            }
+        };
+        // Testing method
+        Map<String, String> allRequestParams = new HashMap<>();
+        allRequestParams.put("scenario", ReceivingInfoRequestCombinations.INVOICEID.name());
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam(), "Y");
+        ReceivingResponse result = receivingInfoService.getInfoSeviceDataV1(allRequestParams);
+        compareResultsV1(list, result.getData());
+
     }
 }

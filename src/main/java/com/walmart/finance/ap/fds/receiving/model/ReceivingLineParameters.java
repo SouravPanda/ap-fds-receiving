@@ -7,7 +7,7 @@ import lombok.Getter;
 public enum ReceivingLineParameters {
 
     ID("_id"),
-    RECEIVINGCONTROLNUMBER("purchaseOrderId"),
+    RECEIVINGCONTROLNUMBER("receivingControlNumber"),
     RECEIVEID("receiveId"),
     STORENUMBER("storeNumber"),
     BASEDIVISIONNUMBER("baseDivisionNumber"),
