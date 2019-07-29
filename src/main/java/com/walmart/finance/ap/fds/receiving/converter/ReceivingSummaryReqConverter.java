@@ -15,10 +15,10 @@ public class ReceivingSummaryReqConverter implements Converter<ReceivingSummaryR
     @Override
     public ReceiveSummary convert(ReceivingSummaryRequest receivingSummaryRequest) {
 
-        String id = receivingSummaryRequest.getControlNumber() + separator + receivingSummaryRequest.getReceiptNumber() + separator + receivingSummaryRequest.getLocationNumber() + separator + receivingSummaryRequest.getReceiptDate();
+        String id = receivingSummaryRequest.getPurchaseOrderId() + separator + receivingSummaryRequest.getReceiptNumber() + separator + receivingSummaryRequest.getLocationNumber() + separator + receivingSummaryRequest.getReceiptDate();
         ReceiveSummary receiveSummary = new ReceiveSummary();
         receiveSummary.set_id(id);
-        receiveSummary.setReceivingControlNumber(receivingSummaryRequest.getControlNumber());
+        receiveSummary.setReceivingControlNumber(receivingSummaryRequest.getPurchaseOrderId());
         receiveSummary.setStoreNumber(receivingSummaryRequest.getLocationNumber());
         return receiveSummary;
     }

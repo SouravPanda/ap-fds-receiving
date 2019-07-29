@@ -17,7 +17,10 @@ public enum ReceivingLineParameters {
     ITEMNUMBER("itemNumber"),
     UPCNUMBER("upcNumber"),
     PURCHASEORDERID("purchaseOrderId"),
-    SUMMARYREFERENCE("summaryReference");
+    SUMMARYREFERENCE("summaryReference"),
+    DATASYNCSTATUS("dataSyncStatus"),
+    LASTUPDATEDDATE("lastUpdatedDate"),
+    INVENTORYMATCHSTATUS("inventoryMatchStatus");
 
     @Getter
     private String parameterName;

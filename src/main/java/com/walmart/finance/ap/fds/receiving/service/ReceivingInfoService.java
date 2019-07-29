@@ -10,4 +10,6 @@ import java.util.Map;
 public interface ReceivingInfoService {
 
     ReceivingResponse getInfoSeviceData(Map<String, String> allRequestParams);
+
+    ReceivingResponse getInfoSeviceDataV1(Map<String, String> allRequestParams);
 }
