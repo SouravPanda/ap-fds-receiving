@@ -108,7 +108,7 @@ public class ReceivingInfoResponseV1 {
 
     private Integer txnBatchNbr;
 
-    private Integer txnControlNbr;
+    private String txnControlNbr;
 
     private String deliveryNoteId;
 
