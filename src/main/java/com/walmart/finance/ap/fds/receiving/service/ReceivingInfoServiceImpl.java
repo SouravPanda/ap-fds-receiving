@@ -344,7 +344,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             receivingInfoResponseV1.setAccountNbr(financialTxnResponseData.getAccountNbr());
             receivingInfoResponseV1.setDeductTypeCode(financialTxnResponseData.getDeductTypeCode());
             receivingInfoResponseV1.setTxnBatchNbr(financialTxnResponseData.getTxnBatchNbr());
-            receivingInfoResponseV1.setTxnControlNbr(StringUtils.isNotEmpty(financialTxnResponseData.getTxnControlNbr()) ? Integer.valueOf(financialTxnResponseData.getTxnControlNbr()) : 0);
+            receivingInfoResponseV1.setTxnControlNbr(financialTxnResponseData.getTxnControlNbr());
             receivingInfoResponseV1.setDeliveryNoteId(financialTxnResponseData.getDeliveryNoteId());
             receivingInfoResponseV1.setOrigStoreNbr(financialTxnResponseData.getOrigStoreNbr());
             receivingInfoResponseV1.setOrigDivNbr(financialTxnResponseData.getOrigDivNbr());
@@ -356,7 +356,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             receivingInfoResponseV1.setMatchDate(financialTxnResponseData.getMatchDate() == null ? null : financialTxnResponseData.getMatchDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
             receivingInfoResponseV1.setProcessStatusCode(financialTxnResponseData.getProcessStatusCode());
             receivingInfoResponseV1.setInvoiceFinTransProcessLogs(
-                    financialTxnResponseData.getInvoiceFinTransProcessLogs().stream().map(t ->
+                    CollectionUtils.isEmpty(financialTxnResponseData.getInvoiceFinTransProcessLogs()) ? null : financialTxnResponseData.getInvoiceFinTransProcessLogs().stream().map(t ->
                             new InvoiceFinTransProcessLogs(
                                     t.getActionIndicator(),
                                     t.getMemoComments(),
@@ -364,7 +364,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                                     t.getProcessStatusTimestamp() == null ? null : t.getProcessStatusTimestamp().toInstant().atZone(ZoneId.of("GMT")).toLocalDate(),
                                     t.getStatusUserId()))
                             .collect(Collectors.toList()));
-            receivingInfoResponseV1.setInvoiceFinTransAdjustLogs(financialTxnResponseData.getInvoiceFinTransAdjustLogs().stream().map(t ->
+            receivingInfoResponseV1.setInvoiceFinTransAdjustLogs(
+                    CollectionUtils.isEmpty(financialTxnResponseData.getInvoiceFinTransAdjustLogs()) ? null : financialTxnResponseData.getInvoiceFinTransAdjustLogs().stream().map(t ->
                     new InvoiceFinTransAdjustLogs(t.getAdjustmentNbr(), t.getCostAdjustAmt(),
                             t.getCreateTs() == null ? null : t.getCreateTs().toInstant().atZone(ZoneId.of("GMT")).toLocalDate(),
                             t.getCreateUserId(),
@@ -373,7 +374,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                             t.getPostDate() == null ? null : t.getPostDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate(),
                             t.getTransactionDate() == null ? null : t.getTransactionDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate()))
                     .collect(Collectors.toList()));
-            receivingInfoResponseV1.setInvoiceFinDelNoteChangeLogs(financialTxnResponseData.getInvoiceFinDelNoteChangeLogs().stream().map(t ->
+            receivingInfoResponseV1.setInvoiceFinDelNoteChangeLogs(
+                    CollectionUtils.isEmpty(financialTxnResponseData.getInvoiceFinDelNoteChangeLogs()) ? null : financialTxnResponseData.getInvoiceFinDelNoteChangeLogs().stream().map(t ->
                     new InvoiceFinDelNoteChangeLogs(
                             t.getChangeTimestamp() == null ? null : t.getChangeTimestamp().toInstant().atZone(ZoneId.of("GMT")).toLocalDate(),
                             t.getChangeUserId()

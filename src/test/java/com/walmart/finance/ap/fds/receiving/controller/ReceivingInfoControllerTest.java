@@ -170,7 +170,7 @@ public class ReceivingInfoControllerTest {
                 "1832721624",724201901,0 ,null,"6854748957","US",
                 1,0.0,-5743.12,0.0,0.0,640
                 ,LocalDate.of(2018,11,23),LocalDate.of(2018,12,23),"6854748957",LocalDate.of(2018,11,24),0,538,
-                0,0,0,"del123",6479,
+                0,0,"0","del123",6479,
                 7,6479,20,64,640,"N",
                 null,10,
                 invoiceFinTransProcessLogs,invoiceFinTransAdjustLogs,invoiceFinDelNoteChangeLogs,lineResponses);
@@ -241,7 +241,7 @@ public class ReceivingInfoControllerTest {
                                 "            \"accountNbr\": 538,\n" +
                                 "            \"deductTypeCode\": 0,\n" +
                                 "            \"txnBatchNbr\": 0,\n" +
-                                "            \"txnControlNbr\": 0,\n" +
+                                "            \"txnControlNbr\": \"0\",\n" +
                                 "            \"deliveryNoteId\": \"del123\",\n" +
                                 "            \"origStoreNbr\": 6479,\n" +
                                 "            \"origDivNbr\": 7,\n" +

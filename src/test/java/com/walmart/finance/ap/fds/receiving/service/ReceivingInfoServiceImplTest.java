@@ -334,7 +334,7 @@ public class ReceivingInfoServiceImplTest {
                 "1832721624",724201901,0 ,null,"6854748957","US",
                 1,0.0,-5743.12,0.0,0.0,640
                 ,null,null,"6854748957",null,0,538,
-                0,0,0,"del123",6479,
+                0,0,"0","del123",6479,
                 7,6479,20,64,640,"N",
                 null,10,
                 invoiceFinTransProcessLogsResponse,invoiceFinTransAdjustLogsResponse,invoiceFinDelNoteChangeLogsResponse,lineResponses);
