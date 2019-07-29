@@ -14,21 +14,25 @@ public class MongoConfiguration extends AbstractMongoConfiguration {
 
     private static final Logger LOG = LoggerFactory.getLogger(MongoConfiguration.class);
 
-    @Value("${receiving-${spring.profiles.active}-${COUNTRY_NAME}}")
+    @Value("${receiving-${spring.profiles.active}}")
     private String mongoURI;
 
     @Value("${spring.data.mongodb.database}")
     private String databaseName;
 
-    @Value("${spring.data.mongodb.maxIdleTime}")
-    private String maxIdleTime;
+    @Value("${spring.data.mongodb.mongoMinPoolSize}")
+    private String mongoMinPoolSize;
+
+    @Value("${spring.data.mongodb.mongoMaxPoolSize}")
+    private String mongoMaxPoolSize;
 
 
     @Override
     public MongoClient mongoClient() {
         LOG.debug("country is {} ",System.getenv("COUNTRY_NAME"));
         MongoClientOptions.Builder optionsBuilder = new MongoClientOptions.Builder();
-        optionsBuilder.maxConnectionIdleTime(Integer.valueOf(maxIdleTime));
+        optionsBuilder.minConnectionsPerHost(Integer.valueOf(mongoMinPoolSize));
+        optionsBuilder.connectionsPerHost(Integer.valueOf(mongoMaxPoolSize));
         LOG.debug("mongo uri {}",mongoURI);
         MongoClientURI uri = new MongoClientURI(mongoURI, optionsBuilder);
         return  new MongoClient (uri);
