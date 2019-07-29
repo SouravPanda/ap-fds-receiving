@@ -103,5 +103,15 @@ public class ReceivingExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(
                 new ReceivingError(false, LocalDateTime.now(), errorDetails), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler({MandatoryPatameterMissingException.class})
+    public ResponseEntity<Object> MandatoryPatameterMissingExceptionHandler(
+            Exception ex, MandatoryPatameterMissingException e, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getMessage() + " " + e.getErrorMessage());
+        ErrorDetails errorDetails = new ErrorDetails(103, ex.getMessage(), details);
+        return new ResponseEntity<>(
+                new ReceivingError(false, LocalDateTime.now(), errorDetails), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
 }
 

@@ -33,7 +33,7 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
             response.setDivisionNumber(receivingLine.getBaseDivisionNumber());
         }
         response.setEachCostAmount(receivingLine.getCostAmount());
-        response.setReceiptNumber(Integer.valueOf(receivingLine.getReceiveId()));
+        response.setReceiptNumber(Long.valueOf(receivingLine.getReceiveId()));
         if(receivingLine.getLineNumber()==null){
             response.setReceiptLineNumber(0) ;
         } else {
@@ -52,7 +52,7 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
 
         response.setPurchaseOrderNumber(receivingLine.getReceivingControlNumber());
 //        response.setParentReceiptNumber(Integer.valueOf(receivingLine.getReceiveId()));
-        response.setPurchaseOrderId(receivingLine.getReceivingControlNumber());
+        response.setPurchaseOrderId(receivingLine.getPurchaseOrderId()== null ? "0" : receivingLine.getPurchaseOrderId().toString());
         /*if (receivingLine.getUpcNumber() == null) {
             response.setUpc("0");
         } else {

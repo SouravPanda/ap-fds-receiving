@@ -32,7 +32,6 @@ public class MongoConfiguration extends AbstractMongoConfiguration {
         LOG.debug("mongo uri {}",mongoURI);
         MongoClientURI uri = new MongoClientURI(mongoURI, optionsBuilder);
         return  new MongoClient (uri);
-
     }
 
     @Override

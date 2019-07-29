@@ -72,14 +72,13 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
 
     private Query searchCriteriaForGet(String purchaseOrderId, String receiptNumber, String transactionType, String controlNumber, String locationNumber, String divisionNumber) {
         Query dynamicQuery = new Query();
-        if (StringUtils.isNotEmpty(purchaseOrderId) || (StringUtils.isNotEmpty(controlNumber))) {
-            if (StringUtils.isNotEmpty(purchaseOrderId)) {
-                Criteria purchaseOrderIdCriteria = Criteria.where("receivingControlNumber").is(purchaseOrderId);
-                dynamicQuery.addCriteria(purchaseOrderIdCriteria);
-            } else {
-                Criteria controlNumberCriteria = Criteria.where("receivingControlNumber").is(controlNumber);
-                dynamicQuery.addCriteria(controlNumberCriteria);
-            }
+        if (StringUtils.isNotEmpty(purchaseOrderId)) {
+            Criteria purchaseOrderIdCriteria = Criteria.where("purchaseOrderId").is(Integer.valueOf(purchaseOrderId));
+            dynamicQuery.addCriteria(purchaseOrderIdCriteria);
+        }
+        if (StringUtils.isNotEmpty(controlNumber)) {
+            Criteria controlNumberCriteria = Criteria.where("receivingControlNumber").is(controlNumber);
+            dynamicQuery.addCriteria(controlNumberCriteria);
         }
         if (StringUtils.isNotEmpty(receiptNumber)) {
             Criteria receiptNumberCriteria = Criteria.where("receiveId").is(receiptNumber);
