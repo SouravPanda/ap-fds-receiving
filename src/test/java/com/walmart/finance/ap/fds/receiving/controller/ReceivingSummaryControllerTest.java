@@ -66,19 +66,19 @@ public class ReceivingSummaryControllerTest {
         successMessage.setTimestamp(LocalDateTime.now());
         Mockito.when(receiveSummaryService.updateReceiveSummary(receivingSummaryRequest, "US")).thenReturn(successMessage);
         String body = "{\n" +
-                "            \"receiptNumber\": \"2\",\n" +
-                "            \"controlNumber\": \"2\",\n" +
-                "            \"receiptDate\": \"2019-04-19\",\n" +
-                "            \"locationNumber\": 2,\n" +
-                "            \"businessStatusCode\": \"A\",\n" +
-                "            \"meta\": {\n" +
-                "                \"unitofWorkid\": null,\n" +
-                "                \"sorRoutingCtx\": {\n" +
-                "                    \"replnTypCd\": null,\n" +
-                "                    \"invProcAreaCode\": 36,\n" +
-                "                    \"locationCountryCd\": \"US\"\n" +
-                "                }\n" +
-                "             }\n" +
+                "\"receiptNumber\" : \"645099\",\n" +
+                "\"purchaseOrderId\": \"1022497259\",\n" +
+                "\"receiptDate\": \"1970-01-01\",\n" +
+                "\"locationNumber\":8231,\n" +
+                " \"businessStatusCode\": \"M\",\n" +
+                " \"meta\": {\n" +
+                "   \"unitofWorkid\": \"12122\",\n" +
+                "   \"sorRoutingCtx\": {\n" +
+                "     \"replnTypCd\": \"R\",\n" +
+                "     \"invProcAreaCode\": 30,\n" +
+                "     \"locationCountryCd\": \"US\"\n" +
+                "   }\n" +
+                " }\n" +
                 "}";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .put("/US/receiving/summary")
@@ -95,19 +95,19 @@ public class ReceivingSummaryControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(content().json("{\n" +
                             "    \"success\": true,\n" +
-                            "    \"timestamp\": \"2019-06-19T14:29:17.812\",\n" +
+                            "    \"timestamp\": \"2019-07-29T00:35:10.17\",\n" +
                             "    \"data\": [\n" +
                             "        {\n" +
-                            "            \"receiptNumber\": \"2\",\n" +
-                            "            \"controlNumber\": \"2\",\n" +
-                            "            \"receiptDate\": \"2019-04-19\",\n" +
-                            "            \"locationNumber\": 2,\n" +
-                            "            \"businessStatusCode\": \"A\",\n" +
+                            "            \"receiptNumber\": \"645099\",\n" +
+                            "            \"purchaseOrderId\": \"1022497259\",\n" +
+                            "            \"receiptDate\": \"1970-01-01\",\n" +
+                            "            \"locationNumber\": 8231,\n" +
+                            "            \"businessStatusCode\": \"M\",\n" +
                             "            \"meta\": {\n" +
-                            "                \"unitofWorkid\": null,\n" +
+                            "                \"unitofWorkid\": \"12122\",\n" +
                             "                \"sorRoutingCtx\": {\n" +
-                            "                    \"replnTypCd\": null,\n" +
-                            "                    \"invProcAreaCode\": 36,\n" +
+                            "                    \"replnTypCd\": \"R\",\n" +
+                            "                    \"invProcAreaCode\": 30,\n" +
                             "                    \"locationCountryCd\": \"US\"\n" +
                             "                }\n" +
                             "            }\n" +
@@ -139,12 +139,12 @@ public class ReceivingSummaryControllerTest {
         Mockito.when(receiveSummaryService.updateReceiveSummaryAndLine(receivingSummaryLineRequest, "US")).thenReturn(successMessage);
         String body = "{\n" +
                 "\"receiptNumber\" : \"999997\",\n" +
-                "\"controlNumber\": \"553683865\",\n" +
+                "\"purchaseOrderId\": \"553683865\",\n" +
                 "\"receiptDate\": \"2019-05-12\",\n" +
                 "\"locationNumber\":\"6565\",\n" +
                 "\"businessStatusCode\": \"A\",\n" +
                 "\"inventoryMatchStatus\":\"0\",\n" +
-                "\"sequenceNumber\": \"4\",\n" +
+                "\"receiptLineNumber\": \"4\",\n" +
                 "\"meta\": {\n" +
                 "    \"unitOfWorkId\": \"12122\",\n" +
                 "    \"sorRoutingCtx\": {\n" +
@@ -173,11 +173,11 @@ public class ReceivingSummaryControllerTest {
                             "    \"data\": [\n" +
                             "        {\n" +
                             "            \"receiptNumber\": \"999997\",\n" +
-                            "            \"controlNumber\": \"553683865\",\n" +
+                            "            \"purchaseOrderId\": \"553683865\",\n" +
                             "            \"receiptDate\": \"2019-05-12\",\n" +
                             "            \"locationNumber\": 6565,\n" +
                             "            \"businessStatusCode\": \"A\",\n" +
-                            "            \"lineSequenceNumber\": null,\n" +
+                            "            \"receiptLineNumber\": null,\n" +
                             "            \"inventoryMatchStatus\": \"0\",\n" +
                             "            \"meta\": {\n" +
                             "                \"unitofWorkid\": null,\n" +

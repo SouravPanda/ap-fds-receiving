@@ -80,7 +80,6 @@ import java.util.concurrent.TimeUnit;
                 log.error("Error Processing the details from producer side :" + e.getMessage() + e.fillInStackTrace() + e.getStackTrace() + "Value" + recvLineSummary.toString());
             }
 
-
         }
 
     }
