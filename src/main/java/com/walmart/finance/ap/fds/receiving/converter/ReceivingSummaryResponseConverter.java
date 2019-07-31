@@ -35,7 +35,7 @@ public class ReceivingSummaryResponseConverter implements Converter<ReceiveSumma
 
 //        response.setParentReceiptNumber(receiveSummary.getReceivingControlNumber());
 
-        response.setDepartmentNumber(receiveSummary.getDepartmentNumber());
+        response.setDepartmentNumber(StringUtils.isNotEmpty(receiveSummary.getDepartmentNumber()) ? Integer.valueOf(receiveSummary.getDepartmentNumber()) : 0 );
 //        response.setParentPurchaseOrderId(receiveSummary.getReceivingControlNumber());
 //        response.setParentTransactionType(receiveSummary.getTransactionType());
 //        response.setParentControlNumber(receiveSummary.getReceivingControlNumber());

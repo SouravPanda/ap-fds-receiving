@@ -21,7 +21,7 @@ public class ReceiveSummary {
     @NotEmpty
     // CONTROL_NBR
     //To be checked
-    private Long receivingControlNumber;//purchaseOrderId //Long
+    private String receivingControlNumber;//purchaseOrderId //Long
 
     @NotEmpty
     //STORE_NBR
@@ -127,7 +127,7 @@ public class ReceiveSummary {
 
 
     // BKRM_PROC_XMIT_DTL/ ACCTG_DEPT_NBR
-    private Integer departmentNumber;
+    private String departmentNumber;
 
     //CASES_RECV
     //To be checked, not present in search or response

@@ -48,13 +48,13 @@ public class ReceiveLineServiceImplTest {
     public void getLineSummaryTest() throws Exception {
         List listOfContent = new ArrayList<ReceivingLine>();
         ReceivingLine receivingLine = new ReceivingLine("112|1804823|8264|18|0|1995-10-17|1995-10-17T18:45:21|122", "4665267",
-                0, 3777, 94493, 0, 0.0, 0.0, new Long(9),
+                0, 3777, 94493, 0, 0.0, 0.0, "9",
                 89, 12, "1122", 99, 8264, 18,
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
                 0, 1.9, "LL", 0, "", null,null,null,null,null,null,null,null,null,null);
         ReceivingLine receivingLineAt = new ReceivingLine("0|0|0|0|0|null|null|12", "6778", 0,
-                0, 0, 0, 0.0, 0.0, new Long(0), 0,
+                0, 0, 0, 0.0, 0.0, "0", 0,
                 0, "0KLL", 0, 0, 0, null, null, 12,
                 LocalDateTime.of(1985, 10, 17, 18, 45, 21), 'A', "BKP", "111",
                 0, LocalDate.now(), 0, 1.9, "LL", 0, "", null, null, null, null, null, null, null,null,null,null);

@@ -212,7 +212,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     private Query searchCriteriaForGet(HashMap<String, String> paramMap) {
         Query dynamicQuery = new Query();
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.CONTROLNUMBER))) {
-            Criteria controlNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(Long.valueOf(paramMap.get(ReceivingConstants.CONTROLNUMBER)));
+            Criteria controlNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.CONTROLNUMBER));
             dynamicQuery.addCriteria(controlNumberCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.PURCHASEORDERID))) {
@@ -244,7 +244,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             dynamicQuery.addCriteria(poReceiveIdCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.DEPARTMENTNUMBER))) {
-            Criteria departmentNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.DEPARTMENTNUMBER.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.DEPARTMENTNUMBER)));
+            Criteria departmentNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.DEPARTMENTNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.DEPARTMENTNUMBER));
             dynamicQuery.addCriteria(departmentNumberCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.VENDORNUMBER))) {
@@ -306,7 +306,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             query.addCriteria(Criteria.where(ReceiveSummaryCosmosDBParameters.VENDORNUMBER.getParameterName()).is(Integer.parseInt(invoiceResponse.getVendorNumber().trim())));
         }*/
         if (StringUtils.isNotEmpty(invoiceResponseData.getInvoiceDeptNumber())) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.DEPARTMENTNUMBER.getParameterName()).is(Integer.parseInt(invoiceResponseData.getInvoiceDeptNumber().trim()));
+            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.DEPARTMENTNUMBER.getParameterName()).is(invoiceResponseData.getInvoiceDeptNumber().trim());
             query.addCriteria(criteriaDefinition);
         }
         log.info("query: " + query);
@@ -317,7 +317,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         Query query = null;
         if (StringUtils.isNotEmpty(invoiceResponseData.getPurchaseOrderNumber())) {
             query = new Query();
-            query.addCriteria(Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(Long.valueOf(invoiceResponseData.getPurchaseOrderNumber().trim())));
+            query.addCriteria(Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponseData.getPurchaseOrderNumber().trim()));
             query.addCriteria(Criteria.where(ReceiveSummaryCosmosDBParameters.TRANSACTIONTYPE.getParameterName()).is(0));
         }
         log.info("query: " + query);
@@ -328,7 +328,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         Query query = null;
         if (StringUtils.isNotEmpty(invoiceResponseData.getInvoiceNumber())) {
             query = new Query();
-            query.addCriteria(Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(Long.valueOf(invoiceResponseData.getInvoiceNumber().trim())));
+            query.addCriteria(Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponseData.getInvoiceNumber().trim()));
             query.addCriteria(Criteria.where(ReceiveSummaryCosmosDBParameters.TRANSACTIONTYPE.getParameterName()).is(1));
         }
         log.info("query: " + query);
@@ -373,8 +373,16 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         if (StringUtils.isNotEmpty(receiveSummary.get_id())) {
             Query query = new Query();
             query.addCriteria(Criteria.where(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).is(receiveSummary.get_id()));
+            if (CollectionUtils.isNotEmpty(itemNumbers)) {
+                query.addCriteria(Criteria.where(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Integer::parseInt).collect(Collectors.toList())));
+            }
+            if (CollectionUtils.isNotEmpty(upcNumbers)) {
+                query.addCriteria(Criteria.where(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(upcNumbers));
+            }
+            log.info("query: " + query);
             return executeQueryReceiveline(query);
         }
+
         return null;
     }
     /******* receive -line data fetching   *********/

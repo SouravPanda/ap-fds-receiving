@@ -73,7 +73,7 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
             dynamicQuery.addCriteria(controlNumberCriteria);
         }
         if (StringUtils.isNotEmpty(receiptNumber)) {
-            Criteria receiptNumberCriteria = Criteria.where("receiveId").is(receiptNumber);
+            Criteria receiptNumberCriteria = Criteria.where("receiveId").in(receiptNumber.split(","));
             dynamicQuery.addCriteria(receiptNumberCriteria);
         }
         if (StringUtils.isNotEmpty(transactionType)) {

@@ -25,7 +25,7 @@ public class ReceivingLine   {
     private Double costAmount;      //BKRM_PROC_XMIT_DTL.COST_AMT
     private Double retailAmount;    //BKRM_PROC_XMIT_DTL.STORE_SALE_AMT
 
-    private Long receivingControlNumber;     //BKRM_PROC_XMIT_HDR.CONTROL_NBR
+    private String receivingControlNumber;     //BKRM_PROC_XMIT_HDR.CONTROL_NBR
     private Integer purchaseReceiptNumber;      //BASE_DIV_NBR + RPR_DATE(month) + RPR_SEQ_NBR
     private Integer purchasedOrderId;       //CONTROL_NBR for control_nbr_type = 0
     private String upcNumber;      //BKRM_PROC_XMIT_DTL.UPC_NBR
