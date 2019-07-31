@@ -23,7 +23,7 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
 
         ReceivingLineResponse response = new ReceivingLineResponse();
 
-        response.setControlNumber(receivingLine.getReceivingControlNumber());
+        response.setControlNumber(receivingLine.getReceivingControlNumber() != null ? receivingLine.getReceivingControlNumber().toString() : null);
 
 //        response.setDamaged(" ");
 
@@ -50,7 +50,7 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
 //        response.setVendorStockNumber(0);
 //        response.setBottleDepositAmount(0);
 
-        response.setPurchaseOrderNumber(receivingLine.getReceivingControlNumber());
+        response.setPurchaseOrderNumber(receivingLine.getReceivingControlNumber() != null ? receivingLine.getReceivingControlNumber().toString() : null);
 //        response.setParentReceiptNumber(Integer.valueOf(receivingLine.getReceiveId()));
         response.setPurchaseOrderId(receivingLine.getPurchaseOrderId()== null ? "0" : receivingLine.getPurchaseOrderId().toString());
         /*if (receivingLine.getUpcNumber() == null) {

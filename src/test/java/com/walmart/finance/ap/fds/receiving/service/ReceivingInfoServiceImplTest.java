@@ -61,7 +61,7 @@ public class ReceivingInfoServiceImplTest {
         when(financialTxnIntegrationService.getFinancialTxnDetails(Mockito.anyMap())).thenReturn(financialTxnResponseDataList);
         // MongoTemplate mocking
         ReceiveSummary receiveSummary = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21",
-                "4665267", 3669, 18, 99,
+                new Long(4665267), 3669, 18, 99,
                 LocalDate.of(1996, 12, 12), LocalTime.of(18, 45, 21),
                 0, 7688, 1111, 0, 0,
                 "H", 0.0, 99.0, 'A',
@@ -71,7 +71,7 @@ public class ReceivingInfoServiceImplTest {
                 LocalDate.now(), 9.0, 7, 0,
                 0, LocalDateTime.now(), 0, "0000030006", "yyyy",
                 LocalDateTime.now(), "4665267"
-                , 'K', "LLL", 0.0, 999403403,null,null,null);
+                , 'K', "LLL", 0.0, new Long(999403403),null,null,null);
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(
                 new ArrayList<ReceiveSummary>() {
                     {
@@ -81,12 +81,12 @@ public class ReceivingInfoServiceImplTest {
         List<ReceivingLine> receivingLines = new ArrayList<ReceivingLine>() {
             {
                 add(new ReceivingLine("999403403|0000030006|3669|2019-06-19|1", "0000030006",
-                        10, 3777, 94493, 7, 30.0, 40.0, "9",
+                        10, 3777, 94493, 7, 30.0, 40.0, new Long(9),
                         89, 12, "1122", 99, 3669, 18,
                         LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                         LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 6, LocalDate.now(),
                         0, 1.9, "LL", 0, "ww",
-                        null, 1, "N", "NSW CRASH TRNF", 1, 999403403, "999403403|0000030006|3669|0",null,null,null));
+                        null, 1, "N", "NSW CRASH TRNF", 1, new Long(999403403), "999403403|0000030006|3669|0",null,null,null));
             }
         };
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(receivingLines);
@@ -101,7 +101,7 @@ public class ReceivingInfoServiceImplTest {
             {
                 add(new ReceivingInfoResponse("USER", null, "ARFW",
                         "4665267", 7777, 99, 1, new Long(1), 3669,
-                        999403403, LocalDate.of(2019, 03, 14), new Long(30006),
+                        new Long(999403403), LocalDate.of(2019, 03, 14), new Long(30006),
                         "A", 0.0, 99.0, "972035", 495742, "Memo",
                         0.0, 0, "USER", "1223",
                         3669, null, "999403403", 1828926897,
@@ -134,7 +134,7 @@ public class ReceivingInfoServiceImplTest {
         when(financialTxnIntegrationService.getFinancialTxnDetails(Mockito.anyMap())).thenReturn(financialTxnResponseDataList);
         // MongoTemplate mocking
         ReceiveSummary receiveSummary = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21",
-                "4665267", 3669, 18, 99,
+                new Long(4665267), 3669, 18, 99,
                 LocalDate.of(1996, 12, 12), LocalTime.of(18, 45, 21),
                 0, 7688, 1111, 0, 0,
                 "H", 0.0, 99.0, 'A',
@@ -144,7 +144,7 @@ public class ReceivingInfoServiceImplTest {
                 LocalDate.now(), 9.0, 7, 0,
                 0, LocalDateTime.now(), 0, "0000030006", "yyyy",
                 LocalDateTime.now(), "4665267"
-                , 'K', "LLL", 0.0, 999403403,null,null,null);
+                , 'K', "LLL", 0.0, new Long(999403403),null,null,null);
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(new ArrayList<ReceiveSummary>() {
             {
                 add(receiveSummary);
@@ -153,12 +153,12 @@ public class ReceivingInfoServiceImplTest {
         List<ReceivingLine> receivingLines = new ArrayList<ReceivingLine>() {
             {
                 add(new ReceivingLine("999403403|0000030006|3669|2019-06-19|1", "0000030006",
-                        10, 3777, 94493, 7, 30.0, 40.0, "9",
+                        10, 3777, 94493, 7, 30.0, 40.0, new Long(9),
                         89, 12, "1122", 99, 3669, 18,
                         LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                         LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 6, LocalDate.now(),
                         0, 1.9, "LL", 0, "ww",
-                        null, 1, "N", "NSW CRASH TRNF", 1, 999403403, "999403403|0000030006|3669|0",null,null,null));
+                        null, 1, "N", "NSW CRASH TRNF", 1, new Long(999403403), "999403403|0000030006|3669|0",null,null,null));
             }
         };
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(receivingLines);
@@ -182,7 +182,7 @@ public class ReceivingInfoServiceImplTest {
             {
                 add(new ReceivingInfoResponse("USER", null, "ARFW",
                         "4665267", 7777, 99, 1, new Long(1), 3669,
-                        999403403, LocalDate.of(2019, 03, 14), new Long(30006),
+                        new Long(999403403), LocalDate.of(2019, 03, 14), new Long(30006),
                         "A", 0.0, 99.0, "972035", 495742, "Memo",
                         0.0, 0, "USER", "1223",
                         3669, null, "999403403", 1828926897,
@@ -255,7 +255,7 @@ public class ReceivingInfoServiceImplTest {
         when(financialTxnIntegrationService.getFinancialTxnDetails(Mockito.anyMap())).thenReturn(financialTxnResponseDataList);
         // MongoTemplate mocking
         ReceiveSummary receiveSummary = new ReceiveSummary("972515962|110950|6479|2019-06-11",
-                "0.0", 6479, 0, 99,
+                new Long(0), 6479, 0, 99,
                 LocalDate.of(1970, 01, 01), LocalTime.of(05, 30, 00),
                 null, 50500, 0, 0, null,
                 "", 0.0, 0.0, 'A',
@@ -265,7 +265,7 @@ public class ReceivingInfoServiceImplTest {
                 LocalDate.of(2019,06,02), 0.0, null, null,
                 0, null, null, "110950", null,
                 null, null
-                , 'S', null, 0.0, 972515962,null,null,null);
+                , 'S', null, 0.0, new Long(972515962),null,null,null);
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(new ArrayList<ReceiveSummary>() {
             {
                 add(receiveSummary);
@@ -280,7 +280,7 @@ public class ReceivingInfoServiceImplTest {
                         null, 'W', "DB2", null, 0, LocalDate.of(2019,06,11),
                         null, 0.0, null, null, "",
                         "{ \"1\" : { \"mdseConditionCode\" : 1.0, \"mdseQuantity\" : 350.0, \"mdseQuantityUnitOfMeasureCode\" : \"01\" }, \"2\" : { \"mdseConditionCode\" : 2.0, \"mdseQuantity\" : 400.0, \"mdseQuantityUnitOfMeasureCode\" : \"02\" } }",
-                        2, "N", "NSW CRASH TRNF", 1, 972515962, "972515962|110950|6479|2019-06-11",null,null,null));
+                        2, "N", "NSW CRASH TRNF", 1, new Long(972515962), "972515962|110950|6479|2019-06-11",null,null,null));
             }
         };
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(receivingLines);
@@ -326,8 +326,8 @@ public class ReceivingInfoServiceImplTest {
             }
         };
         ReceivingInfoResponseV1 response = new ReceivingInfoResponseV1("ID123", null, null,
-                "0.0", 640, 99, 18, new Long(1), 6479,
-                972515962, LocalDate.of(2019, 01, 01), new Long(110950),
+                "0", 640, 99, 18, new Long(1), 6479,
+                new Long(972515962), LocalDate.of(2019, 01, 01), new Long(110950),
                 "A", 0.0, 0.0, null, 397646, null,
                 0.0, 0, "PEPSI MIDAMERICA", "1223",
                 null, null, null, 97166785,

@@ -21,7 +21,7 @@ public class ReceiveSummary {
     @NotEmpty
     // CONTROL_NBR
     //To be checked
-    private String receivingControlNumber;//purchaseOrderId //Long
+    private Long receivingControlNumber;//purchaseOrderId //Long
 
     @NotEmpty
     //STORE_NBR
@@ -168,7 +168,7 @@ public class ReceiveSummary {
 
     private Double bottleDepositAmount;
 
-    private Integer purchaseOrderId ;
+    private Long purchaseOrderId ;
 
     private String dataSyncStatus;
     private LocalDateTime creationTimestamp;

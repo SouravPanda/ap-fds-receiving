@@ -25,7 +25,7 @@ public class ReceivingLine   {
     private Double costAmount;      //BKRM_PROC_XMIT_DTL.COST_AMT
     private Double retailAmount;    //BKRM_PROC_XMIT_DTL.STORE_SALE_AMT
 
-    private String receivingControlNumber;     //BKRM_PROC_XMIT_HDR.CONTROL_NBR
+    private Long receivingControlNumber;     //BKRM_PROC_XMIT_HDR.CONTROL_NBR
     private Integer purchaseReceiptNumber;      //BASE_DIV_NBR + RPR_DATE(month) + RPR_SEQ_NBR
     private Integer purchasedOrderId;       //CONTROL_NBR for control_nbr_type = 0
     private String upcNumber;      //BKRM_PROC_XMIT_DTL.UPC_NBR
@@ -52,7 +52,7 @@ public class ReceivingLine   {
     private String bottleDepositFlag;
     private String itemDescription;
     private Integer costMultiple;
-    private Integer purchaseOrderId;
+    private Long purchaseOrderId;
     private String summaryReference;
     private String dataSyncStatus;
     private LocalDateTime creationTimestamp;

@@ -224,7 +224,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponse.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ? new Long(lineResponseList.size()) : 0);
         receivingInfoResponse.setCarrierCode(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getCarrierCode() : null);
         receivingInfoResponse.setTrailerNumber(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getTrailerNbr() : null);
-        receivingInfoResponse.setControlNumber(receiveSummary.getReceivingControlNumber());
+        receivingInfoResponse.setControlNumber(receiveSummary.getReceivingControlNumber() != null ? receiveSummary.getReceivingControlNumber().toString() : null);
         receivingInfoResponse.setTransactionType(receiveSummary.getTransactionType());
         receivingInfoResponse.setLocationNumber(receiveSummary.getStoreNumber());
         receivingInfoResponse.setPurchaseOrderId(receiveSummary.getPurchaseOrderId());
@@ -366,28 +366,28 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                             .collect(Collectors.toList()));
             receivingInfoResponseV1.setInvoiceFinTransAdjustLogs(
                     CollectionUtils.isEmpty(financialTxnResponseData.getInvoiceFinTransAdjustLogs()) ? null : financialTxnResponseData.getInvoiceFinTransAdjustLogs().stream().map(t ->
-                    new InvoiceFinTransAdjustLogs(t.getAdjustmentNbr(), t.getCostAdjustAmt(),
-                            t.getCreateTs() == null ? null : t.getCreateTs().toInstant().atZone(ZoneId.of("GMT")).toLocalDate(),
-                            t.getCreateUserId(),
-                            t.getDueDate() == null ? null : t.getDueDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate(),
-                            t.getOrigTxnCostAmt(),
-                            t.getPostDate() == null ? null : t.getPostDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate(),
-                            t.getTransactionDate() == null ? null : t.getTransactionDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate()))
-                    .collect(Collectors.toList()));
+                            new InvoiceFinTransAdjustLogs(t.getAdjustmentNbr(), t.getCostAdjustAmt(),
+                                    t.getCreateTs() == null ? null : t.getCreateTs().toInstant().atZone(ZoneId.of("GMT")).toLocalDate(),
+                                    t.getCreateUserId(),
+                                    t.getDueDate() == null ? null : t.getDueDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate(),
+                                    t.getOrigTxnCostAmt(),
+                                    t.getPostDate() == null ? null : t.getPostDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate(),
+                                    t.getTransactionDate() == null ? null : t.getTransactionDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate()))
+                            .collect(Collectors.toList()));
             receivingInfoResponseV1.setInvoiceFinDelNoteChangeLogs(
                     CollectionUtils.isEmpty(financialTxnResponseData.getInvoiceFinDelNoteChangeLogs()) ? null : financialTxnResponseData.getInvoiceFinDelNoteChangeLogs().stream().map(t ->
-                    new InvoiceFinDelNoteChangeLogs(
-                            t.getChangeTimestamp() == null ? null : t.getChangeTimestamp().toInstant().atZone(ZoneId.of("GMT")).toLocalDate(),
-                            t.getChangeUserId()
-                            , t.getDeliveryNoteId()
-                            , t.getOrgDelNoteId()
-                    ))
-                    .collect(Collectors.toList()));
+                            new InvoiceFinDelNoteChangeLogs(
+                                    t.getChangeTimestamp() == null ? null : t.getChangeTimestamp().toInstant().atZone(ZoneId.of("GMT")).toLocalDate(),
+                                    t.getChangeUserId()
+                                    , t.getDeliveryNoteId()
+                                    , t.getOrgDelNoteId()
+                            ))
+                            .collect(Collectors.toList()));
         }
         receivingInfoResponseV1.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ? new Long(lineResponseList.size()) : 0);
         receivingInfoResponseV1.setCarrierCode(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getCarrierCode() : null);
         receivingInfoResponseV1.setTrailerNumber(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getTrailerNbr() : null);
-        receivingInfoResponseV1.setControlNumber(receiveSummary.getReceivingControlNumber());
+        receivingInfoResponseV1.setControlNumber(receiveSummary.getReceivingControlNumber() != null ? receiveSummary.getReceivingControlNumber().toString() : null);
         receivingInfoResponseV1.setTransactionType(receiveSummary.getTransactionType());
         receivingInfoResponseV1.setLocationNumber(receiveSummary.getStoreNumber());
         receivingInfoResponseV1.setPurchaseOrderId(receiveSummary.getPurchaseOrderId());
