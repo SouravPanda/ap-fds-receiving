@@ -224,7 +224,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponse.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ? new Long(lineResponseList.size()) : 0);
         receivingInfoResponse.setCarrierCode(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getCarrierCode() : null);
         receivingInfoResponse.setTrailerNumber(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getTrailerNbr() : null);
-        receivingInfoResponse.setControlNumber(receiveSummary.getReceivingControlNumber() != null ? receiveSummary.getReceivingControlNumber().toString() : null);
+        receivingInfoResponse.setControlNumber(receiveSummary.getReceivingControlNumber());
         receivingInfoResponse.setTransactionType(receiveSummary.getTransactionType());
         receivingInfoResponse.setLocationNumber(receiveSummary.getStoreNumber());
         receivingInfoResponse.setPurchaseOrderId(receiveSummary.getPurchaseOrderId());
@@ -387,7 +387,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponseV1.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ? new Long(lineResponseList.size()) : 0);
         receivingInfoResponseV1.setCarrierCode(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getCarrierCode() : null);
         receivingInfoResponseV1.setTrailerNumber(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getTrailerNbr() : null);
-        receivingInfoResponseV1.setControlNumber(receiveSummary.getReceivingControlNumber() != null ? receiveSummary.getReceivingControlNumber().toString() : null);
+        receivingInfoResponseV1.setControlNumber(receiveSummary.getReceivingControlNumber());
         receivingInfoResponseV1.setTransactionType(receiveSummary.getTransactionType());
         receivingInfoResponseV1.setLocationNumber(receiveSummary.getStoreNumber());
         receivingInfoResponseV1.setPurchaseOrderId(receiveSummary.getPurchaseOrderId());

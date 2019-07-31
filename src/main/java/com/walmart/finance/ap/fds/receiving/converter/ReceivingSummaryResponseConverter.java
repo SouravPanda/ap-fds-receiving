@@ -16,7 +16,7 @@ public class ReceivingSummaryResponseConverter implements Converter<ReceiveSumma
         response.setPurchaseOrderId(receiveSummary.getPurchaseOrderId() == null ? "0" : receiveSummary.getPurchaseOrderId().toString());
         response.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ? Long.valueOf(receiveSummary.getReceiveId()) : 0);
         response.setTransactionType(receiveSummary.getTransactionType());
-        response.setControlNumber(receiveSummary.getReceivingControlNumber() != null ? receiveSummary.getReceivingControlNumber().toString() : null);
+        response.setControlNumber(receiveSummary.getReceivingControlNumber());
         response.setLocationNumber(receiveSummary.getStoreNumber());
         response.setDivisionNumber(receiveSummary.getBaseDivisionNumber());
         response.setReceiptDate(receiveSummary.getReceivingDate()); // TODO will change once  Receipt_Date is available : changed to MDSReceivedate

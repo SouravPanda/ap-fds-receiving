@@ -382,7 +382,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             log.info("query: " + query);
             return executeQueryReceiveline(query);
         }
-
         return null;
     }
     /******* receive -line data fetching   *********/
