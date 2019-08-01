@@ -36,6 +36,6 @@ public class ReceivingLineResponse {
     private String controlNumber;
     private Integer locationNumber;
     private Integer divisionNumber;
-    private Double bottleDepositAmount;
+    private String bottleDepositFlag;
     private List<ReceiveMDSResponse> merchandises;
 }

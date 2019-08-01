@@ -200,7 +200,7 @@ public class ReceivingSummaryControllerTest {
     public void getReceiveSummary() throws Exception {
         ReceivingSummaryResponse response = new ReceivingSummaryResponse("984003673", new Long(10022), 0, "984003673", 3680,
                 28, LocalDate.of(2019, 01, 03), 'M', 762214, null, "0", 0.0, 0.0,
-                null, 96, 0
+                null, 96, 0, 10.0
         );
         List<ReceivingSummaryResponse> responseList = new ArrayList<ReceivingSummaryResponse>() {
             {
@@ -233,7 +233,9 @@ public class ReceivingSummaryControllerTest {
                                 "\"totalCostAmount\": 0,\n" +
                                 "\"totalRetailAmount\": 0,\n" +
                                 "\"lineCount\": null,\n" +
-                                "\"departmentNumber\": 96\n" +
+                                "\"departmentNumber\": 96,\n" +
+                                "\"controlSequenceNumber\":0, \n"+
+                                "\"bottleDepositAmount\" : 10.0 \n"+
                                 "}] " +
                                 "}"
                 ))

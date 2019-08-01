@@ -109,13 +109,14 @@ public class ReceiveSummaryServiceImplTest {
                 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",
                 9.0, 7.0,
-                1L, 0, 0);
+                1L, 0,0,10.0);
+
 
         ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", new Long(1122), 99,
                 "776", 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77",
                 9.0, 7.0,
-                0L, 0, 0);
+                0L, 0,0,10.0);
 
         FreightResponse freightResponse = new FreightResponse("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "0", "0");
         FreightResponse freightResponseAt = new FreightResponse("46652|18048|8264|18|18|1995-10-17|18:45:21", "0", "0");
@@ -197,13 +198,14 @@ public class ReceiveSummaryServiceImplTest {
                 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",
                 9.0, 7.0,
-                0L, 0, 0);
+                0L, 0,0,10.0);
 
         ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", new Long(1122), 99,
                 "776", 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77",
                 9.0, 7.0,
-                0L, 0, 0);
+                0L, 0,0,10.0);
+
 
         FreightResponse freightResponse = new FreightResponse("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "0", "0");
         FreightResponse freightResponseAt = new FreightResponse("46652|18048|8264|18|18|1995-10-17|18:45:21", "0", "0");
@@ -275,13 +277,13 @@ public class ReceiveSummaryServiceImplTest {
                 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",
                 9.0, 7.0,
-                0L, 0, 0);
+                0L, 0,0,10.0);
 
         ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", new Long(1122), 99,
                 "776", 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77",
                 9.0, 7.0,
-                0L, 0, 0);
+                0L, 0,0,10.0);
 
         FreightResponse freightResponse = new FreightResponse("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "0", "0");
         FreightResponse freightResponseAt = new FreightResponse("46652|18048|8264|18|18|1995-10-17|18:45:21", "0", "0");
@@ -343,7 +345,7 @@ public class ReceiveSummaryServiceImplTest {
      * Update service Unit tests
      **/
 
-    @Test
+    @Test(expected=ContentNotFoundException.class)
     public void updateReceiveSummaryHappyPathTest() {
 
         Meta meta = new Meta();
@@ -378,10 +380,10 @@ public class ReceiveSummaryServiceImplTest {
         successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
 
-        //     Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, countryCode).getData(), successMessage.getData());
+        Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, countryCode).getData(), successMessage.getData());
     }
 
-    @Test
+    @Test(expected=ContentNotFoundException.class)
     public void updateReceiveSummaryElsePathTest() {
 
         ReceiveSummary receiveSummary = new ReceiveSummary("998|888|1|0", "888",
@@ -421,7 +423,7 @@ public class ReceiveSummaryServiceImplTest {
         successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
 
-        //Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, countryCode).getData(), successMessage.getData());
+        Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, countryCode).getData(), successMessage.getData());
 
     }
 
@@ -528,7 +530,7 @@ public class ReceiveSummaryServiceImplTest {
         Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, countryCode).getData(), successMessage.getData());
     }
 
-    @Test()
+    @Test(expected=ContentNotFoundException.class)
     public void updateReceiveSummaryLineContentNotFoundTest() {
 
         Meta meta = new Meta();
@@ -547,11 +549,11 @@ public class ReceiveSummaryServiceImplTest {
         Mockito.when(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)).thenReturn(true);
         Mockito.when(receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest)).thenReturn(true);
 
-//        receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, "US");
+        receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, "US");
 
     }
 
-    @Test
+    @Test(expected=ContentNotFoundException.class)
     public void updateReceiveSummaryLineElsePathTest() {
 
         Meta meta = new Meta();
@@ -599,7 +601,7 @@ public class ReceiveSummaryServiceImplTest {
         successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
 
-        // Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, countryCode).getData(), successMessage.getData());
+        Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, countryCode).getData(), successMessage.getData());
     }
 
     @Test(expected = InvalidValueException.class)
