@@ -4,6 +4,7 @@ import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveSummaryService;
+import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryValidator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "{countryCode}/receiving/summary")
@@ -38,23 +40,10 @@ public class ReceivingSummaryController {
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Error")})
     public ReceivingResponse getReceiveSummary(@PathVariable("countryCode")
                                                        String countryCode,
-                                               @RequestParam(value = "purchaseOrderNumber", required = false) String purchaseOrderNumber,
-                                               @RequestParam(value = "purchaseOrderId", required = false) String purchaseOrderId,
-                                               @RequestParam(value = "receiptNumbers", required = false) List<String> receiptNumbers,
-                                               @RequestParam(value = "transactionType", required = false) String transactionType,
-                                               @RequestParam(value = "controlNumber", required = false) String controlNumber,
-                                               @RequestParam(value = "locationNumber", required = false) String locationNumber,
-                                               @RequestParam(value = "divisionNumber", required = false) String divisionNumber,
-                                               @RequestParam(value = "vendorNumber", required = false) String vendorNumber,
-                                               @RequestParam(value = "departmentNumber", required = false) String departmentNumber,
-                                               @RequestParam(value = "invoiceId", required = false) String invoiceId,
-                                               @RequestParam(value = "invoiceNumber", required = false) String invoiceNumber,
-                                               @RequestParam(value = "receiptDateStart", required = false) String receiptDateStart,
-                                               @RequestParam(value = "receiptDateEnd", required = false) String receiptDateEnd,
-                                               @RequestParam(value = "itemNumbers", required = false) List<String> itemNumbers,
-                                               @RequestParam(value = "upcNumbers", required = false) List<String> upcNumbers) {
-        return receiveSummaryService.getReceiveSummary(countryCode, purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
-                divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd, itemNumbers, upcNumbers);//allRequestParam); , pageNbr, pageSize, orderBy, order
+                                               @RequestParam Map<String, String> allRequestParams, List<String> itemNumbers, List<String> upcNumbers) {
+        ReceiveSummaryValidator.validate(countryCode, allRequestParams);
+
+        return receiveSummaryService.getReceiveSummary(allRequestParams, itemNumbers, upcNumbers);
     }
 
     /**

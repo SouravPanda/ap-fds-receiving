@@ -124,6 +124,7 @@ public class ReceiveLineServiceImplTest {
         allRequestParams.put(Mockito.anyString(), Mockito.anyString());
         allRequestParams.put(Mockito.anyString(), Mockito.anyString());
         allRequestParams.put(Mockito.anyString(), Mockito.anyString());
+        receiveLineServiceImpl.getLineSummary(eq(allRequestParams));
      /*   } catch (NullPointerException e) {
             e.getMessage();
         }*/

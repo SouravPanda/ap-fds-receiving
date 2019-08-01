@@ -6,6 +6,7 @@ import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public interface ReceiveSummaryService {
@@ -14,7 +15,6 @@ public interface ReceiveSummaryService {
 
     ReceivingResponse updateReceiveSummaryAndLine(ReceivingSummaryLineRequest receivingSummaryLineSearch, String countryCode);
 
-    ReceivingResponse getReceiveSummary(String countryCode, String purchaseOrderNumber, String purchaseOrderId, List<String> receiptNumber, String transactionType, String controlNumber, String locationNumber,
-                                        String divisionNumber, String vendorNumber, String departmentNumber, String invoiceId, String invoiceNumber, String receiptDateStart, String receiptDateEnd, List<String> itemNumbers, List<String> upcNumbers);// Map<String,String> allRequestParam);
+    ReceivingResponse getReceiveSummary(Map<String, String> allRequestParams,List<String> itemNumbers, List<String> upcNumbers);
 
 }

@@ -1,14 +1,15 @@
 package com.walmart.finance.ap.fds.receiving.service;
 
 
-import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.common.DB2SyncStatus;
-import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryReqConverter;
+import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
 import com.walmart.finance.ap.fds.receiving.exception.*;
-import com.walmart.finance.ap.fds.receiving.integrations.*;
+import com.walmart.finance.ap.fds.receiving.integrations.AdditionalResponse;
+import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
+import com.walmart.finance.ap.fds.receiving.integrations.InvoiceIntegrationService;
+import com.walmart.finance.ap.fds.receiving.integrations.InvoiceResponseData;
 import com.walmart.finance.ap.fds.receiving.model.*;
-import com.walmart.finance.ap.fds.receiving.repository.ReceiveSummaryDataRepository;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
@@ -75,39 +76,21 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     /**
      * Service layer to get the data based on the requested parameters and return pageable response.
      *
-     * @param countryCode
-     * @param purchaseOrderNumber
-     * @param purchaseOrderId
-     * @param receiptNumbers
-     * @param transactionType
-     * @param controlNumber
-     * @param locationNumber
-     * @param divisionNumber
-     * @param vendorNumber
-     * @param departmentNumber
-     * @param invoiceId
-     * @param invoiceNumber
-     * @param receiptDateStart
-     * @param receiptDateEnd
-     * @param itemNumbers
-     * @param upcNumbers
+     * @param allRequestParams
      * @return
-     */
+     **/
 
-    public ReceivingResponse getReceiveSummary(String countryCode, String purchaseOrderNumber, String purchaseOrderId, List<String> receiptNumbers, String transactionType, String controlNumber, String locationNumber,
-                                               String divisionNumber, String vendorNumber, String departmentNumber, String invoiceId, String invoiceNumber, String receiptDateStart, String receiptDateEnd, List<String> itemNumbers, List<String> upcNumbers) {// Map<String,String> allRequestParam) {
-        HashMap<String, String> paramMap = checkingNotNullParameters(countryCode, purchaseOrderNumber, purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber,
-                divisionNumber, vendorNumber, departmentNumber, invoiceId, invoiceNumber, receiptDateStart, receiptDateEnd);
+    public ReceivingResponse getReceiveSummary(Map<String, String> allRequestParams, List<String> itemNumbers, List<String> upcNumbers) {
         List<ReceiveSummary> receiveSummaries;
         List<ReceivingSummaryResponse> responseList;
         try {
-            if (paramMap.containsKey(ReceivingConstants.INVOICENUMBER) || paramMap.containsKey(ReceivingConstants.INVOICEID) || paramMap.containsKey(ReceivingConstants.PURCHASEORDERNUMBER)) {
-                receiveSummaries = getInvoiceFromInvoiceSummary(paramMap);
-                if (paramMap.containsKey((ReceivingConstants.PURCHASEORDERNUMBER)) && receiveSummaries.isEmpty()) {
-                    receiveSummaries = getSearchCriteriaForGet(paramMap);
+            if (allRequestParams.containsKey(ReceivingConstants.INVOICENUMBER) || allRequestParams.containsKey(ReceivingConstants.INVOICEID) || allRequestParams.containsKey(ReceivingConstants.PURCHASEORDERNUMBER)) {
+                receiveSummaries = getInvoiceFromInvoiceSummary(allRequestParams);
+                if (allRequestParams.containsKey((ReceivingConstants.PURCHASEORDERNUMBER)) && receiveSummaries.isEmpty()) {
+                    receiveSummaries = getSearchCriteriaForGet(allRequestParams);
                 }
             } else {
-                receiveSummaries = getSearchCriteriaForGet(paramMap);
+                receiveSummaries = getSearchCriteriaForGet(allRequestParams);
             }
             log.info(ReceivingLogs.BEFORESIZESUMMARY.getParameterName() + receiveSummaries.size());
             if (CollectionUtils.isNotEmpty(receiveSummaries) && receiveSummaries.size() > 1000) {
@@ -140,7 +123,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             }
         } catch (NumberFormatException e) {
             log.error(ExceptionUtils.getStackTrace(e));//TODO
-            throw new BadRequestException(ReceivingErrors.INVALIDDATATYPE.getParameterName(),ReceivingErrors.INVALIDQUERYPARAMS.getParameterName());
+            throw new BadRequestException(ReceivingErrors.INVALIDDATATYPE.getParameterName(), ReceivingErrors.INVALIDQUERYPARAMS.getParameterName());
         }
     }
 
@@ -204,13 +187,13 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     /*******  Search Criteria methods  *********/
 
-    private List<ReceiveSummary> getSearchCriteriaForGet(HashMap<String, String> paramMap) {
+    private List<ReceiveSummary> getSearchCriteriaForGet(Map<String, String> paramMap) {
         log.info(ReceivingLogs.SEARCHCRITERIAFORGET.getParameterName());
         Query query = searchCriteriaForGet(paramMap);
         return executeQueryForReceiveSummary(query);
     }
 
-    private Query searchCriteriaForGet(HashMap<String, String> paramMap) {
+    private Query searchCriteriaForGet(Map<String, String> paramMap) {
         Query dynamicQuery = new Query();
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.CONTROLNUMBER))) {
             Criteria controlNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.CONTROLNUMBER));
@@ -275,7 +258,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             }
         } catch (DateTimeParseException e) {
             log.error(ExceptionUtils.getStackTrace(e));
-            throw new BadRequestException(ReceivingErrors.INVALIDDATATYPE.getParameterName(),ReceivingErrors.INVALIDQUERYPARAMS.getParameterName());
+            throw new BadRequestException(ReceivingErrors.INVALIDDATATYPE.getParameterName(), ReceivingErrors.INVALIDQUERYPARAMS.getParameterName());
         }
         return null;
     }
@@ -284,10 +267,10 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     /******* Invoice Summary Integration *********/
 
-    private List<ReceiveSummary> getInvoiceFromInvoiceSummary(HashMap<String, String> paramMap) {
+    private List<ReceiveSummary> getInvoiceFromInvoiceSummary(Map<String, String> paramMap) {
         log.info(ReceivingLogs.INVOICEFROMINVSUMMARY.getParameterName());
         List<InvoiceResponseData> invoiceResponseDataList = invoiceIntegrationService.getInvoice(paramMap);
-        HashMap<String, ReceiveSummary> receiveSummaryHashMap = new HashMap<>();
+        Map<String, ReceiveSummary> receiveSummaryHashMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(invoiceResponseDataList)) {
             for (InvoiceResponseData invoiceResponseData : invoiceResponseDataList) {
                 listToMapConversion(callRecvSmryAllAttributes(invoiceResponseData), receiveSummaryHashMap);
@@ -450,7 +433,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         if (CollectionUtils.isNotEmpty(upcNumbers)) {
             criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(upcNumbers);
         }
-        return criteriaDefinition != null ? criteriaDefinition : null;
+        return criteriaDefinition;
     }
     /******* receive -line data fetching   *********/
 
@@ -498,7 +481,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         return mongoTemplate.find(query, FreightResponse.class, freightCollection);
     }
 
-    private void listToMapConversion(List<ReceiveSummary> receiveSummaries, HashMap<String, ReceiveSummary> receiveSummaryHashMap) {
+    private void listToMapConversion(List<ReceiveSummary> receiveSummaries, Map<String, ReceiveSummary> receiveSummaryHashMap) {
         receiveSummaries.stream().forEach(t -> receiveSummaryHashMap.put(t.get_id(), t));
     }
 

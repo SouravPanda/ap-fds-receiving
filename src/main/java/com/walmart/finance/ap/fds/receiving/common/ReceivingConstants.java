@@ -41,5 +41,6 @@ public class ReceivingConstants {
     public static final String INVOICEID = "invoiceId";
     public static final String RECEIPTDATEEND = "receiptDateEnd";
     public static final String RECEIPTDATESTART = "receiptDateStart";
+    public static final String RECEIPTNUMBERS="receiptNumbers";
 
 }

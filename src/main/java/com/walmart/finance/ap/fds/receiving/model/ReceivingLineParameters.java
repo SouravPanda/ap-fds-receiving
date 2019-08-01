@@ -15,16 +15,14 @@ public enum ReceivingLineParameters {
     BASEDIVISIONNUMBER("baseDivisionNumber"),
     DIVISIONNUMBER("divisionNumber"),
     TRANSACTIONTYPE("transactionType"),
-    FINALDATE("finalDate"),
-    FINALTIME("finalTime"),
     ITEMNUMBER("itemNumber"),
     UPCNUMBER("upcNumber"),
     PURCHASEORDERID("purchaseOrderId"),
-    BUSINESSSTATUSCODE("businessStatusCode"),
     INVENTORYMATCHSTATUS("inventoryMatchStatus"),
     SUMMARYREFERENCE("summaryReference"),
     DATASYNCSTATUS("dataSyncStatus"),
     RECEIPTNUMBER("receiptNumber"),
+    PURCHASEORDERNUMBER("purchaseOrderNumber"),
     LASTUPDATEDDATE("lastUpdatedDate");
 
 
