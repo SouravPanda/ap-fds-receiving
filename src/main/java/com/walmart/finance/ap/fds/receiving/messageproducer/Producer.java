@@ -2,7 +2,6 @@ package com.walmart.finance.ap.fds.receiving.messageproducer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
-import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -83,4 +82,3 @@ import java.util.concurrent.TimeUnit;
         }
 
     }
-

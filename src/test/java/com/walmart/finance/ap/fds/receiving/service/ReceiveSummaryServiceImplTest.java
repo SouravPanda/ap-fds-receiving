@@ -351,7 +351,7 @@ public class ReceiveSummaryServiceImplTest {
 
     /**   Update service Unit tests **/
 
-    @Test
+    @Test(expected=ContentNotFoundException.class)
     public void updateReceiveSummaryHappyPathTest() {
 
         Meta meta = new Meta();
@@ -386,10 +386,10 @@ public class ReceiveSummaryServiceImplTest {
         successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
 
-   //     Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, countryCode).getData(), successMessage.getData());
+        Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, countryCode).getData(), successMessage.getData());
     }
 
-    @Test
+    @Test(expected=ContentNotFoundException.class)
     public void updateReceiveSummaryElsePathTest() {
 
         ReceiveSummary receiveSummary = new ReceiveSummary("998|888|1|0", "888",
@@ -429,7 +429,7 @@ public class ReceiveSummaryServiceImplTest {
         successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
 
-        //Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, countryCode).getData(), successMessage.getData());
+        Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, countryCode).getData(), successMessage.getData());
 
     }
 
@@ -536,7 +536,7 @@ public class ReceiveSummaryServiceImplTest {
         Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, countryCode).getData(), successMessage.getData());
     }
 
-    @Test()
+    @Test(expected=ContentNotFoundException.class)
     public void updateReceiveSummaryLineContentNotFoundTest() {
 
         Meta meta = new Meta();
@@ -555,11 +555,11 @@ public class ReceiveSummaryServiceImplTest {
         Mockito.when(receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)).thenReturn(true);
         Mockito.when(receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest)).thenReturn(true);
 
-//        receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, "US");
+        receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, "US");
 
     }
 
-    @Test
+    @Test(expected=ContentNotFoundException.class)
     public void updateReceiveSummaryLineElsePathTest() {
 
         Meta meta = new Meta();
@@ -607,7 +607,7 @@ public class ReceiveSummaryServiceImplTest {
         successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
 
-       // Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, countryCode).getData(), successMessage.getData());
+        Assert.assertEquals(receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, countryCode).getData(), successMessage.getData());
     }
 
     @Test(expected = InvalidValueException.class)
