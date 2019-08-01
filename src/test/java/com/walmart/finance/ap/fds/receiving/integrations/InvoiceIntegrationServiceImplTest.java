@@ -37,7 +37,7 @@ public class InvoiceIntegrationServiceImplTest {
 
     @Test
     public void getInvoice() {
-        InvoiceResponseData invoiceResponseData = new InvoiceResponseData("invoiceid", "invoiceNumber", "708588561", "0708588561", null, "918", "0", "621680", "90");
+        InvoiceResponseData invoiceResponseData = new InvoiceResponseData("invoiceid", "invoiceNumber", "708588561", "0708588561", null, "918", "0", "621680", "90",null);
         List<InvoiceResponseData> invoiceResponseDataList = new ArrayList<>();
         invoiceResponseDataList.add(invoiceResponseData);
         InvoiceResponse invoiceResponse = new InvoiceResponse(invoiceResponseDataList);
@@ -64,7 +64,7 @@ public class InvoiceIntegrationServiceImplTest {
 
     @Test(expected = NotFoundException.class)
     public void getInvoiceException() {
-        InvoiceResponseData invoiceResponseData = new InvoiceResponseData("invoiceid", "invoiceNumber", "708588561", "0708588561", null, "918", "0", "621680", "90");
+        InvoiceResponseData invoiceResponseData = new InvoiceResponseData("invoiceid", "invoiceNumber", "708588561", "0708588561", null, "918", "0", "621680", "90",null);
         List<InvoiceResponseData> invoiceResponseDataList = new ArrayList<>();
         invoiceResponseDataList.add(invoiceResponseData);
         InvoiceResponse invoiceResponse = new InvoiceResponse(invoiceResponseDataList);

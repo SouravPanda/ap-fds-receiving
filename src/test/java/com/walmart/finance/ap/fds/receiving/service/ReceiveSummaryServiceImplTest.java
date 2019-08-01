@@ -7,6 +7,7 @@ import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
 import com.walmart.finance.ap.fds.receiving.integrations.InvoiceIntegrationService;
+import com.walmart.finance.ap.fds.receiving.integrations.InvoiceReferenceResponse;
 import com.walmart.finance.ap.fds.receiving.integrations.InvoiceResponseData;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
@@ -94,10 +95,6 @@ public class ReceiveSummaryServiceImplTest {
         listOfContent.add(receiveSummary);
         listOfContent.add(receiveSummaryAt);
 
-//        List<String> listOfReceiptNumbers = new ArrayList<>();
-//        listOfReceiptNumbers.add("99");
-//        listOfReceiptNumbers.add("89");
-
         List<String> listOfItemNumbers = new ArrayList<>();
         listOfItemNumbers.add("99");
         listOfItemNumbers.add("89");
@@ -131,13 +128,17 @@ public class ReceiveSummaryServiceImplTest {
         content.add(receivingSummaryResponse);
         content.add(receivingSummaryResponseAt);
 
-        InvoiceResponseData invoiceResponseData = new InvoiceResponseData("656", "267", "000", "999",
-                "777", "0", "998", "9986", "098");
+        List<InvoiceReferenceResponse> invoiceReferenceResponses = new ArrayList<InvoiceReferenceResponse>(){
+            {
+                add(new InvoiceReferenceResponse("PO","000"));
+                add(new InvoiceReferenceResponse("AD","123"));
+            }
+        };
         List<InvoiceResponseData> invoiceResponseDataList = new ArrayList<>();
-        invoiceResponseDataList.add(new InvoiceResponseData("656", "267", "000", "999",
-                "777", "0", "998", "9986", "098"));
-        invoiceResponseDataList.add(new InvoiceResponseData("656", "267", "000", "99",
-                "77", "0", "98", "9986", "098"));
+        invoiceResponseDataList.add(new InvoiceResponseData("656", "267", "000", null,
+                "777", "0", "998", "9986", "098",invoiceReferenceResponses));
+        invoiceResponseDataList.add(new InvoiceResponseData("656", "267", "000", null,
+                "77", "0", "98", "9986", "098",invoiceReferenceResponses));
 
 
         ReceivingLine receivingLine = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0, 0,0, 0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null,null, 2, null, 'W', "DB2", null, 2, null, 1, 0.0, null, null, null,null, null, null, null, null, null, null,null,null,null);
@@ -186,10 +187,6 @@ public class ReceiveSummaryServiceImplTest {
         List listOfContent = new ArrayList<ReceiveSummary>();
         listOfContent.add(receiveSummary);
 
-//        List<String> listOfReceiptNumbers = new ArrayList<>();
-//        listOfReceiptNumbers.add("99");
-//        listOfReceiptNumbers.add("89");
-
         List<String> listOfItemNumbers = new ArrayList<>();
         listOfItemNumbers.add("99");
         listOfItemNumbers.add("89");
@@ -233,8 +230,6 @@ public class ReceiveSummaryServiceImplTest {
                 .is(998).and("departmentNumber").is(98);
         dynamicQuery.addCriteria(criteriaNew);
 
-        //Mockito.when(invoiceIntegrationService.getInvoice(Mockito.any())).thenReturn(invoiceResponseDataList);
-
         when(receivingSummaryResponseConverter.convert(Mockito.any(ReceiveSummary.class))).thenReturn(receivingSummaryResponse);
 
         when(mongoTemplate.count(dynamicQuery, ReceiveSummary.class)).thenReturn(2L);
@@ -270,10 +265,6 @@ public class ReceiveSummaryServiceImplTest {
 
         List listOfContent = new ArrayList<ReceiveSummary>();
         listOfContent.add(receiveSummary);
-
-//        List<String> listOfReceiptNumbers = new ArrayList<>();
-//        listOfReceiptNumbers.add("99");
-//        listOfReceiptNumbers.add("89");
 
         List<String> listOfItemNumbers = new ArrayList<>();
         listOfItemNumbers.add("99");

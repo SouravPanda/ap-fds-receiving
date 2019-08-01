@@ -277,12 +277,21 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         HashMap<String, ReceiveSummary> receiveSummaryHashMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(invoiceResponseDataList)) {
             for (InvoiceResponseData invoiceResponseData : invoiceResponseDataList) {
+                setPONumberData(invoiceResponseData);
                 listToMapConversion(callRecvSmryAllAttributes(invoiceResponseData), receiveSummaryHashMap);
                 listToMapConversion(callRecvSmryByPOId(invoiceResponseData), receiveSummaryHashMap);
                 listToMapConversion(callRecvSmryByInvoiceNum(invoiceResponseData), receiveSummaryHashMap);
             }
         }
         return receiveSummaryHashMap.values().stream().collect(Collectors.toList());
+    }
+
+    private void setPONumberData(InvoiceResponseData invoiceResponseData) {
+        if (CollectionUtils.isNotEmpty(invoiceResponseData.getInvoiceReferenceResponseList())) {
+            invoiceResponseData.getInvoiceReferenceResponseList().stream()
+                    .filter((t) -> t.getInvoiceRefTypeCd().equalsIgnoreCase("PO"))
+                    .forEach(y -> invoiceResponseData.setPurchaseOrderNumber(y.getInvoiceRefNbr()));
+        }
     }
 
     private List<ReceiveSummary> callRecvSmryAllAttributes(InvoiceResponseData invoiceResponseData) {
