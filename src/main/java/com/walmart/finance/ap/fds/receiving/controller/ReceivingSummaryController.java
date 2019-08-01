@@ -20,6 +20,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(value = "{countryCode}/receiving/summary")
+
 @Api(value = "REST APIs for receiving-summary ")
 public class ReceivingSummaryController {
 
