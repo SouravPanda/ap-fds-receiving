@@ -40,7 +40,7 @@ public class ReceivingSummaryController {
                                                        String countryCode,
                                                @RequestParam(value = "purchaseOrderNumber", required = false) String purchaseOrderNumber,
                                                @RequestParam(value = "purchaseOrderId", required = false) String purchaseOrderId,
-                                               @RequestParam(value = "receiptNumbers", required = false) List<String> receiptNumbers,
+                                               @RequestParam(value = "receiptNumbers", required = false) String receiptNumbers,
                                                @RequestParam(value = "transactionType", required = false) String transactionType,
                                                @RequestParam(value = "controlNumber", required = false) String controlNumber,
                                                @RequestParam(value = "locationNumber", required = false) String locationNumber,

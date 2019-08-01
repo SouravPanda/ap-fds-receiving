@@ -7,6 +7,7 @@ import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
 import com.walmart.finance.ap.fds.receiving.integrations.InvoiceIntegrationService;
+import com.walmart.finance.ap.fds.receiving.integrations.InvoiceReferenceResponse;
 import com.walmart.finance.ap.fds.receiving.integrations.InvoiceResponseData;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
@@ -71,13 +72,13 @@ public class ReceiveSummaryServiceImplTest {
 
     @Test
     public void getReceiveSummaryHappyPathTest() {
-        ReceiveSummary receiveSummary = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665267",
+        ReceiveSummary receiveSummary = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21","4665267",
                 8264, 18, 0, LocalDate.of(1996, 12, 12),
                 LocalTime.of(18, 45, 21), 0, 7688, 1111,
                 0, 0, "H", 0.0, 1.0,
                 'P', 2L, 'k', 'L',
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
-                LocalDate.now(), 9.0, 7, 0, 0, LocalDateTime.now(), 0,
+                LocalDate.now(), 9.0, 7, "0", 0, LocalDateTime.now(), 0,
                 "JJJ", "yyyy", LocalDateTime.now(), "99"
                 , 'K', "LLL", null, null,null,null,null);
         ReceiveSummary receiveSummaryAt = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665207",
@@ -86,17 +87,13 @@ public class ReceiveSummaryServiceImplTest {
                 0, 0, "H", 0.0, 1.0,  'P',
                 2L, 'k', 'L',
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
-                LocalDate.now(), 9.0, 7, 0, 0, LocalDateTime.now(), 0,
+                LocalDate.now(), 9.0, 7, "0", 0, LocalDateTime.now(), 0,
                 "JJJ", "UU", LocalDateTime.now(), "99"
                 , 'K', "IIL", null, null,null,null,null);
 
         List listOfContent = new ArrayList<ReceiveSummary>();
         listOfContent.add(receiveSummary);
         listOfContent.add(receiveSummaryAt);
-
-        List<String> listOfReceiptNumbers = new ArrayList<>();
-        listOfReceiptNumbers.add("99");
-        listOfReceiptNumbers.add("89");
 
         List<String> listOfItemNumbers = new ArrayList<>();
         listOfItemNumbers.add("99");
@@ -131,16 +128,20 @@ public class ReceiveSummaryServiceImplTest {
         content.add(receivingSummaryResponse);
         content.add(receivingSummaryResponseAt);
 
-        InvoiceResponseData invoiceResponseData = new InvoiceResponseData("656", "267", "000", "999",
-                "777", "0", "998", "9986", "098");
+        List<InvoiceReferenceResponse> invoiceReferenceResponses = new ArrayList<InvoiceReferenceResponse>(){
+            {
+                add(new InvoiceReferenceResponse("PO","000"));
+                add(new InvoiceReferenceResponse("AD","123"));
+            }
+        };
         List<InvoiceResponseData> invoiceResponseDataList = new ArrayList<>();
-        invoiceResponseDataList.add(new InvoiceResponseData("656", "267", "000", "999",
-                "777", "0", "998", "9986", "098"));
-        invoiceResponseDataList.add(new InvoiceResponseData("656", "267", "000", "99",
-                "77", "0", "98", "9986", "098"));
+        invoiceResponseDataList.add(new InvoiceResponseData("656", "267", "000", null,
+                "777", "0", "998", "9986", "098",invoiceReferenceResponses));
+        invoiceResponseDataList.add(new InvoiceResponseData("656", "267", "000", null,
+                "77", "0", "98", "9986", "098",invoiceReferenceResponses));
 
 
-        ReceivingLine receivingLine = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0, 0,0, 0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null,null, 2, null, 'W', "DB2", null, 2, null, 1, 0.0, null, null, null,null, null, null, null, null, null, null,null,null,null);
+        ReceivingLine receivingLine = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0, 0,0, 0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null,null, 2, null, 'W', "DB2", null, 2, null, 1, 0.0, null, null, null,null, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21",null,null,null);
         List<ReceivingLine> listOfReceiveLines = new ArrayList<>();
         listOfReceiveLines.add(receivingLine);
 
@@ -165,7 +166,7 @@ public class ReceiveSummaryServiceImplTest {
         successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.now());
 
-        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary("US", "77", "8", listOfReceiptNumbers, "99",
+        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary("US", "77", "8", "99,89", "99",
                 "99", "675", "987", "18", "0", "776"
                 , "1980", "1988-12-12", "1990-11-11", listOfItemNumbers, listOfUpcNumbers).getData(), successMessage.getData().subList(0, 1));
     }
@@ -173,22 +174,18 @@ public class ReceiveSummaryServiceImplTest {
     @Test
     public void getReceiveSummaryElsePathTest(){
 
-        ReceiveSummary receiveSummary = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665207",
+        ReceiveSummary receiveSummary = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21","4665207",
                 8064, 18, 0, LocalDate.of(1986, 12, 12), LocalTime.of(18, 45, 21),
                 0, 9788, 1111,
                 0, 0, "H", 0.0, 1.0,  'P',
                 2L, 'k', 'L',
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
-                LocalDate.now(), 9.0, 7, 0, 0, LocalDateTime.now(), 0,
+                LocalDate.now(), 9.0, 7, "0", 0, LocalDateTime.now(), 0,
                 "JJJ", "UU", LocalDateTime.now(), "99"
                 , 'K', "IIL", null, null,null,null,null);
 
         List listOfContent = new ArrayList<ReceiveSummary>();
         listOfContent.add(receiveSummary);
-
-        List<String> listOfReceiptNumbers = new ArrayList<>();
-        listOfReceiptNumbers.add("99");
-        listOfReceiptNumbers.add("89");
 
         List<String> listOfItemNumbers = new ArrayList<>();
         listOfItemNumbers.add("99");
@@ -221,8 +218,8 @@ public class ReceiveSummaryServiceImplTest {
         content.add(receivingSummaryResponse);
         content.add(receivingSummaryResponseAt);
 
-        ReceivingLine receivingLine = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0, 0,0, 0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null,null, 2, null, 'W', "DB2", null, 2, null, 1, 0.0, null, null, null, null, null, null, null, null, null, null,null,null,null);
-        ReceivingLine receivingLineAt = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|1", "JJJ", 0, 0,0, 0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null,null, 2, null, 'W', "DB2", null, 2, null, 1, 0.0, null, null, null, null, null, null, null, null, null, null,null,null,null);
+        ReceivingLine receivingLine = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0, 0,0, 0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null,null, 2, null, 'W', "DB2", null, 2, null, 1, 0.0, null, null, null, null, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21",null,null,null);
+        ReceivingLine receivingLineAt = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|1", "JJJ", 0, 0,0, 0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null,null, 2, null, 'W', "DB2", null, 2, null, 1, 0.0, null, null, null, null, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21",null,null,null);
 
         List<ReceivingLine> listOfReceiveLines = new ArrayList<>();
         listOfReceiveLines.add(receivingLine);
@@ -232,8 +229,6 @@ public class ReceiveSummaryServiceImplTest {
         Criteria criteriaNew = Criteria.where("purchaseOrderNumber").is("999").and("receivingControlNumber").is("000").and("storeNumber")
                 .is(998).and("departmentNumber").is(98);
         dynamicQuery.addCriteria(criteriaNew);
-
-        //Mockito.when(invoiceIntegrationService.getInvoice(Mockito.any())).thenReturn(invoiceResponseDataList);
 
         when(receivingSummaryResponseConverter.convert(Mockito.any(ReceiveSummary.class))).thenReturn(receivingSummaryResponse);
 
@@ -249,7 +244,7 @@ public class ReceiveSummaryServiceImplTest {
         successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.now());
 
-        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary("US", null, "8", listOfReceiptNumbers, "99",
+        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary("US", null, "8", "99,89", "99",
                 "99", "675", "987", "18", "0", null
                 , null, "1988-12-12", "1990-11-11", listOfItemNumbers, listOfUpcNumbers).getData(), successMessage.getData().subList(0, 1));
     }
@@ -263,17 +258,13 @@ public class ReceiveSummaryServiceImplTest {
                 0, 0, "H", 0.0, 1.0,  'P',
                 2L, 'k', 'L',
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
-                LocalDate.now(), 9.0, 7, 0, 0, LocalDateTime.now(), 0,
+                LocalDate.now(), 9.0, 7, "0", 0, LocalDateTime.now(), 0,
                 "JJJ", "UU", LocalDateTime.now(), "99"
 
                 , 'K', "IIL", null, null,null,null,null);
 
         List listOfContent = new ArrayList<ReceiveSummary>();
         listOfContent.add(receiveSummary);
-
-        List<String> listOfReceiptNumbers = new ArrayList<>();
-        listOfReceiptNumbers.add("99");
-        listOfReceiptNumbers.add("89");
 
         List<String> listOfItemNumbers = new ArrayList<>();
         listOfItemNumbers.add("99");
@@ -306,7 +297,7 @@ public class ReceiveSummaryServiceImplTest {
         content.add(receivingSummaryResponse);
         content.add(receivingSummaryResponseAt);
 
-        ReceivingLine receivingLine = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0, 0,0, 0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null,null, 2, null, 'W', "DB2", null, 2, null, 1, 0.0, null, null, null, null, null, null, null, null, null, null,null,null,null);
+        ReceivingLine receivingLine = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0, 0,0, 0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null,null, 2, null, 'W', "DB2", null, 2, null, 1, 0.0, null, null, null, null, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21",null,null,null);
         List<ReceivingLine> listOfReceiveLines = new ArrayList<>();
         listOfReceiveLines.add(receivingLine);
 
@@ -332,14 +323,14 @@ public class ReceiveSummaryServiceImplTest {
         successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.now());
 
-        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary("US", "77", "8", listOfReceiptNumbers, "99",
+        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary("US", "77", "8", "99,89", "99",
                 null, "675", "987", "18", "0", null
                 , null, "1988-12-12", "1990-11-11", listOfItemNumbers, listOfUpcNumbers).getData(), successMessage.getData().subList(0, 1));
     }
 
     @Test(expected = NotFoundException.class)
     public void getReceiveSummaryException() {
-        receiveSummaryServiceImpl.getReceiveSummary(null, null, null, Mockito.anyList(),
+        receiveSummaryServiceImpl.getReceiveSummary(null, null, null, Mockito.anyString(),
                 null, null, null, null, null, null,
                 null, null, null, null, Mockito.anyList(), Mockito.anyList());
     }
@@ -376,7 +367,7 @@ public class ReceiveSummaryServiceImplTest {
                 0, 0, "H", 0.0, 1.0,  'P',
                 2L, 'k', 'L',
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.of(1995, 10, 16),
-                LocalDate.of(1995, 10, 16), 9.0, 7, 0, 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
+                LocalDate.of(1995, 10, 16), 9.0, 7, "0", 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
                 "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "99"
                 , 'K', "LLL", null, null,null,null,null);
         ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("888", "998", LocalDate.of(2018, 10, 10),
@@ -407,7 +398,7 @@ public class ReceiveSummaryServiceImplTest {
                 0, 0, "H", 0.0, 1.0,  'P',
                 2L, 'k', 'L',
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.of(1995, 10, 16),
-                LocalDate.of(1995, 10, 16), 9.0, 7, 0, 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
+                LocalDate.of(1995, 10, 16), 9.0, 7, "0", 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
                 "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "99"
                 , 'K', "LLL", null, null,null,null,null);
 
@@ -451,7 +442,7 @@ public class ReceiveSummaryServiceImplTest {
                 0, 0, "H", 0.0, 1.0,  'P',
                 2L, 'k', 'L',
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.of(1995, 10, 16),
-                LocalDate.of(1995, 10, 16), 9.0, 7, 0, 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
+                LocalDate.of(1995, 10, 16), 9.0, 7, "0", 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
                 "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "99"
                 , 'K', "LLL", null, null,null,null,null);
 
@@ -515,7 +506,7 @@ public class ReceiveSummaryServiceImplTest {
                 0, 0, "H", 0.0, 1.0,  'P',
                 2L, 'k', 'L',
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.of(1995, 10, 16),
-                LocalDate.of(1995, 10, 16), 9.0, 7, 0, 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
+                LocalDate.of(1995, 10, 16), 9.0, 7, "0", 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
                 "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "9"
                 , 'K', "LLL", null, null,null,null,null);
 
@@ -585,7 +576,7 @@ public class ReceiveSummaryServiceImplTest {
                 0, 0, "H", 0.0, 1.0,  'P',
                 2L, 'k', 'L',
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.of(1995, 10, 16),
-                LocalDate.of(1995, 10, 16), 9.0, 7, 0, 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
+                LocalDate.of(1995, 10, 16), 9.0, 7, "0", 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
                 "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "9"
                 , 'K', "LLL", null, null,null,null,null);
 
@@ -636,7 +627,7 @@ public class ReceiveSummaryServiceImplTest {
                 0, 0, "H", 0.0, 1.0,  'P',
                 2L, 'k', 'L',
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.of(1995, 10, 16),
-                LocalDate.of(1995, 10, 16), 9.0, 7, 0, 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
+                LocalDate.of(1995, 10, 16), 9.0, 7, "0", 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
                 "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "9"
                 , 'K', "LLL", null, null,null,null,null);
 
@@ -689,7 +680,7 @@ public class ReceiveSummaryServiceImplTest {
                 0, 0, "H", 0.0, 1.0,  'P',
                 2L, 'k', 'L',
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.of(1995, 10, 16),
-                LocalDate.of(1995, 10, 16), 9.0, 7, 0, 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
+                LocalDate.of(1995, 10, 16), 9.0, 7, "0", 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
                 "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "9"
                 , 'K', "LLL", null, null,null,null,null);
 

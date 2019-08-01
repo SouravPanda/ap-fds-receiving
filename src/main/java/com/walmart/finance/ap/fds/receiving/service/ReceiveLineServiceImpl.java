@@ -1,12 +1,10 @@
 
 package com.walmart.finance.ap.fds.receiving.service;
 
-import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineReqConverter;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineResponseConverter;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
-import com.walmart.finance.ap.fds.receiving.repository.ReceiveLineDataRepository;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import lombok.Getter;
@@ -33,13 +31,7 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
     public static final Logger log = LoggerFactory.getLogger(ReceiveLineServiceImpl.class);
 
     @Autowired
-    ReceiveLineDataRepository receiveLineDataRepository;
-
-    @Autowired
     ReceivingLineResponseConverter receivingLineResponseConverter;
-
-    @Autowired
-    ReceivingLineReqConverter receivingLineRequestConverter;
 
     @Autowired
     MongoTemplate mongoTemplate;
@@ -73,7 +65,7 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
     private Query searchCriteriaForGet(String purchaseOrderId, String receiptNumber, String transactionType, String controlNumber, String locationNumber, String divisionNumber) {
         Query dynamicQuery = new Query();
         if (StringUtils.isNotEmpty(purchaseOrderId)) {
-            Criteria purchaseOrderIdCriteria = Criteria.where("purchaseOrderId").is(Integer.valueOf(purchaseOrderId));
+            Criteria purchaseOrderIdCriteria = Criteria.where("purchaseOrderId").is(Long.valueOf(purchaseOrderId));
             dynamicQuery.addCriteria(purchaseOrderIdCriteria);
         }
         if (StringUtils.isNotEmpty(controlNumber)) {
@@ -81,7 +73,7 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
             dynamicQuery.addCriteria(controlNumberCriteria);
         }
         if (StringUtils.isNotEmpty(receiptNumber)) {
-            Criteria receiptNumberCriteria = Criteria.where("receiveId").is(receiptNumber);
+            Criteria receiptNumberCriteria = Criteria.where("receiveId").in(receiptNumber.split(","));
             dynamicQuery.addCriteria(receiptNumberCriteria);
         }
         if (StringUtils.isNotEmpty(transactionType)) {

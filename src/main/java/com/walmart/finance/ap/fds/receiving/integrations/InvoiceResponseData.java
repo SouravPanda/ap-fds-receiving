@@ -3,6 +3,7 @@ package com.walmart.finance.ap.fds.receiving.integrations;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+import java.util.List;
 
 @ToString
 @AllArgsConstructor
@@ -21,7 +22,7 @@ public class InvoiceResponseData {
     @JsonProperty("poID")
     private String purchaseOrderId;
 
-    @JsonProperty("poNum")
+//    @JsonProperty("poNum")
     private String purchaseOrderNumber;
 
     @JsonProperty("receivingNum")
@@ -38,6 +39,9 @@ public class InvoiceResponseData {
 
     @JsonProperty("invoiceDeptNumber")
     private String invoiceDeptNumber;
+
+    @JsonProperty("invoiceReference")
+    private List<InvoiceReferenceResponse> invoiceReferenceResponseList;
 
 
 

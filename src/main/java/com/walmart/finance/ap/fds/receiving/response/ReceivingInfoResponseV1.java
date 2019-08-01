@@ -34,7 +34,7 @@ public class ReceivingInfoResponseV1 {
 
     private Integer locationNumber;
 
-    private Integer purchaseOrderId;
+    private Long purchaseOrderId;
 
     private LocalDate receiptDate;
 
