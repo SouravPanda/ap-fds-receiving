@@ -48,7 +48,7 @@ public class ReceivingInfoControllerTest {
         };
         ReceivingInfoResponse response = new ReceivingInfoResponse("USER", LocalDate.of(2019, 03, 14), null,
                 "0", 1, 99, 1, new Long(1), 3669,
-                999403403, LocalDate.of(2019, 03, 14), new Long(30006),
+                new Long(999403403), LocalDate.of(2019, 03, 14), new Long(30006),
                 " ", 0.0, 0.0, null, 495742, "Memo",
                 0.0, 0, "USER", "1223",
                 3669, null, "999403403", 411276735,
@@ -163,7 +163,7 @@ public class ReceivingInfoControllerTest {
         };
         ReceivingInfoResponseV1 response = new ReceivingInfoResponseV1("ID123", LocalDate.of(2019, 05, 27), null,
                 "0.0", 640, 99, 18, new Long(1), 6479,
-                972515962, LocalDate.of(2019, 01, 01), new Long(110950),
+                new Long(972515962), LocalDate.of(2019, 01, 01), new Long(110950),
                 "A", 0.0, 0.0, null, 397646, null,
                 0.0, 0, "PEPSI MIDAMERICA", "1223",
                 null, null, null, 97166785,

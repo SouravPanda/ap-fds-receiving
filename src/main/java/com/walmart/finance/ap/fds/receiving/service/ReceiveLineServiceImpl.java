@@ -73,31 +73,32 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingLineParameters.PURCHASEORDERID.getParameterName()))) {
             criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.PURCHASEORDERID.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.PURCHASEORDERID.trim())));
             dynamicQuery.addCriteria(criteriaDefinition);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIVINGCONTROLNUMBER))) {
-            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.RECEIVINGCONTROLNUMBER));
-            dynamicQuery.addCriteria(criteriaDefinition);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTNUMBER))) {
-            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.RECEIVEID.getParameterName()).is(paramMap.get(ReceivingConstants.RECEIPTNUMBER));
-            dynamicQuery.addCriteria(criteriaDefinition);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.TRANSACTIONTYPE))) {
-            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.TRANSACTIONTYPE.getParameterName()).is(Integer.parseInt(paramMap.get(ReceivingConstants.TRANSACTIONTYPE)));
-            dynamicQuery.addCriteria(criteriaDefinition);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.DIVISIONNUMBER))) {
-            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.BASEDIVISIONNUMBER.getParameterName()).is(Integer.parseInt(paramMap.get(ReceivingConstants.DIVISIONNUMBER.trim())));
-            dynamicQuery.addCriteria(criteriaDefinition);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.LOCATIONNUMBER))) {
-            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.STORENUMBER.getParameterName()).is(Integer.parseInt(paramMap.get(ReceivingConstants.LOCATIONNUMBER.trim())));
-            dynamicQuery.addCriteria(criteriaDefinition);
-        }
+            if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIVINGCONTROLNUMBER))) {
+                criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.RECEIVINGCONTROLNUMBER));
+                dynamicQuery.addCriteria(criteriaDefinition);
+            }
+            if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTNUMBER))) {
+                criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.RECEIVEID.getParameterName()).is(paramMap.get(ReceivingConstants.RECEIPTNUMBER));
+                dynamicQuery.addCriteria(criteriaDefinition);
+            }
+            if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.TRANSACTIONTYPE))) {
+                criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.TRANSACTIONTYPE.getParameterName()).is(Integer.parseInt(paramMap.get(ReceivingConstants.TRANSACTIONTYPE)));
+                dynamicQuery.addCriteria(criteriaDefinition);
+            }
+            if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.DIVISIONNUMBER))) {
+                criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.BASEDIVISIONNUMBER.getParameterName()).is(Integer.parseInt(paramMap.get(ReceivingConstants.DIVISIONNUMBER.trim())));
+                dynamicQuery.addCriteria(criteriaDefinition);
+            }
+            if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.LOCATIONNUMBER))) {
+                criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.STORENUMBER.getParameterName()).is(Integer.parseInt(paramMap.get(ReceivingConstants.LOCATIONNUMBER.trim())));
+                dynamicQuery.addCriteria(criteriaDefinition);
+            }
 
+        }
         return dynamicQuery;
     }
 }
+
 
 
 

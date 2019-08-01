@@ -3,18 +3,15 @@ package com.walmart.finance.ap.fds.receiving.controller;
 
 import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveLineService;
-import com.walmart.finance.ap.fds.receiving.service.ReceiveLineServiceImpl;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveLineValidator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-
 
 @RestController
 @RequestMapping(value = "{countryCode}/receiving/line")
@@ -23,10 +20,7 @@ public class ReceivingLineController {
 
     @Autowired
     private ReceiveLineService receiveLineService;
-
-    @Autowired
-    private ReceiveLineServiceImpl receiveLineServiceImpl;
-
+    
    /* Method calls Receive Service to get
 
       @param
@@ -44,5 +38,4 @@ public class ReceivingLineController {
         return receiveLineService.getLineSummary(allRequestParams);
 
     }
-
 }

@@ -52,7 +52,7 @@ public class ReceivingLine   {
     private String bottleDepositFlag;
     private String itemDescription;
     private Integer costMultiple;
-    private Integer purchaseOrderId;
+    private Long purchaseOrderId;
     private String summaryReference;
     private String dataSyncStatus;
     private LocalDateTime creationTimestamp;

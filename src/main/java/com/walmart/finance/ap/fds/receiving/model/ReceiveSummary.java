@@ -127,7 +127,7 @@ public class ReceiveSummary {
 
 
     // BKRM_PROC_XMIT_DTL/ ACCTG_DEPT_NBR
-    private Integer departmentNumber;
+    private String departmentNumber;
 
     //CASES_RECV
     //To be checked, not present in search or response
@@ -168,7 +168,7 @@ public class ReceiveSummary {
 
     private Double bottleDepositAmount;
 
-    private Integer purchaseOrderId ;
+    private Long purchaseOrderId ;
 
     private String dataSyncStatus;
     private LocalDateTime creationTimestamp;
