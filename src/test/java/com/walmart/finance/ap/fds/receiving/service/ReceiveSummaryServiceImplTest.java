@@ -165,9 +165,7 @@ public class ReceiveSummaryServiceImplTest {
         successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.now());
 
-        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary("US", "77", "8", listOfReceiptNumbers, "99",
-                "99", "675", "987", "18", "0", "776"
-                , "1980", "1988-12-12", "1990-11-11", listOfItemNumbers, listOfUpcNumbers).getData(), successMessage.getData().subList(0, 1));
+        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary(Mockito.anyMap(), listOfItemNumbers, listOfUpcNumbers).getData(), successMessage.getData().subList(0, 1));
     }
 
     @Test
@@ -249,9 +247,7 @@ public class ReceiveSummaryServiceImplTest {
         successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.now());
 
-        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary("US", null, "8", listOfReceiptNumbers, "99",
-                "99", "675", "987", "18", "0", null
-                , null, "1988-12-12", "1990-11-11", listOfItemNumbers, listOfUpcNumbers).getData(), successMessage.getData().subList(0, 1));
+        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary(Mockito.anyMap(), listOfItemNumbers, listOfUpcNumbers).getData(), successMessage.getData().subList(0, 1));
     }
 
     @Test
@@ -332,30 +328,22 @@ public class ReceiveSummaryServiceImplTest {
         successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.now());
 
-        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary("US", "77", "8", listOfReceiptNumbers, "99",
-                null, "675", "987", "18", "0", null
-                , null, "1988-12-12", "1990-11-11", listOfItemNumbers, listOfUpcNumbers).getData(), successMessage.getData().subList(0, 1));
+        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary(Mockito.anyMap(), listOfItemNumbers, listOfUpcNumbers).getData(), successMessage.getData().subList(0, 1));
     }
 
     @Test(expected = NotFoundException.class)
     public void getReceiveSummaryException() {
-        receiveSummaryServiceImpl.getReceiveSummary(null, null, null, Mockito.anyList(),
-                null, null, null, null, null, null,
-                null, null, null, null, Mockito.anyList(), Mockito.anyList());
+        receiveSummaryServiceImpl.getReceiveSummary(Mockito.anyMap(), Mockito.anyList(), Mockito.anyList());
     }
 
     @Test(expected = BadRequestException.class)
     public void getReceiveSummaryNumbnerFormateException() {
-        receiveSummaryServiceImpl.getReceiveSummary(null, null, null, null,
-                null, null, "23qa", null, null, null,
-                null, null, null, null, null, null);
+        receiveSummaryServiceImpl.getReceiveSummary(Mockito.anyMap(), Mockito.anyList(), Mockito.anyList());
     }
 
     @Test(expected = BadRequestException.class)
     public void getReceiveSummaryDateInvaidException() {
-        receiveSummaryServiceImpl.getReceiveSummary(null, null, null, null,
-                null, null, null, null, null, null,
-                null, null, "asdasd", "adssa", null, null);
+        receiveSummaryServiceImpl.getReceiveSummary(Mockito.anyMap(), Mockito.anyList(), Mockito.anyList());
     }
 
     /**   Update service Unit tests **/
