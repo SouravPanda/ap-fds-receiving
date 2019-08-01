@@ -236,7 +236,8 @@ public class ReceivingSummaryControllerTest {
                                 "\"totalCostAmount\": 0,\n" +
                                 "\"totalRetailAmount\": 0,\n" +
                                 "\"lineCount\": null,\n" +
-                                "\"departmentNumber\": 96\n" +
+                                "\"departmentNumber\": 96,\n" +
+                                "\"controlSequenceNumber\":0, \n"+
                                 "\"bottleDepositAmount\" : 10.0 \n"+
                                 "}] " +
                                 "}"
