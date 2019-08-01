@@ -350,11 +350,35 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     private Map<String, AdditionalResponse> getLineResponseMap(List<ReceiveSummary> receiveSummaries, List<String> itemNumbers, List<String> upcNumbers) {
         Map<String, AdditionalResponse> lineResponseMap = new HashMap<>();
         List<ReceivingLine> lineResponseList = new LinkedList<>();
+        List<Criteria> criteriaList = new ArrayList<>();
+        for (ReceiveSummary receiveSummary : receiveSummaries) {
+            criteriaList.add(queryForLineResponse(receiveSummary, itemNumbers, upcNumbers));
+        }
+        if (CollectionUtils.isNotEmpty(criteriaList)) {
+            Query query = new Query(new Criteria().orOperator(criteriaList.toArray(new Criteria[criteriaList.size()])));
+            log.info("query: " + query);
+            lineResponseList = executeQueryReceiveline(query);
+        }
+        Map<String, List<ReceivingLine>> receivingLineMap = new HashMap<>();
+        Iterator<ReceivingLine> iteratorLine = lineResponseList.iterator();
+        //Grouping lines according to SummaryReference
+        while (iteratorLine.hasNext()) {
+            ReceivingLine receivingLine = iteratorLine.next();
+            if (receivingLineMap.containsKey(receivingLine.getSummaryReference())) {
+                receivingLineMap.get(receivingLine.getReceiveId()).add(receivingLine);
+            } else {
+                List<ReceivingLine> lineList = new ArrayList<>();
+                lineList.add(receivingLine);
+                receivingLineMap.put(receivingLine.getSummaryReference(), lineList);
+            }
+            iteratorLine.remove();
+        }
+
         Iterator<ReceiveSummary> iterator = receiveSummaries.iterator();
         while (iterator.hasNext()) {
             ReceiveSummary receiveSummary = iterator.next();
             AdditionalResponse response = new AdditionalResponse();
-            List<ReceivingLine> lineList = queryForLineResponse(receiveSummary, itemNumbers, upcNumbers);
+            List<ReceivingLine> lineList = receivingLineMap.get(receiveSummary.get_id());
             if (CollectionUtils.isNotEmpty(lineList)) {
                 if (receiveSummary.getTypeIndicator().equals("W")) {
                     response.setTotalCostAmount(lineResponseList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount()).sum());
@@ -378,18 +402,16 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         return lineResponseMap;
     }
 
-    private List<ReceivingLine> queryForLineResponse(ReceiveSummary receiveSummary, List<String> itemNumbers, List<String> upcNumbers) {
+    private Criteria queryForLineResponse(ReceiveSummary receiveSummary, List<String> itemNumbers, List<String> upcNumbers) {
         if (StringUtils.isNotEmpty(receiveSummary.get_id())) {
-            Query query = new Query();
-            query.addCriteria(Criteria.where(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).is(receiveSummary.get_id()));
+            Criteria criteriaDefinition = new Criteria(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).is(receiveSummary.get_id());
             if (CollectionUtils.isNotEmpty(itemNumbers)) {
-                query.addCriteria(Criteria.where(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Integer::parseInt).collect(Collectors.toList())));
+                criteriaDefinition.and(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Integer::parseInt).collect(Collectors.toList()));
             }
             if (CollectionUtils.isNotEmpty(upcNumbers)) {
-                query.addCriteria(Criteria.where(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(upcNumbers));
+                criteriaDefinition.and(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(upcNumbers);
             }
-            log.info("query: " + query);
-            return executeQueryReceiveline(query);
+            return criteriaDefinition;
         }
         return null;
     }
