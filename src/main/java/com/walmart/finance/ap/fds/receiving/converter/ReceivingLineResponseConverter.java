@@ -84,7 +84,7 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
         else {
             response.setDivisionNumber(receivingLine.getBaseDivisionNumber());
         }
-        response.setBottleDepositAmount(10.0);
+        response.setBottleDepositFlag(receivingLine.getBottleDepositFlag());
         if(StringUtils.isNotEmpty(receivingLine.getMerchandises())){
             JsonObject jsonObject = gson.fromJson(receivingLine.getMerchandises(), JsonObject.class);
             response.setMerchandises(new ArrayList<>());

@@ -43,6 +43,7 @@ public class ReceivingSummaryResponseConverter implements Converter<ReceiveSumma
 //        response.setParentDivisionNumber(receiveSummary.getBaseDivisionNumber());
 //        response.setMemo("MEMO");
         response.setControlSequenceNumber(receiveSummary.getControlSequenceNumber());
+        response.setBottleDepositAmount(receiveSummary.getBottleDepositAmount());
         return response;
     }
 }

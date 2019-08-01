@@ -97,4 +97,6 @@ public class ReceivingSummaryResponse {
 
     private Integer controlSequenceNumber;
 
+    private Double bottleDepositAmount;
+
 }
