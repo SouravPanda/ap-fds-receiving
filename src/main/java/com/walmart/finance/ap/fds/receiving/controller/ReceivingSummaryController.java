@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "{countryCode}/receiving/summary")
@@ -41,7 +42,8 @@ public class ReceivingSummaryController {
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Error")})
     public ReceivingResponse getReceiveSummary(@PathVariable("countryCode")
                                                        String countryCode,
-                                               @RequestParam Map<String, String> allRequestParams, @RequestParam List<String> itemNumbers,@RequestParam List<String> upcNumbers) {
+                                               @RequestParam(value = "allRequestParams", required = false) Map<String, String> allRequestParams, @RequestParam(value = "itemNumbers", required = false) List<String> itemNumbers,
+                                               @RequestParam(value = "upcNumbers", required = false) List<String> upcNumbers) {
         ReceiveSummaryValidator.validate(countryCode, allRequestParams);
 
         return receiveSummaryService.getReceiveSummary(allRequestParams, itemNumbers, upcNumbers);
