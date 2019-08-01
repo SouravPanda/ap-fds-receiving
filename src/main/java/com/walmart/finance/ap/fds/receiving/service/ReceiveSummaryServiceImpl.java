@@ -5,10 +5,7 @@ import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.common.DB2SyncStatus;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryReqConverter;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
-import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
-import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
-import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
-import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
+import com.walmart.finance.ap.fds.receiving.exception.*;
 import com.walmart.finance.ap.fds.receiving.integrations.*;
 import com.walmart.finance.ap.fds.receiving.model.*;
 import com.walmart.finance.ap.fds.receiving.repository.ReceiveSummaryDataRepository;
@@ -48,16 +45,10 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     public static final Logger log = LoggerFactory.getLogger(ReceiveSummaryServiceImpl.class);
 
     @Autowired
-    ReceiveSummaryDataRepository receiveDataRepository;
-
-    @Autowired
     MongoTemplate mongoTemplate;
 
     @Autowired
     ReceivingSummaryResponseConverter receivingSummaryResponseConverter;
-
-    @Autowired
-    ReceivingSummaryReqConverter receivingSummaryReqConverter;
 
     @Autowired
     InvoiceIntegrationService invoiceIntegrationService;
@@ -67,8 +58,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     @Autowired
     ReceiveSummaryLineValidator receiveSummaryLineValidator;
-
-    FreightLineIntegrationService freightLineIntegrationService;
 
 
     @Autowired
@@ -120,15 +109,15 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             } else {
                 receiveSummaries = getSearchCriteriaForGet(paramMap);
             }
-            log.info("Before : size of recesummary list -" + receiveSummaries.size());
+            log.info(ReceivingLogs.BEFORESIZESUMMARY.getParameterName() + receiveSummaries.size());
             if (CollectionUtils.isNotEmpty(receiveSummaries) && receiveSummaries.size() > 1000) {
                 receiveSummaries.subList(1000, receiveSummaries.size()).clear();
             }
-            log.info("After : size of recesummary list -" + receiveSummaries.size());
+            log.info(ReceivingLogs.AFTERSIZESUMMARY.getParameterName() + receiveSummaries.size());
             Map<String, AdditionalResponse> responseMap = getLineResponseMap(receiveSummaries, itemNumbers, upcNumbers);
             //Todo parallel stream performance check
             if (CollectionUtils.isEmpty(receiveSummaries)) {
-                throw new NotFoundException("Receiving summary not found for given search criteria", "please enter valid query parameters");
+                throw new NotFoundException(ReceivingErrors.CONTENTNOTFOUNDSUMMARY.getParameterName(), ReceivingErrors.INVALIDQUERYPARAMS.getParameterName());
             } else {
                 responseList = receiveSummaries.stream().map(
                         t -> {
@@ -151,7 +140,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             }
         } catch (NumberFormatException e) {
             log.error(ExceptionUtils.getStackTrace(e));//TODO
-            throw new BadRequestException("Data Type is invalid for input values.", "Please enter valid query parameters");
+            throw new BadRequestException(ReceivingErrors.INVALIDDATATYPE.getParameterName(),ReceivingErrors.INVALIDQUERYPARAMS.getParameterName());
         }
     }
 
@@ -208,10 +197,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         return paramMap;
     }
 
-    /*    private String formulateId(String controlNumber, String receiptNumber, String locationNumber, String receiptDate) {
-            return controlNumber + ReceivingConstants.PIPE_SEPARATOR + receiptNumber + ReceivingConstants.PIPE_SEPARATOR + locationNumber + ReceivingConstants.PIPE_SEPARATOR + receiptDate;
-
-        }*/
     private String formulateId(String receivingControlNumber, String poReceiveId, String locationNumber, String MDSReceiveDate) {
         return receivingControlNumber + ReceivingConstants.PIPE_SEPARATOR + poReceiveId + ReceivingConstants.PIPE_SEPARATOR + locationNumber + ReceivingConstants.PIPE_SEPARATOR + MDSReceiveDate;
 
@@ -220,7 +205,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     /*******  Search Criteria methods  *********/
 
     private List<ReceiveSummary> getSearchCriteriaForGet(HashMap<String, String> paramMap) {
-        log.info("Inside getSearchCriteriaForGet method");
+        log.info(ReceivingLogs.SEARCHCRITERIAFORGET.getParameterName());
         Query query = searchCriteriaForGet(paramMap);
         return executeQueryForReceiveSummary(query);
     }
@@ -290,7 +275,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             }
         } catch (DateTimeParseException e) {
             log.error(ExceptionUtils.getStackTrace(e));
-            throw new BadRequestException("Date format is not correct.", "Please enter valid query parameters");
+            throw new BadRequestException(ReceivingErrors.INVALIDDATATYPE.getParameterName(),ReceivingErrors.INVALIDQUERYPARAMS.getParameterName());
         }
         return null;
     }
@@ -300,7 +285,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     /******* Invoice Summary Integration *********/
 
     private List<ReceiveSummary> getInvoiceFromInvoiceSummary(HashMap<String, String> paramMap) {
-        log.info("Inside getInvoiceFromInvoiceSummary method");
+        log.info(ReceivingLogs.INVOICEFROMINVSUMMARY.getParameterName());
         List<InvoiceResponseData> invoiceResponseDataList = invoiceIntegrationService.getInvoice(paramMap);
         HashMap<String, ReceiveSummary> receiveSummaryHashMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(invoiceResponseDataList)) {
@@ -540,7 +525,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
         if (receivingSummaryRequest != null) {
             if (!receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryRequest)) {
-                throw new InvalidValueException("Value of field  businessStatusCode passed is not valid", "it should be one among A,C,D,I,M,X,Z");
+                throw new InvalidValueException(ReceivingErrors.INVALIDBUSINESSSTATUSCODE.getParameterName(), ReceivingErrors.BUSINESSSTATUSDETAILS.getParameterName());
             }
         }
 
@@ -560,7 +545,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
         ReceiveSummary commitedRcvSummary = mongoTemplate.findAndModify(dynamicQuery, update, ReceiveSummary.class, summaryCollection);
         if (commitedRcvSummary == null) {
-            throw new ContentNotFoundException("Receive summary not found for the given id", "please enter a valid id");
+            throw new ContentNotFoundException(ReceivingErrors.CONTENTNOTFOUNDSUMMARY.getParameterName(), ReceivingErrors.VALIDID.getParameterName());
         }
 
         if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
@@ -588,11 +573,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         log.info("unitofWorkid:" + receivingSummaryLineRequest.getMeta().getUnitofWorkid());
 
         if (!receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)) {
-            throw new InvalidValueException("Value of field  businessStatusCode passed is not valid", "it should be one among A,C,D,I,M,X,Z");
+            throw new InvalidValueException(ReceivingErrors.INVALIDBUSINESSSTATUSCODE.getParameterName(), ReceivingErrors.BUSINESSSTATUSDETAILS.getParameterName());
         }
 
         if (!receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest)) {
-            throw new InvalidValueException("Invalid value, inventoryMatchStatus", "it should be in range 0-9");
+            throw new InvalidValueException(ReceivingErrors.INVALIDINVENTORYMATCHSTATUSCODE.getParameterName(), ReceivingErrors.INVALIDINVENTORYMATCHSTATUSDETAILS.getParameterName());
         }
 
         if (receivingSummaryLineRequest.getReceiptLineNumber() == null) {
@@ -612,7 +597,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             update.set(ReceiveSummaryParameters.BUSINESSSTATUSCODE.getParameterName(), receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
             commitedRcvSummary = mongoTemplate.findAndModify(query, update, ReceiveSummary.class, summaryCollection);
             if (commitedRcvSummary == null) {
-                throw new ContentNotFoundException("Receive summary not found for the given id", "please enter a valid id");
+                throw new ContentNotFoundException(ReceivingErrors.CONTENTNOTFOUNDSUMMARY.getParameterName(), ReceivingErrors.VALIDID.getParameterName());
             }
 
             if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
@@ -672,7 +657,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             update.set(ReceiveSummaryParameters.BUSINESSSTATUSCODE.getParameterName(), receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
             commitedRcvSummary = mongoTemplate.findAndModify(query, update, ReceiveSummary.class, summaryCollection);
             if (commitedRcvSummary == null) {
-                throw new ContentNotFoundException("Receive summary not found for the given id", "please enter a valid id");
+                throw new ContentNotFoundException(ReceivingErrors.CONTENTNOTFOUNDSUMMARY.getParameterName(), ReceivingErrors.VALIDID.getParameterName());
             }
             if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
                 summaryLineList.add(commitedRcvSummary);
@@ -688,7 +673,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
             commitedRcvLine = mongoTemplate.findAndModify(query, updateLine, ReceivingLine.class, lineCollection);
             if (commitedRcvLine == null) {
-                throw new ContentNotFoundException("Receive line not found for the given id ", "please enter a valid id");
+                throw new ContentNotFoundException(ReceivingErrors.CONTENTNOTFOUNDLINE.getParameterName(), ReceivingErrors.VALIDID.getParameterName());
             }
             if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
                 summaryLineList.add(commitedRcvLine);

@@ -4,6 +4,7 @@ package com.walmart.finance.ap.fds.receiving.controller;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveLineService;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveLineServiceImpl;
+import com.walmart.finance.ap.fds.receiving.validator.ReceiveLineValidator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -11,6 +12,8 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 
 @RestController
@@ -35,22 +38,10 @@ public class ReceivingLineController {
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
 
     public ReceivingResponse getReceiveLine(@PathVariable("countryCode")
-                                                              String countryCode, @RequestParam(value = "purchaseOrderId", required = false) String purchaseOrderId,
-                                            @RequestParam(value = "receiptNumbers", required = false) String receiptNumbers,
-                                            @RequestParam(value = "transactionType", required = false) String transactionType,
-                                            @RequestParam(value = "controlNumber", required = false) String controlNumber,
-                                            @RequestParam(value = "locationNumber", required = false) String locationNumber,
-                                            @RequestParam(value = "divisionNumber", required = false) String divisionNumber,
-                                            @RequestParam(value = "pageNbr", defaultValue = "0")
-                                                              Integer pageNbr,
-                                            @RequestParam(value = "pageSize", defaultValue = "1000")
-                                                              Integer pageSize,
-                                            @RequestParam(value = "orderBy", defaultValue = "creationDate")
-                                                              String orderBy,
-                                            @RequestParam(value = "order", defaultValue = "DESC")
-                                                              Sort.Direction order) {
+                                                    String countryCode, @RequestParam Map<String, String> allRequestParams) {
+        ReceiveLineValidator.validate(countryCode, allRequestParams);
 
-        return receiveLineService.getLineSummary(purchaseOrderId, receiptNumbers, transactionType, controlNumber, locationNumber, divisionNumber);
+        return receiveLineService.getLineSummary(allRequestParams);
 
     }
 
