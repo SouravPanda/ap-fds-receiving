@@ -365,7 +365,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         while (iteratorLine.hasNext()) {
             ReceivingLine receivingLine = iteratorLine.next();
             if (receivingLineMap.containsKey(receivingLine.getSummaryReference())) {
-                receivingLineMap.get(receivingLine.getReceiveId()).add(receivingLine);
+                receivingLineMap.get(receivingLine.getSummaryReference()).add(receivingLine);
             } else {
                 List<ReceivingLine> lineList = new ArrayList<>();
                 lineList.add(receivingLine);
