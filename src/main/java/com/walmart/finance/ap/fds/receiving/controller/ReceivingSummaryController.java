@@ -40,7 +40,7 @@ public class ReceivingSummaryController {
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Error")})
     public ReceivingResponse getReceiveSummary(@PathVariable("countryCode")
                                                        String countryCode,
-                                               @RequestParam Map<String, String> allRequestParams, List<String> itemNumbers, List<String> upcNumbers) {
+                                               @RequestParam Map<String, String> allRequestParams, @RequestParam List<String> itemNumbers,@RequestParam List<String> upcNumbers) {
         ReceiveSummaryValidator.validate(countryCode, allRequestParams);
 
         return receiveSummaryService.getReceiveSummary(allRequestParams, itemNumbers, upcNumbers);

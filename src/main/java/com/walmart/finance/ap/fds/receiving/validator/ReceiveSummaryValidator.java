@@ -2,9 +2,7 @@ package com.walmart.finance.ap.fds.receiving.validator;
 
 import com.walmart.finance.ap.fds.receiving.common.ReceiveSummaryBusinessStat;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
-import com.walmart.finance.ap.fds.receiving.model.ReceiveLineRequestParams;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryRequestParams;
-import com.walmart.finance.ap.fds.receiving.model.ReceivingLineParameters;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
