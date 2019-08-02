@@ -62,10 +62,10 @@ public class ReceiveLineServiceImplTest {
         listOfContent.add(receivingLineAt);
         ReceivingLineResponse receivingLineResponse = new ReceivingLineResponse(new Long(0), 0, 0, 0, 0, 2.9,
                 1.9, 0, 0, null, "0",
-                null, null, null, 0, null, 0, 0, 10.0, null);
+                null, null, null, 0, null, 0, 0, "A", null);
         ReceivingLineResponse receivingLineResponseAt = new ReceivingLineResponse(new Long(0), 0, 0, 0, 0, 2.9,
                 1.9, 0, 0, null, "0",
-                null, null, null, 0, null, 0, 0, 10.0, null);
+                null, null, null, 0, null, 0, 0, "A", null);
         List<ReceivingLineResponse> content = new ArrayList<>();
         content.add(receivingLineResponse);
         content.add(receivingLineResponseAt);
