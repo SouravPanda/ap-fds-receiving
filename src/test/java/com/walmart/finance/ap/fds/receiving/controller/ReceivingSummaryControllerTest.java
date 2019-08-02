@@ -11,15 +11,12 @@ import com.walmart.finance.ap.fds.receiving.service.ReceiveSummaryServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
@@ -27,8 +24,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -208,7 +204,9 @@ public class ReceivingSummaryControllerTest {
             }
         };
         ReceivingResponse successMessage = new ReceivingResponse(true, LocalDateTime.of(2019, 05, 12, 15, 31, 16), responseList);
-        when(receiveSummaryService.getReceiveSummary(Mockito.anyMap(), Mockito.anyList(), Mockito.anyList())).thenReturn(successMessage);
+        Map<String, String> mockMap = new LinkedHashMap<>();
+        mockMap.put("controlNumber","984003673");
+        when(receiveSummaryService.getReceiveSummary(Mockito.anyMap(),Mockito.any(),Mockito.any())).thenReturn(successMessage);
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/US/receiving/summary")
                 .param("controlNumber", "984003673")
