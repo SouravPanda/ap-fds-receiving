@@ -2,9 +2,11 @@ package com.walmart.finance.ap.fds.receiving.service;
 
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineResponseConverter;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
+import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
+import com.walmart.finance.ap.fds.receiving.validator.ReceiveLineValidator;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @PrepareForTest(ReceiveLineServiceImpl.class)
@@ -79,55 +80,23 @@ public class ReceiveLineServiceImplTest {
         when(mockQuery.limit(Mockito.anyInt())).thenReturn(mockQuery);
         when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.any())).thenReturn(listOfContent);
         when(receivingLineResponseConverter.convert(Mockito.any(ReceivingLine.class))).thenReturn(receivingLineResponse);
-        Map<String, String> allRequestParams = new HashMap<>();
-        allRequestParams.put(Mockito.anyString(), Mockito.anyString());
-        allRequestParams.put(Mockito.anyString(), Mockito.anyString());
-        allRequestParams.put(Mockito.anyString(), Mockito.anyString());
-        allRequestParams.put(Mockito.anyString(), Mockito.anyString());
-        allRequestParams.put(Mockito.anyString(), Mockito.anyString());
-        allRequestParams.put(Mockito.anyString(), Mockito.anyString());
-        Assert.assertEquals(receiveLineServiceImpl.getLineSummary(eq(allRequestParams)).isSuccess(), successMessage.isSuccess());
-    /*    try {
-            Assert.assertEquals(receiveLineServiceImpl.getLineSummary(eq(Mockito.anyMap())).isSuccess(), successMessage.isSuccess());
-        } catch (NullPointerException e) {
-            e.getMessage();
-        }*/
+        Map mockMap = Mockito.mock(Map.class);
+        Assert.assertEquals(receiveLineServiceImpl.getLineSummary(mockMap).isSuccess(), successMessage.isSuccess());
     }
 
+    @Test(expected = NotFoundException.class)
+    public void getLineSummaryNotFoundException() {
+        when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.any())).thenReturn(null);
+        Map mockMap = Mockito.mock(Map.class);
+        receiveLineServiceImpl.getLineSummary(mockMap);
+    }
 
     @Test(expected = BadRequestException.class)
     public void getLineSummaryNumberFormatException() {
-     /*   try {
-            receiveLineServiceImpl.getLineSummary(eq(Mockito.anyMap()));
-        } catch (NullPointerException e) {
-            e.getMessage();
-        }*/
-        Map<String, String> allRequestParams = new HashMap<>();
-        allRequestParams.put(Mockito.anyString(), Mockito.anyString());
-        allRequestParams.put(Mockito.anyString(), Mockito.anyString());
-        allRequestParams.put(Mockito.anyString(), Mockito.anyString());
-        allRequestParams.put(Mockito.anyString(), Mockito.anyString());
-        allRequestParams.put(Mockito.anyString(), Mockito.anyString());
-        allRequestParams.put(Mockito.anyString(), Mockito.anyString());
-        receiveLineServiceImpl.getLineSummary(eq(allRequestParams));
-    }
-
-    // @Test(expected = NotFoundException.class)
-    @Test
-    public void getLineSummaryNotFoundException() {
-        //try {
-        when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.any())).thenReturn(null);
-        Map<String, String> allRequestParams = new HashMap<>();
-        allRequestParams.put(Mockito.anyString(), Mockito.anyString());
-        allRequestParams.put(Mockito.anyString(), Mockito.anyString());
-        allRequestParams.put(Mockito.anyString(), Mockito.anyString());
-        allRequestParams.put(Mockito.anyString(), Mockito.anyString());
-        allRequestParams.put(Mockito.anyString(), Mockito.anyString());
-        allRequestParams.put(Mockito.anyString(), Mockito.anyString());
-        receiveLineServiceImpl.getLineSummary(eq(allRequestParams));
-     /*   } catch (NullPointerException e) {
-            e.getMessage();
-        }*/
+        Map<String, String> dummyMap=new HashMap<>();
+        dummyMap.put("PP","11");
+        ReceiveLineValidator.validate("US", dummyMap);
+        receiveLineServiceImpl.getLineSummary(dummyMap);
     }
 }
 

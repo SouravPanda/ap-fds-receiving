@@ -1,6 +1,8 @@
 package com.walmart.finance.ap.fds.receiving.validator;
 
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
+import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
+import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveLineRequestParams;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLineParameters;
 import org.apache.commons.lang.StringUtils;
@@ -21,7 +23,7 @@ public class ReceiveLineValidator {
                     iterator.remove();
                 }
             } catch (IllegalArgumentException ex) {
-                iterator.remove();
+                throw new BadRequestException(ReceivingErrors.JUNKPARAMS.getParameterName(), ReceivingErrors.INVALIDQUERYPARAMS.getParameterName());
             }
         }
         if (allRequestParams.containsKey(ReceivingLineParameters.PURCHASEORDERID.getParameterName())) {

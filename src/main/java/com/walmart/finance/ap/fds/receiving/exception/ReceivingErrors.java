@@ -14,6 +14,7 @@ public enum ReceivingErrors {
     INVALIDINVENTORYMATCHSTATUSCODE("Invalid value, inventoryMatchStatus"),
     INVALIDINVENTORYMATCHSTATUSDETAILS("it should be in range 0-9"),
     RECEIVELINENOTFOUND("Receiving line not found for given search criteria"),
+    JUNKPARAMS("The given query params are not valid"),
     INVALIDQUERYPARAMS("please enter valid query parameters"),
     INVALIDDATATYPE("Data Type is invalid for input values");
 
