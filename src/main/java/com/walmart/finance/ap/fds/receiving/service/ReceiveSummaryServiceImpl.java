@@ -132,53 +132,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         return receivingControlNumber + ReceivingConstants.PIPE_SEPARATOR + poReceiveId + ReceivingConstants.PIPE_SEPARATOR + storeNumber + ReceivingConstants.PIPE_SEPARATOR + receiptDate + ReceivingConstants.PIPE_SEPARATOR + lineSequenceNumber;
     }
 
-    private HashMap<String, String> checkingNotNullParameters(String countryCode, String purchaseOrderNumber, String purchaseOrderId, String receiptNumber, String transactionType, String controlNumber, String locationNumber, String divisionNumber,
-                                                              String vendorNumber, String departmentNumber, String invoiceId, String invoiceNumber, String receiptDateStart, String receiptDateEnd) {
-        HashMap<String, String> paramMap = new HashMap<>();
-        if (StringUtils.isNotEmpty(countryCode)) {
-            paramMap.put(ReceivingConstants.COUNTRYCODE, countryCode);
-        }
-        if (StringUtils.isNotEmpty(purchaseOrderId)) {
-            paramMap.put(ReceivingConstants.PURCHASEORDERID, purchaseOrderId);
-        }
-        if (StringUtils.isNotEmpty(purchaseOrderNumber)) {
-            paramMap.put(ReceivingConstants.PURCHASEORDERNUMBER, purchaseOrderNumber);
-        }
-        if (StringUtils.isNotEmpty(receiptNumber)) {
-            paramMap.put(ReceivingConstants.RECEIPTNUMBER, receiptNumber);
-        }
-        if (StringUtils.isNotEmpty(transactionType)) {
-            paramMap.put(ReceivingConstants.TRANSACTIONTYPE, transactionType);
-        }
-        if (StringUtils.isNotEmpty(controlNumber)) {
-            paramMap.put(ReceivingConstants.CONTROLNUMBER, controlNumber);
-        }
-        if (StringUtils.isNotEmpty(locationNumber)) {
-            paramMap.put(ReceivingConstants.LOCATIONNUMBER, locationNumber);
-        }
-        if (StringUtils.isNotEmpty(divisionNumber)) {
-            paramMap.put(ReceivingConstants.DIVISIONNUMBER, divisionNumber);
-        }
-        if (StringUtils.isNotEmpty(vendorNumber)) {
-            paramMap.put(ReceivingConstants.VENDORNUMBER, vendorNumber);
-        }
-        if (StringUtils.isNotEmpty(departmentNumber)) {
-            paramMap.put(ReceivingConstants.DEPARTMENTNUMBER, departmentNumber);
-        }
-        if (StringUtils.isNotEmpty(invoiceId)) {
-            paramMap.put(ReceivingConstants.INVOICEID, invoiceId);
-        }
-        if (StringUtils.isNotEmpty(invoiceNumber)) {
-            paramMap.put(ReceivingConstants.INVOICENUMBER, invoiceNumber);
-        }
-        if (StringUtils.isNotEmpty(receiptDateStart)) {
-            paramMap.put(ReceivingConstants.RECEIPTDATESTART, receiptDateStart);
-        }
-        if (StringUtils.isNotEmpty(receiptDateEnd)) {
-            paramMap.put(ReceivingConstants.RECEIPTDATEEND, receiptDateEnd);
-        }
-        return paramMap;
-    }
 
     private String formulateId(String receivingControlNumber, String poReceiveId, String locationNumber, String MDSReceiveDate) {
         return receivingControlNumber + ReceivingConstants.PIPE_SEPARATOR + poReceiveId + ReceivingConstants.PIPE_SEPARATOR + locationNumber + ReceivingConstants.PIPE_SEPARATOR + MDSReceiveDate;

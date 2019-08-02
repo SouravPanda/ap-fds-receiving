@@ -2,6 +2,8 @@ package com.walmart.finance.ap.fds.receiving.validator;
 
 import com.walmart.finance.ap.fds.receiving.common.ReceiveSummaryBusinessStat;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
+import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
+import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryRequestParams;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import org.apache.commons.lang.StringUtils;
@@ -26,7 +28,7 @@ public class ReceiveSummaryValidator {
                     iterator.remove();
                 }
             } catch (IllegalArgumentException ex) {
-                iterator.remove();
+                throw new BadRequestException(ReceivingErrors.JUNKPARAMS.getParameterName(),ReceivingErrors.INVALIDQUERYPARAMS.getParameterName());
             }
         }
         if (allRequestParams.containsKey(ReceiveSummaryRequestParams.PURCHASEORDERNUMBER.getParameterName())) {
@@ -65,8 +67,8 @@ public class ReceiveSummaryValidator {
         if (allRequestParams.containsKey(ReceiveSummaryRequestParams.DEPARTMENTNUMBER.getParameterName())) {
             allRequestParams.put(ReceivingConstants.DEPARTMENTNUMBER, allRequestParams.get(ReceiveSummaryRequestParams.DEPARTMENTNUMBER));
         }
-        if (allRequestParams.containsKey(ReceiveSummaryRequestParams.RECEIPTNUMBERS.getParameterName())) {
-            allRequestParams.put(ReceivingConstants.RECEIPTNUMBERS, allRequestParams.get(ReceiveSummaryRequestParams.RECEIPTNUMBERS));
+        if (allRequestParams.containsKey(ReceiveSummaryRequestParams.RECEIPTNUMBER.getParameterName())) {
+            allRequestParams.put(ReceivingConstants.RECEIPTNUMBERS, allRequestParams.get(ReceiveSummaryRequestParams.RECEIPTNUMBER));
         }
     }
 
