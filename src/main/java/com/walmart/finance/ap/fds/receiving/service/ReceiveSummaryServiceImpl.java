@@ -498,7 +498,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         update.set(ReceiveSummaryParameters.BUSINESSSTATUSCODE.getParameterName(), receivingSummaryRequest.getBusinessStatusCode().charAt(0));
         update.set(ReceiveSummaryParameters.DATASYNCSTATUS.getParameterName(), DB2SyncStatus.UPDATE_SYNC_INITIATED);
         update.set(ReceiveSummaryParameters.LASTUPDATEDDATE.getParameterName(), LocalDateTime.now());
-        ReceiveSummary commitedRcvSummary = mongoTemplate.findAndModify(dynamicQuery, update, FindAndModifyOptions.options().upsert(true).returnNew(true), ReceiveSummary.class, summaryCollection);
+        ReceiveSummary commitedRcvSummary = mongoTemplate.findAndModify(dynamicQuery, update, FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
         if (commitedRcvSummary == null) {
             throw new ContentNotFoundException("Receive summary not found for the given id", "please enter a valid id");
         }
@@ -544,7 +544,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             update.set(ReceiveSummaryParameters.DATASYNCSTATUS.getParameterName(), DB2SyncStatus.UPDATE_SYNC_INITIATED);
             update.set(ReceiveSummaryParameters.LASTUPDATEDDATE.getParameterName(), LocalDateTime.now());
             update.set(ReceiveSummaryParameters.BUSINESSSTATUSCODE.getParameterName(), receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
-            commitedRcvSummary = mongoTemplate.findAndModify(query, update, FindAndModifyOptions.options().upsert(true).returnNew(true),ReceiveSummary.class, summaryCollection);
+            commitedRcvSummary = mongoTemplate.findAndModify(query, update, FindAndModifyOptions.options().returnNew(true),ReceiveSummary.class, summaryCollection);
             if (commitedRcvSummary == null) {
                 throw new ContentNotFoundException("Receive summary not found for the given id", "please enter a valid id");
             }
@@ -571,7 +571,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 queryForLine.addCriteria(Criteria.where(ReceivingLineParameters.STORENUMBER.getParameterName()).is(receivingSummaryLineRequest.getLocationNumber()));
                 queryForLine.addCriteria(Criteria.where(ReceivingLineParameters.ID.getParameterName()).is(lineId));
                 updateLine.set(ReceivingLineParameters.INVENTORYMATCHSTATUS.getParameterName(), Integer.parseInt(receivingSummaryLineRequest.getInventoryMatchStatus()));
-                commitedRcvLine = mongoTemplate.findAndModify(queryForLine, updateLine, FindAndModifyOptions.options().upsert(true).returnNew(true),ReceivingLine.class, lineCollection);
+                commitedRcvLine = mongoTemplate.findAndModify(queryForLine, updateLine, FindAndModifyOptions.options().returnNew(true),ReceivingLine.class, lineCollection);
                 if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
                     summaryLineList.add(commitedRcvLine);
                 }
@@ -596,7 +596,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             update.set(ReceiveSummaryParameters.DATASYNCSTATUS.getParameterName(), DB2SyncStatus.UPDATE_SYNC_INITIATED);
             update.set(ReceiveSummaryParameters.LASTUPDATEDDATE.getParameterName(), LocalDateTime.now());
             update.set(ReceiveSummaryParameters.BUSINESSSTATUSCODE.getParameterName(), receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
-            commitedRcvSummary = mongoTemplate.findAndModify(query, update,FindAndModifyOptions.options().upsert(true).returnNew(true), ReceiveSummary.class, summaryCollection);
+            commitedRcvSummary = mongoTemplate.findAndModify(query, update,FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
             if (commitedRcvSummary == null) {
                 throw new ContentNotFoundException("Receive summary not found for the given id", "please enter a valid id");
             }
@@ -610,7 +610,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             updateLine.set(ReceivingLineParameters.DATASYNCSTATUS.getParameterName(), DB2SyncStatus.UPDATE_SYNC_INITIATED);
             updateLine.set(ReceivingLineParameters.LASTUPDATEDDATE.getParameterName(), LocalDateTime.now());
             updateLine.set(ReceivingLineParameters.INVENTORYMATCHSTATUS.getParameterName(), Integer.parseInt(receivingSummaryLineRequest.getInventoryMatchStatus()));
-            commitedRcvLine = mongoTemplate.findAndModify(query, updateLine,FindAndModifyOptions.options().upsert(true).returnNew(true), ReceivingLine.class, lineCollection);
+            commitedRcvLine = mongoTemplate.findAndModify(query, updateLine,FindAndModifyOptions.options().returnNew(true), ReceivingLine.class, lineCollection);
             if (commitedRcvLine == null) {
                 throw new ContentNotFoundException("Receive line not found for the given id ", "please enter a valid id");
             }
