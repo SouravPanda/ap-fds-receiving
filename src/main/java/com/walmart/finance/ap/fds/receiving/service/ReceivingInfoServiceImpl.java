@@ -104,7 +104,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 + (financialTxnResponseData.getReceivingDate() == null ? "0" : financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
         Query query = new Query();
         CriteriaDefinition criteriaDefinition = null;
-        if (StringUtils.isNotEmpty(id)) {
+        if (StringUtils.isNotEmpty(id) && !id.equalsIgnoreCase("0|0|0|0")) {
             criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.ID.getParameterName()).is(id);
             query.addCriteria(criteriaDefinition);
         }
@@ -123,17 +123,20 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         return executeQueryInSummary(query);
     }
 
+    /**
+     * Put the null check for date parameter befor calling this method
+     *
+     * @param date
+     * @return
+     */
     private LocalDate getDate(String date) {
         try {
-            if (null != date && !"null".equals(date)) {
-                DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                return LocalDate.parse(date, formatterDate);
-            }
+            DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            return LocalDate.parse(date, formatterDate);
         } catch (DateTimeParseException e) {
             log.error(ExceptionUtils.getStackTrace(e));
             throw new BadRequestException("Date format is not correct.", "Please enter valid query parameters");
         }
-        return null;
     }
     /*************************** Financial-Txn Logic : END ***************************/
 
@@ -197,7 +200,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             query.addCriteria(Criteria.where("_id").is(receiveSummary.getFreightBillExpandID()));
             return executeQueryInFreight(query);
         }
-        return null;
+        return new ArrayList<>();
     }
     /******* receive-freight data   *********/
 
@@ -237,7 +240,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponse.setReceiptStatus(receiveSummary.getBusinessStatusCode() != null ? receiveSummary.getBusinessStatusCode().toString() : null);
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()))
                 && allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()).equalsIgnoreCase("Y")) {
-            List<ReceivingInfoLineResponse> lineInfoList = lineResponseList.stream().map((t) -> convertToLineResponse(t)).collect(Collectors.toList());
+            List<ReceivingInfoLineResponse> lineInfoList = lineResponseList.stream().map(t -> convertToLineResponse(t)).collect(Collectors.toList());
             receivingInfoResponse.setReceivingInfoLineResponses(lineInfoList);
         }
         return receivingInfoResponse;
@@ -400,7 +403,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponseV1.setReceiptStatus(receiveSummary.getBusinessStatusCode() != null ? receiveSummary.getBusinessStatusCode().toString() : null);
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()))
                 && allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()).equalsIgnoreCase("Y")) {
-            List<ReceivingInfoLineResponse> lineInfoList = lineResponseList.stream().map((t) -> convertToLineResponse(t)).collect(Collectors.toList());
+            List<ReceivingInfoLineResponse> lineInfoList = lineResponseList.stream().map(t -> convertToLineResponse(t)).collect(Collectors.toList());
             receivingInfoResponseV1.setReceivingInfoLineResponses(lineInfoList);
         }
         return receivingInfoResponseV1;
