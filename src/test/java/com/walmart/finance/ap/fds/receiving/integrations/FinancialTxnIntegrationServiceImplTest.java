@@ -117,14 +117,14 @@ public class FinancialTxnIntegrationServiceImplTest {
                 put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "US");
                 put(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam(), "639050495");
                 put(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam(), "99987");
-                put(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam(), "6302");
+                put(ReceivingInfoRequestQueryParameters.RECEIPTNUMBERS.getQueryParam(), "6302");
                 put(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam(), "1828926897");
-                put("scenario", ReceivingInfoRequestCombinations.INVOICEID.name());
+                put("scenario", ReceivingInfoRequestCombinations.VENDORNUMBER_PURCHASEORDERNUMBER_RECEIPTNUMBERS.name());
             }
         };
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
-        String url = "https://api.dev.wal-mart.com/bofap/dev/bofap/US/invoice/financial/transaction/vendorNumber/2222/poNumber/99987/storeNumber/6302?invoiceNumber=1828926897";
+        String url = "https://api.dev.wal-mart.com/bofap/dev/bofap/US/invoice/financial/transaction/vendorNumber/2222/poNumber/99987/receiptNumber/6302?invoiceNumber=1828926897";
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
         requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
@@ -136,5 +136,231 @@ public class FinancialTxnIntegrationServiceImplTest {
 
     private void compareResults(List<FinancialTxnResponseData> receivingInfoResponses, List<FinancialTxnResponseData> result) {
         org.assertj.core.api.Assertions.assertThat(receivingInfoResponses.get(0)).isEqualToComparingFieldByFieldRecursively(result.get(0));
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void httpStatusCodeException() {
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
+                2222, 0, 9.0, 0, "99987", "USER",
+                null, "VendorName", "1234", 1828926897,
+                "1828926897", "Memo", 1223, null, "164680544", null
+                ,null,null,null,null,null,null,null,null,null,null,null,null,null
+                ,null,null,null,null,null,null,null,null,null,null,null,null,null,null
+                ,null,null,null,null,null,null,null,null,null);
+
+        Map<String, String> queryParamMap = new HashMap<String, String>() {
+            {
+                put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "US");
+                put(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam(), "639050495");
+                put(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam(), "99987");
+                put(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam(), "6302");
+                put(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam(), "1828926897");
+                put("scenario", ReceivingInfoRequestCombinations.VENDORNUMBER_PURCHASEORDERNUMBER_LOCATIONNUMBER.name());
+            }
+        };
+        List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
+        financialTxnResponseDataList.add(financialTxnResponseData);
+        String url = "https://api.dev.wal-mart.com/bofap/dev/bofap/US/invoice/financial/transaction/vendorNumber/639050495/poNumber/99987/storeNumber/6302?invoiceNumber=1828926897";
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
+        requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
+        HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
+        HttpStatusCodeException exception = new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+        when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenThrow(exception);
+        financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap);
+    }
+
+    @Test
+    public void geFinTxnVendorLocationInvoiceNum() {
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
+                2222, 0, 9.0, 0, "99987",
+                "USER", null, "VendorName",
+                "1234", 1828926897, "1828926897", "Memo", 1223,
+                null, "164680544", null
+                ,null,null,null,null,null,null,null,null,null,null,null,null,null
+                ,null,null,null,null,null,null,null,null,null,null,null,null,null,null
+                ,null,null,null,null,null,null,null,null,null);
+
+        Map<String, String> queryParamMap = new HashMap<String, String>() {
+            {
+                put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "US");
+                put(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam(), "639050495");
+                put(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam(), "6302");
+                put(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam(), "1828926897");
+                put("scenario", ReceivingInfoRequestCombinations.VENDORNUMBER_LOCATIONNUMBER_INVOICENUMBER.name());
+            }
+        };
+        List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
+        financialTxnResponseDataList.add(financialTxnResponseData);
+        FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(financialTxnResponseDataList);
+        String url = "https://api.dev.wal-mart.com/bofap/dev/bofap/US/invoice/financial/transaction/vendorNumber/639050495/invoiceNumber/1828926897/storeNumber/6302";
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
+        requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
+        HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
+        ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
+        when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
+        compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
+    }
+
+    @Test
+    public void geFinTxnVendorLocationReceiptNum() {
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
+                2222, 0, 9.0, 0, "99987",
+                "USER", null, "VendorName",
+                "1234", 1828926897, "1828926897", "Memo", 1223,
+                null, "164680544", null
+                ,null,null,null,null,null,null,null,null,null,null,null,null,null
+                ,null,null,null,null,null,null,null,null,null,null,null,null,null,null
+                ,null,null,null,null,null,null,null,null,null);
+
+        Map<String, String> queryParamMap = new HashMap<String, String>() {
+            {
+                put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "US");
+                put(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam(), "639050495");
+                put(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam(), "6302");
+                put(ReceivingInfoRequestQueryParameters.RECEIPTNUMBERS.getQueryParam(), "1828926897");
+                put("scenario", ReceivingInfoRequestCombinations.VENDORNUMBER_LOCATIONNUMBER_RECEIPTNUMBERS.name());
+            }
+        };
+        List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
+        financialTxnResponseDataList.add(financialTxnResponseData);
+        FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(financialTxnResponseDataList);
+        String url = "https://api.dev.wal-mart.com/bofap/dev/bofap/US/invoice/financial/transaction/vendorNumber/639050495/storeNumber/6302/receiptNumber/1828926897";
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
+        requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
+        HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
+        ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
+        when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
+        compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
+    }
+
+    @Test
+    public void geFinTxnVendorPurchaseOrderId() {
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
+                2222, 0, 9.0, 0, "99987",
+                "USER", null, "VendorName",
+                "1234", 1828926897, "1828926897", "Memo", 1223,
+                null, "164680544", null
+                ,null,null,null,null,null,null,null,null,null,null,null,null,null
+                ,null,null,null,null,null,null,null,null,null,null,null,null,null,null
+                ,null,null,null,null,null,null,null,null,null);
+
+        Map<String, String> queryParamMap = new HashMap<String, String>() {
+            {
+                put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "US");
+                put(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam(), "639050495");
+                put(ReceivingInfoRequestQueryParameters.PURCHASEORDERID.getQueryParam(), "1828926897");
+                put("scenario", ReceivingInfoRequestCombinations.VENDORNUMBER_PURCHASEORDERID.name());
+            }
+        };
+        List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
+        financialTxnResponseDataList.add(financialTxnResponseData);
+        FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(financialTxnResponseDataList);
+        String url = "https://api.dev.wal-mart.com/bofap/dev/bofap/US/invoice/financial/transaction/vendorNumber/639050495/purchaseOrderId/1828926897";
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
+        requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
+        HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
+        ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
+        when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
+        compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
+    }
+
+    @Test
+    public void geFinTxnLocationPurchaseOrderNum() {
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
+                2222, 0, 9.0, 0, "99987",
+                "USER", null, "VendorName",
+                "1234", 1828926897, "1828926897", "Memo", 1223,
+                null, "164680544", null
+                ,null,null,null,null,null,null,null,null,null,null,null,null,null
+                ,null,null,null,null,null,null,null,null,null,null,null,null,null,null
+                ,null,null,null,null,null,null,null,null,null);
+
+        Map<String, String> queryParamMap = new HashMap<String, String>() {
+            {
+                put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "US");
+                put(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam(), "6302");
+                put(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam(), "1828926897");
+                put("scenario", ReceivingInfoRequestCombinations.LOCATIONNUMBER_PURCHASEORDERNUMBER_RECEIPTDATESTART_RECEIPTDATEEND.name());
+            }
+        };
+        List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
+        financialTxnResponseDataList.add(financialTxnResponseData);
+        FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(financialTxnResponseDataList);
+        String url = "https://api.dev.wal-mart.com/bofap/dev/bofap/US/invoice/financial/transaction/storeNumber/6302/poNumber/1828926897";
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
+        requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
+        HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
+        ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
+        when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
+        compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
+    }
+
+    @Test
+    public void geFinTxnLocationInvoiceNum() {
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
+                2222, 0, 9.0, 0, "99987",
+                "USER", null, "VendorName",
+                "1234", 1828926897, "1828926897", "Memo", 1223,
+                null, "164680544", null
+                ,null,null,null,null,null,null,null,null,null,null,null,null,null
+                ,null,null,null,null,null,null,null,null,null,null,null,null,null,null
+                ,null,null,null,null,null,null,null,null,null);
+
+        Map<String, String> queryParamMap = new HashMap<String, String>() {
+            {
+                put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "US");
+                put(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam(), "6302");
+                put(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam(), "1828926897");
+                put("scenario", ReceivingInfoRequestCombinations.LOCATIONNUMBER_INVOICENUMBER_RECEIPTDATESTART_RECEIPTDATEEND.name());
+            }
+        };
+        List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
+        financialTxnResponseDataList.add(financialTxnResponseData);
+        FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(financialTxnResponseDataList);
+        String url = "https://api.dev.wal-mart.com/bofap/dev/bofap/US/invoice/financial/transaction/storeNumber/6302/invoiceNumber/1828926897";
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
+        requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
+        HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
+        ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
+        when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
+        compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
+    }
+
+    @Test
+    public void geFinTxnLocationVendorNum() {
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
+                2222, 0, 9.0, 0, "99987",
+                "USER", null, "VendorName",
+                "1234", 1828926897, "1828926897", "Memo", 1223,
+                null, "164680544", null
+                ,null,null,null,null,null,null,null,null,null,null,null,null,null
+                ,null,null,null,null,null,null,null,null,null,null,null,null,null,null
+                ,null,null,null,null,null,null,null,null,null);
+
+        Map<String, String> queryParamMap = new HashMap<String, String>() {
+            {
+                put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "US");
+                put(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam(), "6302");
+                put(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam(), "2222");
+                put("scenario", ReceivingInfoRequestCombinations.LOCATIONNUMBER_VENDORNUMBER_RECEIPTDATESTART_RECEIPTDATEEND.name());
+            }
+        };
+        List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
+        financialTxnResponseDataList.add(financialTxnResponseData);
+        FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(financialTxnResponseDataList);
+        String url = "https://api.dev.wal-mart.com/bofap/dev/bofap/US/invoice/financial/transaction/storeNumber/6302/vendorNumber/2222";
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
+        requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
+        HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
+        ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
+        when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
+        compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
     }
 }
