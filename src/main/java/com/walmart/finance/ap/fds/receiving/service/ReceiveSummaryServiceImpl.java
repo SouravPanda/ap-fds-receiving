@@ -188,7 +188,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             Criteria vendorNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.VENDORNUMBER.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.VENDORNUMBER)));
             dynamicQuery.addCriteria(vendorNumberCriteria);
         }
-        log.info("query: " + dynamicQuery);
+       // log.info("query: " + dynamicQuery);
         return dynamicQuery;
     }
 
@@ -255,7 +255,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.DEPARTMENTNUMBER.getParameterName()).is(invoiceResponseData.getInvoiceDeptNumber().trim());
             query.addCriteria(criteriaDefinition);
         }
-        log.info("query: " + query);
+       // log.info("query: " + query);
         return criteriaDefinition == null ? null : executeQueryForReceiveSummary(query);
     }
 
@@ -266,7 +266,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             query.addCriteria(Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponseData.getPurchaseOrderNumber().trim()));
             query.addCriteria(Criteria.where(ReceiveSummaryCosmosDBParameters.TRANSACTIONTYPE.getParameterName()).is(0));
         }
-        log.info("query: " + query);
+       // log.info("query: " + query);
         return executeQueryForReceiveSummary(query);
     }
 
@@ -277,7 +277,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             query.addCriteria(Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponseData.getInvoiceNumber().trim()));
             query.addCriteria(Criteria.where(ReceiveSummaryCosmosDBParameters.TRANSACTIONTYPE.getParameterName()).is(1));
         }
-        log.info("query: " + query);
+      //  log.info("query: " + query);
         return executeQueryForReceiveSummary(query);
     }
     /******* Invoice Summary Integration *********/
@@ -293,7 +293,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         }
         if (CollectionUtils.isNotEmpty(criteriaList)) {
             Query query = new Query(new Criteria().orOperator(criteriaList.toArray(new Criteria[criteriaList.size()])));
-            log.info("query: " + query);
+          //  log.info("query: " + query);
             lineResponseList = executeQueryReceiveline(query);
         }
         Map<String, List<ReceivingLine>> receivingLineMap = new HashMap<>();

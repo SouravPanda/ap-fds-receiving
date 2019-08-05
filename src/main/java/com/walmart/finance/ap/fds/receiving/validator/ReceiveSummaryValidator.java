@@ -67,8 +67,8 @@ public class ReceiveSummaryValidator {
         if (allRequestParams.containsKey(ReceiveSummaryRequestParams.DEPARTMENTNUMBER.getParameterName())) {
             allRequestParams.put(ReceivingConstants.DEPARTMENTNUMBER, allRequestParams.get(ReceiveSummaryRequestParams.DEPARTMENTNUMBER));
         }
-        if (allRequestParams.containsKey(ReceiveSummaryRequestParams.RECEIPTNUMBER.getParameterName())) {
-            allRequestParams.put(ReceivingConstants.RECEIPTNUMBERS, allRequestParams.get(ReceiveSummaryRequestParams.RECEIPTNUMBER));
+        if (allRequestParams.containsKey(ReceiveSummaryRequestParams.RECEIPTNUMBERS.getParameterName())) {
+            allRequestParams.put(ReceivingConstants.RECEIPTNUMBERS, allRequestParams.get(ReceiveSummaryRequestParams.RECEIPTNUMBERS));
         }
     }
 

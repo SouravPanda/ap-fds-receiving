@@ -8,7 +8,9 @@ public enum ReceiveSummaryRequestParams {
 
     PURCHASEORDERNUMBER("purchaseOrderNumber"),
     PURCHASEORDERID("purchaseOrderId"),
-    RECEIPTNUMBER("receiptNumber"),
+    RECEIPTNUMBERS("receiptNumbers"),
+    ITEMNUMBERS("itemNumbers"),
+    UPCNUMBERS("upcNumbers"),
     CONTROLNUMBER("controlNumber"),
     LOCATIONNUMBER("locationNumber"),
     TRANSACTIONTYPE("transactionType"),

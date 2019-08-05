@@ -9,9 +9,9 @@
           class="org.springframework.aop.interceptor.PerformanceMonitorInterceptor" />
 
     <aop:config>
-        <aop:pointcut id="serviceAndIntegrationMethods" expression="execution(* com.walmart.finance.ap.fds.receiving.service.*.*(..) ||  execution(* com.walmart.finance.ap.fds.receiving.integrations.*.*(..))"/>
-        <aop:advisor pointcut-ref="serviceAndIntegrationMethods" advice-ref="performanceMonitor" order="#{T(com.walmart.finance.ap.fds.receiving.common).PERF_LOGGING_FILTER_ORDER}"/>
+        <aop:pointcut id="serviceAndIntegrationMethods" expression="execution(* com.walmart.finance.ap.fds.receiving.service.*.*(..)) ||  execution(* com.walmart.finance.ap.fds.receiving.integrations.*.*(..))"/>
+        <aop:advisor pointcut-ref="serviceAndIntegrationMethods" advice-ref="performanceMonitor" order="#{T(com.walmart.finance.ap.fds.receiving.common.ReceivingConstants).PERF_LOGGING_FILTER_ORDER}"/>
     </aop:config>
 
-
 </beans>
+
