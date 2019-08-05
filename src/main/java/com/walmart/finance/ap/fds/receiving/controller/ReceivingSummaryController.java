@@ -47,7 +47,8 @@ public class ReceivingSummaryController {
                                                @RequestParam(value = "upcNumbers", required = false) List<String> upcNumbers) {
         ReceiveSummaryValidator.validate(countryCode, allRequestParams);
 
-        return receiveSummaryService.getReceiveSummary(allRequestParams, itemNumbers, upcNumbers);
+        ReceivingResponse receivingResponse = receiveSummaryService.getReceiveSummary(allRequestParams, itemNumbers, upcNumbers);
+        return receivingResponse;
     }
 
     /**
