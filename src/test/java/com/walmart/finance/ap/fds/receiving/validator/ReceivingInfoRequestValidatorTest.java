@@ -19,7 +19,7 @@ public class ReceivingInfoRequestValidatorTest {
         Map<String, String> allRequestParams = new HashMap<>();
         allRequestParams.put(ReceivingInfoRequestQueryParameters.INVOICEID.getQueryParam(), "1234");
         allRequestParams.put(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam(), null);
-        allRequestParams.put("notExist","123");
+        allRequestParams.put("notExist", "123");
         ReceivingInfoRequestValidator.validate("US", allRequestParams);
         assertTrue(allRequestParams.get("scenario").equalsIgnoreCase(ReceivingInfoRequestCombinations.INVOICEID.name()));
     }

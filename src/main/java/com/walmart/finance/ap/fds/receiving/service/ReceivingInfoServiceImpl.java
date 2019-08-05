@@ -123,17 +123,20 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         return executeQueryInSummary(query);
     }
 
+    /**
+     * Put the null check for date parameter befor calling this method
+     *
+     * @param date
+     * @return
+     */
     private LocalDate getDate(String date) {
         try {
-            if (null != date && !"null".equals(date)) {
-                DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                return LocalDate.parse(date, formatterDate);
-            }
+            DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            return LocalDate.parse(date, formatterDate);
         } catch (DateTimeParseException e) {
             log.error(ExceptionUtils.getStackTrace(e));
             throw new BadRequestException("Date format is not correct.", "Please enter valid query parameters");
         }
-        return null;
     }
     /*************************** Financial-Txn Logic : END ***************************/
 
@@ -197,7 +200,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             query.addCriteria(Criteria.where("_id").is(receiveSummary.getFreightBillExpandID()));
             return executeQueryInFreight(query);
         }
-        return null;
+        return new ArrayList<>();
     }
     /******* receive-freight data   *********/
 

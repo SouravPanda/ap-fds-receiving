@@ -10,7 +10,6 @@ import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.response.*;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestCombinations;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
-import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -76,7 +75,7 @@ public class ReceivingInfoServiceImplTest {
                 LocalDate.now(), 9.0, 7, "0",
                 0, LocalDateTime.now(), 0, "0000030006", "yyyy",
                 LocalDateTime.now(), "4665267"
-                , 'K', "LLL", 0.0, new Long(999403403),null,null,null);
+                , 'K', "LLL", 0.0, new Long(999403403), null, null, null);
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(
                 new ArrayList<ReceiveSummary>() {
                     {
@@ -91,7 +90,7 @@ public class ReceivingInfoServiceImplTest {
                         LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                         LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 6, LocalDate.now(),
                         0, 1.9, "LL", 0, "ww",
-                        null, 1, "N", "NSW CRASH TRNF", 1, new Long(999403403), "999403403|0000030006|3669|0",null,null,null));
+                        null, 1, "N", "NSW CRASH TRNF", 1, new Long(999403403), "999403403|0000030006|3669|0", null, null, null));
             }
         };
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(receivingLines);
@@ -149,7 +148,7 @@ public class ReceivingInfoServiceImplTest {
                 LocalDate.now(), 9.0, 7, "0",
                 0, LocalDateTime.now(), 0, "0000030006", "yyyy",
                 LocalDateTime.now(), "4665267"
-                , 'K', "LLL", 0.0, new Long(999403403),null,null,null);
+                , 'K', "LLL", 0.0, new Long(999403403), null, null, null);
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(new ArrayList<ReceiveSummary>() {
             {
                 add(receiveSummary);
@@ -163,7 +162,7 @@ public class ReceivingInfoServiceImplTest {
                         LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                         LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 6, LocalDate.now(),
                         0, 1.9, "LL", 0, "ww",
-                        null, 1, "N", "NSW CRASH TRNF", 1, new Long(999403403), "999403403|0000030006|3669|0",null,null,null));
+                        null, 1, "N", "NSW CRASH TRNF", 1, new Long(999403403), "999403403|0000030006|3669|0", null, null, null));
             }
         };
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(receivingLines);
@@ -209,6 +208,7 @@ public class ReceivingInfoServiceImplTest {
     private void compareResultsV1(List<ReceivingInfoResponseV1> receivingInfoResponses, List<ReceivingInfoResponse> result) {
         org.assertj.core.api.Assertions.assertThat(receivingInfoResponses.get(0)).isEqualToComparingFieldByFieldRecursively(result.get(0));
     }
+
     /**
      * No Financial Txn + Date format exception
      */
@@ -243,7 +243,7 @@ public class ReceivingInfoServiceImplTest {
                     {
                         add(new com.walmart.finance.ap.fds.receiving.integrations.InvoiceFinTransAdjustLogs(
                                 10, 10.05, null, "Change123",
-                                null, 20.02, null,null));
+                                null, 20.02, null, null));
                     }
                 };
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(724201901, 972515962, "110950", 6479,
@@ -267,10 +267,10 @@ public class ReceivingInfoServiceImplTest {
                 null, ' ', ' ',
                 ' ', LocalDateTime.of(2019, 06, 02, 17, 30,
                 00), LocalDate.of(2019, 01, 01),
-                LocalDate.of(2019,06,02), 0.0, null, null,
+                LocalDate.of(2019, 06, 02), 0.0, null, null,
                 0, null, null, "110950", null,
                 null, null
-                , 'S', null, 0.0, new Long(972515962),null,null,null);
+                , 'S', null, 0.0, new Long(972515962), null, null, null);
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(new ArrayList<ReceiveSummary>() {
             {
                 add(receiveSummary);
@@ -282,10 +282,10 @@ public class ReceivingInfoServiceImplTest {
                         1, 575486609, 495742, 2, 30.0, 30.09, null,
                         null, null, "0000047875883989", 0, 6479, 1,
                         LocalDate.of(2019, 06, 20), LocalDateTime.of(2019, 07, 14, 16, 50, 17), null,
-                        null, 'W', "DB2", null, 0, LocalDate.of(2019,06,11),
+                        null, 'W', "DB2", null, 0, LocalDate.of(2019, 06, 11),
                         null, 0.0, null, null, "",
                         "{ \"1\" : { \"mdseConditionCode\" : 1.0, \"mdseQuantity\" : 350.0, \"mdseQuantityUnitOfMeasureCode\" : \"01\" }, \"2\" : { \"mdseConditionCode\" : 2.0, \"mdseQuantity\" : 400.0, \"mdseQuantityUnitOfMeasureCode\" : \"02\" } }",
-                        2, "N", "NSW CRASH TRNF", 1, new Long(972515962), "972515962|110950|6479|2019-06-11",null,null,null));
+                        2, "N", "NSW CRASH TRNF", 1, new Long(972515962), "972515962|110950|6479|2019-06-11", null, null, null));
             }
         };
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(receivingLines);
@@ -296,11 +296,10 @@ public class ReceivingInfoServiceImplTest {
         };
         when(mongoTemplate.find(Mockito.any(Query.class), eq(FreightResponse.class), Mockito.any())).thenReturn(freightResponses);
         // Receiving Info Response Creation
-
-        List<ReceiveMDSResponse> merchandises = new ArrayList<ReceiveMDSResponse>(){
+        List<ReceiveMDSResponse> merchandises = new ArrayList<ReceiveMDSResponse>() {
             {
-                add(new ReceiveMDSResponse(1,350,"01"));
-                add(new ReceiveMDSResponse(2,400,"02"));
+                add(new ReceiveMDSResponse(1, 350, "01"));
+                add(new ReceiveMDSResponse(2, 400, "02"));
             }
         };
         ReceivingInfoLineResponse receivingInfoLineResponse = new ReceivingInfoLineResponse(new Long(110950), 2, 575486609,
@@ -308,26 +307,25 @@ public class ReceivingInfoServiceImplTest {
                 30.09, 2, 0,
                 "N", "0000047875883989",
                 "NSW CRASH TRNF", null, "", 1, "0.0", merchandises);
-
         List<ReceivingInfoLineResponse> lineResponses = new ArrayList<ReceivingInfoLineResponse>() {
             {
                 add(receivingInfoLineResponse);
             }
         };
-        List<com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransProcessLogs> invoiceFinTransProcessLogsResponse = new ArrayList<com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransProcessLogs>(){
+        List<com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransProcessLogs> invoiceFinTransProcessLogsResponse = new ArrayList<com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransProcessLogs>() {
             {
-                add(new com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransProcessLogs(null,null,10,null,"ID123"));
+                add(new com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransProcessLogs(null, null, 10, null, "ID123"));
             }
         };
-        List<com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransAdjustLogs> invoiceFinTransAdjustLogsResponse = new ArrayList<com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransAdjustLogs>(){
+        List<com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransAdjustLogs> invoiceFinTransAdjustLogsResponse = new ArrayList<com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransAdjustLogs>() {
             {
-                add(new com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransAdjustLogs(10,10.05,null,"Change123",
-                        null,20.02,null,null));
+                add(new com.walmart.finance.ap.fds.receiving.response.InvoiceFinTransAdjustLogs(10, 10.05, null, "Change123",
+                        null, 20.02, null, null));
             }
         };
-        List<com.walmart.finance.ap.fds.receiving.response.InvoiceFinDelNoteChangeLogs> invoiceFinDelNoteChangeLogsResponse = new ArrayList<com.walmart.finance.ap.fds.receiving.response.InvoiceFinDelNoteChangeLogs>(){
+        List<com.walmart.finance.ap.fds.receiving.response.InvoiceFinDelNoteChangeLogs> invoiceFinDelNoteChangeLogsResponse = new ArrayList<com.walmart.finance.ap.fds.receiving.response.InvoiceFinDelNoteChangeLogs>() {
             {
-                add(new com.walmart.finance.ap.fds.receiving.response.InvoiceFinDelNoteChangeLogs(null,"User1234","Del1234","OrgDel123"));
+                add(new com.walmart.finance.ap.fds.receiving.response.InvoiceFinDelNoteChangeLogs(null, "User1234", "Del1234", "OrgDel123"));
             }
         };
         ReceivingInfoResponseV1 response = new ReceivingInfoResponseV1("ID123", null, null,
@@ -336,13 +334,13 @@ public class ReceivingInfoServiceImplTest {
                 "A", 0.0, 0.0, null, 397646, null,
                 0.0, 0, "PEPSI MIDAMERICA", "1223",
                 null, null, null, 97166785,
-                "1832721624",724201901,0 ,null,"6854748957","US",
-                1,0.0,-5743.12,0.0,0.0,640
-                ,null,null,"6854748957",null,0,538,
-                0,0,"0","del123",6479,
-                7,6479,20,64,640,"N",
-                null,10,
-                invoiceFinTransProcessLogsResponse,invoiceFinTransAdjustLogsResponse,invoiceFinDelNoteChangeLogsResponse,lineResponses);
+                "1832721624", 724201901, 0, null, "6854748957", "US",
+                1, 0.0, -5743.12, 0.0, 0.0, 640
+                , null, null, "6854748957", null, 0, 538,
+                0, 0, "0", "del123", 6479,
+                7, 6479, 20, 64, 640, "N",
+                null, 10,
+                invoiceFinTransProcessLogsResponse, invoiceFinTransAdjustLogsResponse, invoiceFinDelNoteChangeLogsResponse, lineResponses);
         List<ReceivingInfoResponseV1> list = new ArrayList<ReceivingInfoResponseV1>() {
             {
                 add(response);
@@ -356,11 +354,10 @@ public class ReceivingInfoServiceImplTest {
         allRequestParams.put(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam(), "Y");
         ReceivingResponse result = receivingInfoService.getInfoSeviceDataV1(allRequestParams);
         compareResultsV1(list, result.getData());
-
     }
 
-    @Test (expected = BadRequestException.class)
-    public void formulateIdNullException(){
+    @Test(expected = BadRequestException.class)
+    public void formulateIdReceiptStartDateException() {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(724201901, null, null, null,
                 397646, 18, -5743.12, 640, "6854748957", "ID123",
                 null, "PEPSI MIDAMERICA", "1223", 97166785, "1832721624", null,
@@ -379,13 +376,13 @@ public class ReceivingInfoServiceImplTest {
         // Testing method
         Map<String, String> allRequestParams = new HashMap<>();
         allRequestParams.put("scenario", ReceivingInfoRequestCombinations.INVOICEID.name());
-        allRequestParams.put(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam(),"123");
-        allRequestParams.put(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam(),"123");
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam(), "123");
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam(), "123");
         receivingInfoService.getInfoSeviceDataV1(allRequestParams);
     }
 
-    @Test (expected = BadRequestException.class)
-    public void formulateIdNull(){
+    @Test(expected = BadRequestException.class)
+    public void formulateIdReceiptEndDateException() {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(724201901, null, null, null,
                 397646, 18, -5743.12, 640, "6854748957", "ID123",
                 null, "PEPSI MIDAMERICA", "1223", 97166785, "1832721624", null,
@@ -404,8 +401,8 @@ public class ReceivingInfoServiceImplTest {
         // Testing method
         Map<String, String> allRequestParams = new HashMap<>();
         allRequestParams.put("scenario", ReceivingInfoRequestCombinations.INVOICEID.name());
-        allRequestParams.put(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam(),"2019-01-01");
-        allRequestParams.put(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam(),"123");
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam(), "2019-01-01");
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam(), "123");
         receivingInfoService.getInfoSeviceDataV1(allRequestParams);
     }
 
@@ -414,6 +411,6 @@ public class ReceivingInfoServiceImplTest {
         // Testing method
         Map<String, String> allRequestParams = new HashMap<>();
         allRequestParams.put("scenario", ReceivingInfoRequestCombinations.INVOICEID.name());
-        ReceivingResponse result = receivingInfoService.getInfoSeviceDataV1(allRequestParams);
+        receivingInfoService.getInfoSeviceDataV1(allRequestParams);
     }
 }

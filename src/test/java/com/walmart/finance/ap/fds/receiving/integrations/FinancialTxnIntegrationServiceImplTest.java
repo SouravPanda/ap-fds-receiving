@@ -14,8 +14,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,10 +45,9 @@ public class FinancialTxnIntegrationServiceImplTest {
                 "USER", null, "VendorName",
                 "1234", 1828926897, "1828926897", "Memo", 1223,
                 null, "164680544", null
-                ,null,null,null,null,null,null,null,null,null,null,null,null,null
-                ,null,null,null,null,null,null,null,null,null,null,null,null,null,null
-                ,null,null,null,null,null,null,null,null,null);
-
+                , null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null);
         Map<String, String> queryParamMap = new HashMap<String, String>() {
             {
                 put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "US");
@@ -75,12 +72,12 @@ public class FinancialTxnIntegrationServiceImplTest {
     public void getFinancialTxnDetailsNotFoundException() {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987"
-                , "USER",null, "VendorName", "1234",
+                , "USER", null, "VendorName", "1234",
                 1828926897, "1828926897", "Memo", 1223, null,
                 "164680544", null,
-                null,null,null,null,null,null,null,null,null,null,null,null,null
-                ,null,null,null,null,null,null,null,null,null,null,null,null,null,null
-                ,null,null,null,null,null,null,null,null,null);
+                null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null);
         Map<String, String> queryParamMap = new HashMap<String, String>() {
             {
                 put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "2222");
@@ -108,10 +105,9 @@ public class FinancialTxnIntegrationServiceImplTest {
                 2222, 0, 9.0, 0, "99987", "USER",
                 null, "VendorName", "1234", 1828926897,
                 "1828926897", "Memo", 1223, null, "164680544", null
-                ,null,null,null,null,null,null,null,null,null,null,null,null,null
-                ,null,null,null,null,null,null,null,null,null,null,null,null,null,null
-                ,null,null,null,null,null,null,null,null,null);
-
+                , null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null);
         Map<String, String> queryParamMap = new HashMap<String, String>() {
             {
                 put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "US");
@@ -144,10 +140,9 @@ public class FinancialTxnIntegrationServiceImplTest {
                 2222, 0, 9.0, 0, "99987", "USER",
                 null, "VendorName", "1234", 1828926897,
                 "1828926897", "Memo", 1223, null, "164680544", null
-                ,null,null,null,null,null,null,null,null,null,null,null,null,null
-                ,null,null,null,null,null,null,null,null,null,null,null,null,null,null
-                ,null,null,null,null,null,null,null,null,null);
-
+                , null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null);
         Map<String, String> queryParamMap = new HashMap<String, String>() {
             {
                 put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "US");
@@ -177,10 +172,9 @@ public class FinancialTxnIntegrationServiceImplTest {
                 "USER", null, "VendorName",
                 "1234", 1828926897, "1828926897", "Memo", 1223,
                 null, "164680544", null
-                ,null,null,null,null,null,null,null,null,null,null,null,null,null
-                ,null,null,null,null,null,null,null,null,null,null,null,null,null,null
-                ,null,null,null,null,null,null,null,null,null);
-
+                , null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null);
         Map<String, String> queryParamMap = new HashMap<String, String>() {
             {
                 put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "US");
@@ -210,10 +204,9 @@ public class FinancialTxnIntegrationServiceImplTest {
                 "USER", null, "VendorName",
                 "1234", 1828926897, "1828926897", "Memo", 1223,
                 null, "164680544", null
-                ,null,null,null,null,null,null,null,null,null,null,null,null,null
-                ,null,null,null,null,null,null,null,null,null,null,null,null,null,null
-                ,null,null,null,null,null,null,null,null,null);
-
+                , null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null);
         Map<String, String> queryParamMap = new HashMap<String, String>() {
             {
                 put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "US");
@@ -243,10 +236,9 @@ public class FinancialTxnIntegrationServiceImplTest {
                 "USER", null, "VendorName",
                 "1234", 1828926897, "1828926897", "Memo", 1223,
                 null, "164680544", null
-                ,null,null,null,null,null,null,null,null,null,null,null,null,null
-                ,null,null,null,null,null,null,null,null,null,null,null,null,null,null
-                ,null,null,null,null,null,null,null,null,null);
-
+                , null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null);
         Map<String, String> queryParamMap = new HashMap<String, String>() {
             {
                 put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "US");
@@ -275,10 +267,9 @@ public class FinancialTxnIntegrationServiceImplTest {
                 "USER", null, "VendorName",
                 "1234", 1828926897, "1828926897", "Memo", 1223,
                 null, "164680544", null
-                ,null,null,null,null,null,null,null,null,null,null,null,null,null
-                ,null,null,null,null,null,null,null,null,null,null,null,null,null,null
-                ,null,null,null,null,null,null,null,null,null);
-
+                , null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null);
         Map<String, String> queryParamMap = new HashMap<String, String>() {
             {
                 put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "US");
@@ -307,10 +298,9 @@ public class FinancialTxnIntegrationServiceImplTest {
                 "USER", null, "VendorName",
                 "1234", 1828926897, "1828926897", "Memo", 1223,
                 null, "164680544", null
-                ,null,null,null,null,null,null,null,null,null,null,null,null,null
-                ,null,null,null,null,null,null,null,null,null,null,null,null,null,null
-                ,null,null,null,null,null,null,null,null,null);
-
+                , null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null);
         Map<String, String> queryParamMap = new HashMap<String, String>() {
             {
                 put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "US");
@@ -339,10 +329,9 @@ public class FinancialTxnIntegrationServiceImplTest {
                 "USER", null, "VendorName",
                 "1234", 1828926897, "1828926897", "Memo", 1223,
                 null, "164680544", null
-                ,null,null,null,null,null,null,null,null,null,null,null,null,null
-                ,null,null,null,null,null,null,null,null,null,null,null,null,null,null
-                ,null,null,null,null,null,null,null,null,null);
-
+                , null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null);
         Map<String, String> queryParamMap = new HashMap<String, String>() {
             {
                 put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "US");
@@ -355,6 +344,38 @@ public class FinancialTxnIntegrationServiceImplTest {
         financialTxnResponseDataList.add(financialTxnResponseData);
         FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(financialTxnResponseDataList);
         String url = "https://api.dev.wal-mart.com/bofap/dev/bofap/US/invoice/financial/transaction/storeNumber/6302/vendorNumber/2222";
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
+        requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
+        HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
+        ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
+        when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
+        compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
+    }
+
+    @Test
+    public void geFinTxnVendorPurchaseOrderNumInvoiceNum() {
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
+                2222, 0, 9.0, 0, "99987",
+                "USER", null, "VendorName",
+                "1234", 1828926897, "1828926897", "Memo", 1223,
+                null, "164680544", null
+                , null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null);
+        Map<String, String> queryParamMap = new HashMap<String, String>() {
+            {
+                put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "US");
+                put(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam(), "2222");
+                put(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam(), "164680544");
+                put(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam(), "1828926897");
+                put("scenario", ReceivingInfoRequestCombinations.VENDORNUMBER_PURCHASEORDERNUMBER_INVOICENUMBER.name());
+            }
+        };
+        List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
+        financialTxnResponseDataList.add(financialTxnResponseData);
+        FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(financialTxnResponseDataList);
+        String url = "https://api.dev.wal-mart.com/bofap/dev/bofap/US/invoice/financial/transaction/vendorNumber/2222/poNumber/164680544/invoiceNumber/1828926897";
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
         requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
