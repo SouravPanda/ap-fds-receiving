@@ -180,7 +180,7 @@ public class ReceiveSummaryServiceImplTest {
         List mockListUpcNumbers = Mockito.mock(List.class);
         try {
             Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary(mockMap, mockListNumbers, mockListUpcNumbers).isSuccess(), successMessage.isSuccess());
-        } catch (NullPointerException e) {
+        } catch (NullPointerException  | ClassCastException e) {
             e.getMessage();
         }
     }
