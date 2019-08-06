@@ -406,6 +406,31 @@ public class ReceivingInfoServiceImplTest {
         receivingInfoService.getInfoSeviceDataV1(allRequestParams);
     }
 
+    @Test(expected = BadRequestException.class)
+    public void formulateIdReceiptEndDateBeforeStartDateException() {
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(724201901), null, null, null,
+                397646, 18, -5743.12, 640, "6854748957", "ID123",
+                null, "PEPSI MIDAMERICA", "1223", 97166785, "1832721624", null,
+                null, null, null, null
+                , 538, 1, 0, "US", null, null, 0, "del123",
+                null, null, "N", null, null
+                , null, null, 640, 7, 6479, 6479, 64, 20, null,
+                10, null, "SOE", null, "6854748957"
+                , 0.0, 0, "0", 0.0, 0.0, 0, 1, "PO RECEIVINGS", null);
+        List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
+        financialTxnResponseDataList.add(financialTxnResponseData);
+        when(financialTxnIntegrationService.getFinancialTxnDetails(Mockito.anyMap())).thenReturn(financialTxnResponseDataList);
+        when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(null);
+        when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(null);
+        when(mongoTemplate.find(Mockito.any(Query.class), eq(FreightResponse.class), Mockito.any())).thenReturn(null);
+        // Testing method
+        Map<String, String> allRequestParams = new HashMap<>();
+        allRequestParams.put("scenario", ReceivingInfoRequestCombinations.INVOICEID.name());
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam(), "2019-01-03");
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam(), "2019-01-01");
+        receivingInfoService.getInfoSeviceDataV1(allRequestParams);
+    }
+
     @Test(expected = NotFoundException.class)
     public void getServiceNotFoundExceptionV1() {
         // Testing method

@@ -113,10 +113,16 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()))
                 && StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()))) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGDATE.getParameterName()).
-                    gte(getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()) + " 00:00:00")).
-                    lte(getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()) + " 23:59:59"));
-            query.addCriteria(criteriaDefinition);
+            LocalDateTime startDate = getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()) + " 00:00:00");
+            LocalDateTime endDate = getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()) + " 23:59:59");
+            if (endDate.isAfter(startDate)) {
+                criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGDATE.getParameterName()).
+                        gte(startDate).
+                        lte(endDate);
+                query.addCriteria(criteriaDefinition);
+            } else {
+                throw new BadRequestException("Receipt end date should be greater than receipt start date.", "Please enter valid query parameters");
+            }
         }
         log.info("queryForSummaryResponse :: Query is " + query);
         return executeQueryInSummary(query);
