@@ -28,7 +28,6 @@ import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -115,8 +114,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()))
                 && StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()))) {
             criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGDATE.getParameterName()).
-                    gte(getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()))).
-                    lte(getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam())));
+                    gte(getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()) + " 00:00:00")).
+                    lte(getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()) + " 23:59:59"));
             query.addCriteria(criteriaDefinition);
         }
         log.info("queryForSummaryResponse :: Query is " + query);
@@ -129,10 +128,10 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
      * @param date
      * @return
      */
-    private LocalDate getDate(String date) {
+    private LocalDateTime getDate(String date) {
         try {
-            DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            return LocalDate.parse(date, formatterDate);
+            DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            return LocalDateTime.parse(date, formatterDate);
         } catch (DateTimeParseException e) {
             log.error(ExceptionUtils.getStackTrace(e));
             throw new BadRequestException("Date format is not correct.", "Please enter valid query parameters");

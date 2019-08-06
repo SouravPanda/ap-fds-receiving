@@ -164,7 +164,7 @@ public class ReceivingInfoControllerTest {
                 "A", 0.0, 0.0, null, 397646, null,
                 0.0, 0, "PEPSI MIDAMERICA", "1223",
                 null, null, null, 97166785,
-                "1832721624", 724201901, 0, null, "6854748957", "US",
+                "1832721624", new Long(724201901), 0, null, "6854748957", "US",
                 1, 0.0, -5743.12, 0.0, 0.0, 640
                 , LocalDate.of(2018, 11, 23), LocalDate.of(2018, 12, 23), "6854748957", LocalDate.of(2018, 11, 24), 0, 538,
                 0, 0, "0", "del123", 6479,

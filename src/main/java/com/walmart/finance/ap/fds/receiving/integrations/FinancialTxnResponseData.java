@@ -16,7 +16,7 @@ import java.util.List;
 public class FinancialTxnResponseData {
 
     @JsonProperty("transactionId")
-    private Integer transactionId;
+    private Long transactionId;
 
     @JsonProperty("purchaseOrderId")
     private Integer purchaseOrderId;
