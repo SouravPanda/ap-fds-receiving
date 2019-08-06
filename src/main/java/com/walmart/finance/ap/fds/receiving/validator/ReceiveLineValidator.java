@@ -27,22 +27,22 @@ public class ReceiveLineValidator {
             }
         }
         if (allRequestParams.containsKey(ReceivingLineParameters.PURCHASEORDERID.getParameterName())) {
-            allRequestParams.put(ReceivingConstants.PURCHASEORDERID, allRequestParams.get(ReceiveLineRequestParams.PURCHASEORDERID).trim());
+            allRequestParams.put(ReceivingConstants.PURCHASEORDERID, allRequestParams.get(ReceiveLineRequestParams.PURCHASEORDERID.getParameterName()).trim());
         }
         if (allRequestParams.containsKey(ReceivingLineParameters.RECEIPTNUMBER.getParameterName())) {
-            allRequestParams.put(ReceivingConstants.RECEIPTNUMBER, allRequestParams.get(ReceiveLineRequestParams.RECEIPTNUMBER));
+            allRequestParams.put(ReceivingConstants.RECEIPTNUMBER, allRequestParams.get(ReceiveLineRequestParams.RECEIPTNUMBER.getParameterName()));
         }
         if (allRequestParams.containsKey(ReceivingLineParameters.TRANSACTIONTYPE.getParameterName())) {
-            allRequestParams.put(ReceivingConstants.TRANSACTIONTYPE, allRequestParams.get(ReceiveLineRequestParams.TRANSACTIONTYPE));
+            allRequestParams.put(ReceivingConstants.TRANSACTIONTYPE, allRequestParams.get(ReceiveLineRequestParams.TRANSACTIONTYPE.getParameterName()));
         }
         if (allRequestParams.containsKey(ReceivingLineParameters.CONTROLNUMBER.getParameterName())) {
-            allRequestParams.put(ReceivingConstants.CONTROLNUMBER, allRequestParams.get(ReceiveLineRequestParams.CONTROLNUMBER));
+            allRequestParams.put(ReceivingConstants.CONTROLNUMBER, allRequestParams.get(ReceiveLineRequestParams.CONTROLNUMBER.getParameterName()));
         }
         if (allRequestParams.containsKey(ReceivingLineParameters.LOCATIONNUMBER.getParameterName())) {
-            allRequestParams.put(ReceivingConstants.LOCATIONNUMBER, allRequestParams.get(ReceiveLineRequestParams.LOCATIONNUMBER));
+            allRequestParams.put(ReceivingConstants.LOCATIONNUMBER, allRequestParams.get(ReceiveLineRequestParams.LOCATIONNUMBER.getParameterName()));
         }
         if (allRequestParams.containsKey(ReceivingLineParameters.DIVISIONNUMBER.getParameterName())) {
-            allRequestParams.put(ReceivingConstants.DIVISIONNUMBER, allRequestParams.get(ReceiveLineRequestParams.DIVISIONNUMBER));
+            allRequestParams.put(ReceivingConstants.DIVISIONNUMBER, allRequestParams.get(ReceiveLineRequestParams.DIVISIONNUMBER.getParameterName()));
         }
     }
 }

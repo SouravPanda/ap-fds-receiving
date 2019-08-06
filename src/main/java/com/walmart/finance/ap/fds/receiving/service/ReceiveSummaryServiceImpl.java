@@ -81,6 +81,8 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     public ReceivingResponse getReceiveSummary(Map<String, String> allRequestParams, List<String> itemNumbers, List<String> upcNumbers) {
         List<ReceiveSummary> receiveSummaries;
         List<ReceivingSummaryResponse> responseList;
+     //   allRequestParams.remove(ReceiveSummaryRequestParams.ITEMNUMBERS.getParameterName());
+    //    allRequestParams.remove(ReceiveSummaryRequestParams.UPCNUMBERS.getParameterName());
         try {
             if (allRequestParams.containsKey(ReceivingConstants.INVOICENUMBER) || allRequestParams.containsKey(ReceivingConstants.INVOICEID) || allRequestParams.containsKey(ReceivingConstants.PURCHASEORDERNUMBER)) {
                 receiveSummaries = getInvoiceFromInvoiceSummary(allRequestParams);
@@ -188,7 +190,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             Criteria vendorNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.VENDORNUMBER.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.VENDORNUMBER)));
             dynamicQuery.addCriteria(vendorNumberCriteria);
         }
-       // log.info("query: " + dynamicQuery);
+        // log.info("query: " + dynamicQuery);
         return dynamicQuery;
     }
 
@@ -255,7 +257,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.DEPARTMENTNUMBER.getParameterName()).is(invoiceResponseData.getInvoiceDeptNumber().trim());
             query.addCriteria(criteriaDefinition);
         }
-       // log.info("query: " + query);
+        // log.info("query: " + query);
         return criteriaDefinition == null ? null : executeQueryForReceiveSummary(query);
     }
 
@@ -266,7 +268,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             query.addCriteria(Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponseData.getPurchaseOrderNumber().trim()));
             query.addCriteria(Criteria.where(ReceiveSummaryCosmosDBParameters.TRANSACTIONTYPE.getParameterName()).is(0));
         }
-       // log.info("query: " + query);
+        // log.info("query: " + query);
         return executeQueryForReceiveSummary(query);
     }
 
@@ -277,7 +279,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             query.addCriteria(Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponseData.getInvoiceNumber().trim()));
             query.addCriteria(Criteria.where(ReceiveSummaryCosmosDBParameters.TRANSACTIONTYPE.getParameterName()).is(1));
         }
-      //  log.info("query: " + query);
+        //  log.info("query: " + query);
         return executeQueryForReceiveSummary(query);
     }
     /******* Invoice Summary Integration *********/
@@ -293,7 +295,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         }
         if (CollectionUtils.isNotEmpty(criteriaList)) {
             Query query = new Query(new Criteria().orOperator(criteriaList.toArray(new Criteria[criteriaList.size()])));
-          //  log.info("query: " + query);
+            //  log.info("query: " + query);
             lineResponseList = executeQueryReceiveline(query);
         }
         Map<String, List<ReceivingLine>> receivingLineMap = new HashMap<>();
@@ -481,7 +483,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             update.set(ReceiveSummaryParameters.DATASYNCSTATUS.getParameterName(), DB2SyncStatus.UPDATE_SYNC_INITIATED);
             update.set(ReceiveSummaryParameters.LASTUPDATEDDATE.getParameterName(), LocalDateTime.now());
             update.set(ReceiveSummaryParameters.BUSINESSSTATUSCODE.getParameterName(), receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
-            commitedRcvSummary = mongoTemplate.findAndModify(query, update, FindAndModifyOptions.options().returnNew(true),ReceiveSummary.class, summaryCollection);
+            commitedRcvSummary = mongoTemplate.findAndModify(query, update, FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
             if (commitedRcvSummary == null) {
                 throw new ContentNotFoundException(ReceivingErrors.CONTENTNOTFOUNDSUMMARY.getParameterName(), ReceivingErrors.VALIDID.getParameterName());
             }
@@ -508,7 +510,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 queryForLine.addCriteria(Criteria.where(ReceivingLineParameters.STORENUMBER.getParameterName()).is(receivingSummaryLineRequest.getLocationNumber()));
                 queryForLine.addCriteria(Criteria.where(ReceivingLineParameters.ID.getParameterName()).is(lineId));
                 updateLine.set(ReceivingLineParameters.INVENTORYMATCHSTATUS.getParameterName(), Integer.parseInt(receivingSummaryLineRequest.getInventoryMatchStatus()));
-                commitedRcvLine = mongoTemplate.findAndModify(queryForLine, updateLine, FindAndModifyOptions.options().returnNew(true),ReceivingLine.class, lineCollection);
+                commitedRcvLine = mongoTemplate.findAndModify(queryForLine, updateLine, FindAndModifyOptions.options().returnNew(true), ReceivingLine.class, lineCollection);
                 if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
                     summaryLineList.add(commitedRcvLine);
                 }
@@ -533,7 +535,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             update.set(ReceiveSummaryParameters.DATASYNCSTATUS.getParameterName(), DB2SyncStatus.UPDATE_SYNC_INITIATED);
             update.set(ReceiveSummaryParameters.LASTUPDATEDDATE.getParameterName(), LocalDateTime.now());
             update.set(ReceiveSummaryParameters.BUSINESSSTATUSCODE.getParameterName(), receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
-            commitedRcvSummary = mongoTemplate.findAndModify(query, update,FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
+            commitedRcvSummary = mongoTemplate.findAndModify(query, update, FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
             if (commitedRcvSummary == null) {
                 throw new ContentNotFoundException(ReceivingErrors.CONTENTNOTFOUNDSUMMARY.getParameterName(), ReceivingErrors.VALIDID.getParameterName());
             }
@@ -547,7 +549,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             updateLine.set(ReceivingLineParameters.DATASYNCSTATUS.getParameterName(), DB2SyncStatus.UPDATE_SYNC_INITIATED);
             updateLine.set(ReceivingLineParameters.LASTUPDATEDDATE.getParameterName(), LocalDateTime.now());
             updateLine.set(ReceivingLineParameters.INVENTORYMATCHSTATUS.getParameterName(), Integer.parseInt(receivingSummaryLineRequest.getInventoryMatchStatus()));
-            commitedRcvLine = mongoTemplate.findAndModify(query, updateLine,FindAndModifyOptions.options().returnNew(true), ReceivingLine.class, lineCollection);
+            commitedRcvLine = mongoTemplate.findAndModify(query, updateLine, FindAndModifyOptions.options().returnNew(true), ReceivingLine.class, lineCollection);
             if (commitedRcvLine == null) {
                 throw new ContentNotFoundException(ReceivingErrors.CONTENTNOTFOUNDLINE.getParameterName(), ReceivingErrors.VALIDID.getParameterName());
             }

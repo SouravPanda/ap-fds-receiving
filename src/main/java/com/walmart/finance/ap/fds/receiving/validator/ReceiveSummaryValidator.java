@@ -35,40 +35,40 @@ public class ReceiveSummaryValidator {
             allRequestParams.put(ReceivingConstants.PURCHASEORDERNUMBER, allRequestParams.get(ReceiveSummaryRequestParams.PURCHASEORDERID).trim());
         }
         if (allRequestParams.containsKey(ReceiveSummaryRequestParams.PURCHASEORDERID.getParameterName())) {
-            allRequestParams.put(ReceivingConstants.PURCHASEORDERID, allRequestParams.get(ReceiveSummaryRequestParams.PURCHASEORDERID));
+            allRequestParams.put(ReceivingConstants.PURCHASEORDERID, allRequestParams.get(ReceiveSummaryRequestParams.PURCHASEORDERID.getParameterName()));
         }
         if (allRequestParams.containsKey(ReceiveSummaryRequestParams.TRANSACTIONTYPE.getParameterName())) {
-            allRequestParams.put(ReceivingConstants.TRANSACTIONTYPE, allRequestParams.get(ReceiveSummaryRequestParams.TRANSACTIONTYPE));
+            allRequestParams.put(ReceivingConstants.TRANSACTIONTYPE, allRequestParams.get(ReceiveSummaryRequestParams.TRANSACTIONTYPE.getParameterName()));
         }
         if (allRequestParams.containsKey(ReceiveSummaryRequestParams.CONTROLNUMBER.getParameterName())) {
-            allRequestParams.put(ReceivingConstants.CONTROLNUMBER, allRequestParams.get(ReceiveSummaryRequestParams.CONTROLNUMBER));
+            allRequestParams.put(ReceivingConstants.CONTROLNUMBER, allRequestParams.get(ReceiveSummaryRequestParams.CONTROLNUMBER.getParameterName()));
         }
         if (allRequestParams.containsKey(ReceiveSummaryRequestParams.LOCATIONNUMBER.getParameterName())) {
-            allRequestParams.put(ReceivingConstants.LOCATIONNUMBER, allRequestParams.get(ReceiveSummaryRequestParams.LOCATIONNUMBER));
+            allRequestParams.put(ReceivingConstants.LOCATIONNUMBER, allRequestParams.get(ReceiveSummaryRequestParams.LOCATIONNUMBER.getParameterName()));
         }
         if (allRequestParams.containsKey(ReceiveSummaryRequestParams.DIVISIONNUMBER.getParameterName())) {
-            allRequestParams.put(ReceivingConstants.DIVISIONNUMBER, allRequestParams.get(ReceiveSummaryRequestParams.DIVISIONNUMBER));
+            allRequestParams.put(ReceivingConstants.DIVISIONNUMBER, allRequestParams.get(ReceiveSummaryRequestParams.DIVISIONNUMBER.getParameterName()));
         }
         if (allRequestParams.containsKey(ReceiveSummaryRequestParams.INVOICEID.getParameterName())) {
-            allRequestParams.put(ReceivingConstants.INVOICEID, allRequestParams.get(ReceiveSummaryRequestParams.INVOICEID));
+            allRequestParams.put(ReceivingConstants.INVOICEID, allRequestParams.get(ReceiveSummaryRequestParams.INVOICEID.getParameterName()));
         }
         if (allRequestParams.containsKey(ReceiveSummaryRequestParams.INVOICENUMBER.getParameterName())) {
-            allRequestParams.put(ReceivingConstants.INVOICENUMBER, allRequestParams.get(ReceiveSummaryRequestParams.INVOICENUMBER));
+            allRequestParams.put(ReceivingConstants.INVOICENUMBER, allRequestParams.get(ReceiveSummaryRequestParams.INVOICENUMBER.getParameterName()));
         }
         if (allRequestParams.containsKey(ReceiveSummaryRequestParams.RECEIPTDATESTART.getParameterName())) {
-            allRequestParams.put(ReceivingConstants.RECEIPTDATESTART, allRequestParams.get(ReceiveSummaryRequestParams.RECEIPTDATESTART));
+            allRequestParams.put(ReceivingConstants.RECEIPTDATESTART, allRequestParams.get(ReceiveSummaryRequestParams.RECEIPTDATESTART.getParameterName()));
         }
         if (allRequestParams.containsKey(ReceiveSummaryRequestParams.RECEIPTDATEEND.getParameterName())) {
-            allRequestParams.put(ReceivingConstants.RECEIPTDATEEND, allRequestParams.get(ReceiveSummaryRequestParams.RECEIPTDATEEND));
+            allRequestParams.put(ReceivingConstants.RECEIPTDATEEND, allRequestParams.get(ReceiveSummaryRequestParams.RECEIPTDATEEND.getParameterName()));
         }
         if (allRequestParams.containsKey(ReceiveSummaryRequestParams.VENDORNUMBER.getParameterName())) {
-            allRequestParams.put(ReceivingConstants.VENDORNUMBER, allRequestParams.get(ReceiveSummaryRequestParams.VENDORNUMBER));
+            allRequestParams.put(ReceivingConstants.VENDORNUMBER, allRequestParams.get(ReceiveSummaryRequestParams.VENDORNUMBER.getParameterName()));
         }
         if (allRequestParams.containsKey(ReceiveSummaryRequestParams.DEPARTMENTNUMBER.getParameterName())) {
-            allRequestParams.put(ReceivingConstants.DEPARTMENTNUMBER, allRequestParams.get(ReceiveSummaryRequestParams.DEPARTMENTNUMBER));
+            allRequestParams.put(ReceivingConstants.DEPARTMENTNUMBER, allRequestParams.get(ReceiveSummaryRequestParams.DEPARTMENTNUMBER.getParameterName()));
         }
         if (allRequestParams.containsKey(ReceiveSummaryRequestParams.RECEIPTNUMBERS.getParameterName())) {
-            allRequestParams.put(ReceivingConstants.RECEIPTNUMBERS, allRequestParams.get(ReceiveSummaryRequestParams.RECEIPTNUMBERS));
+            allRequestParams.put(ReceivingConstants.RECEIPTNUMBERS, allRequestParams.get(ReceiveSummaryRequestParams.RECEIPTNUMBERS.getParameterName()));
         }
     }
 
