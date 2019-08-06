@@ -6,7 +6,6 @@ import org.springframework.context.annotation.ImportResource;
 
 @ImportResource("classpath:perf-monitoring.xml")
 @SpringBootApplication
-@ImportResource("classpath:perf-monitoring.xml")
 public class SpringReceiveApplication {
 
     public static void main(String[] args) {
