@@ -28,7 +28,7 @@ public class ReceiveSummaryValidator {
                     iterator.remove();
                 }
             } catch (IllegalArgumentException ex) {
-                throw new BadRequestException(ReceivingErrors.JUNKPARAMS.getParameterName(),ReceivingErrors.INVALIDQUERYPARAMS.getParameterName());
+                throw new BadRequestException(ReceivingErrors.JUNKPARAMS.getParameterName(), ReceivingErrors.INVALIDQUERYPARAMS.getParameterName());
             }
         }
         if (allRequestParams.containsKey(ReceiveSummaryRequestParams.PURCHASEORDERNUMBER.getParameterName())) {
@@ -69,6 +69,12 @@ public class ReceiveSummaryValidator {
         }
         if (allRequestParams.containsKey(ReceiveSummaryRequestParams.RECEIPTNUMBERS.getParameterName())) {
             allRequestParams.put(ReceivingConstants.RECEIPTNUMBERS, allRequestParams.get(ReceiveSummaryRequestParams.RECEIPTNUMBERS.getParameterName()));
+        }
+        if (allRequestParams.containsKey(ReceiveSummaryRequestParams.ITEMNUMBERS.getParameterName())) {
+            allRequestParams.put(ReceivingConstants.ITEMNUMBERS, allRequestParams.get(ReceiveSummaryRequestParams.ITEMNUMBERS.getParameterName()));
+        }
+        if (allRequestParams.containsKey(ReceiveSummaryRequestParams.UPCNUMBERS.getParameterName())) {
+            allRequestParams.put(ReceivingConstants.UPCNUMBERS, allRequestParams.get(ReceiveSummaryRequestParams.UPCNUMBERS.getParameterName()));
         }
     }
 

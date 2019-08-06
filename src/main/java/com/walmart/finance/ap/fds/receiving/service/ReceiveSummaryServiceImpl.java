@@ -78,11 +78,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
      * @return
      **/
 
-    public ReceivingResponse getReceiveSummary(Map<String, String> allRequestParams, List<String> itemNumbers, List<String> upcNumbers) {
+    public ReceivingResponse getReceiveSummary(Map<String, String> allRequestParams) {
         List<ReceiveSummary> receiveSummaries;
         List<ReceivingSummaryResponse> responseList;
-     //   allRequestParams.remove(ReceiveSummaryRequestParams.ITEMNUMBERS.getParameterName());
-    //    allRequestParams.remove(ReceiveSummaryRequestParams.UPCNUMBERS.getParameterName());
         try {
             if (allRequestParams.containsKey(ReceivingConstants.INVOICENUMBER) || allRequestParams.containsKey(ReceivingConstants.INVOICEID) || allRequestParams.containsKey(ReceivingConstants.PURCHASEORDERNUMBER)) {
                 receiveSummaries = getInvoiceFromInvoiceSummary(allRequestParams);
@@ -101,7 +99,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             if (CollectionUtils.isNotEmpty(receiveSummaries) && receiveSummaries.size() > 1000) {
                 receiveSummaries.subList(1000, receiveSummaries.size()).clear();
             }
-            Map<String, AdditionalResponse> responseMap = getLineResponseMap(receiveSummaries, itemNumbers, upcNumbers);
+            Map<String, AdditionalResponse> responseMap = getLineResponseMap(receiveSummaries, allRequestParams);
             //Todo parallel stream performance check
             if (CollectionUtils.isEmpty(receiveSummaries)) {
                 throw new NotFoundException(ReceivingErrors.CONTENTNOTFOUNDSUMMARY.getParameterName(), ReceivingErrors.INVALIDQUERYPARAMS.getParameterName());
@@ -286,12 +284,15 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     /******* receive -line data fetching   *********/
 
-    private Map<String, AdditionalResponse> getLineResponseMap(List<ReceiveSummary> receiveSummaries, List<String> itemNumbers, List<String> upcNumbers) {
+    private Map<String, AdditionalResponse> getLineResponseMap(List<ReceiveSummary> receiveSummaries, Map<String, String> allRequestParams) {
         Map<String, AdditionalResponse> lineResponseMap = new HashMap<>();
         List<ReceivingLine> lineResponseList = new LinkedList<>();
         List<Criteria> criteriaList = new ArrayList<>();
+        List<String> itemNumbers = allRequestParams.containsKey(ReceiveSummaryRequestParams.ITEMNUMBERS.getParameterName())?Arrays.asList(allRequestParams.get(ReceiveSummaryRequestParams.ITEMNUMBERS.getParameterName()).split(",")):null;
+        List<String> upcNumbers = allRequestParams.containsKey(ReceiveSummaryRequestParams.UPCNUMBERS.getParameterName())?Arrays.asList(allRequestParams.get(ReceiveSummaryRequestParams.UPCNUMBERS.getParameterName()).split(",")):null;
         for (ReceiveSummary receiveSummary : receiveSummaries) {
-            criteriaList.add(queryForLineResponse(receiveSummary, itemNumbers, upcNumbers));
+            criteriaList.add(queryForLineResponse(receiveSummary,
+                    itemNumbers, upcNumbers));
         }
         if (CollectionUtils.isNotEmpty(criteriaList)) {
             Query query = new Query(new Criteria().orOperator(criteriaList.toArray(new Criteria[criteriaList.size()])));

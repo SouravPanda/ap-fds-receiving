@@ -209,7 +209,7 @@ public class ReceivingSummaryControllerTest {
         ReceivingResponse successMessage = new ReceivingResponse(true, LocalDateTime.of(2019, 05, 12, 15, 31, 16), responseList);
         Map<String, String> mockMap = new LinkedHashMap<>();
         mockMap.put("controlNumber","984003673");
-        when(receiveSummaryService.getReceiveSummary(Mockito.anyMap(),Mockito.any(),Mockito.any())).thenReturn(successMessage);
+        when(receiveSummaryService.getReceiveSummary(Mockito.anyMap())).thenReturn(successMessage);
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/US/receiving/summary")
                 .param("controlNumber", "984003673")

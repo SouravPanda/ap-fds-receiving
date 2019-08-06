@@ -179,7 +179,7 @@ public class ReceiveSummaryServiceImplTest {
         List mockListNumbers = Mockito.mock(List.class);
         List mockListUpcNumbers = Mockito.mock(List.class);
         try {
-            Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary(mockMap, mockListNumbers, mockListUpcNumbers).isSuccess(), successMessage.isSuccess());
+            Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary(mockMap).isSuccess(), successMessage.isSuccess());
         } catch (NullPointerException  | ClassCastException e) {
             e.getMessage();
         }
@@ -259,7 +259,7 @@ public class ReceiveSummaryServiceImplTest {
         successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.now());
         Map mockMap = Mockito.mock(Map.class);
-        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary(mockMap, listOfItemNumbers, listOfUpcNumbers).getData(), successMessage.getData().subList(0, 1));
+        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary(mockMap).getData(), successMessage.getData().subList(0, 1));
 
     }
 
@@ -337,7 +337,7 @@ public class ReceiveSummaryServiceImplTest {
         successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.now());
         Map mockMap = Mockito.mock(Map.class);
-        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary(mockMap, listOfItemNumbers, listOfUpcNumbers).getData(), successMessage.getData().subList(0, 1));
+        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary(mockMap).getData(), successMessage.getData().subList(0, 1));
 
     }
 
@@ -353,7 +353,7 @@ public class ReceiveSummaryServiceImplTest {
         listOfItemNumbers.add("89");
 
         Map mockMap = Mockito.mock(Map.class);
-        receiveSummaryServiceImpl.getReceiveSummary(mockMap, listOfItemNumbers, listOfUpcNumbers);
+        receiveSummaryServiceImpl.getReceiveSummary(mockMap);
     }
 
     @Test(expected = NotFoundException.class)
@@ -368,7 +368,7 @@ public class ReceiveSummaryServiceImplTest {
         listOfUpcNumbers.add("89");
 
         Map mockMap = Mockito.mock(Map.class);
-        receiveSummaryServiceImpl.getReceiveSummary(mockMap, null, listOfUpcNumbers);
+        receiveSummaryServiceImpl.getReceiveSummary(mockMap);
     }
 
     @Test(expected = BadRequestException.class)
@@ -385,7 +385,7 @@ public class ReceiveSummaryServiceImplTest {
         Map mockMap= new HashMap();
         mockMap.put("HH","KKK");
         ReceiveSummaryValidator.validate("US",mockMap);
-        receiveSummaryServiceImpl.getReceiveSummary(mockMap, null, listOfUpcNumbers.stream().collect(Collectors.toList()));
+        receiveSummaryServiceImpl.getReceiveSummary(mockMap);
     }
 
     /**

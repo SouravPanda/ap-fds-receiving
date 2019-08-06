@@ -15,6 +15,6 @@ public interface ReceiveSummaryService {
 
     ReceivingResponse updateReceiveSummaryAndLine(ReceivingSummaryLineRequest receivingSummaryLineSearch, String countryCode);
 
-    ReceivingResponse getReceiveSummary(Map<String, String> allRequestParams,List<String> itemNumbers, List<String> upcNumbers);
+    ReceivingResponse getReceiveSummary(Map<String, String> allRequestParams);
 
 }

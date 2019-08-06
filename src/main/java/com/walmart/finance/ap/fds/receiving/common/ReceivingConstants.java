@@ -42,5 +42,7 @@ public class ReceivingConstants {
     public static final String RECEIPTDATEEND = "receiptDateEnd";
     public static final String RECEIPTDATESTART = "receiptDateStart";
     public static final String RECEIPTNUMBERS="receiptNumbers";
+    public static final String ITEMNUMBERS="itemNumbers";
+    public static final String UPCNUMBERS="upcNumbers";
 
 }
