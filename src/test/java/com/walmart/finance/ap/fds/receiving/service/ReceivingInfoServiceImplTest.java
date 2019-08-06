@@ -349,6 +349,8 @@ public class ReceivingInfoServiceImplTest {
         // Testing method
         Map<String, String> allRequestParams = new HashMap<>();
         allRequestParams.put("scenario", ReceivingInfoRequestCombinations.INVOICEID.name());
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam(), "2019-01-01");
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam(), "2019-01-01");
         allRequestParams.put(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam(), "Y");
         allRequestParams.put(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam(), "123");
         allRequestParams.put(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam(), "Y");
