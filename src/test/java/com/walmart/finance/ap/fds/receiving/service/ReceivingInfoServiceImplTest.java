@@ -131,7 +131,7 @@ public class ReceivingInfoServiceImplTest {
                 null, "USER", "1223", 1828926897, "000000004147570", "Memo",
                 3669, null, "999403403", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
-                , null, null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, 0, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null);
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
@@ -246,7 +246,7 @@ public class ReceivingInfoServiceImplTest {
                                 null, 20.02, null, null));
                     }
                 };
-        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(724201901), 972515962, "110950", 6479,
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(724201901), 972515962, "110950", 6480,
                 397646, 18, -5743.12, 640, "6854748957", "ID123",
                 null, "PEPSI MIDAMERICA", "1223", 97166785, "1832721624", null,
                 null, null, null, null
