@@ -29,7 +29,7 @@ public class ReceivingConstants {
     public static final int PERF_LOGGING_FILTER_ORDER = 4;
     public static final String COUNTRYCODE = "countryCode";
     public static final String INVOICENUMBER = "invoiceNumber";
-    public static final String PURCHASEORDERNUMBER = "pONumber";
+    public static final String PURCHASEORDERNUMBER = "purchaseOrderNumber";
     public static final String PURCHASEORDERID = "purchaseOrderId";
     public static final String RECEIPTNUMBER = "receiptNumbers";
     public static final String TRANSACTIONTYPE = "transactionType";

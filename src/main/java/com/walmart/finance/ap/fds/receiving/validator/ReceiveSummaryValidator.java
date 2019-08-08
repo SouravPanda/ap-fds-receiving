@@ -4,6 +4,7 @@ import com.walmart.finance.ap.fds.receiving.common.ReceiveSummaryBusinessStat;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
+import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryCosmosDBParameters;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryRequestParams;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import org.apache.commons.lang.StringUtils;
@@ -32,7 +33,7 @@ public class ReceiveSummaryValidator {
             }
         }
         if (allRequestParams.containsKey(ReceiveSummaryRequestParams.PURCHASEORDERNUMBER.getParameterName())) {
-            allRequestParams.put(ReceivingConstants.PURCHASEORDERNUMBER, allRequestParams.get(ReceiveSummaryRequestParams.PURCHASEORDERNUMBER));
+            allRequestParams.put(ReceiveSummaryCosmosDBParameters.PURCHASEORDERNUMBER.getParameterName(), allRequestParams.get(ReceiveSummaryRequestParams.PURCHASEORDERNUMBER));
         }
         if (allRequestParams.containsKey(ReceiveSummaryRequestParams.PURCHASEORDERID.getParameterName())) {
             allRequestParams.put(ReceivingConstants.PURCHASEORDERID, allRequestParams.get(ReceiveSummaryRequestParams.PURCHASEORDERID.getParameterName()));
