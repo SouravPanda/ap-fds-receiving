@@ -176,8 +176,6 @@ public class ReceiveSummaryServiceImplTest {
         successMessage.setTimestamp(LocalDateTime.now());
 
         Map mockMap = Mockito.mock(Map.class);
-        List mockListNumbers = Mockito.mock(List.class);
-        List mockListUpcNumbers = Mockito.mock(List.class);
         try {
             Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary(mockMap).isSuccess(), successMessage.isSuccess());
         } catch (NullPointerException  | ClassCastException e) {
