@@ -32,7 +32,7 @@ public class ReceiveSummaryValidator {
             }
         }
         if (allRequestParams.containsKey(ReceiveSummaryRequestParams.PURCHASEORDERNUMBER.getParameterName())) {
-            allRequestParams.put(ReceivingConstants.PURCHASEORDERNUMBER, allRequestParams.get(ReceiveSummaryRequestParams.PURCHASEORDERNUMBER).trim());
+            allRequestParams.put(ReceivingConstants.PURCHASEORDERNUMBER, allRequestParams.get(ReceiveSummaryRequestParams.PURCHASEORDERNUMBER));
         }
         if (allRequestParams.containsKey(ReceiveSummaryRequestParams.PURCHASEORDERID.getParameterName())) {
             allRequestParams.put(ReceivingConstants.PURCHASEORDERID, allRequestParams.get(ReceiveSummaryRequestParams.PURCHASEORDERID.getParameterName()));
