@@ -28,7 +28,6 @@ import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -98,9 +97,11 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     }
 
     private List<ReceiveSummary> getSummaryData(FinancialTxnResponseData financialTxnResponseData, Map<String, String> allRequestParams) {
+        Integer storeNumber = ( financialTxnResponseData.getOrigStoreNbr() == null || financialTxnResponseData.getOrigStoreNbr() == 0)
+                ? financialTxnResponseData.getStoreNumber() : financialTxnResponseData.getOrigStoreNbr();
         String id = (financialTxnResponseData.getPurchaseOrderId() == null ? 0 : financialTxnResponseData.getPurchaseOrderId()) + ReceivingConstants.PIPE_SEPARATOR
-                + (StringUtils.isEmpty(financialTxnResponseData.getReceiveId()) ? "0" : financialTxnResponseData.getReceiveId()) + ReceivingConstants.PIPE_SEPARATOR
-                + (financialTxnResponseData.getStoreNumber() == null ? 0 : financialTxnResponseData.getStoreNumber()) + ReceivingConstants.PIPE_SEPARATOR
+                + (StringUtils.isEmpty(financialTxnResponseData.getReceiveId()) ? "0" : Integer.valueOf(financialTxnResponseData.getReceiveId())) + ReceivingConstants.PIPE_SEPARATOR
+                + (storeNumber == null ? 0 : storeNumber) + ReceivingConstants.PIPE_SEPARATOR
                 + (financialTxnResponseData.getReceivingDate() == null ? "0" : financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
         Query query = new Query();
         CriteriaDefinition criteriaDefinition = null;
@@ -108,16 +109,22 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.ID.getParameterName()).is(id);
             query.addCriteria(criteriaDefinition);
         }
-        if (financialTxnResponseData.getStoreNumber() != null) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.STORENUMBER.getParameterName()).is(financialTxnResponseData.getStoreNumber());
+        if (storeNumber != null) {
+            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.STORENUMBER.getParameterName()).is(storeNumber);
             query.addCriteria(criteriaDefinition);
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()))
                 && StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()))) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGDATE.getParameterName()).
-                    gte(getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()))).
-                    lte(getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam())));
-            query.addCriteria(criteriaDefinition);
+            LocalDateTime startDate = getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()) + " 00:00:00");
+            LocalDateTime endDate = getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()) + " 23:59:59");
+            if (endDate.isAfter(startDate)) {
+                criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGDATE.getParameterName()).
+                        gte(startDate).
+                        lte(endDate);
+                query.addCriteria(criteriaDefinition);
+            } else {
+                throw new BadRequestException("Receipt end date should be greater than receipt start date.", "Please enter valid query parameters");
+            }
         }
         log.info("queryForSummaryResponse :: Query is " + query);
         return executeQueryInSummary(query);
@@ -129,10 +136,10 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
      * @param date
      * @return
      */
-    private LocalDate getDate(String date) {
+    private LocalDateTime getDate(String date) {
         try {
-            DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            return LocalDate.parse(date, formatterDate);
+            DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            return LocalDateTime.parse(date, formatterDate);
         } catch (DateTimeParseException e) {
             log.error(ExceptionUtils.getStackTrace(e));
             throw new BadRequestException("Date format is not correct.", "Please enter valid query parameters");

@@ -40,7 +40,7 @@ public class FinancialTxnIntegrationServiceImplTest {
 
     @Test
     public void getFinancialTxnDetails() {
-        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
                 "1234", 1828926897, "1828926897", "Memo", 1223,
@@ -70,7 +70,7 @@ public class FinancialTxnIntegrationServiceImplTest {
 
     @Test(expected = NotFoundException.class)
     public void getFinancialTxnDetailsNotFoundException() {
-        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987"
                 , "USER", null, "VendorName", "1234",
                 1828926897, "1828926897", "Memo", 1223, null,
@@ -101,7 +101,7 @@ public class FinancialTxnIntegrationServiceImplTest {
 
     @Test(expected = NotFoundException.class)
     public void getFinancialTxnDetailsResponseNullCheck() {
-        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987", "USER",
                 null, "VendorName", "1234", 1828926897,
                 "1828926897", "Memo", 1223, null, "164680544", null
@@ -136,7 +136,7 @@ public class FinancialTxnIntegrationServiceImplTest {
 
     @Test(expected = NotFoundException.class)
     public void httpStatusCodeException() {
-        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987", "USER",
                 null, "VendorName", "1234", 1828926897,
                 "1828926897", "Memo", 1223, null, "164680544", null
@@ -167,7 +167,7 @@ public class FinancialTxnIntegrationServiceImplTest {
 
     @Test
     public void geFinTxnVendorLocationInvoiceNum() {
-        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
                 "1234", 1828926897, "1828926897", "Memo", 1223,
@@ -199,7 +199,7 @@ public class FinancialTxnIntegrationServiceImplTest {
 
     @Test
     public void geFinTxnVendorLocationReceiptNum() {
-        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
                 "1234", 1828926897, "1828926897", "Memo", 1223,
@@ -231,7 +231,7 @@ public class FinancialTxnIntegrationServiceImplTest {
 
     @Test
     public void geFinTxnVendorPurchaseOrderId() {
-        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
                 "1234", 1828926897, "1828926897", "Memo", 1223,
@@ -262,7 +262,7 @@ public class FinancialTxnIntegrationServiceImplTest {
 
     @Test
     public void geFinTxnLocationPurchaseOrderNum() {
-        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
                 "1234", 1828926897, "1828926897", "Memo", 1223,
@@ -293,7 +293,7 @@ public class FinancialTxnIntegrationServiceImplTest {
 
     @Test
     public void geFinTxnLocationInvoiceNum() {
-        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
                 "1234", 1828926897, "1828926897", "Memo", 1223,
@@ -324,7 +324,7 @@ public class FinancialTxnIntegrationServiceImplTest {
 
     @Test
     public void geFinTxnLocationVendorNum() {
-        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
                 "1234", 1828926897, "1828926897", "Memo", 1223,
@@ -355,7 +355,7 @@ public class FinancialTxnIntegrationServiceImplTest {
 
     @Test
     public void geFinTxnVendorPurchaseOrderNumInvoiceNum() {
-        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(123, 164680544, "10441", 6302,
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
                 "1234", 1828926897, "1828926897", "Memo", 1223,

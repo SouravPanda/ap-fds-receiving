@@ -70,7 +70,7 @@ public class ReceivingInfoResponseV1 {
 
     private String invoiceNumber;
 
-    private Integer transactionId;
+    private Long transactionId;
 
     private Integer txnSeqNbr;
 
