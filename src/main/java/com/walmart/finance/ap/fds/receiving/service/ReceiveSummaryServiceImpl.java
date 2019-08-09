@@ -1,11 +1,11 @@
 package com.walmart.finance.ap.fds.receiving.service;
 
+import com.mongodb.client.result.UpdateResult;
 import com.walmart.finance.ap.fds.receiving.common.DB2SyncStatus;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
-import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.integrations.AdditionalResponse;
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
@@ -374,7 +374,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             }
             iteratorLine.remove();
         }
-
         Iterator<ReceiveSummary> iterator = receiveSummaries.iterator();
         while (iterator.hasNext()) {
             ReceiveSummary receiveSummary = iterator.next();
@@ -445,9 +444,8 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         if (query != null) {
             long startTime = System.currentTimeMillis();
             receiveSummaries = mongoTemplate.find(query.limit(1000), ReceiveSummary.class, summaryCollection);
-            log.info("executeQueryForReceiveSummary :: queryTime :: "+(System.currentTimeMillis()-startTime));
+            log.info("executeQueryForReceiveSummary :: queryTime :: " + (System.currentTimeMillis() - startTime));
         }
-
         return receiveSummaries;
     }
 
@@ -456,7 +454,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         if (query != null) {
             long startTime = System.currentTimeMillis();
             receiveLines = mongoTemplate.find(query, ReceivingLine.class, lineCollection);
-            log.info("executeQueryReceiveline :: queryTime :: "+(System.currentTimeMillis()-startTime));
+            log.info("executeQueryReceiveline :: queryTime :: " + (System.currentTimeMillis() - startTime));
         }
         return receiveLines;
     }
@@ -465,7 +463,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         List<FreightResponse> freightResponses = new LinkedList<>();
         long startTime = System.currentTimeMillis();
         freightResponses = mongoTemplate.find(query, FreightResponse.class, freightCollection);
-        log.info("executeQueryReceiveFreight :: queryTime :: "+(System.currentTimeMillis()-startTime));
+        log.info("executeQueryReceiveFreight :: queryTime :: " + (System.currentTimeMillis() - startTime));
         return freightResponses;
     }
 
@@ -475,31 +473,13 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     /******* Common Methods  *********/
 
-    private boolean isWareHouseData(Integer invProcAreaCode, String repInTypCd, String locationCountryCd) {
-        if (StringUtils.isNotEmpty(locationCountryCd) && StringUtils.isNotEmpty(repInTypCd) && invProcAreaCode != null) {
-            return (invProcAreaCode == 36 || invProcAreaCode == 30) && (repInTypCd.equals("R") || repInTypCd.equals("U") || repInTypCd.equals("F")) && (locationCountryCd.equals("US"));
-        }
-        return false;
-    }
-
     @Override
     @Transactional
     public ReceivingResponse updateReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest, String countryCode) {
         log.info("unitofWorkid:" + receivingSummaryRequest.getMeta().getUnitofWorkid());
-        List<ReceivingSummaryRequest> responseList = new ArrayList<>();
-        Boolean isWareHouseData = isWareHouseData(receivingSummaryRequest.getMeta().getSorRoutingCtx().getInvProcAreaCode(), receivingSummaryRequest.getMeta().getSorRoutingCtx().getReplnTypCd(),
-                receivingSummaryRequest.getMeta().getSorRoutingCtx().getLocationCountryCd());
-        String id;
-        if (receivingSummaryRequest != null) {
-            if (!receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryRequest)) {
-                throw new InvalidValueException("Value of field  businessStatusCode passed is not valid", "it should be one among A,C,D,I,M,X,Z");
-            }
-        }
-        if (isWareHouseData == false) {
-            id = formulateId(receivingSummaryRequest.getPurchaseOrderId(), receivingSummaryRequest.getReceiptNumber(), receivingSummaryRequest.getLocationNumber().toString(), receivingSummaryRequest.getReceiptDate().toString());
-        } else {
-            id = formulateId(receivingSummaryRequest.getPurchaseOrderId(), receivingSummaryRequest.getReceiptNumber(), receivingSummaryRequest.getLocationNumber().toString(), "0");
-        }
+        Boolean isWareHouseData = receiveSummaryValidator.isWareHouseData(receivingSummaryRequest.getMeta().getSorRoutingCtx());
+        receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryRequest.getBusinessStatusCode());
+        String id = formulateId(receivingSummaryRequest.getPurchaseOrderId(), receivingSummaryRequest.getReceiptNumber(), receivingSummaryRequest.getLocationNumber().toString(), isWareHouseData ? "0" : receivingSummaryRequest.getReceiptDate().toString());
         Query dynamicQuery = new Query();
         dynamicQuery.addCriteria(Criteria.where(ReceiveSummaryParameters.ID.getParameterName()).is(id));
         dynamicQuery.addCriteria(Criteria.where(ReceiveSummaryParameters.STORENUMBER.getParameterName()).is(receivingSummaryRequest.getLocationNumber()));
@@ -507,13 +487,16 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         update.set(ReceiveSummaryParameters.BUSINESSSTATUSCODE.getParameterName(), receivingSummaryRequest.getBusinessStatusCode().charAt(0));
         update.set(ReceiveSummaryParameters.DATASYNCSTATUS.getParameterName(), DB2SyncStatus.UPDATE_SYNC_INITIATED);
         update.set(ReceiveSummaryParameters.LASTUPDATEDDATE.getParameterName(), LocalDateTime.now());
+        long startTime = System.currentTimeMillis();
         ReceiveSummary commitedRcvSummary = mongoTemplate.findAndModify(dynamicQuery, update, FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
+        log.info("updateReceiveSummary :: updateSummaryQueryTime :: " + (System.currentTimeMillis() - startTime));
         if (commitedRcvSummary == null) {
             throw new ContentNotFoundException("Receive summary not found for the given id", "please enter a valid id");
         }
         if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
             publisher.publishEvent(commitedRcvSummary);
         }
+        List<ReceivingSummaryRequest> responseList = new ArrayList<>();
         responseList.add(receivingSummaryRequest);
         ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setTimestamp(LocalDateTime.now());
@@ -525,109 +508,60 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     @Override
     @Transactional
     public ReceivingResponse updateReceiveSummaryAndLine(ReceivingSummaryLineRequest receivingSummaryLineRequest, String countryCode) {
-        Boolean isWareHouseData = isWareHouseData(receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getInvProcAreaCode(), receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getReplnTypCd(),
-                receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getLocationCountryCd());
-        Query dynamicQuery = new Query();
-        ReceivingLine commitedRcvLine;
-        ReceiveSummary commitedRcvSummary;
-        String id;
-        List<ReceivingSummaryLineRequest> responseList = new ArrayList<>();
-        List summaryLineList = new ArrayList();
         log.info("unitofWorkid:" + receivingSummaryLineRequest.getMeta().getUnitofWorkid());
-        if (!receiveSummaryLineValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest)) {
-            throw new InvalidValueException("Value of field  businessStatusCode passed is not valid", "it should be one among A,C,D,I,M,X,Z");
+        Boolean isWareHouseData = receiveSummaryValidator.isWareHouseData(receivingSummaryLineRequest.getMeta().getSorRoutingCtx());
+        List summaryLineList = new ArrayList();
+        receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest.getBusinessStatusCode());
+        receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest);
+        receiveSummaryLineValidator.validateReceiptLineNumber(receivingSummaryLineRequest.getReceiptLineNumber());
+        String id = formulateId(receivingSummaryLineRequest.getPurchaseOrderId(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), isWareHouseData ? "0" : receivingSummaryLineRequest.getReceiptDate().toString());
+        Query query = new Query();
+        query.addCriteria(Criteria.where(ReceiveSummaryParameters.STORENUMBER.getParameterName()).is(receivingSummaryLineRequest.getLocationNumber()));
+        query.addCriteria(Criteria.where(ReceiveSummaryParameters.ID.getParameterName()).is(id));
+        Update update = new Update();
+        update.set(ReceiveSummaryParameters.DATASYNCSTATUS.getParameterName(), DB2SyncStatus.UPDATE_SYNC_INITIATED);
+        update.set(ReceiveSummaryParameters.LASTUPDATEDDATE.getParameterName(), LocalDateTime.now());
+        update.set(ReceiveSummaryParameters.BUSINESSSTATUSCODE.getParameterName(), receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
+        long startTime = System.currentTimeMillis();
+        ReceiveSummary commitedRcvSummary = mongoTemplate.findAndModify(query, update, FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
+        log.info("updateReceiveSummaryAndLine :: updateSummaryQueryTime :: " + (System.currentTimeMillis() - startTime));
+        if (commitedRcvSummary == null) {
+            throw new ContentNotFoundException("Receive summary not found for the given id", "please enter a valid id");
         }
-        if (!receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest)) {
-            throw new InvalidValueException("Invalid value, inventoryMatchStatus", "it should be in range 0-9");
+        if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
+            summaryLineList.add(commitedRcvSummary);
         }
-        if (receivingSummaryLineRequest.getReceiptLineNumber() == null) {
-            if (isWareHouseData == false) {
-                id = formulateId(receivingSummaryLineRequest.getPurchaseOrderId(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), receivingSummaryLineRequest.getReceiptDate().toString());
-            } else {
-                id = formulateId(receivingSummaryLineRequest.getPurchaseOrderId(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), "0");
-            }
-            Query query = new Query();
-            query.addCriteria(Criteria.where(ReceiveSummaryParameters.ID.getParameterName()).is(id));
-            query.addCriteria(Criteria.where(ReceiveSummaryParameters.STORENUMBER.getParameterName()).is(receivingSummaryLineRequest.getLocationNumber()));
-            Update update = new Update();
-            update.set(ReceiveSummaryParameters.DATASYNCSTATUS.getParameterName(), DB2SyncStatus.UPDATE_SYNC_INITIATED);
-            update.set(ReceiveSummaryParameters.LASTUPDATEDDATE.getParameterName(), LocalDateTime.now());
-            update.set(ReceiveSummaryParameters.BUSINESSSTATUSCODE.getParameterName(), receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
-            commitedRcvSummary = mongoTemplate.findAndModify(query, update, FindAndModifyOptions.options().returnNew(true),ReceiveSummary.class, summaryCollection);
-            if (commitedRcvSummary == null) {
-                throw new ContentNotFoundException("Receive summary not found for the given id", "please enter a valid id");
-            }
-            if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
-                summaryLineList.add(commitedRcvSummary);
-            }
-            if (StringUtils.isNotEmpty(id)) {
-                Criteria summaryReferenceCriteria = Criteria.where(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).is(id);
-                dynamicQuery.addCriteria(summaryReferenceCriteria);
-            }
-            if (receivingSummaryLineRequest.getLocationNumber() != null) {
-                Criteria locationNumberCriteria = Criteria.where(ReceivingLineParameters.STORENUMBER.getParameterName()).is(receivingSummaryLineRequest.getLocationNumber());
-                dynamicQuery.addCriteria(locationNumberCriteria);
-            }
-            //TODO code needs to optimized remove the DB calls in loop
-            List<ReceivingLine> receivingLineList = mongoTemplate.find(dynamicQuery, ReceivingLine.class, lineCollection);
-            String lineId;
-            for (ReceivingLine receivingLine : receivingLineList) {
-                lineId = receivingLine.get_id();
-                Query queryForLine = new Query();
-                Update updateLine = new Update();
-                updateLine.set(ReceivingLineParameters.DATASYNCSTATUS.getParameterName(), DB2SyncStatus.UPDATE_SYNC_INITIATED);
-                updateLine.set(ReceivingLineParameters.LASTUPDATEDDATE.getParameterName(), LocalDateTime.now());
-                queryForLine.addCriteria(Criteria.where(ReceivingLineParameters.STORENUMBER.getParameterName()).is(receivingSummaryLineRequest.getLocationNumber()));
-                queryForLine.addCriteria(Criteria.where(ReceivingLineParameters.ID.getParameterName()).is(lineId));
-                updateLine.set(ReceivingLineParameters.INVENTORYMATCHSTATUS.getParameterName(), Integer.parseInt(receivingSummaryLineRequest.getInventoryMatchStatus()));
-                commitedRcvLine = mongoTemplate.findAndModify(queryForLine, updateLine, FindAndModifyOptions.options().returnNew(true),ReceivingLine.class, lineCollection);
-                if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
-                    summaryLineList.add(commitedRcvLine);
-                }
-            }
-            publisher.publishEvent(summaryLineList);
-        } else {
-            String lineId;
-            String summaryId;
-            if (isWareHouseData == false) {
-                summaryId = formulateId(receivingSummaryLineRequest.getPurchaseOrderId(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), receivingSummaryLineRequest.getReceiptDate().toString());
-                lineId = formulateLineId(receivingSummaryLineRequest.getPurchaseOrderId(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(),
-                        receivingSummaryLineRequest.getReceiptDate().toString(), receivingSummaryLineRequest.getReceiptLineNumber().toString());
-            } else {
-                summaryId = formulateId(receivingSummaryLineRequest.getPurchaseOrderId(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), "0");
-                lineId = formulateLineId(receivingSummaryLineRequest.getPurchaseOrderId(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(),
-                        "0", receivingSummaryLineRequest.getReceiptLineNumber().toString());
-            }
-            Query query = new Query();
-            query.addCriteria(Criteria.where(ReceiveSummaryParameters.ID.getParameterName()).is(summaryId));
-            query.addCriteria(Criteria.where(ReceiveSummaryParameters.STORENUMBER.getParameterName()).is(receivingSummaryLineRequest.getLocationNumber()));
-            Update update = new Update();
-            update.set(ReceiveSummaryParameters.DATASYNCSTATUS.getParameterName(), DB2SyncStatus.UPDATE_SYNC_INITIATED);
-            update.set(ReceiveSummaryParameters.LASTUPDATEDDATE.getParameterName(), LocalDateTime.now());
-            update.set(ReceiveSummaryParameters.BUSINESSSTATUSCODE.getParameterName(), receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
-            commitedRcvSummary = mongoTemplate.findAndModify(query, update,FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
-            if (commitedRcvSummary == null) {
-                throw new ContentNotFoundException("Receive summary not found for the given id", "please enter a valid id");
-            }
-            if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
-                summaryLineList.add(commitedRcvSummary);
-            }
-            query = new Query();
-            query.addCriteria(Criteria.where(ReceivingLineParameters.ID.getParameterName()).is(lineId));
-            query.addCriteria(Criteria.where(ReceivingLineParameters.STORENUMBER.getParameterName()).is(receivingSummaryLineRequest.getLocationNumber()));
-            Update updateLine = new Update();
-            updateLine.set(ReceivingLineParameters.DATASYNCSTATUS.getParameterName(), DB2SyncStatus.UPDATE_SYNC_INITIATED);
-            updateLine.set(ReceivingLineParameters.LASTUPDATEDDATE.getParameterName(), LocalDateTime.now());
-            updateLine.set(ReceivingLineParameters.INVENTORYMATCHSTATUS.getParameterName(), Integer.parseInt(receivingSummaryLineRequest.getInventoryMatchStatus()));
-            commitedRcvLine = mongoTemplate.findAndModify(query, updateLine,FindAndModifyOptions.options().returnNew(true), ReceivingLine.class, lineCollection);
-            if (commitedRcvLine == null) {
-                throw new ContentNotFoundException("Receive line not found for the given id ", "please enter a valid id");
-            }
+        Update updateLine = new Update();
+        updateLine.set(ReceivingLineParameters.DATASYNCSTATUS.getParameterName(), DB2SyncStatus.UPDATE_SYNC_INITIATED);
+        updateLine.set(ReceivingLineParameters.LASTUPDATEDDATE.getParameterName(), LocalDateTime.now());
+        updateLine.set(ReceivingLineParameters.INVENTORYMATCHSTATUS.getParameterName(), Integer.parseInt(receivingSummaryLineRequest.getInventoryMatchStatus()));
+        if (StringUtils.isNotEmpty(receivingSummaryLineRequest.getReceiptLineNumber())) {
+            String lineId = id + ReceivingConstants.PIPE_SEPARATOR + receivingSummaryLineRequest.getReceiptLineNumber().toString();
+            Query queryForLine = new Query();
+            queryForLine.addCriteria(Criteria.where(ReceivingLineParameters.STORENUMBER.getParameterName()).is(receivingSummaryLineRequest.getLocationNumber()));
+            queryForLine.addCriteria(Criteria.where(ReceivingLineParameters.ID.getParameterName()).is(lineId));
+            startTime = System.currentTimeMillis();
+            ReceivingLine commitedRcvLine = mongoTemplate.findAndModify(queryForLine, updateLine, FindAndModifyOptions.options().returnNew(true), ReceivingLine.class, lineCollection);
+            log.info("updateReceiveSummaryAndLine :: updateLineQueryTime :: findAndModify " + (System.currentTimeMillis() - startTime));
             if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
                 summaryLineList.add(commitedRcvLine);
             }
-            publisher.publishEvent(summaryLineList);
+        } else {
+            Query queryForLine = new Query();
+            queryForLine.addCriteria(Criteria.where(ReceivingLineParameters.STORENUMBER.getParameterName()).is(receivingSummaryLineRequest.getLocationNumber()));
+            queryForLine.addCriteria(Criteria.where(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).is(id));
+            startTime = System.currentTimeMillis();
+            UpdateResult updateResult = mongoTemplate.updateMulti(queryForLine, updateLine, ReceivingLine.class, lineCollection);
+            long endTime = System.currentTimeMillis();
+            List<ReceivingLine> receivingLines = mongoTemplate.find(queryForLine, ReceivingLine.class, lineCollection);
+            log.info("updateReceiveSummaryAndLine :: updateLineQueryTime :: multipleUpdate " + (endTime - startTime));
+            log.info("updateReceiveSummaryAndLine :: updateLineQueryTime :: find " + (System.currentTimeMillis() - endTime));
+            if (isWareHouseData && CollectionUtils.isNotEmpty(receivingLines) && receivingLines.size() == updateResult.getModifiedCount()) {
+                summaryLineList.addAll(receivingLines);
+            }
         }
+        publisher.publishEvent(summaryLineList);
+        List<ReceivingSummaryLineRequest> responseList = new ArrayList<>();
         responseList.add(receivingSummaryLineRequest);
         ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setSuccess(true);

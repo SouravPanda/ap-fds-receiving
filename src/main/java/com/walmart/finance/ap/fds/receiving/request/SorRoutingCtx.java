@@ -12,12 +12,12 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class SorRoutingCtx {
 
-    @NotEmpty
+    @NotEmpty(message = "Missing mandatory parameter,please enter a valid replnTypCd")
     String replnTypCd;
 
-    @NotNull
+    @NotNull(message = "Missing mandatory parameter,please enter a valid invProcAreaCode")
     Integer invProcAreaCode;
 
-    @NotEmpty
+    @NotEmpty(message = "Missing mandatory parameter,please enter a valid locationCountryCd")
     String locationCountryCd;
 }
