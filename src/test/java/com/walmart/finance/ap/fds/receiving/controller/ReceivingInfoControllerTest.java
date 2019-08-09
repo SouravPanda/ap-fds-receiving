@@ -17,7 +17,6 @@ import javax.ws.rs.core.MediaType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -127,11 +126,10 @@ public class ReceivingInfoControllerTest {
 
     @Test
     public void getReceivingInfoV1() throws Exception {
-
-        List<ReceiveMDSResponse> merchandises = new ArrayList<ReceiveMDSResponse>(){
+        List<ReceiveMDSResponse> merchandises = new ArrayList<ReceiveMDSResponse>() {
             {
-                add(new ReceiveMDSResponse(1,350,"01"));
-                add(new ReceiveMDSResponse(2,400,"02"));
+                add(new ReceiveMDSResponse(1, 350, "01"));
+                add(new ReceiveMDSResponse(2, 400, "02"));
             }
         };
         ReceivingInfoLineResponse receivingInfoLineResponse = new ReceivingInfoLineResponse(new Long(110950), 2, 575486609,
@@ -139,26 +137,25 @@ public class ReceivingInfoControllerTest {
                 30.09, 2, 0,
                 "N", "0000047875883989",
                 "NSW CRASH TRNF", null, "ww", 1, "0.0", merchandises);
-
         List<ReceivingInfoLineResponse> lineResponses = new ArrayList<ReceivingInfoLineResponse>() {
             {
                 add(receivingInfoLineResponse);
             }
         };
-        List<InvoiceFinTransProcessLogs> invoiceFinTransProcessLogs = new ArrayList<InvoiceFinTransProcessLogs>(){
+        List<InvoiceFinTransProcessLogs> invoiceFinTransProcessLogs = new ArrayList<InvoiceFinTransProcessLogs>() {
             {
-                add(new InvoiceFinTransProcessLogs(null,null,10,LocalDate.of(2019,05,27),"ID123"));
+                add(new InvoiceFinTransProcessLogs(null, null, 10, LocalDate.of(2019, 05, 27), "ID123"));
             }
         };
-        List<InvoiceFinTransAdjustLogs> invoiceFinTransAdjustLogs = new ArrayList<InvoiceFinTransAdjustLogs>(){
+        List<InvoiceFinTransAdjustLogs> invoiceFinTransAdjustLogs = new ArrayList<InvoiceFinTransAdjustLogs>() {
             {
-                add(new InvoiceFinTransAdjustLogs(10,10.05,LocalDate.of(2019,05,27),"Change123",
-                        LocalDate.of(2018,12,23),20.02,LocalDate.of(2018,11,23),LocalDate.of(2018,11,24)));
+                add(new InvoiceFinTransAdjustLogs(10, 10.05, LocalDate.of(2019, 05, 27), "Change123",
+                        LocalDate.of(2018, 12, 23), 20.02, LocalDate.of(2018, 11, 23), LocalDate.of(2018, 11, 24)));
             }
         };
-        List<InvoiceFinDelNoteChangeLogs> invoiceFinDelNoteChangeLogs = new ArrayList<InvoiceFinDelNoteChangeLogs>(){
+        List<InvoiceFinDelNoteChangeLogs> invoiceFinDelNoteChangeLogs = new ArrayList<InvoiceFinDelNoteChangeLogs>() {
             {
-                add(new InvoiceFinDelNoteChangeLogs(LocalDate.of(2019,05,27),"User1234","Del1234","OrgDel123"));
+                add(new InvoiceFinDelNoteChangeLogs(LocalDate.of(2019, 05, 27), "User1234", "Del1234", "OrgDel123"));
             }
         };
         ReceivingInfoResponseV1 response = new ReceivingInfoResponseV1("ID123", LocalDate.of(2019, 05, 27), null,
@@ -167,13 +164,13 @@ public class ReceivingInfoControllerTest {
                 "A", 0.0, 0.0, null, 397646, null,
                 0.0, 0, "PEPSI MIDAMERICA", "1223",
                 null, null, null, 97166785,
-                "1832721624",724201901,0 ,null,"6854748957","US",
-                1,0.0,-5743.12,0.0,0.0,640
-                ,LocalDate.of(2018,11,23),LocalDate.of(2018,12,23),"6854748957",LocalDate.of(2018,11,24),0,538,
-                0,0,"0","del123",6479,
-                7,6479,20,64,640,"N",
-                null,10,
-                invoiceFinTransProcessLogs,invoiceFinTransAdjustLogs,invoiceFinDelNoteChangeLogs,lineResponses);
+                "1832721624", new Long(724201901), 0, null, "6854748957", "US",
+                1, 0.0, -5743.12, 0.0, 0.0, 640
+                , LocalDate.of(2018, 11, 23), LocalDate.of(2018, 12, 23), "6854748957", LocalDate.of(2018, 11, 24), 0, 538,
+                0, 0, "0", "del123", 6479,
+                7, 6479, 20, 64, 640, "N",
+                null, 10,
+                invoiceFinTransProcessLogs, invoiceFinTransAdjustLogs, invoiceFinDelNoteChangeLogs, lineResponses);
         List<ReceivingInfoResponseV1> list = new ArrayList<ReceivingInfoResponseV1>() {
             {
                 add(response);
@@ -189,7 +186,6 @@ public class ReceivingInfoControllerTest {
         mockMvc.perform(requestBuilder)
                 .andExpect(status().isOk())
                 .andExpect(content().json(
-
                         "{\n" +
                                 "    \"success\": true,\n" +
                                 "    \"timestamp\": \"2019-05-12T15:31:16\",\n" +

@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class ReceivingInfoRequestValidator {
+    private ReceivingInfoRequestValidator() {
+    }
 
     public static void validate(String countryCode, Map<String, String> allRequestParams) {
         Iterator<Map.Entry<String, String>> iterator = allRequestParams.entrySet().iterator();

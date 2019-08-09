@@ -2,7 +2,9 @@ package com.walmart.finance.ap.fds.receiving;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ImportResource;
 
+@ImportResource("classpath:perf-monitoring.xml")
 @SpringBootApplication
 public class SpringReceiveApplication {
 
