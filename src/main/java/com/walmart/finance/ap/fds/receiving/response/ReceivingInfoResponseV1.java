@@ -60,7 +60,7 @@ public class ReceivingInfoResponseV1 {
 
     private String parentReceivingNbr;
 
-    private Integer parentReceivingStoreNbr;
+    private String parentReceivingStoreNbr;
 
     private LocalDate parentReceivingDate;
 
