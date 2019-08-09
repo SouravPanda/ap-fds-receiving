@@ -44,7 +44,9 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
     public ReceivingResponse getLineSummary(String purchaseOrderId, String receiptNumber, String transactionType, String controlNumber, String locationNumber, String divisionNumber) {
         try {
             Query query = searchCriteriaForGet(purchaseOrderId, receiptNumber, transactionType, controlNumber, locationNumber, divisionNumber);
+            long startTime = System.currentTimeMillis();
             List<ReceivingLine> receiveLines = mongoTemplate.find(query.limit(1000), ReceivingLine.class, lineCollection);
+            log.info(" getLineSummary :: queryTime :: "+(System.currentTimeMillis()-startTime));
             List<ReceivingLineResponse> responseList;
             if (CollectionUtils.isEmpty(receiveLines)) {
                 throw new NotFoundException("Receiving line not found for given search criteria ", "please enter valid query parameters");

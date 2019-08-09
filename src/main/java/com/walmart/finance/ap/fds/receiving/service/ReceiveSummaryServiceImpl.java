@@ -443,21 +443,30 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     private List<ReceiveSummary> executeQueryForReceiveSummary(Query query) {
         List<ReceiveSummary> receiveSummaries = new ArrayList<>();
         if (query != null) {
+            long startTime = System.currentTimeMillis();
             receiveSummaries = mongoTemplate.find(query.limit(1000), ReceiveSummary.class, summaryCollection);
+            log.info("executeQueryForReceiveSummary :: queryTime :: "+(System.currentTimeMillis()-startTime));
         }
+
         return receiveSummaries;
     }
 
     private List<ReceivingLine> executeQueryReceiveline(Query query) {
         List<ReceivingLine> receiveLines = new LinkedList<>();
         if (query != null) {
+            long startTime = System.currentTimeMillis();
             receiveLines = mongoTemplate.find(query, ReceivingLine.class, lineCollection);
+            log.info("executeQueryReceiveline :: queryTime :: "+(System.currentTimeMillis()-startTime));
         }
         return receiveLines;
     }
 
     private List<FreightResponse> executeQueryReceiveFreight(Query query) {
-        return mongoTemplate.find(query, FreightResponse.class, freightCollection);
+        List<FreightResponse> freightResponses = new LinkedList<>();
+        long startTime = System.currentTimeMillis();
+        freightResponses = mongoTemplate.find(query, FreightResponse.class, freightCollection);
+        log.info("executeQueryReceiveFreight :: queryTime :: "+(System.currentTimeMillis()-startTime));
+        return freightResponses;
     }
 
     private void listToMapConversion(List<ReceiveSummary> receiveSummaries, HashMap<String, ReceiveSummary> receiveSummaryHashMap) {
