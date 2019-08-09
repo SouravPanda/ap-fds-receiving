@@ -43,6 +43,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 
 @PrepareForTest(ReceiveSummaryServiceImpl.class)
@@ -222,11 +224,11 @@ public class ReceiveSummaryServiceImplTest {
                 8064, 18, 0, LocalDate.of(1986, 12, 12), LocalTime.of(18, 45, 21),
                 0, 9788, 1111,
                 0, 0, "H", 0.0, 1.0, 'P',
-                2L, 'k', 'L',
+                null, 'k', 'L',
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
                 LocalDate.now(), 9.0, 7, "0", 0, LocalDateTime.now(), 0,
                 "JJJ", "UU", LocalDateTime.now(), "99"
-                , 'K', "IIL", null, null, null, null, null);
+                , 'W', "IIL", null, null, null, null, null);
         List listOfContent = new ArrayList<ReceiveSummary>();
         listOfContent.add(receiveSummary);
         List<String> listOfItemNumbers = new ArrayList<>();
@@ -633,6 +635,7 @@ public class ReceiveSummaryServiceImplTest {
         doNothing().when(publisher).publishEvent(mock(List.class));
         receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, "US");
     }
+
 }
 
 
