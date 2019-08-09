@@ -6,11 +6,13 @@ import com.mongodb.MongoClientURI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 @Configuration
-public class MongoConfiguration extends AbstractMongoConfiguration {
+public class MongoConfiguration  {
 
     private static final Logger LOG = LoggerFactory.getLogger(MongoConfiguration.class);
 
@@ -26,20 +28,16 @@ public class MongoConfiguration extends AbstractMongoConfiguration {
     @Value("${spring.data.mongodb.mongoMaxPoolSize}")
     private String mongoMaxPoolSize;
 
-
-    @Override
+    @Bean
     public MongoClient mongoClient() {
-        LOG.debug("country is {} ",System.getenv("COUNTRY_NAME"));
-        MongoClientOptions.Builder optionsBuilder = new MongoClientOptions.Builder();
-        optionsBuilder.minConnectionsPerHost(Integer.valueOf(mongoMinPoolSize));
-        optionsBuilder.connectionsPerHost(Integer.valueOf(mongoMaxPoolSize));
-        LOG.debug("mongo uri {}",mongoURI);
-        MongoClientURI uri = new MongoClientURI(mongoURI, optionsBuilder);
-        return  new MongoClient (uri);
+        MongoClient mongoClient = new MongoClient(new MongoClientURI(mongoURI));
+        return mongoClient;
     }
 
-    @Override
-    protected String getDatabaseName() {
-        return databaseName;
+    @Bean
+    public MongoTemplate mongoTemplate(MongoClient mongoClient) {
+        MongoTemplate mongoTemplate = new MongoTemplate(mongoClient, databaseName);
+        return mongoTemplate;
     }
+
 }
