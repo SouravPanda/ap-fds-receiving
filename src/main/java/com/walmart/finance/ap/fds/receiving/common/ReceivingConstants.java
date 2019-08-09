@@ -31,7 +31,7 @@ public class ReceivingConstants {
     public static final String INVOICENUMBER = "invoiceNumber";
     public static final String PURCHASEORDERNUMBER = "purchaseOrderNumber";
     public static final String PURCHASEORDERID = "purchaseOrderId";
-    public static final String RECEIPTNUMBER = "receiptNumbers";
+    public static final String RECEIPTNUMBERS = "receiptNumbers";
     public static final String TRANSACTIONTYPE = "transactionType";
     public static final String CONTROLNUMBER = "controlNumber";
     public static final String LOCATIONNUMBER = "locationNumber";
@@ -41,7 +41,6 @@ public class ReceivingConstants {
     public static final String INVOICEID = "invoiceId";
     public static final String RECEIPTDATEEND = "receiptDateEnd";
     public static final String RECEIPTDATESTART = "receiptDateStart";
-    public static final String RECEIPTNUMBERS="receiptNumbers";
     public static final String ITEMNUMBERS="itemNumbers";
     public static final String UPCNUMBERS="upcNumbers";
 
