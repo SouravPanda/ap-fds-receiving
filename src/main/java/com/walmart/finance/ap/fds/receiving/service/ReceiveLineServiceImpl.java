@@ -96,7 +96,6 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
             criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.STORENUMBER.getParameterName()).is(Integer.parseInt(paramMap.get(ReceivingConstants.LOCATIONNUMBER.trim())));
             dynamicQuery.addCriteria(criteriaDefinition);
         }
-
         return dynamicQuery;
     }
 }
