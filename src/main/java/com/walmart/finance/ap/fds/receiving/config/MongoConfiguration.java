@@ -31,8 +31,9 @@ public class MongoConfiguration extends AbstractMongoConfiguration {
     public MongoClient mongoClient() {
         LOG.debug("country is {} ",System.getenv("COUNTRY_NAME"));
         MongoClientOptions.Builder optionsBuilder = new MongoClientOptions.Builder();
-        optionsBuilder.minConnectionsPerHost(Integer.valueOf(mongoMinPoolSize));
-        optionsBuilder.connectionsPerHost(Integer.valueOf(mongoMaxPoolSize));
+//        optionsBuilder.minConnectionsPerHost(Integer.valueOf(mongoMinPoolSize));
+//        optionsBuilder.connectionsPerHost(Integer.valueOf(mongoMaxPoolSize));
+        optionsBuilder.maxConnectionIdleTime(600000);
         LOG.debug("mongo uri {}",mongoURI);
         MongoClientURI uri = new MongoClientURI(mongoURI, optionsBuilder);
         return  new MongoClient (uri);
