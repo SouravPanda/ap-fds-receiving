@@ -152,7 +152,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     private List<ReceiveSummary> executeQueryInSummary(Query query) {
         List<ReceiveSummary> receiveSummaries = new ArrayList<>();
         if (query != null) {
+            long startTime = System.currentTimeMillis();
             receiveSummaries = mongoTemplate.find(query.limit(1000), ReceiveSummary.class, summaryCollection);
+            log.info(" executeQueryInSummary :: queryTime :: "+(System.currentTimeMillis()-startTime));
         }
         return receiveSummaries;
     }
@@ -160,7 +162,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     private List<ReceivingLine> executeQueryInLine(Query query) {
         List<ReceivingLine> receiveLines = new ArrayList<>();
         if (query != null) {
+            long startTime = System.currentTimeMillis();
             receiveLines = mongoTemplate.find(query.limit(1000), ReceivingLine.class, lineCollection);
+            log.info(" executeQueryInLine :: queryTime :: "+(System.currentTimeMillis()-startTime));
         }
         return receiveLines;
     }
@@ -168,7 +172,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     private List<FreightResponse> executeQueryInFreight(Query query) {
         List<FreightResponse> receiveFreights = new ArrayList<>();
         if (query != null) {
+            long startTime = System.currentTimeMillis();
             receiveFreights = mongoTemplate.find(query.limit(1000), FreightResponse.class, freightCollection);
+            log.info(" executeQueryInFreight :: queryTime :: "+(System.currentTimeMillis()-startTime));
         }
         return receiveFreights;
     }
