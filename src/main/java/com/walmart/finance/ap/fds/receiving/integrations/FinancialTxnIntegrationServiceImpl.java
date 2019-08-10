@@ -126,7 +126,6 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
                 url += "storeNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
                         + "/vendorNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam());
                 break;
-            default:
         }
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
         allRequestParamsClone.entrySet()

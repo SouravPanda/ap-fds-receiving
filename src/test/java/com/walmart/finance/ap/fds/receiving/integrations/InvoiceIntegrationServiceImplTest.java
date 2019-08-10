@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static org.junit.Assert.assertNull;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 public class InvoiceIntegrationServiceImplTest {
@@ -83,5 +84,29 @@ public class InvoiceIntegrationServiceImplTest {
         HttpStatusCodeException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, InvoiceResponse.class)).thenThrow(exception);
         invoiceIntegrationService.getInvoice(paramMap);
+    }
+
+    @Test
+    public void getInvoiceExceptionNot() {
+        InvoiceResponseData invoiceResponseData = new InvoiceResponseData("invoiceid", "invoiceNumber", "708588561", "0708588561", null, "918", "0", "621680", "90",null);
+        List<InvoiceResponseData> invoiceResponseDataList = new ArrayList<>();
+        invoiceResponseDataList.add(invoiceResponseData);
+        InvoiceResponse invoiceResponse = new InvoiceResponse(invoiceResponseDataList);
+        HashMap<String, String> paramMap = new HashMap<String, String>() {
+            {
+                put(ReceivingConstants.COUNTRYCODE, "US");
+                put(ReceivingConstants.INVOICEID, "1234");
+                put(ReceivingConstants.PURCHASEORDERNUMBER,"123");
+            }
+        };
+        String url = "https://api.qa.wal-mart.com/si/bofap/US/invoice/summary?invoiceId=1234";
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.set(ReceivingConstants.WM_CONSUMER, invoiceIntegrationService.getConsumerId());
+        requestHeaders.set(ReceivingConstants.WMAPIKEY, invoiceIntegrationService.getClientId());
+        HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
+        ResponseEntity<InvoiceResponse> response = new ResponseEntity<>(invoiceResponse, HttpStatus.OK);
+        HttpStatusCodeException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND);
+        when(restTemplate.exchange(url, HttpMethod.GET, entity, InvoiceResponse.class)).thenThrow(exception);
+        assertNull(invoiceIntegrationService.getInvoice(paramMap));
     }
 }

@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.*;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class FinancialTxnIntegrationServiceImplTest {
@@ -384,4 +386,37 @@ public class FinancialTxnIntegrationServiceImplTest {
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
         compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
     }
+
+
+    @Test(expected = NotFoundException.class)
+    public void httpStatusCodeExceptionTest2() {
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
+                2222, 0, 9.0, 0, "99987", "USER",
+                null, "VendorName", "1234", 1828926897,
+                "1828926897", "Memo", "1223", null, "164680544", null
+                , null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null, null, null, null, null, null
+                , null, null, null, null, null, null, null, null, null);
+        Map<String, String> queryParamMap = new HashMap<String, String>() {
+            {
+                put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), "US");
+                put(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam(), "639050495");
+                put(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam(), "99987");
+                put(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam(), "6302");
+                put(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam(), "1828926897");
+                put("scenario", ReceivingInfoRequestCombinations.VENDORNUMBER_PURCHASEORDERNUMBER_LOCATIONNUMBER.name());
+            }
+        };
+        List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
+        financialTxnResponseDataList.add(financialTxnResponseData);
+        String url = "https://api.dev.wal-mart.com/bofap/dev/bofap/US/invoice/financial/transaction/vendorNumber/639050495/poNumber/99987/storeNumber/6302?invoiceNumber=1828926897";
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
+        requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
+        HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
+        when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(null);
+        financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap);
+    }
+
+
 }
