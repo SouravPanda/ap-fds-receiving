@@ -43,8 +43,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 
 @PrepareForTest(ReceiveSummaryServiceImpl.class)
@@ -635,7 +633,72 @@ public class ReceiveSummaryServiceImplTest {
         doNothing().when(publisher).publishEvent(mock(List.class));
         receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, "US");
     }
+    /**
+     * Upc Numbers with + No line respose so iterator.remove scenario
+     */
+    @Test
+    public void getReceiveSummaryTest1(){
+        ReceiveSummary receiveSummary = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665207",
+                8064, 18, 0, LocalDate.of(1986, 12, 12), LocalTime.of(18, 45, 21),
+                0, 9788, 1111,
+                0, 0, "H", 0.0, 1.0, 'P',
+                null, 'k', 'L',
+                'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
+                LocalDate.now(), 9.0, 7, "0", 0, LocalDateTime.now(), 0,
+                "JJJ", "UU", LocalDateTime.now(), "99"
+                , 'K', "IIL", null, null, null, null, null);
+        ArrayList<ReceiveSummary> receiveSummaries = new ArrayList<>();
+        receiveSummaries.add(receiveSummary);
+        when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(receiveSummaries);
+        when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(new ArrayList<>());
+        receiveSummaryServiceImpl.getReceiveSummary("US",null,"123",null,"99",null,null,null,null,null,null,null,null,null,null,new ArrayList<String>(){{add("444");}});
+    }
 
+    /**
+     * No line respose + No item/upc  summary_id null (for line query) +  get freight respone
+     */
+    @Test
+    public void getReceiveSummaryTest2(){
+        ReceiveSummary receiveSummary = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665207",
+                8064, 18, 0, LocalDate.of(1986, 12, 12), LocalTime.of(18, 45, 21),
+                0, 9788, 1111,
+                0, 0, "H", 0.0, 1.0, 'P',
+                null, 'k', 'L',
+                'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
+                LocalDate.now(), 9.0, 7, "0", 0, LocalDateTime.now(), 0,
+                "JJJ", "UU", LocalDateTime.now(), "99"
+                , 'K', "IIL", null, null, null, null, null);
+        ArrayList<ReceiveSummary> receiveSummaries = new ArrayList<>();
+        receiveSummaries.add(receiveSummary);
+        when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(receiveSummaries);
+        when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(new ArrayList<>());
+        when(receivingSummaryResponseConverter.convert(Mockito.any(ReceiveSummary.class))).thenReturn(mock(ReceivingSummaryResponse.class));
+        receiveSummaryServiceImpl.getReceiveSummary("US",null,"123",null,"99",null,null,null,null,null,null,null,null,null,null,null);
+    }
+
+
+    /**
+     *  this covers the scenario for summary list > 1000.
+     * */
+    @Test (expected = NotFoundException.class)
+    public void getReceiveSummaryTest3(){
+        ReceiveSummary receiveSummary = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665207",
+                8064, 18, 0, LocalDate.of(1986, 12, 12), LocalTime.of(18, 45, 21),
+                0, 9788, 1111,
+                0, 0, "H", 0.0, 1.0, 'P',
+                null, 'k', 'L',
+                'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
+                LocalDate.now(), 9.0, 7, "0", 0, LocalDateTime.now(), 0,
+                "JJJ", "UU", LocalDateTime.now(), "99"
+                , 'K', "IIL", null, null, null, null, null);
+        ArrayList<ReceiveSummary> receiveSummaries = mock(ArrayList.class);
+//        receiveSummaries.add(receiveSummary);
+        when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(receiveSummaries);
+        when(receiveSummaries.size()).thenReturn(1234);
+        when(receiveSummaries.isEmpty()).thenReturn(false).thenReturn(true);
+//        when(receiveSummaries.get(Mockito.anyInt())).thenReturn(receiveSummary);
+        receiveSummaryServiceImpl.getReceiveSummary("US",null,"123",null,"99",null,null,null,null,null,null,null,null,null,null,new ArrayList<String>(){{add("444");}});
+    }
 }
 
 

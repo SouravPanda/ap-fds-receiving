@@ -112,11 +112,12 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             if (CollectionUtils.isNotEmpty(receiveSummaries) && receiveSummaries.size() > 1000) {
                 receiveSummaries.subList(1000, receiveSummaries.size()).clear();
             }
-            Map<String, AdditionalResponse> responseMap = getLineResponseMap(receiveSummaries, itemNumbers, upcNumbers);
-            //Todo parallel stream performance check
             if (CollectionUtils.isEmpty(receiveSummaries)) {
                 throw new NotFoundException("Receiving summary not found for given search criteria", "please enter valid query parameters");
             } else {
+                //Todo parallel stream performance check
+                Map<String, AdditionalResponse> responseMap = getLineResponseMap(receiveSummaries, itemNumbers, upcNumbers);
+
                 responseList = receiveSummaries.stream().map(
                         t -> {
                             ReceivingSummaryResponse response = receivingSummaryResponseConverter.convert(t);
@@ -346,7 +347,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         List<ReceivingLine> lineResponseList = new LinkedList<>();
         List<Criteria> criteriaList = new ArrayList<>();
         for (ReceiveSummary receiveSummary : receiveSummaries) {
-            criteriaList.add(queryForLineResponse(receiveSummary, itemNumbers, upcNumbers));
+            if (StringUtils.isNotEmpty(receiveSummary.get_id())) {
+                criteriaList.add(queryForLineResponse(receiveSummary, itemNumbers, upcNumbers));
+            }
         }
         if (CollectionUtils.isNotEmpty(criteriaList)) {
             Query query = new Query(new Criteria().orOperator(criteriaList.toArray(new Criteria[criteriaList.size()])));
@@ -373,7 +376,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             AdditionalResponse response = new AdditionalResponse();
             List<ReceivingLine> lineList = receivingLineMap.get(receiveSummary.get_id());
             if (CollectionUtils.isNotEmpty(lineList)) {
-                if (receiveSummary.getTypeIndicator().equals("W")) {
+                if (receiveSummary.getTypeIndicator().equals('W')) {
                     response.setTotalCostAmount(lineResponseList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount()).sum());
                     response.setTotalRetailAmount(lineResponseList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
                 } else {
@@ -396,17 +399,14 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     }
 
     private Criteria queryForLineResponse(ReceiveSummary receiveSummary, List<String> itemNumbers, List<String> upcNumbers) {
-        if (StringUtils.isNotEmpty(receiveSummary.get_id())) {
-            Criteria criteriaDefinition = new Criteria(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).is(receiveSummary.get_id());
-            if (CollectionUtils.isNotEmpty(itemNumbers)) {
-                criteriaDefinition.and(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Integer::parseInt).collect(Collectors.toList()));
-            }
-            if (CollectionUtils.isNotEmpty(upcNumbers)) {
-                criteriaDefinition.and(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(upcNumbers);
-            }
-            return criteriaDefinition;
+        Criteria criteriaDefinition = new Criteria(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).is(receiveSummary.get_id());
+        if (CollectionUtils.isNotEmpty(itemNumbers)) {
+            criteriaDefinition.and(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Integer::parseInt).collect(Collectors.toList()));
         }
-        return null;
+        if (CollectionUtils.isNotEmpty(upcNumbers)) {
+            criteriaDefinition.and(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(upcNumbers);
+        }
+        return criteriaDefinition;
     }
     /******* receive -line data fetching   *********/
 
