@@ -11,15 +11,12 @@ import com.walmart.finance.ap.fds.receiving.service.ReceiveSummaryServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
@@ -66,9 +63,9 @@ public class ReceivingSummaryControllerTest {
         successMessage.setTimestamp(LocalDateTime.now());
         Mockito.when(receiveSummaryService.updateReceiveSummary(receivingSummaryRequest, "US")).thenReturn(successMessage);
         String body = "{\n" +
-                "\"receiptNumber\" : \"645099\",\n" +
+                "\"receiveId\" : \"645099\",\n" +
                 "\"purchaseOrderId\": \"1022497259\",\n" +
-                "\"receiptDate\": \"1970-01-01\",\n" +
+                "\"receiveDate\": \"1970-01-01\",\n" +
                 "\"locationNumber\":8231,\n" +
                 " \"businessStatusCode\": \"M\",\n" +
                 " \"meta\": {\n" +
@@ -82,10 +79,6 @@ public class ReceivingSummaryControllerTest {
                 "}";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .put("/US/receiving/summary")
-                .header("X-FDS-FOUNDATION-API-KEY", "razorbacks")
-                .header("Content-Type", "application/json")
-                .header("X-IBM-Client-Secret", "rK7xP5iW4uV0gI4mA0dM8yQ3dV8tW2hG6nB8uA5mY1kA4sQ8oB")
-                .header("X-IBM-Client-Id", "e684e483-dbba-41d5-a040-6043b48798f5")
                 .accept(MediaType.APPLICATION_JSON)
                 .content(body)
                 .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
@@ -98,9 +91,9 @@ public class ReceivingSummaryControllerTest {
                             "    \"timestamp\": \"2019-07-29T00:35:10.17\",\n" +
                             "    \"data\": [\n" +
                             "        {\n" +
-                            "            \"receiptNumber\": \"645099\",\n" +
+                            "            \"receiveId\": \"645099\",\n" +
                             "            \"purchaseOrderId\": \"1022497259\",\n" +
-                            "            \"receiptDate\": \"1970-01-01\",\n" +
+                            "            \"receiveDate\": \"1970-01-01\",\n" +
                             "            \"locationNumber\": 8231,\n" +
                             "            \"businessStatusCode\": \"M\",\n" +
                             "            \"meta\": {\n" +
@@ -129,7 +122,7 @@ public class ReceivingSummaryControllerTest {
         sorRoutingCtx.setReplnTypCd("R");
         meta.setSorRoutingCtx(sorRoutingCtx);
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("2", "2", LocalDate.now(), 2,
-                "A", 1, "9", meta);
+                "A", "1", "9", meta);
         ReceivingResponse successMessage = new ReceivingResponse();
         List<ReceivingSummaryLineRequest> responseList = new ArrayList<>();
         successMessage.setSuccess(true);
@@ -138,13 +131,13 @@ public class ReceivingSummaryControllerTest {
         successMessage.setTimestamp(LocalDateTime.now());
         Mockito.when(receiveSummaryService.updateReceiveSummaryAndLine(receivingSummaryLineRequest, "US")).thenReturn(successMessage);
         String body = "{\n" +
-                "\"receiptNumber\" : \"999997\",\n" +
+                "\"receiveId\" : \"999997\",\n" +
                 "\"purchaseOrderId\": \"553683865\",\n" +
-                "\"receiptDate\": \"2019-05-12\",\n" +
+                "\"receiveDate\": \"2019-05-12\",\n" +
                 "\"locationNumber\":\"6565\",\n" +
                 "\"businessStatusCode\": \"A\",\n" +
                 "\"inventoryMatchStatus\":\"0\",\n" +
-                "\"receiptLineNumber\": \"4\",\n" +
+                "\"lineSequenceNumber\": \"4\",\n" +
                 "\"meta\": {\n" +
                 "    \"unitOfWorkId\": \"12122\",\n" +
                 "    \"sorRoutingCtx\": {\n" +
@@ -156,10 +149,6 @@ public class ReceivingSummaryControllerTest {
                 "}";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .put("/US/receiving/summary/line")
-                .header("X-FDS-FOUNDATION-API-KEY", "razorbacks")
-                .header("Content-Type", "application/json")
-                .header("X-IBM-Client-Secret", "rK7xP5iW4uV0gI4mA0dM8yQ3dV8tW2hG6nB8uA5mY1kA4sQ8oB")
-                .header("X-IBM-Client-Id", "e684e483-dbba-41d5-a040-6043b48798f5")
                 .accept(MediaType.APPLICATION_JSON)
                 .content(body)
                 .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
@@ -172,15 +161,15 @@ public class ReceivingSummaryControllerTest {
                             "    \"timestamp\": \"2019-07-12T12:54:52.604\",\n" +
                             "    \"data\": [\n" +
                             "        {\n" +
-                            "            \"receiptNumber\": \"999997\",\n" +
+                            "            \"receiveId\": \"999997\",\n" +
                             "            \"purchaseOrderId\": \"553683865\",\n" +
-                            "            \"receiptDate\": \"2019-05-12\",\n" +
+                            "            \"receiveDate\": \"2019-05-12\",\n" +
                             "            \"locationNumber\": 6565,\n" +
                             "            \"businessStatusCode\": \"A\",\n" +
-                            "            \"receiptLineNumber\": null,\n" +
+                            "            \"lineSequenceNumber\": \"4\",\n" +
                             "            \"inventoryMatchStatus\": \"0\",\n" +
                             "            \"meta\": {\n" +
-                            "                \"unitofWorkid\": null,\n" +
+                            "                \"unitofWorkid\": 12122,\n" +
                             "                \"sorRoutingCtx\": {\n" +
                             "                    \"replnTypCd\": \"R\",\n" +
                             "                    \"invProcAreaCode\": 30,\n" +
@@ -237,8 +226,8 @@ public class ReceivingSummaryControllerTest {
                                 "\"totalRetailAmount\": 0,\n" +
                                 "\"lineCount\": null,\n" +
                                 "\"departmentNumber\": 96,\n" +
-                                "\"controlSequenceNumber\":0, \n"+
-                                "\"bottleDepositAmount\" : 10.0 \n"+
+                                "\"controlSequenceNumber\":0, \n" +
+                                "\"bottleDepositAmount\" : 10.0 \n" +
                                 "}] " +
                                 "}"
                 ))

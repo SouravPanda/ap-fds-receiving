@@ -56,7 +56,7 @@ public class ReceivingInfoServiceImplTest {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 999403403, "30006", 3669,
                 495742, 1, 9.0, 7777, "99987", "USER",
                 null, "USER", "1223", 1828926897, "000000004147570", "Memo",
-                3669, null, "999403403", null
+                "3669", null, "999403403", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null);
@@ -108,7 +108,7 @@ public class ReceivingInfoServiceImplTest {
                         new Long(999403403), LocalDate.of(2019, 03, 14), new Long(30006),
                         "A", 0.0, 99.0, "972035", 495742, "Memo",
                         0.0, 0, "USER", "1223",
-                        3669, null, "999403403", 1828926897,
+                        "3669", null, "999403403", 1828926897,
                         "000000004147570", null));
             }
         };
@@ -129,7 +129,7 @@ public class ReceivingInfoServiceImplTest {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 999403403, "30006", 3669,
                 495742, 1, 9.0, 7777, "99987", "USER",
                 null, "USER", "1223", 1828926897, "000000004147570", "Memo",
-                3669, null, "999403403", null
+                "3669", null, "999403403", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, 0, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null);
@@ -189,7 +189,7 @@ public class ReceivingInfoServiceImplTest {
                         new Long(999403403), LocalDate.of(2019, 03, 14), new Long(30006),
                         "A", 0.0, 99.0, "972035", 495742, "Memo",
                         0.0, 0, "USER", "1223",
-                        3669, null, "999403403", 1828926897,
+                        "3669", null, "999403403", 1828926897,
                         "000000004147570", receivingInfoLineResponses));
             }
         };

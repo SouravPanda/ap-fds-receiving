@@ -1,5 +1,9 @@
 package com.walmart.finance.ap.fds.receiving.common;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
 public enum ReceiveSummaryBusinessStat {
 
     A("ACTIVE"),
@@ -10,11 +14,7 @@ public enum ReceiveSummaryBusinessStat {
     X("P1A REMOVE"),
     Z("US STORE RECEIVING VISIBILITY");
 
+    @Getter
     private String value;
-
-    ReceiveSummaryBusinessStat(String value)
-    {
-        this.value = value;
-    }
 }
 

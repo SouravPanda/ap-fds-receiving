@@ -64,7 +64,7 @@ public class FinancialTxnResponseData {
     private String memo;
 
     @JsonProperty("parentReceivingStoreNbr")
-    private Integer parentReceivingStoreNbr;
+    private String parentReceivingStoreNbr;
 
     @JsonProperty("parentReceivingDate")
     private Date parentReceivingDate;

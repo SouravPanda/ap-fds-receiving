@@ -1,5 +1,6 @@
 package com.walmart.finance.ap.fds.receiving.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,18 +17,21 @@ import java.time.LocalDate;
 @Data
 @ToString
 @PropertySource("application.properties")
+@NotNull
 public class ReceivingSummaryLineRequest {
 
+    @JsonProperty("receiveId")
     @Valid
-    @NotEmpty(message = "Missing mandatory parameter,please enter a valid receiptNumber")
+    @NotEmpty(message = "Missing mandatory parameter,please enter a valid receiveId")
     private String receiptNumber;
 
     @Valid
     @NotEmpty(message = "Missing mandatory parameter,please enter a valid purchaseOrderId")
     private String purchaseOrderId;
 
+    @JsonProperty("receiveDate")
     @Valid
-    @NotNull(message = "Missing mandatory parameter,please enter a valid receiptDate")
+    @NotNull(message = "Missing mandatory parameter,please enter a valid receiveDate")
     private LocalDate receiptDate;
 
     @Valid
@@ -38,13 +42,14 @@ public class ReceivingSummaryLineRequest {
     @NotEmpty(message = "Missing mandatory parameter,please enter a valid businessStatusCode")
     private String businessStatusCode;
 
-    Integer receiptLineNumber;
+    @JsonProperty("lineSequenceNumber")
+    private String receiptLineNumber;
 
     @Valid
     @NotEmpty(message = "Please enter a valid inventoryMatchStatus")
     private String inventoryMatchStatus;
 
     @Valid
+    @NotNull(message = "Missing mandatory parameter,please enter a valid meta")
     private Meta meta;
-
 }
