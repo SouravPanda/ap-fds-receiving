@@ -9,7 +9,7 @@
 	#App Insight Appender
 	<appender name="aiAppender"
       class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
-        <instrumentationKey>[603bc049-a041-45ed-810c-beaa60a18f8d]</instrumentationKey>
+        <instrumentationKey>603bc049-a041-45ed-810c-beaa60a18f8d</instrumentationKey>
     </appender>
 	
     # Console appender for application logs
