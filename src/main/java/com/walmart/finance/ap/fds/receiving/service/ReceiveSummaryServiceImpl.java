@@ -197,7 +197,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             return LocalDate.parse(date, formatterDate);
         } catch (DateTimeParseException e) {
             log.error(ExceptionUtils.getStackTrace(e));
-            throw new BadRequestException("Date format is not correct.", "Please enter valid query parameters");
+            throw new BadRequestException(ReceivingErrors.INVALIDDATATYPE.getParameterName(), ReceivingErrors.INVALIDQUERYPARAMS.getParameterName());
         }
     }
     /*******  Search Criteria methods  *********/
