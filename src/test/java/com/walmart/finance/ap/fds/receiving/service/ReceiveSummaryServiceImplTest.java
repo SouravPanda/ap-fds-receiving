@@ -747,7 +747,7 @@ public class ReceiveSummaryServiceImplTest {
     /**
      * this covers the scenario for summary list > 1000.
      */
-    @Test(expected = NotFoundException.class)
+    @Test
     public void getReceiveSummaryTest3() {
         ReceiveSummary receiveSummary = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665207",
                 8064, 18, 0, LocalDate.of(1986, 12, 12), LocalTime.of(18, 45, 21),
