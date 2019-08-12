@@ -186,7 +186,7 @@
 	
 		<dependency> 
       		<groupId>com.microsoft.azure</groupId>  
-      		<artifactId>applicationinsights-logging-log4j2</artifactId>  
+      		<artifactId>applicationinsights-logging-logback</artifactId>  
       		<version>2.1.1</version> 
     	</dependency> 
     	
