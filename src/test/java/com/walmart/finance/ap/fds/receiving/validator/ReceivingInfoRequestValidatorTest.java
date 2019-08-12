@@ -1,5 +1,6 @@
 package com.walmart.finance.ap.fds.receiving.validator;
 
+import com.walmart.finance.ap.fds.receiving.exception.MandatoryPatameterMissingException;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 
@@ -17,6 +18,8 @@ public class ReceivingInfoRequestValidatorTest {
     public void validateScneario1() {
         Map<String, String> allRequestParams = new HashMap<>();
         allRequestParams.put(ReceivingInfoRequestQueryParameters.INVOICEID.getQueryParam(), "1234");
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam(), null);
+        allRequestParams.put("notExist", "123");
         ReceivingInfoRequestValidator.validate("US", allRequestParams);
         assertTrue(allRequestParams.get("scenario").equalsIgnoreCase(ReceivingInfoRequestCombinations.INVOICEID.name()));
     }
@@ -78,5 +81,48 @@ public class ReceivingInfoRequestValidatorTest {
         allRequestParams.put(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam(), "1234");
         ReceivingInfoRequestValidator.validate("US", allRequestParams);
         assertTrue(allRequestParams.get("scenario").equalsIgnoreCase(ReceivingInfoRequestCombinations.VENDORNUMBER_PURCHASEORDERID.name()));
+    }
+
+    @Test
+    public void validateScneario8() {
+        Map<String, String> allRequestParams = new HashMap<>();
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam(), "1234");
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam(), "1234");
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam(), "1234");
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam(), "1234");
+        ReceivingInfoRequestValidator.validate("US", allRequestParams);
+        assertTrue(allRequestParams.get("scenario").equalsIgnoreCase(ReceivingInfoRequestCombinations.LOCATIONNUMBER_PURCHASEORDERNUMBER_RECEIPTDATESTART_RECEIPTDATEEND.name()));
+    }
+
+    @Test
+    public void validateScneario9() {
+        Map<String, String> allRequestParams = new HashMap<>();
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam(), "1234");
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam(), "1234");
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam(), "1234");
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam(), "1234");
+        ReceivingInfoRequestValidator.validate("US", allRequestParams);
+        assertTrue(allRequestParams.get("scenario").equalsIgnoreCase(ReceivingInfoRequestCombinations.LOCATIONNUMBER_INVOICENUMBER_RECEIPTDATESTART_RECEIPTDATEEND.name()));
+    }
+
+    @Test
+    public void validateScneario10() {
+        Map<String, String> allRequestParams = new HashMap<>();
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam(), "1234");
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam(), "1234");
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam(), "1234");
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam(), "1234");
+        ReceivingInfoRequestValidator.validate("US", allRequestParams);
+        assertTrue(allRequestParams.get("scenario").equalsIgnoreCase(ReceivingInfoRequestCombinations.LOCATIONNUMBER_VENDORNUMBER_RECEIPTDATESTART_RECEIPTDATEEND.name()));
+    }
+
+    @Test(expected = MandatoryPatameterMissingException.class)
+    public void inValidScneario() {
+        Map<String, String> allRequestParams = new HashMap<>();
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam(), "1234");
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam(), "1234");
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam(), "1234");
+        ReceivingInfoRequestValidator.validate("US", allRequestParams);
+        assertTrue(allRequestParams.get("scenario").equalsIgnoreCase(ReceivingInfoRequestCombinations.LOCATIONNUMBER_VENDORNUMBER_RECEIPTDATESTART_RECEIPTDATEEND.name()));
     }
 }

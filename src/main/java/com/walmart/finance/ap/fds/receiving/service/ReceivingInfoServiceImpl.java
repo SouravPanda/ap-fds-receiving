@@ -28,7 +28,6 @@ import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -98,42 +97,53 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     }
 
     private List<ReceiveSummary> getSummaryData(FinancialTxnResponseData financialTxnResponseData, Map<String, String> allRequestParams) {
+        Integer storeNumber = ( financialTxnResponseData.getOrigStoreNbr() == null || financialTxnResponseData.getOrigStoreNbr() == 0)
+                ? financialTxnResponseData.getStoreNumber() : financialTxnResponseData.getOrigStoreNbr();
         String id = (financialTxnResponseData.getPurchaseOrderId() == null ? 0 : financialTxnResponseData.getPurchaseOrderId()) + ReceivingConstants.PIPE_SEPARATOR
-                + (StringUtils.isEmpty(financialTxnResponseData.getReceiveId()) ? "0" : financialTxnResponseData.getReceiveId()) + ReceivingConstants.PIPE_SEPARATOR
-                + (financialTxnResponseData.getStoreNumber() == null ? 0 : financialTxnResponseData.getStoreNumber()) + ReceivingConstants.PIPE_SEPARATOR
+                + (StringUtils.isEmpty(financialTxnResponseData.getReceiveId()) ? "0" : Integer.valueOf(financialTxnResponseData.getReceiveId())) + ReceivingConstants.PIPE_SEPARATOR
+                + (storeNumber == null ? 0 : storeNumber) + ReceivingConstants.PIPE_SEPARATOR
                 + (financialTxnResponseData.getReceivingDate() == null ? "0" : financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
         Query query = new Query();
         CriteriaDefinition criteriaDefinition = null;
-        if (StringUtils.isNotEmpty(id)) {
+        if (StringUtils.isNotEmpty(id) && !id.equalsIgnoreCase("0|0|0|0")) {
             criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.ID.getParameterName()).is(id);
             query.addCriteria(criteriaDefinition);
         }
-        if (financialTxnResponseData.getStoreNumber() != null) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.STORENUMBER.getParameterName()).is(financialTxnResponseData.getStoreNumber());
+        if (storeNumber != null) {
+            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.STORENUMBER.getParameterName()).is(storeNumber);
             query.addCriteria(criteriaDefinition);
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()))
                 && StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()))) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGDATE.getParameterName()).
-                    gte(getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()))).
-                    lte(getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam())));
-            query.addCriteria(criteriaDefinition);
+            LocalDateTime startDate = getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()) + " 00:00:00");
+            LocalDateTime endDate = getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()) + " 23:59:59");
+            if (endDate.isAfter(startDate)) {
+                criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGDATE.getParameterName()).
+                        gte(startDate).
+                        lte(endDate);
+                query.addCriteria(criteriaDefinition);
+            } else {
+                throw new BadRequestException("Receipt end date should be greater than receipt start date.", "Please enter valid query parameters");
+            }
         }
         log.info("queryForSummaryResponse :: Query is " + query);
         return executeQueryInSummary(query);
     }
 
-    private LocalDate getDate(String date) {
+    /**
+     * Put the null check for date parameter befor calling this method
+     *
+     * @param date
+     * @return
+     */
+    private LocalDateTime getDate(String date) {
         try {
-            if (null != date && !"null".equals(date)) {
-                DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                return LocalDate.parse(date, formatterDate);
-            }
+            DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            return LocalDateTime.parse(date, formatterDate);
         } catch (DateTimeParseException e) {
             log.error(ExceptionUtils.getStackTrace(e));
             throw new BadRequestException("Date format is not correct.", "Please enter valid query parameters");
         }
-        return null;
     }
     /*************************** Financial-Txn Logic : END ***************************/
 
@@ -197,7 +207,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             query.addCriteria(Criteria.where("_id").is(receiveSummary.getFreightBillExpandID()));
             return executeQueryInFreight(query);
         }
-        return null;
+        return new ArrayList<>();
     }
     /******* receive-freight data   *********/
 
@@ -237,7 +247,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponse.setReceiptStatus(receiveSummary.getBusinessStatusCode() != null ? receiveSummary.getBusinessStatusCode().toString() : null);
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()))
                 && allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()).equalsIgnoreCase("Y")) {
-            List<ReceivingInfoLineResponse> lineInfoList = lineResponseList.stream().map((t) -> convertToLineResponse(t)).collect(Collectors.toList());
+            List<ReceivingInfoLineResponse> lineInfoList = lineResponseList.stream().map(t -> convertToLineResponse(t)).collect(Collectors.toList());
             receivingInfoResponse.setReceivingInfoLineResponses(lineInfoList);
         }
         return receivingInfoResponse;
@@ -400,7 +410,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponseV1.setReceiptStatus(receiveSummary.getBusinessStatusCode() != null ? receiveSummary.getBusinessStatusCode().toString() : null);
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()))
                 && allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()).equalsIgnoreCase("Y")) {
-            List<ReceivingInfoLineResponse> lineInfoList = lineResponseList.stream().map((t) -> convertToLineResponse(t)).collect(Collectors.toList());
+            List<ReceivingInfoLineResponse> lineInfoList = lineResponseList.stream().map(t -> convertToLineResponse(t)).collect(Collectors.toList());
             receivingInfoResponseV1.setReceivingInfoLineResponses(lineInfoList);
         }
         return receivingInfoResponseV1;
