@@ -50,7 +50,7 @@ public class ReceivingInfoControllerTest {
                 new Long(999403403), LocalDate.of(2019, 03, 14), new Long(30006),
                 " ", 0.0, 0.0, null, 495742, "Memo",
                 0.0, 0, "USER", "1223",
-                3669, null, "999403403", 411276735,
+                "3669", null, "999403403", 411276735,
                 "411276735", lineResponses);
         List<ReceivingInfoResponse> list = new ArrayList<ReceivingInfoResponse>() {
             {
@@ -94,7 +94,7 @@ public class ReceivingInfoControllerTest {
                                 "\"controlSequenceNumber\": 0,\n" +
                                 "\"vendorName\": \"USER\",\n" +
                                 "\"parentReceivingNbr\": \"1223\",\n" +
-                                "\"parentReceivingStoreNbr\": 3669,\n" +
+                                "\"parentReceivingStoreNbr\": \"3669\",\n" +
                                 "\"parentReceivingDate\": null,\n" +
                                 "\"parentPurchaseOrderId\": \"999403403\",\n" +
                                 "\"invoiceId\": 411276735,\n" +

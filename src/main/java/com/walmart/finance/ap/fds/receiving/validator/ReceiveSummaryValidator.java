@@ -6,9 +6,13 @@ import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryCosmosDBParameters;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryRequestParams;
-import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
+import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
+import com.walmart.finance.ap.fds.receiving.request.SorRoutingCtx;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -17,6 +21,8 @@ import java.util.Map;
 
 @Component
 public class ReceiveSummaryValidator {
+
+    public static final Logger log = LoggerFactory.getLogger(ReceiveSummaryValidator.class);
 
     public static void validate(String countryCode, Map<String, String> allRequestParams) {
         Iterator<Map.Entry<String, String>> iterator = allRequestParams.entrySet().iterator();
@@ -81,16 +87,27 @@ public class ReceiveSummaryValidator {
 
     List<ReceiveSummaryBusinessStat> businessStatList = Arrays.asList(ReceiveSummaryBusinessStat.values());
 
-    public boolean validateBusinessStatUpdateSummary(ReceivingSummaryRequest receivingSummaryRequest) {
-        for (ReceiveSummaryBusinessStat businessStat : businessStatList) {
-            if (businessStat.toString().equals(receivingSummaryRequest.getBusinessStatusCode())) {
-                return true;
-            }
+    public void validateBusinessStatUpdateSummary(String businessStatusCode) {
+        try {
+            ReceiveSummaryBusinessStat.valueOf(businessStatusCode);
+        } catch (IllegalArgumentException e) {
+            log.error(ExceptionUtils.getStackTrace(e));
+            throw new InvalidValueException(ReceivingErrors.INVALIDBUSINESSSTATUSCODE.getParameterName(), ReceivingErrors.BUSINESSSTATUSDETAILS.getParameterName());
         }
-        return false;
-
     }
 
+    /**
+     * This all are mandatory parameters so null checks are present in request itself.
+     */
+    //TODO : Put this hardcode value in constant or enum.
+    public Boolean isWareHouseData(SorRoutingCtx sorRoutingCtx) {
+        if ((sorRoutingCtx.getLocationCountryCd().equals("US"))
+                && (sorRoutingCtx.getReplnTypCd().equals("R") || sorRoutingCtx.getReplnTypCd().equals("U") || sorRoutingCtx.getReplnTypCd().equals("F"))
+                && (sorRoutingCtx.getInvProcAreaCode() == 36 || sorRoutingCtx.getInvProcAreaCode() == 30)) {
+            return true;
+        }
+        return false;
+    }
 }
 
 

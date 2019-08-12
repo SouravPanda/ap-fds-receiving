@@ -1,9 +1,9 @@
 package com.walmart.finance.ap.fds.receiving.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 
 import javax.validation.Valid;
@@ -15,15 +15,18 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @PropertySource("application.properties")
+@NotNull
 public class ReceivingSummaryRequest {
 
-    @NotEmpty(message = "Missing mandatory parameter,please enter a valid receiptNumber")
+    @JsonProperty("receiveId")
+    @NotEmpty(message = "Missing mandatory parameter,please enter a valid receiveId")
     private String receiptNumber;
 
     @NotEmpty(message = "Missing mandatory parameter,please enter a valid purchaseOrderId")
     private String purchaseOrderId;
 
-    @NotNull(message = "Missing mandatory parameter,please enter a valid receiptDate")
+    @JsonProperty("receiveDate")
+    @NotNull(message = "Missing mandatory parameter,please enter a valid receiveDate")
     private LocalDate receiptDate;
 
     @NotNull(message = "Missing mandatory parameter,please enter a valid locationNumber")
@@ -33,6 +36,6 @@ public class ReceivingSummaryRequest {
     private String businessStatusCode;
 
     @Valid
+    @NotNull(message = "Missing mandatory parameter,please enter a valid meta")
     private Meta meta;
-
 }
