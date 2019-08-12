@@ -22,8 +22,8 @@ public class ReceivingConstants {
     public static final String WM_ENV = "WM_SVC.ENV";
     public static final String WM_SVC_VERSION = "WM_SVC.VERSION";
     public static final String WMAPIKEY = "WMT-API-KEY";
-    public static final String RECEIVESUMMARYWAREHOUSE = "wh_db2sync_recv_summary";
-    public static final String RECEIVELINEWAREHOUSE = "wh_db2sync_recv_line_summary";
+    public static final String RECEIVESUMMARYWAREHOUSE = "receiving_wh_summary_write_db2";
+    public static final String RECEIVELINEWAREHOUSE = "receiving_wh_summaryline_write_db2";
     public static final int XSS_FILTER_ORDER = 1;
     public static final int MDC_FILTER_ORDER = 2;
     public static final int LOGGING_FILTER_ORDER = 3;
