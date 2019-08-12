@@ -1,56 +1,54 @@
 package com.walmart.finance.ap.fds.receiving.messageproducer;
 
-import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
-import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.TopicPartition;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
+import org.mockito.*;
+import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.concurrent.ListenableFuture;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-
+@EnableKafka
 @RunWith(SpringJUnit4ClassRunner.class)
 public class ProducerTest {
 
     @Spy
     @InjectMocks
-    private  Producer producer;
+    private Producer producer;
 
     @Mock
-    private KafkaTemplate kafkaTemplate;
+    KafkaTemplate<String, String> kafkaTemplate;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
 
-
-   @Test(expected = Exception.class)
-    public void sendReceiveSummary() {
-
-        ReceiveSummary receiveSummary = new ReceiveSummary("abc","2",2,2,2,null,null,2,2,2,2,2,"A",0.0,0.0,'A',2L,'A','A','A',null,null,null,0.0,2,"2",2,null,2,"2","A",null,"A",'A',"A",null,null,null,null,null);
-        producer.sendReceiveSummary(receiveSummary,"fds-db-dev.test.receive-summary");
-        doThrow(new Exception()).when(producer).sendReceiveSummary(receiveSummary,"fds-db-dev.test.receive-summary");
+    @Test
+    public void sendToEventHubException() {
+        when(kafkaTemplate.send(Mockito.anyString(), Mockito.anyString())).thenThrow(Exception.class);
+        producer.sendToEventHub(Mockito.anyString(), Mockito.anyString());
     }
 
-    @Test(expected = Exception.class)
-    public void sendReceiveLine() {
-        List receivingLineList = new ArrayList();
-        ReceivingLine receiveLine = new ReceivingLine();
-        receiveLine.setPurchasedOrderId(345);
-        receiveLine.setBaseDivisionNumber(34);
-        receiveLine.set_id("3243434|998945|48545");
-        receivingLineList.add(receiveLine);
-        producer.sendReceiveLine(receivingLineList,"fds-db-dev.test.receive-summary");
-        doThrow(new Exception()).when(producer).sendReceiveLine(receivingLineList,"fds-db-dev.test.receive-summary");
+    @Test
+    public void sendToEventHub() throws InterruptedException, ExecutionException, TimeoutException {
+        TopicPartition topicPartition = new TopicPartition("topic", 2);
+        RecordMetadata recordMetadata = new RecordMetadata(topicPartition, 1, 2, 0, null, 0, 0);
+        SendResult<String, String> sendResult = new SendResult<>(null, recordMetadata);
+        ListenableFuture<SendResult<String, String>> listenableFuture = mock(ListenableFuture.class);
+        when(kafkaTemplate.send(Mockito.anyString(), Mockito.anyString())).thenReturn(listenableFuture);
+        when(listenableFuture.get(10, TimeUnit.SECONDS)).thenReturn(sendResult);
+        producer.sendToEventHub(Mockito.anyString(), Mockito.anyString());
     }
 }
