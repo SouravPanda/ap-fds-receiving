@@ -124,7 +124,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             }
         } catch (NumberFormatException e) {
             log.error(ExceptionUtils.getStackTrace(e));//TODO
-            throw new BadRequestException("Data Type is invalid for input values.", "Please enter valid query parameters");
+            throw new BadRequestException(ReceivingErrors.INVALIDDATATYPE.getParameterName(), ReceivingErrors.INVALIDQUERYPARAMS.getParameterName());
         }
     }
 
@@ -139,7 +139,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     /*******  Search Criteria methods  *********/
 
     private List<ReceiveSummary> getSearchCriteriaForGet(Map<String, String> paramMap) {
-        log.info("Inside getSearchCriteriaForGet method");
+        log.info(ReceivingLogs.SEARCHCRITERIAFORGET.getParameterName());
         Query query = searchCriteriaForGet(paramMap);
         return executeQueryForReceiveSummary(query);
     }
@@ -205,7 +205,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     /******* Invoice Summary Integration *********/
 
     private List<ReceiveSummary> getInvoiceFromInvoiceSummary(Map<String, String> paramMap) {
-        log.info("Inside getInvoiceFromInvoiceSummary method");
+        log.info(ReceivingLogs.INVOICEFROMINVSUMMARY.getParameterName());
         List<InvoiceResponseData> invoiceResponseDataList = invoiceIntegrationService.getInvoice(paramMap);
         HashMap<String, ReceiveSummary> receiveSummaryHashMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(invoiceResponseDataList)) {
@@ -424,7 +424,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         ReceiveSummary commitedRcvSummary = mongoTemplate.findAndModify(dynamicQuery, update, FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
         log.info("updateReceiveSummary :: updateSummaryQueryTime :: " + (System.currentTimeMillis() - startTime));
         if (commitedRcvSummary == null) {
-            throw new ContentNotFoundException("Receive summary not found for the given id", "please enter a valid id");
+            throw new ContentNotFoundException(ReceivingErrors.CONTENTNOTFOUNDSUMMARY.getParameterName(), ReceivingErrors.VALIDID.getParameterName());
         }
         if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
             publisher.publishEvent(commitedRcvSummary);
@@ -459,7 +459,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         ReceiveSummary commitedRcvSummary = mongoTemplate.findAndModify(query, update, FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
         log.info("updateReceiveSummaryAndLine :: updateSummaryQueryTime :: " + (System.currentTimeMillis() - startTime));
         if (commitedRcvSummary == null) {
-            throw new ContentNotFoundException("Receive summary not found for the given id", "please enter a valid id");
+            throw new ContentNotFoundException(ReceivingErrors.CONTENTNOTFOUNDSUMMARY.getParameterName(), ReceivingErrors.VALIDID.getParameterName());
         }
         if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
             summaryLineList.add(commitedRcvSummary);
