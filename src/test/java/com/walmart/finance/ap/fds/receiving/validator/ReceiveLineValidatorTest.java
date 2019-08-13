@@ -24,6 +24,9 @@ public class ReceiveLineValidatorTest {
         allRequestParams.put(ReceivingConstants.PURCHASEORDERID, "111");
         allRequestParams.put(ReceivingConstants.TRANSACTIONTYPE, "99");
         allRequestParams.put(ReceivingConstants.LOCATIONNUMBER, "113");
+        allRequestParams.put(ReceivingConstants.RECEIPTNUMBERS,"555");
+        allRequestParams.put(ReceivingConstants.CONTROLNUMBER,"999");
+        allRequestParams.put(ReceivingConstants.DIVISIONNUMBER,"88");
         ReceiveLineValidator.validate("US", allRequestParams);
     }
 
@@ -33,6 +36,18 @@ public class ReceiveLineValidatorTest {
         allRequestParams.put(ReceivingConstants.PURCHASEORDERID, "111");
         allRequestParams.put(ReceivingConstants.TRANSACTIONTYPE, "99");
         allRequestParams.put(ReceivingConstants.WM_ENV, "113");
+        ReceiveLineValidator.validate("US", allRequestParams);
+    }
+
+    @Test
+    public void validateEmptyLineArguments() {
+        Map<String, String> allRequestParams = new HashMap<>();
+        allRequestParams.put(ReceivingConstants.PURCHASEORDERID, null);
+        allRequestParams.put(ReceivingConstants.TRANSACTIONTYPE, "99");
+        allRequestParams.put(ReceivingConstants.LOCATIONNUMBER, "113");
+        allRequestParams.put(ReceivingConstants.RECEIPTNUMBERS,"555");
+        allRequestParams.put(ReceivingConstants.CONTROLNUMBER,"999");
+        allRequestParams.put(ReceivingConstants.DIVISIONNUMBER,"00");
         ReceiveLineValidator.validate("US", allRequestParams);
     }
 }
