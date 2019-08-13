@@ -11,6 +11,7 @@ import com.walmart.finance.ap.fds.receiving.integrations.InvoiceIntegrationServi
 import com.walmart.finance.ap.fds.receiving.integrations.InvoiceReferenceResponse;
 import com.walmart.finance.ap.fds.receiving.integrations.InvoiceResponseData;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
+import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryRequestParams;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.request.Meta;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
@@ -709,14 +710,13 @@ public class ReceiveSummaryServiceImplTest {
                 , 'K', "IIL", null, null, null, null, null);
         ArrayList<ReceiveSummary> receiveSummaries = new ArrayList<>();
         receiveSummaries.add(receiveSummary);
-        try {
-            when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(receiveSummaries);
-            when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(new ArrayList<>());
-            Map mockMap = Mockito.mock(Map.class);
-            receiveSummaryServiceImpl.getReceiveSummary(mockMap);
-        } catch (NullPointerException e) {
-            e.getMessage();
-        }
+        when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(receiveSummaries);
+        when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(new ArrayList<>());
+        Map mockMap = new HashMap<String, String>();
+        mockMap.put("countryCode", "US");
+        mockMap.put(ReceiveSummaryRequestParams.TRANSACTIONTYPE.getParameterName(), "99");
+        mockMap.put(ReceiveSummaryRequestParams.UPCNUMBERS.getParameterName(), "888,999");
+        receiveSummaryServiceImpl.getReceiveSummary(mockMap);
     }
 
     /**
@@ -759,12 +759,12 @@ public class ReceiveSummaryServiceImplTest {
                 , 'K', "IIL", null, null, null, null, null);
         ArrayList<ReceiveSummary> receiveSummaries = mock(ArrayList.class);
 //        receiveSummaries.add(receiveSummary);
-            when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(receiveSummaries);
-            when(receiveSummaries.size()).thenReturn(1234);
-            when(receiveSummaries.isEmpty()).thenReturn(false).thenReturn(true);
+        when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(receiveSummaries);
+        when(receiveSummaries.size()).thenReturn(1234);
+        when(receiveSummaries.isEmpty()).thenReturn(false).thenReturn(true);
 //        when(receiveSummaries.get(Mockito.anyInt())).thenReturn(receiveSummary);
-            Map mockMap = Mockito.mock(Map.class);
-            receiveSummaryServiceImpl.getReceiveSummary(mockMap);
+        Map mockMap = Mockito.mock(Map.class);
+        receiveSummaryServiceImpl.getReceiveSummary(mockMap);
     }
 }
 
