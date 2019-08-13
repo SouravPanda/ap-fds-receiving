@@ -1,0 +1,28 @@
+package com.walmart.finance.ap.fds.receiving.validator;
+
+import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@PrepareForTest(ReceiveSummaryValidator.class)
+@RunWith(PowerMockRunner.class)
+public class ReceiveLineValidatorTest {
+
+    @InjectMocks
+    ReceiveLineValidator receiveLineValidator;
+
+    @Test
+    public void validateLineArguments() {
+        Map<String, String> allRequestParams= new HashMap<>();
+        allRequestParams.put(ReceivingConstants.PURCHASEORDERID,"111");
+        allRequestParams.put(ReceivingConstants.TRANSACTIONTYPE,"99");
+        allRequestParams.put(ReceivingConstants.LOCATIONNUMBER,"113");
+        ReceiveLineValidator.validate("US",allRequestParams);
+    }
+}
