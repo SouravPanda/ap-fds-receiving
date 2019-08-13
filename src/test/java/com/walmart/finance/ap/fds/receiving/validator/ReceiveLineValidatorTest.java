@@ -1,6 +1,7 @@
 package com.walmart.finance.ap.fds.receiving.validator;
 
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
+import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -19,10 +20,19 @@ public class ReceiveLineValidatorTest {
 
     @Test
     public void validateLineArguments() {
-        Map<String, String> allRequestParams= new HashMap<>();
-        allRequestParams.put(ReceivingConstants.PURCHASEORDERID,"111");
-        allRequestParams.put(ReceivingConstants.TRANSACTIONTYPE,"99");
-        allRequestParams.put(ReceivingConstants.LOCATIONNUMBER,"113");
-        ReceiveLineValidator.validate("US",allRequestParams);
+        Map<String, String> allRequestParams = new HashMap<>();
+        allRequestParams.put(ReceivingConstants.PURCHASEORDERID, "111");
+        allRequestParams.put(ReceivingConstants.TRANSACTIONTYPE, "99");
+        allRequestParams.put(ReceivingConstants.LOCATIONNUMBER, "113");
+        ReceiveLineValidator.validate("US", allRequestParams);
+    }
+
+    @Test(expected = BadRequestException.class)
+    public void validateInvalidLineArguments() {
+        Map<String, String> allRequestParams = new HashMap<>();
+        allRequestParams.put(ReceivingConstants.PURCHASEORDERID, "111");
+        allRequestParams.put(ReceivingConstants.TRANSACTIONTYPE, "99");
+        allRequestParams.put(ReceivingConstants.WM_ENV, "113");
+        ReceiveLineValidator.validate("US", allRequestParams);
     }
 }
