@@ -746,7 +746,7 @@ public class ReceiveSummaryServiceImplTest {
     /**
      * this covers the scenario for summary list > 1000.
      */
-    @Test
+    @Test(expected = NotFoundException.class)
     public void getReceiveSummaryTest3() {
         ReceiveSummary receiveSummary = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665207",
                 8064, 18, 0, LocalDate.of(1986, 12, 12), LocalTime.of(18, 45, 21),
@@ -759,16 +759,12 @@ public class ReceiveSummaryServiceImplTest {
                 , 'K', "IIL", null, null, null, null, null);
         ArrayList<ReceiveSummary> receiveSummaries = mock(ArrayList.class);
 //        receiveSummaries.add(receiveSummary);
-        try {
             when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(receiveSummaries);
             when(receiveSummaries.size()).thenReturn(1234);
             when(receiveSummaries.isEmpty()).thenReturn(false).thenReturn(true);
 //        when(receiveSummaries.get(Mockito.anyInt())).thenReturn(receiveSummary);
             Map mockMap = Mockito.mock(Map.class);
             receiveSummaryServiceImpl.getReceiveSummary(mockMap);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }
 

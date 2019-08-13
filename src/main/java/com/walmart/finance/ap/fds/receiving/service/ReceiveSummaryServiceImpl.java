@@ -98,12 +98,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             if (CollectionUtils.isNotEmpty(receiveSummaries) && receiveSummaries.size() > 1000) {
                 receiveSummaries.subList(1000, receiveSummaries.size()).clear();
             }
-            Map<String, AdditionalResponse> responseMap = getLineResponseMap(receiveSummaries, allRequestParams);
             //Todo parallel stream performance check
             if (CollectionUtils.isEmpty(receiveSummaries)) {
                 throw new NotFoundException(ReceivingErrors.CONTENTNOTFOUNDSUMMARY.getParameterName(), ReceivingErrors.INVALIDQUERYPARAMS.getParameterName());
             } else {
-
+                Map<String, AdditionalResponse> responseMap = getLineResponseMap(receiveSummaries, allRequestParams);
                 responseList = receiveSummaries.stream().map(
                         t -> {
                             ReceivingSummaryResponse response = receivingSummaryResponseConverter.convert(t);
@@ -191,6 +190,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         // log.info("query: " + dynamicQuery);
         return dynamicQuery;
     }
+
     public LocalDate getDate(String date) {
         try {
             DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
