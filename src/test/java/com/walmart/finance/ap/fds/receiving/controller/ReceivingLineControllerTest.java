@@ -56,8 +56,7 @@ public class ReceivingLineControllerTest {
         };
         ReceivingResponse successMessage = new ReceivingResponse(true, LocalDateTime.of(2019, 05, 12, 15, 31, 16), responseList);
 
-        when(receiveLineService.getLineSummary(Mockito.any(), Mockito.any(), Mockito.any(),
-                Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(successMessage);
+        when(receiveLineService.getLineSummary(Mockito.anyMap())).thenReturn(successMessage);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/US/receiving/line")

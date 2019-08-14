@@ -1,10 +1,13 @@
 
 package com.walmart.finance.ap.fds.receiving.service;
 
+import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineResponseConverter;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
+import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
+import com.walmart.finance.ap.fds.receiving.model.ReceivingLineParameters;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import lombok.Getter;
@@ -23,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,15 +45,15 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
     @Value("${azure.cosmosdb.collection.line}")
     private String lineCollection;
 
-    public ReceivingResponse getLineSummary(String purchaseOrderId, String receiptNumber, String transactionType, String controlNumber, String locationNumber, String divisionNumber) {
+    public ReceivingResponse getLineSummary(Map<String, String> allRequestParams) {
         try {
-            Query query = searchCriteriaForGet(purchaseOrderId, receiptNumber, transactionType, controlNumber, locationNumber, divisionNumber);
+            Query query = searchCriteriaForGet(allRequestParams);
             long startTime = System.currentTimeMillis();
             List<ReceivingLine> receiveLines = mongoTemplate.find(query.limit(1000), ReceivingLine.class, lineCollection);
-            log.info(" getLineSummary :: queryTime :: "+(System.currentTimeMillis()-startTime));
+            log.info(" getLineSummary :: queryTime :: " + (System.currentTimeMillis() - startTime));
             List<ReceivingLineResponse> responseList;
             if (CollectionUtils.isEmpty(receiveLines)) {
-                throw new NotFoundException("Receiving line not found for given search criteria ", "please enter valid query parameters");
+                throw new NotFoundException(ReceivingErrors.RECEIVELINENOTFOUND.getParameterName(), ReceivingErrors.INVALIDQUERYPARAMS.getParameterName());
             } else {
                 responseList = receiveLines.stream().map(t -> receivingLineResponseConverter.convert(t)).collect(Collectors.toList());
                 ReceivingResponse successMessage = new ReceivingResponse();
@@ -60,39 +64,42 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
             }
         } catch (NumberFormatException e) {
             log.error(ExceptionUtils.getStackTrace(e));
-            throw new BadRequestException("Data Type is invalid for input values.", "Please enter valid query parameters");
+            throw new BadRequestException(ReceivingErrors.INVALIDDATATYPE.getParameterName(), ReceivingErrors.INVALIDQUERYPARAMS.getParameterName());
         }
     }
 
-    private Query searchCriteriaForGet(String purchaseOrderId, String receiptNumber, String transactionType, String controlNumber, String locationNumber, String divisionNumber) {
+    private Query searchCriteriaForGet(Map<String, String> paramMap) {
         Query dynamicQuery = new Query();
-        if (StringUtils.isNotEmpty(purchaseOrderId)) {
-            Criteria purchaseOrderIdCriteria = Criteria.where("purchaseOrderId").is(Long.valueOf(purchaseOrderId));
-            dynamicQuery.addCriteria(purchaseOrderIdCriteria);
+        Criteria criteriaDefinition = new Criteria();
+
+        if (StringUtils.isNotEmpty(paramMap.get(ReceivingLineParameters.PURCHASEORDERID.getParameterName()))) {
+            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.PURCHASEORDERID.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.PURCHASEORDERID.trim())));
+            dynamicQuery.addCriteria(criteriaDefinition);
         }
-        if (StringUtils.isNotEmpty(controlNumber)) {
-            Criteria controlNumberCriteria = Criteria.where("receivingControlNumber").is(controlNumber);
-            dynamicQuery.addCriteria(controlNumberCriteria);
+        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIVINGCONTROLNUMBER))) {
+            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.RECEIVINGCONTROLNUMBER));
+            dynamicQuery.addCriteria(criteriaDefinition);
         }
-        if (StringUtils.isNotEmpty(receiptNumber)) {
-            Criteria receiptNumberCriteria = Criteria.where("receiveId").in(receiptNumber.split(","));
-            dynamicQuery.addCriteria(receiptNumberCriteria);
+        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTNUMBERS))) {
+            criteriaDefinition = criteriaDefinition.where(ReceivingLineParameters.RECEIVEID.getParameterName()).in(paramMap.get(ReceivingConstants.RECEIPTNUMBERS).split(","));
+            dynamicQuery.addCriteria(criteriaDefinition);
         }
-        if (StringUtils.isNotEmpty(transactionType)) {
-            Criteria transactionTypeCriteria = Criteria.where("transactionType").is(Integer.valueOf(transactionType));
-            dynamicQuery.addCriteria(transactionTypeCriteria);
+        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.TRANSACTIONTYPE))) {
+            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.TRANSACTIONTYPE.getParameterName()).is(Integer.parseInt(paramMap.get(ReceivingConstants.TRANSACTIONTYPE)));
+            dynamicQuery.addCriteria(criteriaDefinition);
         }
-        if (StringUtils.isNotEmpty(divisionNumber)) {
-            Criteria divisionNumberCriteria = Criteria.where("baseDivisionNumber").is(Integer.valueOf(divisionNumber));
-            dynamicQuery.addCriteria(divisionNumberCriteria);
+        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.DIVISIONNUMBER))) {
+            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.BASEDIVISIONNUMBER.getParameterName()).is(Integer.parseInt(paramMap.get(ReceivingConstants.DIVISIONNUMBER.trim())));
+            dynamicQuery.addCriteria(criteriaDefinition);
         }
-        if (StringUtils.isNotEmpty(locationNumber)) {
-            Criteria locationNumberCriteria = Criteria.where("storeNumber").is(Integer.valueOf(locationNumber));
-            dynamicQuery.addCriteria(locationNumberCriteria);
+        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.LOCATIONNUMBER))) {
+            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.STORENUMBER.getParameterName()).is(Integer.parseInt(paramMap.get(ReceivingConstants.LOCATIONNUMBER.trim())));
+            dynamicQuery.addCriteria(criteriaDefinition);
         }
         return dynamicQuery;
     }
 }
+
 
 
 

@@ -25,7 +25,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -197,10 +199,9 @@ public class ReceivingSummaryControllerTest {
             }
         };
         ReceivingResponse successMessage = new ReceivingResponse(true, LocalDateTime.of(2019, 05, 12, 15, 31, 16), responseList);
-        when(receiveSummaryService.getReceiveSummary(Mockito.any(), Mockito.any(), Mockito.any(),
-                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
-                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
-                Mockito.any())).thenReturn(successMessage);
+        Map<String, String> mockMap = new LinkedHashMap<>();
+        mockMap.put("controlNumber","984003673");
+        when(receiveSummaryService.getReceiveSummary(Mockito.anyMap())).thenReturn(successMessage);
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/US/receiving/summary")
                 .param("controlNumber", "984003673")

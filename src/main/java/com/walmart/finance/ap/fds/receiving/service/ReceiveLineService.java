@@ -3,8 +3,9 @@ package com.walmart.finance.ap.fds.receiving.service;
 
 import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 
+import java.util.Map;
+
 
 public interface ReceiveLineService {
-    ReceivingResponse getLineSummary(String purchaseOrderId, String receiptNumbers, String transactionType, String controlNumber, String locationNumber, String divisionNumber);
+    ReceivingResponse getLineSummary(Map<String, String> allRequestParams);
 }
-

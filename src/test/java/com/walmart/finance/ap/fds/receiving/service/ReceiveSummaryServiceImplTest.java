@@ -11,6 +11,7 @@ import com.walmart.finance.ap.fds.receiving.integrations.InvoiceIntegrationServi
 import com.walmart.finance.ap.fds.receiving.integrations.InvoiceReferenceResponse;
 import com.walmart.finance.ap.fds.receiving.integrations.InvoiceResponseData;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
+import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryRequestParams;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.request.Meta;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
@@ -41,7 +42,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.Mockito.*;
 
@@ -95,6 +98,7 @@ public class ReceiveSummaryServiceImplTest {
                 LocalDate.now(), 9.0, 7, "0", 0, LocalDateTime.now(), 0,
                 "JJJ", "UU", LocalDateTime.now(), "99"
                 , 'K', "IIL", null, null, null, null, null);
+
         List listOfContent = new ArrayList<ReceiveSummary>();
         listOfContent.add(receiveSummary);
         listOfContent.add(receiveSummaryAt);
@@ -110,11 +114,13 @@ public class ReceiveSummaryServiceImplTest {
                 LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",
                 9.0, 7.0,
                 1L, 0, 0, 10.0);
+
         ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", new Long(1122), 99,
                 "776", 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77",
                 9.0, 7.0,
                 0L, 0, 0, 10.0);
+
         FreightResponse freightResponse = new FreightResponse("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "0", "0");
         FreightResponse freightResponseAt = new FreightResponse("46652|18048|8264|18|18|1995-10-17|18:45:21", "0", "0");
         List<FreightResponse> listOfFreight = new ArrayList<>();
@@ -123,6 +129,7 @@ public class ReceiveSummaryServiceImplTest {
         List<ReceivingSummaryResponse> content = new ArrayList<>();
         content.add(receivingSummaryResponse);
         content.add(receivingSummaryResponseAt);
+
         List<InvoiceReferenceResponse> invoiceReferenceResponses = new ArrayList<InvoiceReferenceResponse>() {
             {
                 add(new InvoiceReferenceResponse("PO", "000"));
@@ -134,7 +141,15 @@ public class ReceiveSummaryServiceImplTest {
                 "777", "0", "998", "9986", "098", invoiceReferenceResponses));
         invoiceResponseDataList.add(new InvoiceResponseData("656", "267", "000", null,
                 "77", "0", "98", "9986", "098", invoiceReferenceResponses));
-        ReceivingLine receivingLine = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0, 0, 0, 0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null, null, 2, null, 'W', "DB2", null, 2, null, 1, 0.0, null, null, null, null, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21", null, null, null);
+
+
+        ReceivingLine receivingLine = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0,
+                0, 0, 0, 0.0, 0.0, "776", 0,
+                0, "444", 1, 1, 1, null, null, 2,
+                null, 'W', "DB2", null, 2, null, 1, 0.0,
+                null, null, null, null, null, null,
+                null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21", null, null, null);
+
         List<ReceivingLine> listOfReceiveLines = new ArrayList<>();
         listOfReceiveLines.add(receivingLine);
         Query dynamicQuery = new Query();
@@ -151,13 +166,19 @@ public class ReceiveSummaryServiceImplTest {
         successMessage.setData(content);
         successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.now());
-        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary("US", "77", "8", "99,89", "99",
-                "99", "675", "987", "18", "0", "776"
-                , "1980", "1988-12-12", "1990-11-11", listOfItemNumbers, listOfUpcNumbers).getData(), successMessage.getData().subList(0, 1));
+
+        Map mockMap = Mockito.mock(Map.class);
+        try {
+            Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary(mockMap).isSuccess(), successMessage.isSuccess());
+        } catch (NullPointerException | ClassCastException e) {
+            e.getMessage();
+        }
+
     }
 
     @Test
     public void getReceiveSummaryElsePathTest() {
+
         ReceiveSummary receiveSummary = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665207",
                 8064, 18, 0, LocalDate.of(1986, 12, 12), LocalTime.of(18, 45, 21),
                 0, 9788, 1111,
@@ -167,6 +188,7 @@ public class ReceiveSummaryServiceImplTest {
                 LocalDate.now(), 9.0, 7, "0", 0, LocalDateTime.now(), 0,
                 "JJJ", "UU", LocalDateTime.now(), "99"
                 , 'K', "IIL", null, null, null, null, null);
+
         List listOfContent = new ArrayList<ReceiveSummary>();
         listOfContent.add(receiveSummary);
         List<String> listOfItemNumbers = new ArrayList<>();
@@ -180,11 +202,13 @@ public class ReceiveSummaryServiceImplTest {
                 LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",
                 9.0, 7.0,
                 0L, 0, 0, 10.0);
+
         ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", new Long(1122), 99,
                 "776", 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77",
                 9.0, 7.0,
                 0L, 0, 0, 10.0);
+
         FreightResponse freightResponse = new FreightResponse("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "0", "0");
         FreightResponse freightResponseAt = new FreightResponse("46652|18048|8264|18|18|1995-10-17|18:45:21", "0", "0");
         List<FreightResponse> listOfFreight = new ArrayList<>();
@@ -193,8 +217,10 @@ public class ReceiveSummaryServiceImplTest {
         List<ReceivingSummaryResponse> content = new ArrayList<>();
         content.add(receivingSummaryResponse);
         content.add(receivingSummaryResponseAt);
+
         ReceivingLine receivingLine = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0, 0, 0, 0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null, null, 2, null, 'W', "DB2", null, 2, null, 1, 0.0, null, null, null, null, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21", null, null, null);
         ReceivingLine receivingLineAt = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|1", "JJJ", 0, 0, 0, 0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null, null, 2, null, 'W', "DB2", null, 2, null, 1, 0.0, null, null, null, null, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21", null, null, null);
+
         List<ReceivingLine> listOfReceiveLines = new ArrayList<>();
         listOfReceiveLines.add(receivingLine);
         listOfReceiveLines.add(receivingLineAt);
@@ -211,9 +237,8 @@ public class ReceiveSummaryServiceImplTest {
         successMessage.setData(content);
         successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.now());
-        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary("US", null, "8", "99,89", "99",
-                "99", "675", "987", "18", "0", null
-                , null, "1988-12-12", "1990-11-11", listOfItemNumbers, listOfUpcNumbers).getData(), successMessage.getData().subList(0, 1));
+        Map mockMap = Mockito.mock(Map.class);
+        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary(mockMap).getData(), successMessage.getData().subList(0, 1));
     }
 
     @Test
@@ -271,30 +296,55 @@ public class ReceiveSummaryServiceImplTest {
         successMessage.setData(content);
         successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.now());
-        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary("US", "77", "8", "99,89", "99",
-                null, "675", "987", "18", "0", null
-                , null, "1988-12-12", "1990-11-11", listOfItemNumbers, listOfUpcNumbers).getData(), successMessage.getData().subList(0, 1));
+        Map mockMap = Mockito.mock(Map.class);
+        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary(mockMap).getData(), successMessage.getData().subList(0, 1));
     }
 
     @Test(expected = NotFoundException.class)
     public void getReceiveSummaryException() {
-        receiveSummaryServiceImpl.getReceiveSummary(null, null, null, Mockito.anyString(),
-                null, null, null, null, null, null,
-                null, null, null, null, Mockito.anyList(), Mockito.anyList());
+
+        List<String> listOfItemNumbers = new ArrayList<>();
+        listOfItemNumbers.add("99");
+        listOfItemNumbers.add("89");
+
+        List<String> listOfUpcNumbers = new ArrayList<>();
+        listOfItemNumbers.add("9");
+        listOfItemNumbers.add("89");
+
+        Map mockMap = Mockito.mock(Map.class);
+        receiveSummaryServiceImpl.getReceiveSummary(mockMap);
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test(expected = NotFoundException.class)
     public void getReceiveSummaryNumbnerFormateException() {
-        receiveSummaryServiceImpl.getReceiveSummary(null, null, null, null,
-                null, null, "23qa", null, null, null,
-                null, null, null, null, null, null);
+
+        List<String> listOfItemNumbers = new ArrayList<>();
+        listOfItemNumbers.add("99");
+        listOfItemNumbers.add("89");
+
+        List<String> listOfUpcNumbers = new ArrayList<>();
+        listOfUpcNumbers.add("9");
+        listOfUpcNumbers.add("89");
+
+        Map mockMap = Mockito.mock(Map.class);
+        receiveSummaryServiceImpl.getReceiveSummary(mockMap);
     }
 
     @Test(expected = BadRequestException.class)
     public void getReceiveSummaryDateInvaidException() {
-        receiveSummaryServiceImpl.getReceiveSummary(null, null, null, null,
-                null, null, null, null, null, null,
-                null, null, "asdasd", "adssa", null, null);
+
+        List<String> listOfItemNumbers = new ArrayList<>();
+        listOfItemNumbers.add("99");
+        listOfItemNumbers.add("89");
+
+        List<String> listOfUpcNumbers = new ArrayList<>();
+        listOfUpcNumbers.add("null");
+        listOfItemNumbers.add("null");
+
+        Map mockMap = new HashMap();
+        mockMap.put("HH", "KKK");
+        ReceiveSummaryValidator.validate("US", mockMap);
+        receiveSummaryServiceImpl.getReceiveSummary(mockMap);
     }
 
     /**
@@ -344,6 +394,7 @@ public class ReceiveSummaryServiceImplTest {
                 LocalDate.of(1995, 10, 16), 9.0, 7, "0", 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
                 "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "99"
                 , 'K', "LLL", null, null, null, null, null);
+
         Meta meta = new Meta();
         SorRoutingCtx sorRoutingCtx = new SorRoutingCtx();
         sorRoutingCtx.setInvProcAreaCode(30);
@@ -377,6 +428,7 @@ public class ReceiveSummaryServiceImplTest {
                 LocalDate.of(1995, 10, 16), 9.0, 7, "0", 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
                 "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "99"
                 , 'K', "LLL", null, null, null, null, null);
+
         Meta meta = new Meta();
         SorRoutingCtx sorRoutingCtx = new SorRoutingCtx();
         sorRoutingCtx.setInvProcAreaCode(30);
@@ -427,12 +479,14 @@ public class ReceiveSummaryServiceImplTest {
                 LocalDate.of(1995, 10, 16), 9.0, 7, "0", 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
                 "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "9"
                 , 'K', "LLL", null, null, null, null, null);
+
         ReceivingLine receivingLine = new ReceivingLine("9|8|1|0|1", "8",
                 0, 3777, 94493, 0, 0.0, 0.0, "9",
                 89, 12, "1122", 99, 8264, 18,
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 1,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
                 0, 1.9, "LL", 9, "OO", null, null, null, null, null, null, null, null, null, null);
+
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
                 "1", "9", meta);
         doNothing().when(receiveSummaryValidator).validateBusinessStatUpdateSummary(Mockito.anyString());
@@ -482,12 +536,14 @@ public class ReceiveSummaryServiceImplTest {
                 LocalDate.of(1995, 10, 16), 9.0, 7, "0", 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
                 "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "9"
                 , 'K', "LLL", null, null, null, null, null);
+
         ReceivingLine receivingLine = new ReceivingLine("9|8|1|0|1", "8",
                 0, 3777, 94493, 0, 0.0, 0.0, "9",
                 89, 12, "1122", 99, 8264, 18,
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 1,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
                 0, 1.9, "LL", 9, "OO", null, null, null, null, null, null, null, null, null, null);
+
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
                 null, "9", meta);
         Meta mockString = Mockito.mock(Meta.class);
@@ -522,12 +578,14 @@ public class ReceiveSummaryServiceImplTest {
                 LocalDate.of(1995, 10, 16), 9.0, 7, "0", 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
                 "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "9"
                 , 'K', "LLL", null, null, null, null, null);
+
         ReceivingLine receivingLine = new ReceivingLine("9|8|1|0|1", "8",
                 0, 3777, 94493, 0, 0.0, 0.0, "9",
                 89, 12, "1122", 99, 8264, 18,
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 1,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
                 0, 1.9, "LL", 10, "OO", null, null, null, null, null, null, null, null, null, null);
+
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "P",
                 null, "10", meta);
         Meta mockString = Mockito.mock(Meta.class);
@@ -562,12 +620,14 @@ public class ReceiveSummaryServiceImplTest {
                 LocalDate.of(1995, 10, 16), 9.0, 7, "0", 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
                 "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "9"
                 , 'K', "LLL", null, null, null, null, null);
+
         ReceivingLine receivingLine = new ReceivingLine("9|8|1|0|1", "8",
                 0, 3777, 94493, 0, 0.0, 0.0, "9",
                 89, 12, "1122", 99, 8264, 18,
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 1,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
                 0, 1.9, "LL", 10, "OO", null, null, null, null, null, null, null, null, null, null);
+
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
                 null, "10", meta);
         Meta mockString = Mockito.mock(Meta.class);
@@ -633,11 +693,12 @@ public class ReceiveSummaryServiceImplTest {
         doNothing().when(publisher).publishEvent(mock(List.class));
         receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, "US");
     }
+
     /**
      * Upc Numbers with + No line respose so iterator.remove scenario
      */
     @Test
-    public void getReceiveSummaryTest1(){
+    public void getReceiveSummaryTest1() {
         ReceiveSummary receiveSummary = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665207",
                 8064, 18, 0, LocalDate.of(1986, 12, 12), LocalTime.of(18, 45, 21),
                 0, 9788, 1111,
@@ -647,18 +708,27 @@ public class ReceiveSummaryServiceImplTest {
                 LocalDate.now(), 9.0, 7, "0", 0, LocalDateTime.now(), 0,
                 "JJJ", "UU", LocalDateTime.now(), "99"
                 , 'K', "IIL", null, null, null, null, null);
-        ArrayList<ReceiveSummary> receiveSummaries = new ArrayList<>();
-        receiveSummaries.add(receiveSummary);
-        when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(receiveSummaries);
-        when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(new ArrayList<>());
-        receiveSummaryServiceImpl.getReceiveSummary("US",null,"123",null,"99",null,null,null,null,null,null,null,null,null,null,new ArrayList<String>(){{add("444");}});
+        try {
+            ArrayList<ReceiveSummary> receiveSummaries = new ArrayList<>();
+            receiveSummaries.add(receiveSummary);
+            when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(receiveSummaries);
+            when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(new ArrayList<>());
+            Map mockMap = new HashMap<String, String>();
+            mockMap.put("countryCode", "US");
+            mockMap.put(ReceiveSummaryRequestParams.TRANSACTIONTYPE.getParameterName(), "99");
+            mockMap.put(ReceiveSummaryRequestParams.UPCNUMBERS.getParameterName(), "888,999");
+            receiveSummaryServiceImpl.getReceiveSummary(mockMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
      * No line respose + No item/upc  summary_id null (for line query) +  get freight respone
      */
     @Test
-    public void getReceiveSummaryTest2(){
+    public void getReceiveSummaryTest2() {
         ReceiveSummary receiveSummary = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665207",
                 8064, 18, 0, LocalDate.of(1986, 12, 12), LocalTime.of(18, 45, 21),
                 0, 9788, 1111,
@@ -673,15 +743,16 @@ public class ReceiveSummaryServiceImplTest {
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(receiveSummaries);
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(new ArrayList<>());
         when(receivingSummaryResponseConverter.convert(Mockito.any(ReceiveSummary.class))).thenReturn(mock(ReceivingSummaryResponse.class));
-        receiveSummaryServiceImpl.getReceiveSummary("US",null,"123",null,"99",null,null,null,null,null,null,null,null,null,null,null);
+        Map mockMap = Mockito.mock(Map.class);
+        receiveSummaryServiceImpl.getReceiveSummary(mockMap);
     }
 
 
     /**
-     *  this covers the scenario for summary list > 1000.
-     * */
-    @Test (expected = NotFoundException.class)
-    public void getReceiveSummaryTest3(){
+     * this covers the scenario for summary list > 1000.
+     */
+    @Test(expected = NotFoundException.class)
+    public void getReceiveSummaryTest3() {
         ReceiveSummary receiveSummary = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665207",
                 8064, 18, 0, LocalDate.of(1986, 12, 12), LocalTime.of(18, 45, 21),
                 0, 9788, 1111,
@@ -697,7 +768,8 @@ public class ReceiveSummaryServiceImplTest {
         when(receiveSummaries.size()).thenReturn(1234);
         when(receiveSummaries.isEmpty()).thenReturn(false).thenReturn(true);
 //        when(receiveSummaries.get(Mockito.anyInt())).thenReturn(receiveSummary);
-        receiveSummaryServiceImpl.getReceiveSummary("US",null,"123",null,"99",null,null,null,null,null,null,null,null,null,null,new ArrayList<String>(){{add("444");}});
+        Map mockMap = Mockito.mock(Map.class);
+        receiveSummaryServiceImpl.getReceiveSummary(mockMap);
     }
 }
 
