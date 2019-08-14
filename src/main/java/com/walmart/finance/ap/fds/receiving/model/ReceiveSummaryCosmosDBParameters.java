@@ -41,7 +41,8 @@ public enum ReceiveSummaryCosmosDBParameters {
     PURCHASEORDERNUMBER("poNumber"),
     TYPEINDICATOR("typeIndicator"),
     WRITEINDICATOR("writeIndicator"),
-    PURCHASEORDERID("purchaseOrderId");
+    PURCHASEORDERID("purchaseOrderId"),
+    DATERECEIVED("dateReceived");
 
     @Getter
     private String parameterName;
