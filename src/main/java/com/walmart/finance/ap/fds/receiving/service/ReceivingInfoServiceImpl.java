@@ -118,7 +118,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             LocalDateTime startDate = getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()) + " 00:00:00");
             LocalDateTime endDate = getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()) + " 23:59:59");
             if (endDate.isAfter(startDate)) {
-                criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGDATE.getParameterName()).
+                criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.DATERECEIVED.getParameterName()).
                         gte(startDate).
                         lte(endDate);
                 query.addCriteria(criteriaDefinition);
