@@ -1,5 +1,7 @@
 package com.walmart.finance.ap.fds.receiving.validator;
 
+import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
+import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
 import com.walmart.finance.ap.fds.receiving.request.Meta;
 import com.walmart.finance.ap.fds.receiving.request.SorRoutingCtx;
@@ -8,6 +10,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -63,5 +68,48 @@ public class ReceiveSummaryValidatorTest {
     public void isWareHouseDataReplyTypeCd2() {
         SorRoutingCtx sorRoutingCtx = new SorRoutingCtx("F", 30, "US");
         assertTrue(receiveSummaryValidator.isWareHouseData(sorRoutingCtx));
+    }
+
+    @Test
+    public void validateSummaryArguments() {
+        Map<String, String> allRequestParams = new HashMap<>();
+        allRequestParams.put(ReceivingConstants.PURCHASEORDERNUMBER, "111");
+        allRequestParams.put(ReceivingConstants.TRANSACTIONTYPE, "99");
+        allRequestParams.put(ReceivingConstants.LOCATIONNUMBER, "113");
+        allRequestParams.put(ReceivingConstants.RECEIPTNUMBERS,"555");
+        allRequestParams.put(ReceivingConstants.CONTROLNUMBER,"999");
+        allRequestParams.put(ReceivingConstants.PURCHASEORDERID,"88");
+        allRequestParams.put(ReceivingConstants.INVOICEID,"97");
+        allRequestParams.put(ReceivingConstants.VENDORNUMBER,"111");
+        allRequestParams.put(ReceivingConstants.RECEIVINGCONTROLNUMBER,"00");
+        allRequestParams.put(ReceivingConstants.DIVISIONNUMBER,"77");
+        allRequestParams.put(ReceivingConstants.ITEMNUMBERS,"55");
+        allRequestParams.put(ReceivingConstants.UPCNUMBERS,"09");
+        allRequestParams.put(ReceivingConstants.RECEIPTDATESTART,"08-09-2017");
+        allRequestParams.put(ReceivingConstants.RECEIPTDATEEND,"09-09-2018");
+        allRequestParams.put(ReceivingConstants.DEPARTMENTNUMBER,"0");
+        allRequestParams.put(ReceivingConstants.INVOICENUMBER,"134");
+        ReceiveSummaryValidator.validate("US", allRequestParams);
+    }
+
+    @Test(expected = BadRequestException.class)
+    public void validateInvalidSummaryArguments() {
+        Map<String, String> allRequestParams = new HashMap<>();
+        allRequestParams.put(ReceivingConstants.PURCHASEORDERID, "111");
+        allRequestParams.put(ReceivingConstants.TRANSACTIONTYPE, "99");
+        allRequestParams.put(ReceivingConstants.WM_ENV, "113");
+        ReceiveSummaryValidator.validate("US", allRequestParams);
+    }
+
+    @Test
+    public void validateEmptySummaryArguments() {
+        Map<String, String> allRequestParams = new HashMap<>();
+        allRequestParams.put(ReceivingConstants.PURCHASEORDERID, null);
+        allRequestParams.put(ReceivingConstants.TRANSACTIONTYPE, "99");
+        allRequestParams.put(ReceivingConstants.LOCATIONNUMBER, "113");
+        allRequestParams.put(ReceivingConstants.RECEIPTNUMBERS,"555");
+        allRequestParams.put(ReceivingConstants.CONTROLNUMBER,"999");
+        allRequestParams.put(ReceivingConstants.DIVISIONNUMBER,"00");
+        ReceiveSummaryValidator.validate("US", allRequestParams);
     }
 }
