@@ -64,8 +64,6 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
         ResponseEntity<FinancialTxnResponse> response;
         try {
             response = restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class);
-            log.error("I am here "+response.getBody().toString());
-            log.error("I am here with error code "+response.getStatusCode().toString());
         } catch (HttpStatusCodeException e) {
             log.error(ExceptionUtils.getStackTrace(e));
             throw new NotFoundException("Financial Transaction data not found for given search criteria.");
