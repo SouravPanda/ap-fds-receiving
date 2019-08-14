@@ -116,6 +116,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                             return response;
                         }
                 ).collect(Collectors.toList());
+                if (CollectionUtils.isEmpty(responseList)) {
+                    throw new NotFoundException(ReceivingErrors.CONTENTNOTFOUNDSUMMARY.getParameterName(), ReceivingErrors.INVALIDQUERYPARAMS.getParameterName());
+                }
                 ReceivingResponse successMessage = new ReceivingResponse();
                 successMessage.setData(responseList);
                 successMessage.setSuccess(true);
