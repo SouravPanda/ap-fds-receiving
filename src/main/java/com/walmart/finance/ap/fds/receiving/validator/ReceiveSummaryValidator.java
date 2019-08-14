@@ -101,12 +101,9 @@ public class ReceiveSummaryValidator {
      */
     //TODO : Put this hardcode value in constant or enum.
     public Boolean isWareHouseData(SorRoutingCtx sorRoutingCtx) {
-        if ((sorRoutingCtx.getLocationCountryCd().equals("US"))
+        return (sorRoutingCtx.getLocationCountryCd().equals("US"))
                 && (sorRoutingCtx.getReplnTypCd().equals("R") || sorRoutingCtx.getReplnTypCd().equals("U") || sorRoutingCtx.getReplnTypCd().equals("F"))
-                && (sorRoutingCtx.getInvProcAreaCode() == 36 || sorRoutingCtx.getInvProcAreaCode() == 30)) {
-            return true;
-        }
-        return false;
+                && (sorRoutingCtx.getInvProcAreaCode() == 36 || sorRoutingCtx.getInvProcAreaCode() == 30);
     }
 }
 
