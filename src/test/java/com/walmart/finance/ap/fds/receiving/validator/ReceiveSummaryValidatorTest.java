@@ -8,6 +8,8 @@ import com.walmart.finance.ap.fds.receiving.request.SorRoutingCtx;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -76,19 +78,19 @@ public class ReceiveSummaryValidatorTest {
         allRequestParams.put(ReceivingConstants.PURCHASEORDERNUMBER, "111");
         allRequestParams.put(ReceivingConstants.TRANSACTIONTYPE, "99");
         allRequestParams.put(ReceivingConstants.LOCATIONNUMBER, "113");
-        allRequestParams.put(ReceivingConstants.RECEIPTNUMBERS,"555");
-        allRequestParams.put(ReceivingConstants.CONTROLNUMBER,"999");
-        allRequestParams.put(ReceivingConstants.PURCHASEORDERID,"88");
-        allRequestParams.put(ReceivingConstants.INVOICEID,"97");
-        allRequestParams.put(ReceivingConstants.VENDORNUMBER,"111");
-        allRequestParams.put(ReceivingConstants.RECEIVINGCONTROLNUMBER,"00");
-        allRequestParams.put(ReceivingConstants.DIVISIONNUMBER,"77");
-        allRequestParams.put(ReceivingConstants.ITEMNUMBERS,"55");
-        allRequestParams.put(ReceivingConstants.UPCNUMBERS,"09");
-        allRequestParams.put(ReceivingConstants.RECEIPTDATESTART,"08-09-2017");
-        allRequestParams.put(ReceivingConstants.RECEIPTDATEEND,"09-09-2018");
-        allRequestParams.put(ReceivingConstants.DEPARTMENTNUMBER,"0");
-        allRequestParams.put(ReceivingConstants.INVOICENUMBER,"134");
+        allRequestParams.put(ReceivingConstants.RECEIPTNUMBERS, "555");
+        allRequestParams.put(ReceivingConstants.CONTROLNUMBER, "999");
+        allRequestParams.put(ReceivingConstants.PURCHASEORDERID, "88");
+        allRequestParams.put(ReceivingConstants.INVOICEID, "97");
+        allRequestParams.put(ReceivingConstants.VENDORNUMBER, "111");
+        allRequestParams.put(ReceivingConstants.RECEIVINGCONTROLNUMBER, "00");
+        allRequestParams.put(ReceivingConstants.DIVISIONNUMBER, "77");
+        allRequestParams.put(ReceivingConstants.ITEMNUMBERS, "55");
+        allRequestParams.put(ReceivingConstants.UPCNUMBERS, "09");
+        allRequestParams.put(ReceivingConstants.RECEIPTDATESTART, "08-09-2017");
+        allRequestParams.put(ReceivingConstants.RECEIPTDATEEND, "09-09-2018");
+        allRequestParams.put(ReceivingConstants.DEPARTMENTNUMBER, "0");
+        allRequestParams.put(ReceivingConstants.INVOICENUMBER, "134");
         ReceiveSummaryValidator.validate("US", allRequestParams);
     }
 
@@ -107,9 +109,10 @@ public class ReceiveSummaryValidatorTest {
         allRequestParams.put(ReceivingConstants.PURCHASEORDERID, null);
         allRequestParams.put(ReceivingConstants.TRANSACTIONTYPE, "99");
         allRequestParams.put(ReceivingConstants.LOCATIONNUMBER, "113");
-        allRequestParams.put(ReceivingConstants.RECEIPTNUMBERS,"555");
-        allRequestParams.put(ReceivingConstants.CONTROLNUMBER,"999");
-        allRequestParams.put(ReceivingConstants.DIVISIONNUMBER,"00");
+        allRequestParams.put(ReceivingConstants.RECEIPTNUMBERS, "555");
+        allRequestParams.put(ReceivingConstants.CONTROLNUMBER, "999");
+        allRequestParams.put(ReceivingConstants.DIVISIONNUMBER, "00");
         ReceiveSummaryValidator.validate("US", allRequestParams);
     }
+
 }
