@@ -10,6 +10,10 @@ public enum ReceiveLineRequestParams {
     CONTROLNUMBER("controlNumber"),
     LOCATIONNUMBER("locationNumber"),
     DIVISIONNUMBER("divisionNumber"),
+    ORDERBY("orderBy"),
+    ORDER("order"),
+    PAGENBR("pageNbr"),
+    PAGESIZE("pageSize"),
     TRANSACTIONTYPE("transactionType"),
     PURCHASEORDERID("purchaseOrderId");
 
