@@ -15,8 +15,16 @@ public enum ReceiveLineRequestParams {
     PAGENBR("pageNbr"),
     PAGESIZE("pageSize"),
     TRANSACTIONTYPE("transactionType"),
-    PURCHASEORDERID("purchaseOrderId");
-
+    PURCHASEORDERNUMBER("purchaseOrderNumber"),
+    PURCHASEORDERID("purchaseOrderId"),
+    ITEMNUMBERS("itemNumbers"),
+    UPCNUMBERS("upcNumbers"),
+    VENDORNUMBER("vendorNumber"),
+    DEPARTMENTNUMBER("departmentNumber"),
+    INVOICEID("invoiceId"),
+    INVOICENUMBER("invoiceNumber"),
+    RECEIPTDATESTART("receiptDateStart"),
+    RECEIPTDATEEND("receiptDateEnd");
 
     @Getter
     private String parameterName;
