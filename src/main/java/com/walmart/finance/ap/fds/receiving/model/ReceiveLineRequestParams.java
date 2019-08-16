@@ -6,7 +6,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ReceiveLineRequestParams {
 
-    RECEIPTNUMBERS("receiptNumbers"),
+    RECEIPTNUMBER("receiptNumber"),
     CONTROLNUMBER("controlNumber"),
     LOCATIONNUMBER("locationNumber"),
     DIVISIONNUMBER("divisionNumber"),
@@ -15,16 +15,7 @@ public enum ReceiveLineRequestParams {
     PAGENBR("pageNbr"),
     PAGESIZE("pageSize"),
     TRANSACTIONTYPE("transactionType"),
-    PURCHASEORDERNUMBER("purchaseOrderNumber"),
-    PURCHASEORDERID("purchaseOrderId"),
-    ITEMNUMBERS("itemNumbers"),
-    UPCNUMBERS("upcNumbers"),
-    VENDORNUMBER("vendorNumber"),
-    DEPARTMENTNUMBER("departmentNumber"),
-    INVOICEID("invoiceId"),
-    INVOICENUMBER("invoiceNumber"),
-    RECEIPTDATESTART("receiptDateStart"),
-    RECEIPTDATEEND("receiptDateEnd");
+    PURCHASEORDERID("purchaseOrderId");
 
     @Getter
     private String parameterName;
