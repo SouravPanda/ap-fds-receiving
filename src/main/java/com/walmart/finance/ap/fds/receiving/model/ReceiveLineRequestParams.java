@@ -6,7 +6,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ReceiveLineRequestParams {
 
-    RECEIPTNUMBER("receiptNumber"),
+    RECEIPTNUMBERS("receiptNumbers"),
     CONTROLNUMBER("controlNumber"),
     LOCATIONNUMBER("locationNumber"),
     DIVISIONNUMBER("divisionNumber"),

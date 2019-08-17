@@ -22,7 +22,7 @@ public enum ReceivingLineParameters {
     SUMMARYREFERENCE("summaryReference"),
     DATASYNCSTATUS("dataSyncStatus"),
     RECEIPTNUMBERS("receiptNumbers"),
-    RECEIPTNUMBER("receiptNumber"),
+ //   RECEIPTNUMBER("receiptNumber"),
     PURCHASEORDERNUMBER("purchaseOrderNumber"),
     LASTUPDATEDDATE("lastUpdatedDate");
 
