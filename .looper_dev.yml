@@ -22,10 +22,10 @@ flows:
     - call: readpom
     - mvn clean install
     - call: build_push_latest_img_dev
-#    - call: runsonar
+    - call: runsonar
   pr:
     - mvn clean package
- #   - call: runsonar
+    - call: runsonar
 
   build_push_latest_img_dev:
     - shell: echo "build_push_latest_img_dev"
