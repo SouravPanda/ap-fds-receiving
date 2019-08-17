@@ -32,6 +32,7 @@ public class ReceivingConstants {
     public static final String PURCHASEORDERNUMBER = "purchaseOrderNumber";
     public static final String PURCHASEORDERID = "purchaseOrderId";
     public static final String RECEIPTNUMBERS = "receiptNumbers";
+    public static final String RECEIPTNUMBER = "receiptNumber";
     public static final String TRANSACTIONTYPE = "transactionType";
     public static final String CONTROLNUMBER = "controlNumber";
     public static final String LOCATIONNUMBER = "locationNumber";

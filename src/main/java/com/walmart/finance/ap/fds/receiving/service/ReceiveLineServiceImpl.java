@@ -80,8 +80,8 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
             criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.RECEIVINGCONTROLNUMBER));
             dynamicQuery.addCriteria(criteriaDefinition);
         }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTNUMBERS))) {
-            criteriaDefinition = criteriaDefinition.where(ReceivingLineParameters.RECEIVEID.getParameterName()).in(paramMap.get(ReceivingConstants.RECEIPTNUMBERS).split(","));
+        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTNUMBER))) {
+            criteriaDefinition = criteriaDefinition.where(ReceivingLineParameters.RECEIVEID.getParameterName()).in(paramMap.get(ReceivingConstants.RECEIPTNUMBER).split(","));
             dynamicQuery.addCriteria(criteriaDefinition);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.TRANSACTIONTYPE))) {

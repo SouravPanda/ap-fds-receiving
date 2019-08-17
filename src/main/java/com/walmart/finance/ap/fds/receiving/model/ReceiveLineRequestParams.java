@@ -6,13 +6,16 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ReceiveLineRequestParams {
 
-    RECEIPTNUMBERS("receiptNumbers"),
+    RECEIPTNUMBER("receiptNumber"),
     CONTROLNUMBER("controlNumber"),
     LOCATIONNUMBER("locationNumber"),
     DIVISIONNUMBER("divisionNumber"),
+    ORDERBY("orderBy"),
+    ORDER("order"),
+    PAGENBR("pageNbr"),
+    PAGESIZE("pageSize"),
     TRANSACTIONTYPE("transactionType"),
     PURCHASEORDERID("purchaseOrderId");
-
 
     @Getter
     private String parameterName;

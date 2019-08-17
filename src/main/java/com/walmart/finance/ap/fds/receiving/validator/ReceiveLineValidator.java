@@ -29,8 +29,8 @@ public class ReceiveLineValidator {
         if (allRequestParams.containsKey(ReceivingLineParameters.PURCHASEORDERID.getParameterName())) {
             allRequestParams.put(ReceivingConstants.PURCHASEORDERID, allRequestParams.get(ReceiveLineRequestParams.PURCHASEORDERID.getParameterName()).trim());
         }
-        if (allRequestParams.containsKey(ReceivingLineParameters.RECEIPTNUMBERS.getParameterName())) {
-            allRequestParams.put(ReceivingConstants.RECEIPTNUMBERS, allRequestParams.get(ReceiveLineRequestParams.RECEIPTNUMBERS.getParameterName()));
+        if (allRequestParams.containsKey(ReceivingLineParameters.RECEIPTNUMBER.getParameterName())) {
+            allRequestParams.put(ReceivingConstants.RECEIPTNUMBER, allRequestParams.get(ReceiveLineRequestParams.RECEIPTNUMBER.getParameterName()));
         }
         if (allRequestParams.containsKey(ReceivingLineParameters.TRANSACTIONTYPE.getParameterName())) {
             allRequestParams.put(ReceivingConstants.TRANSACTIONTYPE, allRequestParams.get(ReceiveLineRequestParams.TRANSACTIONTYPE.getParameterName()));
