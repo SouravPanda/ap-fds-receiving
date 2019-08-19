@@ -20,8 +20,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class InvoiceIntegrationServiceImpl implements InvoiceIntegrationService {
@@ -58,7 +58,7 @@ public class InvoiceIntegrationServiceImpl implements InvoiceIntegrationService 
      * @return
      */
     @Override
-    public List<InvoiceResponseData> getInvoice(HashMap<String, String> paramMap) {
+    public List<InvoiceResponseData> getInvoice(Map<String, String> paramMap) {
         log.info("Inside getInvoice method");
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set(ReceivingConstants.WM_CONSUMER, consumerId);
@@ -77,14 +77,14 @@ public class InvoiceIntegrationServiceImpl implements InvoiceIntegrationService 
             }
         }
 
-        if (response != null && response.getBody() != null && CollectionUtils.isNotEmpty(response.getBody().getInvoiceResponseDataList()) ) {
+        if (response != null && response.getBody() != null && CollectionUtils.isNotEmpty(response.getBody().getInvoiceResponseDataList())) {
             invoiceResponseDataList = response.getBody().getInvoiceResponseDataList();
         }
         return invoiceResponseDataList;
     }
 
     // TODO Need to check country code.
-    private String makeInvoiceURL(HashMap<String, String> paramMap) {
+    private String makeInvoiceURL(Map<String, String> paramMap) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(invoicebaseUrl + paramMap.get(ReceivingConstants.COUNTRYCODE) + invoiceBaseEndpoint);
         paramMap.entrySet()
                 .stream()

@@ -6,6 +6,7 @@ import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
+import com.walmart.finance.ap.fds.receiving.validator.ReceiveLineValidator;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +23,9 @@ import org.springframework.data.mongodb.core.query.Query;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.Mockito.when;
 
@@ -52,12 +55,12 @@ public class ReceiveLineServiceImplTest {
                 89, 12, "1122", 99, 8264, 18,
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
-                0, 1.9, "LL", 0, "", null,null,null,null,null,null,null,null,null,null);
+                0, 1.9, "LL", 0, "", null, null, null, null, null, null, null, null, null, null);
         ReceivingLine receivingLineAt = new ReceivingLine("0|0|0|0|0|null|null|12", "6778", 0,
                 0, 0, 0, 0.0, 0.0, "0", 0,
                 0, "0KLL", 0, 0, 0, null, null, 12,
                 LocalDateTime.of(1985, 10, 17, 18, 45, 21), 'A', "BKP", "111",
-                0, LocalDate.now(), 0, 1.9, "LL", 0, "", null, null, null, null, null, null, null,null,null,null);
+                0, LocalDate.now(), 0, 1.9, "LL", 0, "", null, null, null, null, null, null, null, null, null, null);
         listOfContent.add(receivingLine);
         listOfContent.add(receivingLineAt);
         ReceivingLineResponse receivingLineResponse = new ReceivingLineResponse(new Long(0), 0, 0, 0, 0, 2.9,
@@ -77,21 +80,23 @@ public class ReceiveLineServiceImplTest {
         when(mockQuery.limit(Mockito.anyInt())).thenReturn(mockQuery);
         when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.any())).thenReturn(listOfContent);
         when(receivingLineResponseConverter.convert(Mockito.any(ReceivingLine.class))).thenReturn(receivingLineResponse);
-        Assert.assertEquals(receiveLineServiceImpl.getLineSummary("78887", "1", "1", "777", "87", "88").getData(), successMessage.getData());
-    }
-
-
-    @Test(expected = BadRequestException.class)
-    public void getLineSummaryNumberFormatException() {
-        receiveLineServiceImpl.getLineSummary(null, null, null, "123",
-                "null", null);
+        Map mockMap = Mockito.mock(Map.class);
+        Assert.assertEquals(receiveLineServiceImpl.getLineSummary(mockMap).isSuccess(), successMessage.isSuccess());
     }
 
     @Test(expected = NotFoundException.class)
     public void getLineSummaryNotFoundException() {
         when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.any())).thenReturn(null);
-        receiveLineServiceImpl.getLineSummary(null, null, null, null,
-                null, null);
+        Map mockMap = Mockito.mock(Map.class);
+        receiveLineServiceImpl.getLineSummary(mockMap);
+    }
+
+    @Test(expected = BadRequestException.class)
+    public void getLineSummaryNumberFormatException() {
+        Map<String, String> dummyMap=new HashMap<>();
+        dummyMap.put("PP","11");
+        ReceiveLineValidator.validate("US", dummyMap);
+        receiveLineServiceImpl.getLineSummary(dummyMap);
     }
 }
 

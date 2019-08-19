@@ -8,20 +8,25 @@ public enum ReceivingLineParameters {
 
     ID("_id"),
     RECEIVINGCONTROLNUMBER("receivingControlNumber"),
+    CONTROLNUMBER("controlNumber"),
     RECEIVEID("receiveId"),
     STORENUMBER("storeNumber"),
+    LOCATIONNUMBER("locationNumber"),
     BASEDIVISIONNUMBER("baseDivisionNumber"),
+    DIVISIONNUMBER("divisionNumber"),
     TRANSACTIONTYPE("transactionType"),
-    FINALDATE("finalDate"),
-    FINALTIME("finalTime"),
     ITEMNUMBER("itemNumber"),
     UPCNUMBER("upcNumber"),
     PURCHASEORDERID("purchaseOrderId"),
+    INVENTORYMATCHSTATUS("inventoryMatchStatus"),
     SUMMARYREFERENCE("summaryReference"),
     DATASYNCSTATUS("dataSyncStatus"),
-    LASTUPDATEDDATE("lastUpdatedDate"),
-    INVENTORYMATCHSTATUS("inventoryMatchStatus");
+    RECEIPTNUMBER("receiptNumber"),
+    PURCHASEORDERNUMBER("purchaseOrderNumber"),
+    LASTUPDATEDDATE("lastUpdatedDate");
+
 
     @Getter
     private String parameterName;
+
 }
