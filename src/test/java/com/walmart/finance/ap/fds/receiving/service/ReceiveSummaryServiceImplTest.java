@@ -225,8 +225,8 @@ public class ReceiveSummaryServiceImplTest {
         listOfReceiveLines.add(receivingLine);
         listOfReceiveLines.add(receivingLineAt);
         Query dynamicQuery = new Query();
-        Criteria criteriaNew = Criteria.where("purchaseOrderNumber").is("999").and("receivingControlNumber").is("000").and("storeNumber")
-                .is(998).and("departmentNumber").is(98);
+        Criteria criteriaNew = Criteria.where(ReceiveSummaryRequestParams.PURCHASEORDERNUMBER.getParameterName()).is("999").and(ReceiveSummaryRequestParams.CONTROLNUMBER.getParameterName()).is("000").and(ReceiveSummaryRequestParams.LOCATIONNUMBER.getParameterName())
+                .is(998).and(ReceiveSummaryRequestParams.DEPARTMENTNUMBER.getParameterName()).is(98);
         dynamicQuery.addCriteria(criteriaNew);
         when(receivingSummaryResponseConverter.convert(Mockito.any(ReceiveSummary.class))).thenReturn(receivingSummaryResponse);
         when(mongoTemplate.count(dynamicQuery, ReceiveSummary.class)).thenReturn(2L);
@@ -237,7 +237,22 @@ public class ReceiveSummaryServiceImplTest {
         successMessage.setData(content);
         successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.now());
-        Map mockMap = Mockito.mock(Map.class);
+        Map mockMap = new HashMap();
+        mockMap.put(ReceiveSummaryRequestParams.PURCHASEORDERNUMBER.getParameterName(),"999");
+        mockMap.put(ReceiveSummaryRequestParams.CONTROLNUMBER.getParameterName(),"000");
+        mockMap.put(ReceiveSummaryRequestParams.LOCATIONNUMBER.getParameterName(),"998");
+        mockMap.put(ReceiveSummaryRequestParams.DEPARTMENTNUMBER.getParameterName(),"98");
+        mockMap.put(ReceiveSummaryRequestParams.UPCNUMBERS.getParameterName(),"89776");
+        mockMap.put(ReceiveSummaryRequestParams.VENDORNUMBER.getParameterName(),"0987");
+        mockMap.put(ReceiveSummaryRequestParams.DIVISIONNUMBER.getParameterName(),"90");
+        mockMap.put(ReceiveSummaryRequestParams.ITEMNUMBERS.getParameterName(),"9880");
+        mockMap.put(ReceiveSummaryRequestParams.INVOICEID.getParameterName(),"098");
+        mockMap.put(ReceiveSummaryRequestParams.PURCHASEORDERID.getParameterName(),"456");
+        mockMap.put(ReceiveSummaryRequestParams.RECEIPTNUMBERS.getParameterName(),"234");
+        mockMap.put(ReceiveSummaryRequestParams.INVOICENUMBER.getParameterName(),"134");
+        mockMap.put(ReceiveSummaryRequestParams.RECEIPTDATEEND.getParameterName(),"2017-12-12");
+        mockMap.put(ReceiveSummaryRequestParams.RECEIPTDATESTART.getParameterName(),"2015-12-12");
+        mockMap.put(ReceiveSummaryRequestParams.TRANSACTIONTYPE.getParameterName(),"0");
         Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary(mockMap).getData(), successMessage.getData().subList(0, 1));
     }
 
@@ -282,8 +297,8 @@ public class ReceiveSummaryServiceImplTest {
         List<ReceivingLine> listOfReceiveLines = new ArrayList<>();
         listOfReceiveLines.add(receivingLine);
         Query dynamicQuery = new Query();
-        Criteria criteriaNew = Criteria.where("purchaseOrderNumber").is("999").and("receivingControlNumber").is("000").and("storeNumber")
-                .is(998).and("departmentNumber").is(98);
+        Criteria criteriaNew = Criteria.where(ReceiveSummaryRequestParams.PURCHASEORDERNUMBER.getParameterName()).is("999").and(ReceiveSummaryRequestParams.CONTROLNUMBER.getParameterName()).is("000").and(ReceiveSummaryRequestParams.LOCATIONNUMBER.getParameterName())
+                .is(998).and(ReceiveSummaryRequestParams.DEPARTMENTNUMBER.getParameterName()).is(98);
         dynamicQuery.addCriteria(criteriaNew);
         List<InvoiceResponseData> invoiceResponseDataList = new ArrayList<>();
         Mockito.when(invoiceIntegrationService.getInvoice(Mockito.any())).thenReturn(invoiceResponseDataList);
