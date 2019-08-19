@@ -22,6 +22,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +60,7 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
         requestHeaders.set(ReceivingConstants.WM_CONSUMER, consumerId);
         requestHeaders.set(ReceivingConstants.WMAPIKEY, clientId);
         HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
-        List<FinancialTxnResponseData> financialTxnResponseDataList;
+        List<FinancialTxnResponseData> financialTxnResponseDataList =  new ArrayList<>();
         String url = makeUrl(allRequestParams);
         ResponseEntity<FinancialTxnResponse> response;
         try {
@@ -72,9 +73,9 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
             financialTxnResponseDataList = response.getBody().getFinancialTxnResponseDataList();
         } else {
             log.error("Financial Transaction data not found for url " + url);
-            throw new NotFoundException("Financial Transaction data not found for given search criteria.");
+            //throw new NotFoundException("Financial Transaction data not found for given search criteria.");
         }
-        return financialTxnResponseDataList;
+        return new ArrayList<>();
     }
 
     private String makeUrl(Map<String, String> allRequestParams) {
