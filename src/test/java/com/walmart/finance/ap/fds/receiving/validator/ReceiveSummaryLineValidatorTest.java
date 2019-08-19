@@ -70,6 +70,13 @@ public class ReceiveSummaryLineValidatorTest {
         receiveSummaryLineValidator.validateReceiptLineNumber("7");
     }
 
+    @Test
+    public void validateInventoryMatchStatus() {
+        ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
+                "1", "2", null);
+        receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest);
+    }
+
     @Test(expected = InvalidValueException.class)
     public void validateReceiptLineNumberException() {
         receiveSummaryLineValidator.validateReceiptLineNumber("a");
