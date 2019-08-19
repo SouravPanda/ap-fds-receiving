@@ -3,6 +3,7 @@ package com.walmart.finance.ap.fds.receiving.validator;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
+import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryRequestParams;
 import com.walmart.finance.ap.fds.receiving.request.Meta;
 import com.walmart.finance.ap.fds.receiving.request.SorRoutingCtx;
 import org.junit.Test;
@@ -91,6 +92,10 @@ public class ReceiveSummaryValidatorTest {
         allRequestParams.put(ReceivingConstants.RECEIPTDATEEND, "09-09-2018");
         allRequestParams.put(ReceivingConstants.DEPARTMENTNUMBER, "0");
         allRequestParams.put(ReceivingConstants.INVOICENUMBER, "134");
+        allRequestParams.put(ReceiveSummaryRequestParams.ORDER.getParameterName(),"");
+        allRequestParams.put(ReceiveSummaryRequestParams.ORDERBY.getParameterName(),"");
+        allRequestParams.put(ReceiveSummaryRequestParams.PAGENBR.getParameterName(),"");
+        allRequestParams.put(ReceiveSummaryRequestParams.PAGESIZE.getParameterName(),"");
         ReceiveSummaryValidator.validate("US", allRequestParams);
     }
 

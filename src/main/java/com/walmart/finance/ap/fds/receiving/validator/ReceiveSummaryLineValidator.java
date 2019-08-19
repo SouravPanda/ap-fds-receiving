@@ -1,6 +1,7 @@
 package com.walmart.finance.ap.fds.receiving.validator;
 
 import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
+import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -16,11 +17,11 @@ public class ReceiveSummaryLineValidator {
         try {
             Integer invMatchStatus = Integer.valueOf(receivingSummaryLineRequest.getInventoryMatchStatus());
             if (!(invMatchStatus >= 0 && invMatchStatus <= 9)) {
-                throw new InvalidValueException("Invalid value, inventoryMatchStatus", "it should be in range 0-9");
+                throw new InvalidValueException(ReceivingErrors.INVALIDINVENTORYMATCHSTATUSCODE.getParameterName(), ReceivingErrors.INVALIDINVENTORYMATCHSTATUSDETAILS.getParameterName());
             }
         } catch (NumberFormatException e) {
             log.error(ExceptionUtils.getStackTrace(e));
-            throw new InvalidValueException("Invalid value, inventoryMatchStatus", "it should be in range 0-9");
+            throw new InvalidValueException(ReceivingErrors.INVALIDINVENTORYMATCHSTATUSCODE.getParameterName(), ReceivingErrors.INVALIDINVENTORYMATCHSTATUSDETAILS.getParameterName());
         }
     }
 
@@ -31,7 +32,7 @@ public class ReceiveSummaryLineValidator {
             }
         } catch (NumberFormatException e) {
             log.error(ExceptionUtils.getStackTrace(e));
-            throw new InvalidValueException("Invalid value, lineSequenceNumber", "it should be in an integer");
+            throw new InvalidValueException(ReceivingErrors.INVALIDLINESEQUENCE.getParameterName(), ReceivingErrors.INVALIDLINESEQUENCEDETAILS.getParameterName());
         }
     }
 }
