@@ -10,28 +10,28 @@
 	<springProfile name="dev-us">
    		<appender name="aiAppender"
       		class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
-        	<instrumentationKey>c3a39937-8fe2-4300-928b-a0bb7c5b205e</instrumentationKey>
+        	<instrumentationKey>1c1abd11-54d5-44d2-b3c5-b5425b6c27a7</instrumentationKey>
     	</appender>
     </springProfile>
     
     <springProfile name="dev-ca">
    		<appender name="aiAppender"
       		class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
-        	<instrumentationKey>746ba336-e89e-42d4-af18-bd95794cf42a</instrumentationKey>
+        	<instrumentationKey>899a2f7d-2607-4301-8bdd-1e3ab87c4c3d</instrumentationKey>
     	</appender>
     </springProfile>
     
     <springProfile name="qa-us">
    		<appender name="aiAppender"
       		class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
-        	<instrumentationKey>c3a39937-8fe2-4300-928b-a0bb7c5b205e</instrumentationKey>
+        	<instrumentationKey>1c1abd11-54d5-44d2-b3c5-b5425b6c27a7</instrumentationKey>
     	</appender>
     </springProfile>
     
     <springProfile name="qa-ca">
    		<appender name="aiAppender"
       		class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
-        	<instrumentationKey>746ba336-e89e-42d4-af18-bd95794cf42a</instrumentationKey>
+        	<instrumentationKey>899a2f7d-2607-4301-8bdd-1e3ab87c4c3d</instrumentationKey>
     	</appender>
     </springProfile>
     
