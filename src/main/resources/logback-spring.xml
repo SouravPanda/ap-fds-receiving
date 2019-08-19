@@ -10,28 +10,56 @@
 	<springProfile name="dev-us">
    		<appender name="aiAppender"
       		class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
-        	<instrumentationKey>603bc049-a041-45ed-810c-beaa60a18f8d</instrumentationKey>
+        	<instrumentationKey>c3a39937-8fe2-4300-928b-a0bb7c5b205e</instrumentationKey>
     	</appender>
     </springProfile>
     
     <springProfile name="dev-ca">
    		<appender name="aiAppender"
       		class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
-        	<instrumentationKey>603bc049-a041-45ed-810c-beaa60a18f8d</instrumentationKey>
+        	<instrumentationKey>746ba336-e89e-42d4-af18-bd95794cf42a</instrumentationKey>
+    	</appender>
+    </springProfile>
+    
+    <springProfile name="qa-us">
+   		<appender name="aiAppender"
+      		class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
+        	<instrumentationKey>c3a39937-8fe2-4300-928b-a0bb7c5b205e</instrumentationKey>
+    	</appender>
+    </springProfile>
+    
+    <springProfile name="qa-ca">
+   		<appender name="aiAppender"
+      		class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
+        	<instrumentationKey>746ba336-e89e-42d4-af18-bd95794cf42a</instrumentationKey>
+    	</appender>
+    </springProfile>
+    
+     <springProfile name="stage-us">
+   		<appender name="aiAppender"
+      		class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
+        	<instrumentationKey>c3a39937-8fe2-4300-928b-a0bb7c5b205e</instrumentationKey>
+    	</appender>
+    </springProfile>
+    
+    <springProfile name="stage-ca">
+   		<appender name="aiAppender"
+      		class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
+        	<instrumentationKey>746ba336-e89e-42d4-af18-bd95794cf42a</instrumentationKey>
     	</appender>
     </springProfile>
     
     <springProfile name="prod-ca">
    		<appender name="aiAppender"
       		class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
-        	<instrumentationKey>603bc049-a041-45ed-810c-beaa60a18f8d</instrumentationKey>
+        	<instrumentationKey>f0c5410c-ae54-4abd-baee-f831e9bf9f10</instrumentationKey>
     	</appender>
     </springProfile>
     
      <springProfile name="prod-us">
    		<appender name="aiAppender"
       		class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
-        	<instrumentationKey>603bc049-a041-45ed-810c-beaa60a18f8d</instrumentationKey>
+        	<instrumentationKey>5486046f-8ab3-443b-b225-8a8302e1abed</instrumentationKey>
     	</appender>
     </springProfile>
 	
