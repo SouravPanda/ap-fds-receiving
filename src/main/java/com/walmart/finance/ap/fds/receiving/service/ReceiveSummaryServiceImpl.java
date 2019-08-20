@@ -16,7 +16,6 @@ import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryLineValidator;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryValidator;
-import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -34,7 +33,6 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -416,7 +414,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     @Override
     @Transactional
     public ReceivingResponse updateReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest, String countryCode) {
-        log.info("unitofWorkid:" + receivingSummaryRequest.getMeta().getUnitofWorkid());
+        log.info("unitOfWorkId:" + receivingSummaryRequest.getMeta().getUnitOfWorkId());
         Boolean isWareHouseData = receiveSummaryValidator.isWareHouseData(receivingSummaryRequest.getMeta().getSorRoutingCtx());
         receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryRequest.getBusinessStatusCode());
         String id = formulateId(receivingSummaryRequest.getPurchaseOrderId(), receivingSummaryRequest.getReceiptNumber(), receivingSummaryRequest.getLocationNumber().toString(), isWareHouseData ? "0" : receivingSummaryRequest.getReceiptDate().toString());
@@ -434,7 +432,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             throw new ContentNotFoundException(ReceivingErrors.CONTENTNOTFOUNDSUMMARY.getParameterName(), ReceivingErrors.VALIDID.getParameterName());
         }
         if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
-            publisher.publishEvent(commitedRcvSummary);
+            publisher.publishEvent(receivingSummaryRequest);
         }
         List<ReceivingSummaryRequest> responseList = new ArrayList<>();
         responseList.add(receivingSummaryRequest);
@@ -448,9 +446,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     @Override
     @Transactional
     public ReceivingResponse updateReceiveSummaryAndLine(ReceivingSummaryLineRequest receivingSummaryLineRequest, String countryCode) {
-        log.info("unitofWorkid:" + receivingSummaryLineRequest.getMeta().getUnitofWorkid());
+        log.info("unitOfWorkId:" + receivingSummaryLineRequest.getMeta().getUnitOfWorkId());
         Boolean isWareHouseData = receiveSummaryValidator.isWareHouseData(receivingSummaryLineRequest.getMeta().getSorRoutingCtx());
-        List summaryLineList = new ArrayList();
+
         receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest.getBusinessStatusCode());
         receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest);
         receiveSummaryLineValidator.validateReceiptLineNumber(receivingSummaryLineRequest.getReceiptLineNumber());
@@ -468,9 +466,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         if (commitedRcvSummary == null) {
             throw new ContentNotFoundException(ReceivingErrors.CONTENTNOTFOUNDSUMMARY.getParameterName(), ReceivingErrors.VALIDID.getParameterName());
         }
-        if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
-            summaryLineList.add(commitedRcvSummary);
-        }
         Update updateLine = new Update();
         updateLine.set(ReceivingLineParameters.DATASYNCSTATUS.getParameterName(), DB2SyncStatus.UPDATE_SYNC_INITIATED);
         updateLine.set(ReceivingLineParameters.LASTUPDATEDDATE.getParameterName(), LocalDateTime.now());
@@ -483,9 +478,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             startTime = System.currentTimeMillis();
             ReceivingLine commitedRcvLine = mongoTemplate.findAndModify(queryForLine, updateLine, FindAndModifyOptions.options().returnNew(true), ReceivingLine.class, lineCollection);
             log.info("updateReceiveSummaryAndLine :: updateLineQueryTime :: findAndModify " + (System.currentTimeMillis() - startTime));
-            if (Objects.nonNull(commitedRcvLine) && isWareHouseData) {
-                summaryLineList.add(commitedRcvLine);
-            }
+
         } else {
             Query queryForLine = new Query();
             queryForLine.addCriteria(Criteria.where(ReceivingLineParameters.STORENUMBER.getParameterName()).is(receivingSummaryLineRequest.getLocationNumber()));
@@ -496,17 +489,16 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             List<ReceivingLine> receivingLines = mongoTemplate.find(queryForLine, ReceivingLine.class, lineCollection);
             log.info("updateReceiveSummaryAndLine :: updateLineQueryTime :: multipleUpdate " + (endTime - startTime));
             log.info("updateReceiveSummaryAndLine :: updateLineQueryTime :: find " + (System.currentTimeMillis() - endTime));
-            if (isWareHouseData && CollectionUtils.isNotEmpty(receivingLines) && receivingLines.size() == updateResult.getModifiedCount()) {
-                summaryLineList.addAll(receivingLines);
-            }
         }
-        publisher.publishEvent(summaryLineList);
+
         List<ReceivingSummaryLineRequest> responseList = new ArrayList<>();
         responseList.add(receivingSummaryLineRequest);
         ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setSuccess(true);
         successMessage.setData(responseList);
         successMessage.setTimestamp(LocalDateTime.now());
+        if(isWareHouseData)
+            publisher.publishEvent(receivingSummaryLineRequest);
         return successMessage;
     }
 }

@@ -498,7 +498,7 @@ public class ReceiveSummaryServiceImplTest {
         ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("888", "998", LocalDate.of(2018, 10, 10),
                 1, "A", meta);
         Meta mockString = Mockito.mock(Meta.class);
-        when(mockString.getUnitofWorkid()).thenReturn("11");
+        when(mockString.getUnitOfWorkId()).thenReturn("11");
         List<ReceivingSummaryRequest> responseList = new ArrayList<>();
         String countryCode = "US";
         when(mongoTemplate.findById((Mockito.anyString()), Mockito.any(Class.class), Mockito.any())).thenReturn(receiveSummary);
@@ -532,7 +532,7 @@ public class ReceiveSummaryServiceImplTest {
         ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("888", "998", LocalDate.of(2018, 10, 10),
                 1, "P", meta);
         Meta mockString = Mockito.mock(Meta.class);
-        when(mockString.getUnitofWorkid()).thenReturn("11");
+        when(mockString.getUnitOfWorkId()).thenReturn("11");
         when(mongoTemplate.findById((Mockito.anyString()), Mockito.any(Class.class), Mockito.any())).thenReturn(receiveSummary);
         doThrow(InvalidValueException.class).when(receiveSummaryValidator).validateBusinessStatUpdateSummary(Mockito.anyString());
         receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, "US");
@@ -550,7 +550,7 @@ public class ReceiveSummaryServiceImplTest {
                 1, "A", meta);
         String id = null;
         Meta mockString = Mockito.mock(Meta.class);
-        when(mockString.getUnitofWorkid()).thenReturn("11");
+        when(mockString.getUnitOfWorkId()).thenReturn("11");
         doNothing().when(receiveSummaryValidator).validateBusinessStatUpdateSummary(Mockito.anyString());
         receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, "US");
     }
@@ -606,7 +606,7 @@ public class ReceiveSummaryServiceImplTest {
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
                 "1", "9", meta);
         Meta mockString = Mockito.mock(Meta.class);
-        when(mockString.getUnitofWorkid()).thenReturn("11");
+        when(mockString.getUnitOfWorkId()).thenReturn("11");
         doNothing().when(receiveSummaryValidator).validateBusinessStatUpdateSummary(Mockito.anyString());
         doNothing().when(receiveSummaryLineValidator).validateInventoryMatchStatus(receivingSummaryLineRequest);
         receiveSummaryServiceImpl.updateReceiveSummaryAndLine(receivingSummaryLineRequest, "US");
@@ -641,7 +641,7 @@ public class ReceiveSummaryServiceImplTest {
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
                 null, "9", meta);
         Meta mockString = Mockito.mock(Meta.class);
-        when(mockString.getUnitofWorkid()).thenReturn("11");
+        when(mockString.getUnitOfWorkId()).thenReturn("11");
         doNothing().when(receiveSummaryValidator).validateBusinessStatUpdateSummary(Mockito.anyString());
         doNothing().when(receiveSummaryLineValidator).validateInventoryMatchStatus(receivingSummaryLineRequest);
         when(mongoTemplate.findById((Mockito.anyString()), Mockito.any(Class.class), Mockito.any())).thenReturn(receiveSummary, receivingLine);
@@ -683,7 +683,7 @@ public class ReceiveSummaryServiceImplTest {
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "P",
                 null, "10", meta);
         Meta mockString = Mockito.mock(Meta.class);
-        when(mockString.getUnitofWorkid()).thenReturn("11");
+        when(mockString.getUnitOfWorkId()).thenReturn("11");
         doThrow(InvalidValueException.class).when(receiveSummaryValidator).validateBusinessStatUpdateSummary(Mockito.anyString());
         doThrow(InvalidValueException.class).when(receiveSummaryLineValidator).validateInventoryMatchStatus(receivingSummaryLineRequest);
         when(mongoTemplate.findById((Mockito.anyString()), Mockito.any(Class.class), Mockito.any())).thenReturn(receiveSummary, receivingLine);
@@ -725,7 +725,7 @@ public class ReceiveSummaryServiceImplTest {
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
                 null, "10", meta);
         Meta mockString = Mockito.mock(Meta.class);
-        when(mockString.getUnitofWorkid()).thenReturn("11");
+        when(mockString.getUnitOfWorkId()).thenReturn("11");
         when(mongoTemplate.findById((Mockito.anyString()), Mockito.any(Class.class), Mockito.any())).thenReturn(receiveSummary, receivingLine);
         List<ReceivingSummaryLineRequest> responseList = new ArrayList<>();
         responseList.add(receivingSummaryLineRequest);

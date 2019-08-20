@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.messageproducer.Producer;
-import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
+import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -24,7 +24,7 @@ public class ReceiveSummaryListener {
     public static final Logger log = LoggerFactory.getLogger(ReceiveSummaryListener.class);
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void onReceiveSummaryCommit(ReceiveSummary event) {
+    public void onReceiveSummaryCommit(ReceivingSummaryRequest event) {
         try {
             producer.sendToEventHub(new ObjectMapper().writeValueAsString(event), ReceivingConstants.RECEIVESUMMARYWAREHOUSE);
         } catch (JsonProcessingException e) {
