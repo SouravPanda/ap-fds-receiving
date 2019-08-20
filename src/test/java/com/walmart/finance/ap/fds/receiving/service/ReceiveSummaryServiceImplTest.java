@@ -82,7 +82,9 @@ public class ReceiveSummaryServiceImplTest {
 
     @Test
     public void getReceiveSummaryHappyPathTest() {
-        ReceiveSummary receiveSummary = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665267",
+
+        List listOfContent = new ArrayList<ReceiveSummary>();
+        listOfContent.add(new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665267",
                 8264, 18, 0, LocalDate.of(1996, 12, 12),
                 LocalTime.of(18, 45, 21), 0, 7688, 1111,
                 0, 0, "H", 0.0, 1.0,
@@ -90,8 +92,8 @@ public class ReceiveSummaryServiceImplTest {
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
                 LocalDate.now(), 9.0, 7, "0", 0, LocalDateTime.now(), 0,
                 "JJJ", "yyyy", LocalDateTime.now(), "99"
-                , 'K', "LLL", null, null, null, null, null);
-        ReceiveSummary receiveSummaryAt = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665207",
+                , 'K', "LLL", null, null, null, null, null));
+        listOfContent.add(new ReceiveSummary("4665267|1804823|824|18|18|1995-10-17|18:45:21", "4665207",
                 8064, 18, 0, LocalDate.of(1986, 12, 12), LocalTime.of(18, 45, 21),
                 0, 9788, 1111,
                 0, 0, "H", 0.0, 1.0, 'P',
@@ -99,17 +101,14 @@ public class ReceiveSummaryServiceImplTest {
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
                 LocalDate.now(), 9.0, 7, "0", 0, LocalDateTime.now(), 0,
                 "JJJ", "UU", LocalDateTime.now(), "99"
-                , 'K', "IIL", null, null, null, null, null);
+                , 'K', "IIL", null, null, null, null, null));
 
-        List listOfContent = new ArrayList<ReceiveSummary>();
-        listOfContent.add(receiveSummary);
-        listOfContent.add(receiveSummaryAt);
         List<String> listOfItemNumbers = new ArrayList<>();
         listOfItemNumbers.add("99");
         listOfItemNumbers.add("89");
         List<String> listOfUpcNumbers = new ArrayList<>();
-        listOfItemNumbers.add("9");
-        listOfItemNumbers.add("89");
+        listOfUpcNumbers.add("9");
+        listOfUpcNumbers.add("89");
         Query query = new Query();
         ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", new Long(1122), 99, "776",
                 3680, 0,
@@ -144,19 +143,17 @@ public class ReceiveSummaryServiceImplTest {
         invoiceResponseDataList.add(new InvoiceResponseData("656", "267", "000", null,
                 "77", "0", "98", "9986", "098", invoiceReferenceResponses));
 
+        List<ReceivingLine> listOfReceiveLines = new ArrayList<>();
 
-        ReceivingLine receivingLine = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0,
+        listOfReceiveLines.add(new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0,
                 0, 0, 0, 0.0, 0.0, "776", 0,
                 0, "444", 1, 1, 1, null, null, 2,
                 null, 'W', "DB2", null, 2, null, 1, 0.0,
                 null, null, null, null, null, null,
-                null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21", null, null, null);
-
-        List<ReceivingLine> listOfReceiveLines = new ArrayList<>();
-        listOfReceiveLines.add(receivingLine);
+                null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21", null, null, null));
         Query dynamicQuery = new Query();
-        Criteria criteriaNew = Criteria.where("purchaseOrderNumber").is("999").and("receivingControlNumber").is("000").and("storeNumber")
-                .is(998).and("departmentNumber").is(98);
+        Criteria criteriaNew = Criteria.where(ReceiveSummaryRequestParams.PURCHASEORDERNUMBER.getParameterName()).is("999").and(ReceiveSummaryRequestParams.CONTROLNUMBER.getParameterName()).is("000").and(ReceiveSummaryRequestParams.LOCATIONNUMBER.getParameterName())
+                .is(998).and(ReceiveSummaryRequestParams.DEPARTMENTNUMBER.getParameterName()).is(98);
         dynamicQuery.addCriteria(criteriaNew);
         Mockito.when(invoiceIntegrationService.getInvoice(Mockito.any())).thenReturn(invoiceResponseDataList);
         when(receivingSummaryResponseConverter.convert(Mockito.any(ReceiveSummary.class))).thenReturn(receivingSummaryResponse);
@@ -168,20 +165,31 @@ public class ReceiveSummaryServiceImplTest {
         successMessage.setData(content);
         successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.now());
-
-        Map mockMap = Mockito.mock(Map.class);
-        try {
-            Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary(mockMap).isSuccess(), successMessage.isSuccess());
-        } catch (NullPointerException | ClassCastException e) {
-            e.getMessage();
-        }
-
+        Map<String, List<ReceivingLine>> receivingLineMap = new HashMap<>();
+        Map mockMap = new HashMap();
+        mockMap.put(ReceiveSummaryRequestParams.PURCHASEORDERNUMBER.getParameterName(), "999");
+        mockMap.put(ReceiveSummaryRequestParams.CONTROLNUMBER.getParameterName(), "000");
+        mockMap.put(ReceiveSummaryRequestParams.LOCATIONNUMBER.getParameterName(), "998");
+        mockMap.put(ReceiveSummaryRequestParams.DEPARTMENTNUMBER.getParameterName(), "98");
+        mockMap.put(ReceiveSummaryRequestParams.UPCNUMBERS.getParameterName(), "89776");
+        mockMap.put(ReceiveSummaryRequestParams.VENDORNUMBER.getParameterName(), "0987");
+        mockMap.put(ReceiveSummaryRequestParams.DIVISIONNUMBER.getParameterName(), "90");
+        mockMap.put(ReceiveSummaryRequestParams.ITEMNUMBERS.getParameterName(), "9880");
+        mockMap.put(ReceiveSummaryRequestParams.INVOICEID.getParameterName(), "098");
+        mockMap.put(ReceiveSummaryRequestParams.PURCHASEORDERID.getParameterName(), "456");
+        mockMap.put(ReceiveSummaryRequestParams.RECEIPTNUMBERS.getParameterName(), "234");
+        mockMap.put(ReceiveSummaryRequestParams.INVOICENUMBER.getParameterName(), "134");
+        mockMap.put(ReceiveSummaryRequestParams.RECEIPTDATEEND.getParameterName(), "2017-12-12");
+        mockMap.put(ReceiveSummaryRequestParams.RECEIPTDATESTART.getParameterName(), "2015-12-12");
+        mockMap.put(ReceiveSummaryRequestParams.TRANSACTIONTYPE.getParameterName(), "0");
+        Assert.assertEquals(receiveSummaryServiceImpl.getReceiveSummary(mockMap).isSuccess(), successMessage.isSuccess());
     }
 
     @Test
     public void getReceiveSummaryElsePathTest() {
 
-        ReceiveSummary receiveSummary = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665207",
+        List listOfContent = new ArrayList<ReceiveSummary>();
+        listOfContent.add(new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665207",
                 8064, 18, 0, LocalDate.of(1986, 12, 12), LocalTime.of(18, 45, 21),
                 0, 9788, 1111,
                 0, 0, "H", 0.0, 1.0, 'P',
@@ -189,10 +197,7 @@ public class ReceiveSummaryServiceImplTest {
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
                 LocalDate.now(), 9.0, 7, "0", 0, LocalDateTime.now(), 0,
                 "JJJ", "UU", LocalDateTime.now(), "99"
-                , 'K', "IIL", null, null, null, null, null);
-
-        List listOfContent = new ArrayList<ReceiveSummary>();
-        listOfContent.add(receiveSummary);
+                , 'K', "IIL", null, null, null, null, null));
         List<String> listOfItemNumbers = new ArrayList<>();
         listOfItemNumbers.add("99");
         listOfItemNumbers.add("89");
@@ -261,7 +266,8 @@ public class ReceiveSummaryServiceImplTest {
     @Test(expected = Exception.class)
     public void getReceiveSummaryDateFormatException() {
 
-        ReceiveSummary receiveSummary = new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665207",
+        List listOfContent = new ArrayList<ReceiveSummary>();
+        listOfContent.add(new ReceiveSummary("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "4665207",
                 8064, 18, 0, LocalDate.of(1986, 12, 12), LocalTime.of(18, 45, 21),
                 0, 9788, 1111,
                 0, 0, "H", 0.0, 1.0, 'P',
@@ -269,10 +275,7 @@ public class ReceiveSummaryServiceImplTest {
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
                 LocalDate.now(), 9.0, 7, "0", 0, LocalDateTime.now(), 0,
                 "JJJ", "UU", LocalDateTime.now(), "99"
-                , 'K', "IIL", null, null, null, null, null);
-
-        List listOfContent = new ArrayList<ReceiveSummary>();
-        listOfContent.add(receiveSummary);
+                , 'K', "IIL", null, null, null, null, null));
         List<String> listOfItemNumbers = new ArrayList<>();
         listOfItemNumbers.add("99");
         listOfItemNumbers.add("89");
@@ -328,10 +331,10 @@ public class ReceiveSummaryServiceImplTest {
     }
 
     @Test(expected = Exception.class)
-    public void getReceiveSummaryNumberFormatException(){
-        Map<String, String> dummyMap=new HashMap<>();
-        String parseString="67GHHJ";
-        dummyMap.put(ReceiveLineRequestParams.TRANSACTIONTYPE.getParameterName(),parseString);
+    public void getReceiveSummaryNumberFormatException() {
+        Map<String, String> dummyMap = new HashMap<>();
+        String parseString = "67GHHJ";
+        dummyMap.put(ReceiveLineRequestParams.TRANSACTIONTYPE.getParameterName(), parseString);
         ReceiveLineValidator.validate("US", dummyMap);
         receiveSummaryServiceImpl.getReceiveSummary(dummyMap);
     }
