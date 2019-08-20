@@ -16,6 +16,7 @@ import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryLineValidator;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryValidator;
+import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -150,6 +151,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     private Query searchCriteriaForGet(Map<String, String> paramMap) {
         Query dynamicQuery = new Query();
+
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.CONTROLNUMBER))) {
             Criteria controlNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.CONTROLNUMBER));
             dynamicQuery.addCriteria(controlNumberCriteria);
@@ -163,7 +165,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             dynamicQuery.addCriteria(baseDivisionNumberCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTDATESTART)) && StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTDATEEND))) {
-            Criteria mdsReceiveDateCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGDATE.getParameterName()).gte(getDate(paramMap.get(ReceivingConstants.RECEIPTDATESTART))).lte(getDate(paramMap.get(ReceivingConstants.RECEIPTDATEEND)));
+            LocalDateTime startDate = getDate(paramMap.get(ReceivingConstants.RECEIPTDATESTART) + " 00:00:00");
+            LocalDateTime endDate = getDate(paramMap.get(ReceivingConstants.RECEIPTDATEEND) + " 23:59:59");
+            Criteria mdsReceiveDateCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.DATERECEIVED.getParameterName()).gte(startDate).lte(endDate);
             dynamicQuery.addCriteria(mdsReceiveDateCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.TRANSACTIONTYPE))) {
@@ -194,10 +198,10 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         return dynamicQuery;
     }
 
-    public LocalDate getDate(String date) {
+    private LocalDateTime getDate(String date) {
         try {
-            DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            return LocalDate.parse(date, formatterDate);
+            DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern(ReceivingConstants.DATEFORMATTER);
+            return LocalDateTime.parse(date, formatterDate);
         } catch (DateTimeParseException e) {
             log.error(ExceptionUtils.getStackTrace(e));
             throw new BadRequestException(ReceivingErrors.INVALIDDATATYPE.getParameterName(), ReceivingErrors.INVALIDQUERYPARAMS.getParameterName());
