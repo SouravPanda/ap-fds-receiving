@@ -62,6 +62,18 @@ public class ReceiveSummaryValidatorTest {
     }
 
     @Test
+    public void isWareHouseDataInvalidCountry2() {
+        SorRoutingCtx sorRoutingCtx = new SorRoutingCtx("F", 36, "RUS");
+        assertFalse(receiveSummaryValidator.isWareHouseData(sorRoutingCtx));
+    }
+
+    @Test
+    public void isWareHouseDataInvalidCountry3() {
+        SorRoutingCtx sorRoutingCtx = new SorRoutingCtx("U", 36, "RUS");
+        assertFalse(receiveSummaryValidator.isWareHouseData(sorRoutingCtx));
+    }
+
+    @Test
     public void isWareHouseDataValidCountry() {
         SorRoutingCtx sorRoutingCtx = new SorRoutingCtx("R", 30, "US");
         assertTrue(receiveSummaryValidator.isWareHouseData(sorRoutingCtx));
@@ -74,8 +86,20 @@ public class ReceiveSummaryValidatorTest {
     }
 
     @Test
+    public void isWareHouseDataReplyType() {
+        SorRoutingCtx sorRoutingCtx = new SorRoutingCtx("U", 36, "US");
+        assertTrue(receiveSummaryValidator.isWareHouseData(sorRoutingCtx));
+    }
+
+    @Test
     public void isWareHouseDataReplyTypeCd2() {
         SorRoutingCtx sorRoutingCtx = new SorRoutingCtx("F", 30, "US");
+        assertTrue(receiveSummaryValidator.isWareHouseData(sorRoutingCtx));
+    }
+
+    @Test
+    public void isWareHouseDataReplyTypeCd3() {
+        SorRoutingCtx sorRoutingCtx = new SorRoutingCtx("F", 36, "US");
         assertTrue(receiveSummaryValidator.isWareHouseData(sorRoutingCtx));
     }
 
