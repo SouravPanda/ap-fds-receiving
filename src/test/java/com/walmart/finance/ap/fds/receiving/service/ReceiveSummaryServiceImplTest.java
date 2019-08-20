@@ -857,11 +857,9 @@ public class ReceiveSummaryServiceImplTest {
                 "JJJ", "UU", LocalDateTime.now(), "99"
                 , 'K', "IIL", null, null, null, null, null);
         ArrayList<ReceiveSummary> receiveSummaries = mock(ArrayList.class);
-//        receiveSummaries.add(receiveSummary);
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(receiveSummaries);
         when(receiveSummaries.size()).thenReturn(1234);
         when(receiveSummaries.isEmpty()).thenReturn(false).thenReturn(true);
-//        when(receiveSummaries.get(Mockito.anyInt())).thenReturn(receiveSummary);
         Map mockMap = Mockito.mock(Map.class);
         receiveSummaryServiceImpl.getReceiveSummary(mockMap);
     }
