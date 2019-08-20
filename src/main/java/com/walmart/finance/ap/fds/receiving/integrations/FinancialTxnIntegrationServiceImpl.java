@@ -73,9 +73,8 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
             financialTxnResponseDataList = response.getBody().getFinancialTxnResponseDataList();
         } else {
             log.error("Financial Transaction data not found for url " + url);
-            //throw new NotFoundException("Financial Transaction data not found for given search criteria.");
         }
-        return new ArrayList<>();
+        return financialTxnResponseDataList;
     }
 
     private String makeUrl(Map<String, String> allRequestParams) {

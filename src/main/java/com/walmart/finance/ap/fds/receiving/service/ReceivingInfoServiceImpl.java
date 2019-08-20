@@ -354,8 +354,20 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     @Override
     public ReceivingResponse getInfoSeviceDataV1(Map<String, String> allRequestParams) {
         List<FinancialTxnResponseData> financialTxnResponseDataList = financialTxnIntegrationService.getFinancialTxnDetails(allRequestParams);
+        List<ReceivingInfoResponseV1> receivingInfoResponses =
+                getReceivingInfoResponseV1s(allRequestParams, financialTxnResponseDataList);
+        ReceivingResponse successMessage = new ReceivingResponse();
+        successMessage.setData(receivingInfoResponses);
+        successMessage.setSuccess(true);
+        successMessage.setTimestamp(LocalDateTime.now());
+        return successMessage;
+    }
+
+    private List<ReceivingInfoResponseV1> getReceivingInfoResponseV1s(Map<String, String> allRequestParams,
+                                                                      List<FinancialTxnResponseData> financialTxnResponseDataList) {
         List<ReceivingInfoResponseV1> receivingInfoResponses;
         if (financialTxnResponseDataList.isEmpty()) {
+            /*Financial Trans Fallback*/
             switch (ReceivingInfoRequestCombinations.valueOf(allRequestParams.get("scenario")) ) {
                 case INVOICEID :
                 case VENDORNUMBER_LOCATIONNUMBER_INVOICENUMBER:
@@ -377,11 +389,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         if (CollectionUtils.isEmpty(receivingInfoResponses)) {
             throw new NotFoundException("Receiving data not found for given search criteria.", "please enter valid query parameters");
         }
-        ReceivingResponse successMessage = new ReceivingResponse();
-        successMessage.setData(receivingInfoResponses);
-        successMessage.setSuccess(true);
-        successMessage.setTimestamp(LocalDateTime.now());
-        return successMessage;
+        return receivingInfoResponses;
     }
 
     private List<ReceivingInfoResponseV1> getDataForFinancialTxnV1(List<FinancialTxnResponseData> financialTxnResponseDataList, Map<String, String> allRequestParams) {
