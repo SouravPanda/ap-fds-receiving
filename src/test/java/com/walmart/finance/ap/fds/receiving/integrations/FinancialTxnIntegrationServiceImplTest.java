@@ -70,7 +70,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void getFinancialTxnDetailsNotFoundException() {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987"
@@ -98,10 +98,10 @@ public class FinancialTxnIntegrationServiceImplTest {
         HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
         HttpStatusCodeException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenThrow(exception);
-        compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
+        org.assertj.core.api.Assertions.assertThat(financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap).isEmpty());
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void getFinancialTxnDetailsResponseNullCheck() {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987", "USER",
@@ -129,7 +129,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
         ResponseEntity<FinancialTxnResponse> response = null;
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
-        compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
+        org.assertj.core.api.Assertions.assertThat( financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap).isEmpty());
     }
 
     private void compareResults(List<FinancialTxnResponseData> receivingInfoResponses, List<FinancialTxnResponseData> result) {
@@ -388,7 +388,7 @@ public class FinancialTxnIntegrationServiceImplTest {
     }
 
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void httpStatusCodeExceptionTest2() {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987", "USER",
