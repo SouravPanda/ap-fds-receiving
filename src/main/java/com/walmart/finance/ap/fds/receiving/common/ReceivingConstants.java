@@ -44,5 +44,6 @@ public class ReceivingConstants {
     public static final String RECEIPTDATESTART = "receiptDateStart";
     public static final String ITEMNUMBERS="itemNumbers";
     public static final String UPCNUMBERS="upcNumbers";
+    public static final String DATEFORMATTER="yyyy-MM-dd HH:mm:ss";
 
 }
