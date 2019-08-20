@@ -62,6 +62,12 @@ public class ReceiveSummaryValidatorTest {
     }
 
     @Test
+    public void isWareHouseDataValidCountry() {
+        SorRoutingCtx sorRoutingCtx = new SorRoutingCtx("R", 30, "US");
+        assertTrue(receiveSummaryValidator.isWareHouseData(sorRoutingCtx));
+    }
+
+    @Test
     public void isWareHouseDataReplyTypeCd() {
         SorRoutingCtx sorRoutingCtx = new SorRoutingCtx("U", 30, "US");
         assertTrue(receiveSummaryValidator.isWareHouseData(sorRoutingCtx));
