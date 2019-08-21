@@ -83,6 +83,7 @@ public class ReceiveSummaryValidator {
         if (allRequestParams.containsKey(ReceiveSummaryRequestParams.UPCNUMBERS.getParameterName())) {
             allRequestParams.put(ReceivingConstants.UPCNUMBERS, allRequestParams.get(ReceiveSummaryRequestParams.UPCNUMBERS.getParameterName()));
         }
+        allRequestParams.put(ReceivingConstants.COUNTRYCODE, "US");
     }
 
     List<ReceiveSummaryBusinessStat> businessStatList = Arrays.asList(ReceiveSummaryBusinessStat.values());

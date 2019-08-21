@@ -122,10 +122,10 @@ public class ReceiveSummaryValidatorTest {
         allRequestParams.put(ReceivingConstants.RECEIPTDATEEND, "09-09-2018");
         allRequestParams.put(ReceivingConstants.DEPARTMENTNUMBER, "0");
         allRequestParams.put(ReceivingConstants.INVOICENUMBER, "134");
-        allRequestParams.put(ReceiveSummaryRequestParams.ORDER.getParameterName(),"");
-        allRequestParams.put(ReceiveSummaryRequestParams.ORDERBY.getParameterName(),"");
-        allRequestParams.put(ReceiveSummaryRequestParams.PAGENBR.getParameterName(),"");
-        allRequestParams.put(ReceiveSummaryRequestParams.PAGESIZE.getParameterName(),"");
+        allRequestParams.put(ReceiveSummaryRequestParams.ORDER.getParameterName(), "");
+        allRequestParams.put(ReceiveSummaryRequestParams.ORDERBY.getParameterName(), "");
+        allRequestParams.put(ReceiveSummaryRequestParams.PAGENBR.getParameterName(), "");
+        allRequestParams.put(ReceiveSummaryRequestParams.PAGESIZE.getParameterName(), "");
         ReceiveSummaryValidator.validate("US", allRequestParams);
     }
 
@@ -134,6 +134,7 @@ public class ReceiveSummaryValidatorTest {
         Map<String, String> allRequestParams = new HashMap<>();
         allRequestParams.put(ReceivingConstants.PURCHASEORDERID, "111");
         allRequestParams.put(ReceivingConstants.TRANSACTIONTYPE, "99");
+        allRequestParams.put(ReceivingConstants.COUNTRYCODE, "US");
         allRequestParams.put(ReceivingConstants.WM_ENV, "113");
         ReceiveSummaryValidator.validate("US", allRequestParams);
     }
