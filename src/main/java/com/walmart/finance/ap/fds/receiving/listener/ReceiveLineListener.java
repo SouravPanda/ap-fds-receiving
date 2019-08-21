@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
+import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 
-import java.util.List;
 
 @Component
 public class ReceiveLineListener {
@@ -23,7 +23,7 @@ public class ReceiveLineListener {
     public static final Logger log = LoggerFactory.getLogger(ReceiveLineListener.class);
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void onReceiveLineCommit(List event) {
+    public void onReceiveLineCommit( ReceivingSummaryLineRequest event) {
         try {
             producer.sendToEventHub(new ObjectMapper().writeValueAsString(event), ReceivingConstants.RECEIVELINEWAREHOUSE);
         } catch (JsonProcessingException e) {
