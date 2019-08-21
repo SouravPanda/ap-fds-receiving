@@ -91,6 +91,7 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
             for (Map.Entry<String, JsonElement> jsonElementEntry : jsonObject.entrySet()) {
                 JsonObject innerJsonObject = (JsonObject) jsonElementEntry.getValue();
                 ReceiveMDSResponse receiveMDSResponse = new ReceiveMDSResponse(
+                        innerJsonObject.get("mdseDisplayCode").getAsInt(),
                         innerJsonObject.get("mdseConditionCode").getAsInt(),
                         innerJsonObject.get("mdseQuantity").getAsInt(),
                         innerJsonObject.get("mdseQuantityUnitOfMeasureCode").getAsString());

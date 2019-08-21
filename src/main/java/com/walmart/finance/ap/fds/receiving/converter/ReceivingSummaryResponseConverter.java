@@ -6,6 +6,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
+import java.time.ZoneId;
+
 @Component
 public class ReceivingSummaryResponseConverter implements Converter<ReceiveSummary, ReceivingSummaryResponse> {
 
@@ -19,7 +21,9 @@ public class ReceivingSummaryResponseConverter implements Converter<ReceiveSumma
         response.setControlNumber(receiveSummary.getReceivingControlNumber());
         response.setLocationNumber(receiveSummary.getStoreNumber());
         response.setDivisionNumber(receiveSummary.getBaseDivisionNumber());
-        response.setReceiptDate(receiveSummary.getReceivingDate()); // TODO will change once  Receipt_Date is available : changed to MDSReceivedate
+        response.setReceiptDate(receiveSummary.getDateReceived().atZone(ZoneId.of("GMT")).toLocalDate()); // TODO will change once  Receipt_Date is
+        // available : changed
+        // to MDSReceivedate
         response.setReceiptStatus(receiveSummary.getBusinessStatusCode()); //   TODO will change once  TOTAL_MATCH_IND is available
         response.setVendorNumber(receiveSummary.getVendorNumber());
 //        response.setCarrierCode("CRCode");

@@ -10,6 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ReceiveMDSResponse {
+    private Integer mdseDisplayCode;
     private Integer mdseConditionCode;
     private Integer mdseQuantity;
     private String mdseQuantityUnitOfMeasureCode;

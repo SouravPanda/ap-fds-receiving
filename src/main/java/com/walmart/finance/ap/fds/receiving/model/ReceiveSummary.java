@@ -173,6 +173,7 @@ public class ReceiveSummary {
     private String dataSyncStatus;
     private LocalDateTime creationTimestamp;
     private LocalDateTime lastUpdatedDate;
+    private LocalDateTime dateReceived;
 
 }
 

@@ -20,6 +20,7 @@ import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryP
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,7 +92,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             if (CollectionUtils.isNotEmpty(receiveSummaries)) {
                 List<ReceivingLine> lineResponseList = getLineData(receiveSummaries.get(0), allRequestParams);
                 List<FreightResponse> freightResponseList = getFreightData(receiveSummaries.get(0));
-                ReceivingInfoResponse receivingInfoResponse = convertsionToReceivingInfo(receiveSummaries.get(0), financialTxnResponseData, lineResponseList, freightResponseList, allRequestParams);
+                ReceivingInfoResponse receivingInfoResponse = conversionToReceivingInfo(receiveSummaries.get(0), financialTxnResponseData, lineResponseList, freightResponseList, allRequestParams);
                 receivingInfoResponses.add(receivingInfoResponse);
             }
         }
@@ -143,6 +144,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     private Query searchCriteriaForGet(Map<String, String> paramMap) {
         Query dynamicQuery = new Query();
+
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.CONTROLNUMBER))) {
             Criteria controlNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.CONTROLNUMBER));
             dynamicQuery.addCriteria(controlNumberCriteria);
@@ -156,7 +158,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             dynamicQuery.addCriteria(baseDivisionNumberCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTDATESTART)) && StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTDATEEND))) {
-            Criteria mdsReceiveDateCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGDATE.getParameterName()).gte(getDate(paramMap.get(ReceivingConstants.RECEIPTDATESTART))).lte(getDate(paramMap.get(ReceivingConstants.RECEIPTDATEEND)));
+            LocalDateTime startDate = getDate(paramMap.get(ReceivingConstants.RECEIPTDATESTART) + " 00:00:00");
+            LocalDateTime endDate = getDate(paramMap.get(ReceivingConstants.RECEIPTDATEEND) + " 23:59:59");
+            Criteria mdsReceiveDateCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.DATERECEIVED.getParameterName()).gte(startDate).lte(endDate);
             dynamicQuery.addCriteria(mdsReceiveDateCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.TRANSACTIONTYPE))) {
@@ -164,8 +168,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             dynamicQuery.addCriteria(transactionTypeCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.LOCATIONNUMBER))) {
-            Criteria storeNumberCriteria =
-                    Criteria.where(ReceiveSummaryCosmosDBParameters.STORENUMBER.getParameterName()).is(Double.valueOf(paramMap.get(ReceivingConstants.LOCATIONNUMBER)));
+            Criteria storeNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.STORENUMBER.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.LOCATIONNUMBER)));
             dynamicQuery.addCriteria(storeNumberCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.PURCHASEORDERNUMBER))) {
@@ -214,6 +217,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             receiveSummaries = mongoTemplate.find(query.limit(1000), ReceiveSummary.class, summaryCollection);
             log.info(" executeQueryInSummary :: queryTime :: "+(System.currentTimeMillis()-startTime));
         }
+        System.out.println(receiveSummaries);
         return receiveSummaries;
     }
 
@@ -276,7 +280,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     /******* receive-freight data   *********/
 
     /*************************** Conversion Methods ***********************************/
-    private ReceivingInfoResponse convertsionToReceivingInfo(ReceiveSummary receiveSummary, FinancialTxnResponseData financialTxnResponseData, List<ReceivingLine> lineResponseList, List<FreightResponse> freightResponseList, Map<String, String> allRequestParams) {
+    private ReceivingInfoResponse conversionToReceivingInfo(ReceiveSummary receiveSummary, FinancialTxnResponseData financialTxnResponseData, List<ReceivingLine> lineResponseList, List<FreightResponse> freightResponseList, Map<String, String> allRequestParams) {
         ReceivingInfoResponse receivingInfoResponse = new ReceivingInfoResponse();
         if (financialTxnResponseData != null) {
             receivingInfoResponse.setAuthorizedBy(financialTxnResponseData.getAuthorizedBy());
@@ -302,7 +306,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponse.setTransactionType(receiveSummary.getTransactionType());
         receivingInfoResponse.setLocationNumber(receiveSummary.getStoreNumber());
         receivingInfoResponse.setPurchaseOrderId(receiveSummary.getPurchaseOrderId());
-        receivingInfoResponse.setReceiptDate(receiveSummary.getReceivingDate());
+        receivingInfoResponse.setReceiptDate(receiveSummary.getDateReceived().atZone(ZoneId.of("GMT")).toLocalDate());
         receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ? Long.valueOf(receiveSummary.getReceiveId()) : 0);
         receivingInfoResponse.setTotalCostAmount(receiveSummary.getTotalCostAmount());
         receivingInfoResponse.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());
@@ -340,6 +344,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             for (Map.Entry<String, JsonElement> jsonElementEntry : jsonObject.entrySet()) {
                 JsonObject innerJsonObject = (JsonObject) jsonElementEntry.getValue();
                 ReceiveMDSResponse receiveMDSResponse = new ReceiveMDSResponse(
+                        innerJsonObject.get("mdseDisplayCode").getAsInt(),
                         innerJsonObject.get("mdseConditionCode").getAsInt(),
                         innerJsonObject.get("mdseQuantity").getAsInt(),
                         innerJsonObject.get("mdseQuantityUnitOfMeasureCode").getAsString());
@@ -497,6 +502,12 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                                     , t.getOrgDelNoteId()
                             ))
                             .collect(Collectors.toList()));
+        } else {
+            if(NumberUtils.isDigits(receiveSummary.getDepartmentNumber())) {
+                receivingInfoResponseV1.setDepartmentNumber(Integer.parseInt(receiveSummary.getDepartmentNumber()));
+            }
+            receivingInfoResponseV1.setDivisionNumber(receiveSummary.getBaseDivisionNumber());
+            receivingInfoResponseV1.setVendorNumber(receiveSummary.getVendorNumber());
         }
         receivingInfoResponseV1.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ? new Long(lineResponseList.size()) : 0);
         receivingInfoResponseV1.setCarrierCode(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getCarrierCode() : null);
@@ -505,7 +516,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponseV1.setTransactionType(receiveSummary.getTransactionType());
         receivingInfoResponseV1.setLocationNumber(receiveSummary.getStoreNumber());
         receivingInfoResponseV1.setPurchaseOrderId(receiveSummary.getPurchaseOrderId());
-        receivingInfoResponseV1.setReceiptDate(receiveSummary.getReceivingDate());
+        receivingInfoResponseV1.setReceiptDate(receiveSummary.getDateReceived().atZone(ZoneId.of("GMT")).toLocalDate());
         receivingInfoResponseV1.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ? Long.valueOf(receiveSummary.getReceiveId()) : 0);
         receivingInfoResponseV1.setTotalCostAmount(receiveSummary.getTotalCostAmount());
         receivingInfoResponseV1.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());
