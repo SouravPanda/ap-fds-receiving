@@ -6,7 +6,65 @@
     <property name="APP_NAME" value="ap-fds-receiving" />
     <property name="PERF_LOG" value="perf-monitoring" />
 
-
+	#App Insight Appender
+	<springProfile name="dev-us">
+   		<appender name="aiAppender"
+      		class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
+        	<instrumentationKey>1c1abd11-54d5-44d2-b3c5-b5425b6c27a7</instrumentationKey>
+    	</appender>
+    </springProfile>
+    
+    <springProfile name="dev-ca">
+   		<appender name="aiAppender"
+      		class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
+        	<instrumentationKey>899a2f7d-2607-4301-8bdd-1e3ab87c4c3d</instrumentationKey>
+    	</appender>
+    </springProfile>
+    
+    <springProfile name="qa-us">
+   		<appender name="aiAppender"
+      		class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
+        	<instrumentationKey>1c1abd11-54d5-44d2-b3c5-b5425b6c27a7</instrumentationKey>
+    	</appender>
+    </springProfile>
+    
+    <springProfile name="qa-ca">
+   		<appender name="aiAppender"
+      		class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
+        	<instrumentationKey>899a2f7d-2607-4301-8bdd-1e3ab87c4c3d</instrumentationKey>
+    	</appender>
+    </springProfile>
+    
+     <springProfile name="stage-us">
+   		<appender name="aiAppender"
+      		class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
+        	<instrumentationKey>c3a39937-8fe2-4300-928b-a0bb7c5b205e</instrumentationKey>
+    	</appender>
+    </springProfile>
+    
+    <springProfile name="stage-ca">
+   		<appender name="aiAppender"
+      		class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
+        	<instrumentationKey>746ba336-e89e-42d4-af18-bd95794cf42a</instrumentationKey>
+    	</appender>
+    </springProfile>
+    
+    <springProfile name="prod-ca">
+   		<appender name="aiAppender"
+      		class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
+        	<instrumentationKey>f0c5410c-ae54-4abd-baee-f831e9bf9f10</instrumentationKey>
+    	</appender>
+    </springProfile>
+    
+     <springProfile name="prod-us">
+   		<appender name="aiAppender"
+      		class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
+        	<instrumentationKey>5486046f-8ab3-443b-b225-8a8302e1abed</instrumentationKey>
+    	</appender>
+    </springProfile>
+	
+	
+	
     # Console appender for application logs
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -54,5 +112,6 @@
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="APP-FILE" />
+        <appender-ref ref="aiAppender"/>
     </root>
 </configuration>

@@ -3,6 +3,7 @@ package com.walmart.finance.ap.fds.receiving.validator;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
+import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryRequestParams;
 import com.walmart.finance.ap.fds.receiving.request.Meta;
 import com.walmart.finance.ap.fds.receiving.request.SorRoutingCtx;
 import org.junit.Test;
@@ -61,14 +62,44 @@ public class ReceiveSummaryValidatorTest {
     }
 
     @Test
+    public void isWareHouseDataInvalidCountry2() {
+        SorRoutingCtx sorRoutingCtx = new SorRoutingCtx("F", 36, "RUS");
+        assertFalse(receiveSummaryValidator.isWareHouseData(sorRoutingCtx));
+    }
+
+    @Test
+    public void isWareHouseDataInvalidCountry3() {
+        SorRoutingCtx sorRoutingCtx = new SorRoutingCtx("U", 36, "RUS");
+        assertFalse(receiveSummaryValidator.isWareHouseData(sorRoutingCtx));
+    }
+
+    @Test
+    public void isWareHouseDataValidCountry() {
+        SorRoutingCtx sorRoutingCtx = new SorRoutingCtx("R", 30, "US");
+        assertTrue(receiveSummaryValidator.isWareHouseData(sorRoutingCtx));
+    }
+
+    @Test
     public void isWareHouseDataReplyTypeCd() {
         SorRoutingCtx sorRoutingCtx = new SorRoutingCtx("U", 30, "US");
         assertTrue(receiveSummaryValidator.isWareHouseData(sorRoutingCtx));
     }
 
     @Test
+    public void isWareHouseDataReplyType() {
+        SorRoutingCtx sorRoutingCtx = new SorRoutingCtx("U", 36, "US");
+        assertTrue(receiveSummaryValidator.isWareHouseData(sorRoutingCtx));
+    }
+
+    @Test
     public void isWareHouseDataReplyTypeCd2() {
         SorRoutingCtx sorRoutingCtx = new SorRoutingCtx("F", 30, "US");
+        assertTrue(receiveSummaryValidator.isWareHouseData(sorRoutingCtx));
+    }
+
+    @Test
+    public void isWareHouseDataReplyTypeCd3() {
+        SorRoutingCtx sorRoutingCtx = new SorRoutingCtx("F", 36, "US");
         assertTrue(receiveSummaryValidator.isWareHouseData(sorRoutingCtx));
     }
 
@@ -91,6 +122,10 @@ public class ReceiveSummaryValidatorTest {
         allRequestParams.put(ReceivingConstants.RECEIPTDATEEND, "09-09-2018");
         allRequestParams.put(ReceivingConstants.DEPARTMENTNUMBER, "0");
         allRequestParams.put(ReceivingConstants.INVOICENUMBER, "134");
+        allRequestParams.put(ReceiveSummaryRequestParams.ORDER.getParameterName(),"");
+        allRequestParams.put(ReceiveSummaryRequestParams.ORDERBY.getParameterName(),"");
+        allRequestParams.put(ReceiveSummaryRequestParams.PAGENBR.getParameterName(),"");
+        allRequestParams.put(ReceiveSummaryRequestParams.PAGESIZE.getParameterName(),"");
         ReceiveSummaryValidator.validate("US", allRequestParams);
     }
 

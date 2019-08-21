@@ -16,7 +16,9 @@ public enum ReceivingErrors {
     RECEIVELINENOTFOUND("Receiving line not found for given search criteria"),
     JUNKPARAMS("The given query params are not valid"),
     INVALIDQUERYPARAMS("please enter valid query parameters"),
-    INVALIDDATATYPE("Data Type is invalid for input values");
+    INVALIDDATATYPE("Data Type is invalid for input values"),
+    INVALIDLINESEQUENCE("Invalid value, lineSequenceNumber"),
+    INVALIDLINESEQUENCEDETAILS("it should be in an integer");
 
     @Getter
     private String parameterName;

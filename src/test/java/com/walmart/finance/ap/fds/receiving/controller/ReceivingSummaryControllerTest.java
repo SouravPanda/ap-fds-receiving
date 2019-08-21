@@ -71,7 +71,7 @@ public class ReceivingSummaryControllerTest {
                 "\"locationNumber\":8231,\n" +
                 " \"businessStatusCode\": \"M\",\n" +
                 " \"meta\": {\n" +
-                "   \"unitofWorkid\": \"12122\",\n" +
+                "   \"unitOfWorkId\": \"12122\",\n" +
                 "   \"sorRoutingCtx\": {\n" +
                 "     \"replnTypCd\": \"R\",\n" +
                 "     \"invProcAreaCode\": 30,\n" +
@@ -99,7 +99,7 @@ public class ReceivingSummaryControllerTest {
                             "            \"locationNumber\": 8231,\n" +
                             "            \"businessStatusCode\": \"M\",\n" +
                             "            \"meta\": {\n" +
-                            "                \"unitofWorkid\": \"12122\",\n" +
+                            "                \"unitOfWorkId\": \"12122\",\n" +
                             "                \"sorRoutingCtx\": {\n" +
                             "                    \"replnTypCd\": \"R\",\n" +
                             "                    \"invProcAreaCode\": 30,\n" +
@@ -171,7 +171,7 @@ public class ReceivingSummaryControllerTest {
                             "            \"lineSequenceNumber\": \"4\",\n" +
                             "            \"inventoryMatchStatus\": \"0\",\n" +
                             "            \"meta\": {\n" +
-                            "                \"unitofWorkid\": 12122,\n" +
+                            "                \"unitOfWorkId\": 12122,\n" +
                             "                \"sorRoutingCtx\": {\n" +
                             "                    \"replnTypCd\": \"R\",\n" +
                             "                    \"invProcAreaCode\": 30,\n" +
