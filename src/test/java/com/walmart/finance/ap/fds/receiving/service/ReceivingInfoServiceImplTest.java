@@ -339,7 +339,7 @@ public class ReceivingInfoServiceImplTest {
                 , null, null, "6854748957", null, 0, 538,
                 0, 0, "0", "del123", 6479,
                 7, 6479, 20, 64, 640, "N",
-                null, 10,
+                null, 10, 666666L,
                 invoiceFinTransProcessLogsResponse, invoiceFinTransAdjustLogsResponse, invoiceFinDelNoteChangeLogsResponse, lineResponses);
         List<ReceivingInfoResponseV1> list = new ArrayList<ReceivingInfoResponseV1>() {
             {
