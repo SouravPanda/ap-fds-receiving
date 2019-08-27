@@ -2,6 +2,8 @@ package com.walmart.finance.ap.fds.receiving.controller;
 
 import com.walmart.finance.ap.fds.receiving.response.*;
 import com.walmart.finance.ap.fds.receiving.service.ReceivingInfoServiceImpl;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -18,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import static org.powermock.api.mockito.PowerMockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -32,6 +35,17 @@ public class ReceivingInfoControllerTest {
 
     @MockBean
     ReceivingInfoServiceImpl receivingInfoService;
+
+    @BeforeClass
+    public static void setSystemProperty() {
+        Properties properties = System.getProperties();
+        properties.setProperty("spring.profiles.active", "dev-us");
+    }
+
+    @AfterClass
+    public static void removeSystemProperty() {
+        System.clearProperty("spring.profiles.active");
+    }
 
     @Test
     public void getReceivingInfo() throws Exception {

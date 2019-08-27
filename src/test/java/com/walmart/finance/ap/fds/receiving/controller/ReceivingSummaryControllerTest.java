@@ -8,7 +8,9 @@ import com.walmart.finance.ap.fds.receiving.request.SorRoutingCtx;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveSummaryServiceImpl;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -24,10 +26,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -46,6 +45,17 @@ public class ReceivingSummaryControllerTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+    }
+
+    @BeforeClass
+    public static void setSystemProperty() {
+        Properties properties = System.getProperties();
+        properties.setProperty("spring.profiles.active", "dev-us");
+    }
+
+    @AfterClass
+    public static void removeSystemProperty() {
+        System.clearProperty("spring.profiles.active");
     }
 
     @Test
@@ -200,7 +210,7 @@ public class ReceivingSummaryControllerTest {
         };
         ReceivingResponse successMessage = new ReceivingResponse(true, LocalDateTime.of(2019, 05, 12, 15, 31, 16), responseList);
         Map<String, String> mockMap = new LinkedHashMap<>();
-        mockMap.put("controlNumber","984003673");
+        mockMap.put("controlNumber", "984003673");
         when(receiveSummaryService.getReceiveSummary(Mockito.anyMap())).thenReturn(successMessage);
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/US/receiving/summary")
