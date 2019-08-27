@@ -215,7 +215,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             receiveSummaries = mongoTemplate.find(query.limit(1000), ReceiveSummary.class, summaryCollection);
             log.info(" executeQueryInSummary :: queryTime :: "+(System.currentTimeMillis()-startTime));
         }
-        System.out.println(receiveSummaries);
         return receiveSummaries;
     }
 
@@ -417,8 +416,13 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     private void enrichQueryParams(Map<String, String> allRequestParams, List<FinancialTxnResponseData> financialTxnResponseDataList) {
         if (CollectionUtils.isNotEmpty(financialTxnResponseDataList)) {
+            Integer storeNumber =
+                    (financialTxnResponseDataList.get(0).getOrigStoreNbr() == null ||
+                            financialTxnResponseDataList.get(0).getOrigStoreNbr() == 0)
+                    ? financialTxnResponseDataList.get(0).getStoreNumber() :
+                            financialTxnResponseDataList.get(0).getOrigStoreNbr();
             allRequestParams.put("locationNumber",
-                    String.valueOf(financialTxnResponseDataList.get(0).getOrigStoreNbr()));
+                    String.valueOf(storeNumber));
         }
     }
 
