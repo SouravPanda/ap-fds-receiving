@@ -15,7 +15,6 @@ import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryCosmosDBParamete
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLineParameters;
 import com.walmart.finance.ap.fds.receiving.response.*;
-import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestCombinations;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -31,14 +30,12 @@ import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -134,9 +131,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     }
 
     private List<ReceiveSummary> getSummaryData(Map<String, String> allRequestParams) {
-        if (!allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())) {
-            throw new BadRequestException("Please provide 'locationNumber'");
-        }
         Query query = searchCriteriaForGet(allRequestParams);
         log.info("queryForSummaryResponse :: Query is " + query);
         return executeQueryInSummary(query);
@@ -176,7 +170,11 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             dynamicQuery.addCriteria(purchaseOrderNumberCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTNUMBERS))) {
-            Criteria poReceiveIdCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVEID.getParameterName()).in(paramMap.get(ReceivingConstants.RECEIPTNUMBERS).split(","));
+            String[] receiptNbrs = paramMap.get(ReceivingConstants.RECEIPTNUMBERS).split(",");
+            for(int i = 0; i<receiptNbrs.length; i++) {
+                receiptNbrs[i] = String.valueOf(Long.parseLong(receiptNbrs[i]));
+            }
+            Criteria poReceiveIdCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVEID.getParameterName()).in(receiptNbrs);
             dynamicQuery.addCriteria(poReceiveIdCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.DEPARTMENTNUMBER))) {
@@ -217,7 +215,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             receiveSummaries = mongoTemplate.find(query.limit(1000), ReceiveSummary.class, summaryCollection);
             log.info(" executeQueryInSummary :: queryTime :: "+(System.currentTimeMillis()-startTime));
         }
-        System.out.println(receiveSummaries);
         return receiveSummaries;
     }
 
@@ -359,9 +356,57 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     @Override
     public ReceivingResponse getInfoSeviceDataV1(Map<String, String> allRequestParams) {
+        List<ReceivingInfoResponseV1> receivingInfoResponses;
         List<FinancialTxnResponseData> financialTxnResponseDataList = financialTxnIntegrationService.getFinancialTxnDetails(allRequestParams);
-        List<ReceivingInfoResponseV1> receivingInfoResponses =
-                getReceivingInfoResponseV1s(allRequestParams, financialTxnResponseDataList);
+
+        if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.INVOICEID.getQueryParam()) ||
+                allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam())) {
+            /*
+            As the request has InvoiceId/InvoiceNumber,
+            we need response from Fin Trans response to get Receiving Info
+             */
+            if (financialTxnResponseDataList.isEmpty()) {
+                throw new NotFoundException("Financial Transaction data not found for given search criteria.");
+            } else {
+                receivingInfoResponses = getDataForFinancialTxnV1(financialTxnResponseDataList, allRequestParams);
+                if (CollectionUtils.isEmpty(receivingInfoResponses)) {
+                    throw new NotFoundException("Receiving data not found for given search criteria.");
+                }
+            }
+        } else {
+
+            /*
+            As the request has parameters which are available in Receiving,
+            we can get response from 'Fin Trans' and 'Receiving Info' independently
+             */
+            enrichQueryParams(allRequestParams, financialTxnResponseDataList);
+            receivingInfoResponses = getDataWoFinancialTxnV1(allRequestParams);
+            if (CollectionUtils.isEmpty(receivingInfoResponses)) {
+                throw new NotFoundException("Receiving data not found for given search criteria.");
+            } else {
+                Map<String, ReceivingInfoResponseV1> receivingInfoResponseV1Map =
+                        getReceivingInfoMap(receivingInfoResponses);
+                for (FinancialTxnResponseData financialTxnResponseData : financialTxnResponseDataList) {
+                    Integer storeNumber = (financialTxnResponseData.getOrigStoreNbr() == null || financialTxnResponseData.getOrigStoreNbr() == 0)
+                            ? financialTxnResponseData.getStoreNumber() : financialTxnResponseData.getOrigStoreNbr();
+                    String id = (financialTxnResponseData.getPurchaseOrderId() == null ? 0 :
+                            financialTxnResponseData.getPurchaseOrderId())
+                            + ReceivingConstants.PIPE_SEPARATOR
+                            + (StringUtils.isEmpty(financialTxnResponseData.getReceiveId()) ? "0" :
+                            Long.valueOf(financialTxnResponseData.getReceiveId())) + ReceivingConstants.PIPE_SEPARATOR
+                            + (storeNumber == null ? 0 : storeNumber) + ReceivingConstants.PIPE_SEPARATOR
+                            + (financialTxnResponseData.getReceivingDate() == null ? "0" :
+                            financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
+
+                    ReceivingInfoResponseV1 receivingInfoResponseV1 = receivingInfoResponseV1Map.get(id);
+                    if (receivingInfoResponseV1 != null) {
+                        updateReceivingInfoResponseV1(financialTxnResponseData, receivingInfoResponseV1);
+                    }
+                }
+                receivingInfoResponses = new ArrayList<>(receivingInfoResponseV1Map.values());
+            }
+        }
+
         ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setData(receivingInfoResponses);
         successMessage.setSuccess(true);
@@ -369,33 +414,16 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         return successMessage;
     }
 
-    private List<ReceivingInfoResponseV1> getReceivingInfoResponseV1s(Map<String, String> allRequestParams,
-                                                                      List<FinancialTxnResponseData> financialTxnResponseDataList) {
-        List<ReceivingInfoResponseV1> receivingInfoResponses;
-        if (financialTxnResponseDataList.isEmpty()) {
-            /*Financial Trans Fallback*/
-            switch (ReceivingInfoRequestCombinations.valueOf(allRequestParams.get("scenario")) ) {
-                case INVOICEID :
-                case VENDORNUMBER_LOCATIONNUMBER_INVOICENUMBER:
-                case LOCATIONNUMBER_INVOICENUMBER_RECEIPTDATESTART_RECEIPTDATEEND:
-                case VENDORNUMBER_PURCHASEORDERNUMBER_INVOICENUMBER:
-                    throw new NotFoundException("Financial Transaction data not found for given search criteria.");
-
-                default:
-                    if (!allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())) {
-                       throw new BadRequestException("Financial Transaction data not found for given search. " ,
-                                "Please try providing 'locationNumber' as well");
-                    }
-                    receivingInfoResponses = getDataWoFinancialTxnV1(allRequestParams);
-
-            }
-        } else {
-            receivingInfoResponses = getDataForFinancialTxnV1(financialTxnResponseDataList, allRequestParams);
+    private void enrichQueryParams(Map<String, String> allRequestParams, List<FinancialTxnResponseData> financialTxnResponseDataList) {
+        if (CollectionUtils.isNotEmpty(financialTxnResponseDataList)) {
+            Integer storeNumber =
+                    (financialTxnResponseDataList.get(0).getOrigStoreNbr() == null ||
+                            financialTxnResponseDataList.get(0).getOrigStoreNbr() == 0)
+                    ? financialTxnResponseDataList.get(0).getStoreNumber() :
+                            financialTxnResponseDataList.get(0).getOrigStoreNbr();
+            allRequestParams.put("locationNumber",
+                    String.valueOf(storeNumber));
         }
-        if (CollectionUtils.isEmpty(receivingInfoResponses)) {
-            throw new NotFoundException("Receiving data not found for given search criteria.", "please enter valid query parameters");
-        }
-        return receivingInfoResponses;
     }
 
     private List<ReceivingInfoResponseV1> getDataForFinancialTxnV1(List<FinancialTxnResponseData> financialTxnResponseDataList, Map<String, String> allRequestParams) {
@@ -415,99 +443,56 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     private List<ReceivingInfoResponseV1> getDataWoFinancialTxnV1(Map<String, String> allRequestParams) {
         List<ReceivingInfoResponseV1> receivingInfoResponses = new ArrayList<>();
         List<ReceiveSummary> receiveSummaries = getSummaryData(allRequestParams);
-        if (CollectionUtils.isNotEmpty(receiveSummaries)) {
-            List<ReceivingLine> lineResponseList = getLineData(receiveSummaries.get(0), allRequestParams);
-            List<FreightResponse> freightResponseList = getFreightData(receiveSummaries.get(0));
-            ReceivingInfoResponseV1 receivingInfoResponseV1 = conversionToReceivingInfoV1(receiveSummaries.get(0), null,
-                    lineResponseList, freightResponseList, allRequestParams);
-            receivingInfoResponses.add(receivingInfoResponseV1);
+        for (ReceiveSummary receiveSummary : receiveSummaries) {
+            if (CollectionUtils.isNotEmpty(receiveSummaries)) {
+                List<ReceivingLine> lineResponseList = getLineData(receiveSummary, allRequestParams);
+                List<FreightResponse> freightResponseList = getFreightData(receiveSummary);
+                ReceivingInfoResponseV1 receivingInfoResponseV1 = conversionToReceivingInfoV1(receiveSummary, null,
+                        lineResponseList, freightResponseList, allRequestParams);
+                receivingInfoResponses.add(receivingInfoResponseV1);
+            }
         }
         return receivingInfoResponses;
+    }
+
+    private Map<String, ReceivingInfoResponseV1> getReceivingInfoMap(List<ReceivingInfoResponseV1> receivingInfoResponseV1List) {
+
+        Map<String, ReceivingInfoResponseV1> receivingInfoResponseV1Map = new HashMap<>();
+        for (ReceivingInfoResponseV1 receivingInfoResponseV1 : receivingInfoResponseV1List) {
+
+            String id = (receivingInfoResponseV1.getPurchaseOrderId() == null ? 0 :
+                    receivingInfoResponseV1.getPurchaseOrderId())
+                    + ReceivingConstants.PIPE_SEPARATOR
+                    + (receivingInfoResponseV1.getReceiveId() == null ? "0" :
+                    Long.valueOf(receivingInfoResponseV1.getReceiveId()))
+                    + ReceivingConstants.PIPE_SEPARATOR
+                    + (receivingInfoResponseV1.getOrigStoreNbr() == null ? 0 :
+                    receivingInfoResponseV1.getOrigStoreNbr())
+                    + ReceivingConstants.PIPE_SEPARATOR
+                    + (receivingInfoResponseV1.getParentReceivingDate().isEqual(LocalDate.of(1970,1,1)) ? "0" :
+                    receivingInfoResponseV1.getParentReceivingDate());
+            receivingInfoResponseV1Map.put(id, receivingInfoResponseV1);
+        }
+        return receivingInfoResponseV1Map;
+
     }
 
     private ReceivingInfoResponseV1 conversionToReceivingInfoV1(ReceiveSummary receiveSummary, FinancialTxnResponseData financialTxnResponseData, List<ReceivingLine> lineResponseList, List<FreightResponse> freightResponseList, Map<String, String> allRequestParams) {
         ReceivingInfoResponseV1 receivingInfoResponseV1 = new ReceivingInfoResponseV1();
         if (financialTxnResponseData != null) {
-            receivingInfoResponseV1.setAuthorizedBy(financialTxnResponseData.getAuthorizedBy());
-            receivingInfoResponseV1.setAuthorizedDate(financialTxnResponseData.getAuthorizedDate() != null ?
-                    financialTxnResponseData.getAuthorizedDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate() : null);
-            receivingInfoResponseV1.setDepartmentNumber(financialTxnResponseData.getDepartmentNumber());
-            receivingInfoResponseV1.setDivisionNumber(financialTxnResponseData.getDivisionNumber());
-            receivingInfoResponseV1.setVendorNumber(financialTxnResponseData.getVendorNumber());
-            receivingInfoResponseV1.setMemo(financialTxnResponseData.getMemo());
-            receivingInfoResponseV1.setVendorName(financialTxnResponseData.getVendorName());
-            receivingInfoResponseV1.setParentReceivingNbr(financialTxnResponseData.getParentReceivingNbr());
-            receivingInfoResponseV1.setParentReceivingStoreNbr(financialTxnResponseData.getParentReceivingStoreNbr());
-            receivingInfoResponseV1.setParentReceivingDate(financialTxnResponseData.getParentReceivingDate() != null ?
-                    financialTxnResponseData.getParentReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate() : null);
-            receivingInfoResponseV1.setParentPurchaseOrderId(financialTxnResponseData.getParentPurchaseOrderId());
-            receivingInfoResponseV1.setInvoiceId(financialTxnResponseData.getInvoiceId());
-            receivingInfoResponseV1.setInvoiceNumber(financialTxnResponseData.getInvoiceNumber());
-            // Version V1 additional fields
-            receivingInfoResponseV1.setTransactionId(financialTxnResponseData.getTransactionId());
-            receivingInfoResponseV1.setTxnSeqNbr(financialTxnResponseData.getTxnSeqNbr());
-            receivingInfoResponseV1.setF6ASeqNbr(financialTxnResponseData.getF6ASeqNbr());
-            receivingInfoResponseV1.setTransactionNbr(financialTxnResponseData.getTransactionNbr());
-            receivingInfoResponseV1.setCountryCode(financialTxnResponseData.getCountryCode());
-            receivingInfoResponseV1.setApCompanyId(financialTxnResponseData.getApCompanyId());
-            receivingInfoResponseV1.setTxnRetailAmt(financialTxnResponseData.getTxnRetailAmt());
-            receivingInfoResponseV1.setTxnCostAmt(financialTxnResponseData.getTotalCostAmount());
-            receivingInfoResponseV1.setTxnDiscountAmt(financialTxnResponseData.getTxnDiscountAmt());
-            receivingInfoResponseV1.setTxnAllowanceAmt(financialTxnResponseData.getTxnAllowanceAmt());
-            receivingInfoResponseV1.setVendorDeptNbr(financialTxnResponseData.getDepartmentNumber());
-            receivingInfoResponseV1.setPostDate(financialTxnResponseData.getPostDate() == null ? null : financialTxnResponseData.getPostDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
-            receivingInfoResponseV1.setDueDate(financialTxnResponseData.getDueDate() == null ? null : financialTxnResponseData.getDueDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
-            receivingInfoResponseV1.setPoNbr(financialTxnResponseData.getPoNumber());
-            receivingInfoResponseV1.setTransactionDate(financialTxnResponseData.getTransactionDate() == null ? null : financialTxnResponseData.getTransactionDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
-            receivingInfoResponseV1.setClaimNbr(financialTxnResponseData.getClaimNbr());
-            receivingInfoResponseV1.setAccountNbr(financialTxnResponseData.getAccountNbr());
-            receivingInfoResponseV1.setDeductTypeCode(financialTxnResponseData.getDeductTypeCode());
-            receivingInfoResponseV1.setTxnBatchNbr(financialTxnResponseData.getTxnBatchNbr());
-            receivingInfoResponseV1.setTxnControlNbr(financialTxnResponseData.getTxnControlNbr());
-            receivingInfoResponseV1.setDeliveryNoteId(financialTxnResponseData.getDeliveryNoteId());
-            receivingInfoResponseV1.setOrigStoreNbr(financialTxnResponseData.getOrigStoreNbr());
-            receivingInfoResponseV1.setOrigDivNbr(financialTxnResponseData.getOrigDivNbr());
-            receivingInfoResponseV1.setPoDcNbr(financialTxnResponseData.getPoDcNbr());
-            receivingInfoResponseV1.setPoTypeCode(financialTxnResponseData.getPoTypeCode());
-            receivingInfoResponseV1.setPoDeptNbr(financialTxnResponseData.getPoDeptNbr());
-            receivingInfoResponseV1.setOffsetAccountNbr(financialTxnResponseData.getOffsetAccountNbr());
-            receivingInfoResponseV1.setGrocinvoiceInd(financialTxnResponseData.getGrocinvoiceInd());
-            receivingInfoResponseV1.setMatchDate(financialTxnResponseData.getMatchDate() == null ? null : financialTxnResponseData.getMatchDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
-            receivingInfoResponseV1.setProcessStatusCode(financialTxnResponseData.getProcessStatusCode());
-            receivingInfoResponseV1.setInvoiceFinTransProcessLogs(
-                    CollectionUtils.isEmpty(financialTxnResponseData.getInvoiceFinTransProcessLogs()) ? null : financialTxnResponseData.getInvoiceFinTransProcessLogs().stream().map(t ->
-                            new InvoiceFinTransProcessLogs(
-                                    t.getActionIndicator(),
-                                    t.getMemoComments(),
-                                    t.getProcessStatusCode(),
-                                    t.getProcessStatusTimestamp() == null ? null : t.getProcessStatusTimestamp().toInstant().atZone(ZoneId.of("GMT")).toLocalDate(),
-                                    t.getStatusUserId()))
-                            .collect(Collectors.toList()));
-            receivingInfoResponseV1.setInvoiceFinTransAdjustLogs(
-                    CollectionUtils.isEmpty(financialTxnResponseData.getInvoiceFinTransAdjustLogs()) ? null : financialTxnResponseData.getInvoiceFinTransAdjustLogs().stream().map(t ->
-                            new InvoiceFinTransAdjustLogs(t.getAdjustmentNbr(), t.getCostAdjustAmt(),
-                                    t.getCreateTs() == null ? null : t.getCreateTs().toInstant().atZone(ZoneId.of("GMT")).toLocalDate(),
-                                    t.getCreateUserId(),
-                                    t.getDueDate() == null ? null : t.getDueDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate(),
-                                    t.getOrigTxnCostAmt(),
-                                    t.getPostDate() == null ? null : t.getPostDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate(),
-                                    t.getTransactionDate() == null ? null : t.getTransactionDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate()))
-                            .collect(Collectors.toList()));
-            receivingInfoResponseV1.setInvoiceFinDelNoteChangeLogs(
-                    CollectionUtils.isEmpty(financialTxnResponseData.getInvoiceFinDelNoteChangeLogs()) ? null : financialTxnResponseData.getInvoiceFinDelNoteChangeLogs().stream().map(t ->
-                            new InvoiceFinDelNoteChangeLogs(
-                                    t.getChangeTimestamp() == null ? null : t.getChangeTimestamp().toInstant().atZone(ZoneId.of("GMT")).toLocalDate(),
-                                    t.getChangeUserId()
-                                    , t.getDeliveryNoteId()
-                                    , t.getOrgDelNoteId()
-                            ))
-                            .collect(Collectors.toList()));
+            updateReceivingInfoResponseV1(financialTxnResponseData, receivingInfoResponseV1);
         } else {
             if(NumberUtils.isDigits(receiveSummary.getDepartmentNumber())) {
                 receivingInfoResponseV1.setDepartmentNumber(Integer.parseInt(receiveSummary.getDepartmentNumber()));
             }
             receivingInfoResponseV1.setDivisionNumber(receiveSummary.getBaseDivisionNumber());
             receivingInfoResponseV1.setVendorNumber(receiveSummary.getVendorNumber());
+            if (receivingInfoResponseV1.getOrigStoreNbr() == null ) {
+                receivingInfoResponseV1.setOrigStoreNbr(receiveSummary.getStoreNumber());
+            }
+            if (receivingInfoResponseV1.getParentReceivingDate() == null ) {
+                receivingInfoResponseV1.setParentReceivingDate(receiveSummary.getReceivingDate());
+            }
         }
         receivingInfoResponseV1.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ? new Long(lineResponseList.size()) : 0);
         receivingInfoResponseV1.setCarrierCode(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getCarrierCode() : null);
@@ -522,6 +507,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponseV1.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());
         receivingInfoResponseV1.setBottleDepositAmount(receiveSummary.getBottleDepositAmount());
         receivingInfoResponseV1.setControlSequenceNumber(receiveSummary.getControlSequenceNumber());
+        receivingInfoResponseV1.setReceiveId(Long.parseLong(receiveSummary.getReceiveId()));
         receivingInfoResponseV1.setReceiptStatus(receiveSummary.getBusinessStatusCode() != null ? receiveSummary.getBusinessStatusCode().toString() : null);
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()))
                 && allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()).equalsIgnoreCase("Y")) {
@@ -529,6 +515,83 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             receivingInfoResponseV1.setReceivingInfoLineResponses(lineInfoList);
         }
         return receivingInfoResponseV1;
+    }
+
+    private void updateReceivingInfoResponseV1(FinancialTxnResponseData financialTxnResponseData, ReceivingInfoResponseV1 receivingInfoResponseV1) {
+        receivingInfoResponseV1.setAuthorizedBy(financialTxnResponseData.getAuthorizedBy());
+        receivingInfoResponseV1.setAuthorizedDate(financialTxnResponseData.getAuthorizedDate() != null ?
+                financialTxnResponseData.getAuthorizedDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate() : null);
+        receivingInfoResponseV1.setDepartmentNumber(financialTxnResponseData.getDepartmentNumber());
+        receivingInfoResponseV1.setDivisionNumber(financialTxnResponseData.getDivisionNumber());
+        receivingInfoResponseV1.setVendorNumber(financialTxnResponseData.getVendorNumber());
+        receivingInfoResponseV1.setMemo(financialTxnResponseData.getMemo());
+        receivingInfoResponseV1.setVendorName(financialTxnResponseData.getVendorName());
+        receivingInfoResponseV1.setParentReceivingNbr(financialTxnResponseData.getParentReceivingNbr());
+        receivingInfoResponseV1.setParentReceivingStoreNbr(financialTxnResponseData.getParentReceivingStoreNbr());
+        receivingInfoResponseV1.setParentReceivingDate(financialTxnResponseData.getParentReceivingDate() != null ?
+                financialTxnResponseData.getParentReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate() : null);
+        receivingInfoResponseV1.setParentPurchaseOrderId(financialTxnResponseData.getParentPurchaseOrderId());
+        receivingInfoResponseV1.setInvoiceId(financialTxnResponseData.getInvoiceId());
+        receivingInfoResponseV1.setInvoiceNumber(financialTxnResponseData.getInvoiceNumber());
+        // Version V1 additional fields
+        receivingInfoResponseV1.setTransactionId(financialTxnResponseData.getTransactionId());
+        receivingInfoResponseV1.setTxnSeqNbr(financialTxnResponseData.getTxnSeqNbr());
+        receivingInfoResponseV1.setF6ASeqNbr(financialTxnResponseData.getF6ASeqNbr());
+        receivingInfoResponseV1.setTransactionNbr(financialTxnResponseData.getTransactionNbr());
+        receivingInfoResponseV1.setCountryCode(financialTxnResponseData.getCountryCode());
+        receivingInfoResponseV1.setApCompanyId(financialTxnResponseData.getApCompanyId());
+        receivingInfoResponseV1.setTxnRetailAmt(financialTxnResponseData.getTxnRetailAmt());
+        receivingInfoResponseV1.setTxnCostAmt(financialTxnResponseData.getTotalCostAmount());
+        receivingInfoResponseV1.setTxnDiscountAmt(financialTxnResponseData.getTxnDiscountAmt());
+        receivingInfoResponseV1.setTxnAllowanceAmt(financialTxnResponseData.getTxnAllowanceAmt());
+        receivingInfoResponseV1.setVendorDeptNbr(financialTxnResponseData.getDepartmentNumber());
+        receivingInfoResponseV1.setPostDate(financialTxnResponseData.getPostDate() == null ? null : financialTxnResponseData.getPostDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
+        receivingInfoResponseV1.setDueDate(financialTxnResponseData.getDueDate() == null ? null : financialTxnResponseData.getDueDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
+        receivingInfoResponseV1.setPoNbr(financialTxnResponseData.getPoNumber());
+        receivingInfoResponseV1.setTransactionDate(financialTxnResponseData.getTransactionDate() == null ? null : financialTxnResponseData.getTransactionDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
+        receivingInfoResponseV1.setClaimNbr(financialTxnResponseData.getClaimNbr());
+        receivingInfoResponseV1.setAccountNbr(financialTxnResponseData.getAccountNbr());
+        receivingInfoResponseV1.setDeductTypeCode(financialTxnResponseData.getDeductTypeCode());
+        receivingInfoResponseV1.setTxnBatchNbr(financialTxnResponseData.getTxnBatchNbr());
+        receivingInfoResponseV1.setTxnControlNbr(financialTxnResponseData.getTxnControlNbr());
+        receivingInfoResponseV1.setDeliveryNoteId(financialTxnResponseData.getDeliveryNoteId());
+        receivingInfoResponseV1.setOrigStoreNbr(financialTxnResponseData.getOrigStoreNbr());
+        receivingInfoResponseV1.setOrigDivNbr(financialTxnResponseData.getOrigDivNbr());
+        receivingInfoResponseV1.setPoDcNbr(financialTxnResponseData.getPoDcNbr());
+        receivingInfoResponseV1.setPoTypeCode(financialTxnResponseData.getPoTypeCode());
+        receivingInfoResponseV1.setPoDeptNbr(financialTxnResponseData.getPoDeptNbr());
+        receivingInfoResponseV1.setOffsetAccountNbr(financialTxnResponseData.getOffsetAccountNbr());
+        receivingInfoResponseV1.setGrocinvoiceInd(financialTxnResponseData.getGrocinvoiceInd());
+        receivingInfoResponseV1.setMatchDate(financialTxnResponseData.getMatchDate() == null ? null : financialTxnResponseData.getMatchDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
+        receivingInfoResponseV1.setProcessStatusCode(financialTxnResponseData.getProcessStatusCode());
+        receivingInfoResponseV1.setInvoiceFinTransProcessLogs(
+                CollectionUtils.isEmpty(financialTxnResponseData.getInvoiceFinTransProcessLogs()) ? null : financialTxnResponseData.getInvoiceFinTransProcessLogs().stream().map(t ->
+                        new InvoiceFinTransProcessLogs(
+                                t.getActionIndicator(),
+                                t.getMemoComments(),
+                                t.getProcessStatusCode(),
+                                t.getProcessStatusTimestamp() == null ? null : t.getProcessStatusTimestamp().toInstant().atZone(ZoneId.of("GMT")).toLocalDate(),
+                                t.getStatusUserId()))
+                        .collect(Collectors.toList()));
+        receivingInfoResponseV1.setInvoiceFinTransAdjustLogs(
+                CollectionUtils.isEmpty(financialTxnResponseData.getInvoiceFinTransAdjustLogs()) ? null : financialTxnResponseData.getInvoiceFinTransAdjustLogs().stream().map(t ->
+                        new InvoiceFinTransAdjustLogs(t.getAdjustmentNbr(), t.getCostAdjustAmt(),
+                                t.getCreateTs() == null ? null : t.getCreateTs().toInstant().atZone(ZoneId.of("GMT")).toLocalDate(),
+                                t.getCreateUserId(),
+                                t.getDueDate() == null ? null : t.getDueDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate(),
+                                t.getOrigTxnCostAmt(),
+                                t.getPostDate() == null ? null : t.getPostDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate(),
+                                t.getTransactionDate() == null ? null : t.getTransactionDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate()))
+                        .collect(Collectors.toList()));
+        receivingInfoResponseV1.setInvoiceFinDelNoteChangeLogs(
+                CollectionUtils.isEmpty(financialTxnResponseData.getInvoiceFinDelNoteChangeLogs()) ? null : financialTxnResponseData.getInvoiceFinDelNoteChangeLogs().stream().map(t ->
+                        new InvoiceFinDelNoteChangeLogs(
+                                t.getChangeTimestamp() == null ? null : t.getChangeTimestamp().toInstant().atZone(ZoneId.of("GMT")).toLocalDate(),
+                                t.getChangeUserId()
+                                , t.getDeliveryNoteId()
+                                , t.getOrgDelNoteId()
+                        ))
+                        .collect(Collectors.toList()));
     }
     /*************************** Version 1 Methods ***********************************/
 

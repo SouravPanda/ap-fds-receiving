@@ -183,7 +183,7 @@ public class ReceivingInfoControllerTest {
                 , LocalDate.of(2018, 11, 23), LocalDate.of(2018, 12, 23), "6854748957", LocalDate.of(2018, 11, 24), 0, 538,
                 0, 0, "0", "del123", 6479,
                 7, 6479, 20, 64, 640, "N",
-                null, 10,
+                null, 10, 666666L,
                 invoiceFinTransProcessLogs, invoiceFinTransAdjustLogs, invoiceFinDelNoteChangeLogs, lineResponses);
         List<ReceivingInfoResponseV1> list = new ArrayList<ReceivingInfoResponseV1>() {
             {

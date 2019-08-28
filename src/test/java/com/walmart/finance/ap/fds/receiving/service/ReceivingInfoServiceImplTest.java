@@ -339,7 +339,7 @@ public class ReceivingInfoServiceImplTest {
                 , null, null, "6854748957", null, 0, 538,
                 0, 0, "0", "del123", 6479,
                 7, 6479, 20, 64, 640, "N",
-                null, 10,
+                null, 10, 666666L,
                 invoiceFinTransProcessLogsResponse, invoiceFinTransAdjustLogsResponse, invoiceFinDelNoteChangeLogsResponse, lineResponses);
         List<ReceivingInfoResponseV1> list = new ArrayList<ReceivingInfoResponseV1>() {
             {
@@ -354,7 +354,6 @@ public class ReceivingInfoServiceImplTest {
         allRequestParams.put(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam(), "Y");
         allRequestParams.put(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam(), "123");
         allRequestParams.put(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam(), "Y");
-        System.out.println(receivingInfoService);
         //ReceivingResponse result = receivingInfoService.getInfoSeviceDataV1(allRequestParams);
         //compareResultsV1(list, result.getData());
     }
@@ -409,7 +408,7 @@ public class ReceivingInfoServiceImplTest {
         receivingInfoService.getInfoSeviceDataV1(allRequestParams);
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test(expected = NotFoundException.class)
     public void formulateIdReceiptEndDateBeforeStartDateException() {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(724201901), null, null, null,
                 397646, 18, -5743.12, 640, "6854748957", "ID123",
@@ -423,7 +422,7 @@ public class ReceivingInfoServiceImplTest {
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
         when(financialTxnIntegrationService.getFinancialTxnDetails(Mockito.anyMap())).thenReturn(financialTxnResponseDataList);
-        when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(null);
+        when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(new ArrayList<>());
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(null);
         when(mongoTemplate.find(Mockito.any(Query.class), eq(FreightResponse.class), Mockito.any())).thenReturn(null);
         // Testing method
