@@ -2,6 +2,7 @@ package com.walmart.finance.ap.fds.receiving.integrations;
 
 import com.google.common.base.Enums;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
+import com.walmart.finance.ap.fds.receiving.exception.FinancialTransException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestCombinations;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
@@ -22,6 +23,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.ws.rs.InternalServerErrorException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,8 +68,8 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
         try {
             response = restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class);
         } catch (HttpStatusCodeException e) {
-            log.error(ExceptionUtils.getStackTrace(e));
-            throw new NotFoundException("Financial Transaction data not found for given search criteria.");
+            log.error("Failed to get response from Financial Transaction.", e);
+            throw new FinancialTransException("Failed to get response from Financial Transaction.");
         }
         if (response != null && response.getBody() != null && CollectionUtils.isNotEmpty(response.getBody().getFinancialTxnResponseDataList())) {
             financialTxnResponseDataList = response.getBody().getFinancialTxnResponseDataList();
@@ -79,6 +81,10 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
 
     private String makeUrl(Map<String, String> allRequestParams) {
         Map<String, String> allRequestParamsClone = new HashMap<>(allRequestParams);
+
+        //Removing 'Transaction Type' from params as it is not applicable for Financial Transactions
+        allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.TRANSACTIONTYPE.getQueryParam());
+
         String url = financialTxnBaseUrl + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam()) + financialTxnBaseEndpoint;
         ReceivingInfoRequestCombinations combination = ReceivingInfoRequestCombinations.valueOf(allRequestParamsClone.remove("scenario"));
         switch (combination) {

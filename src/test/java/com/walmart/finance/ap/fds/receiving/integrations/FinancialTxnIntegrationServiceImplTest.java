@@ -1,7 +1,7 @@
 package com.walmart.finance.ap.fds.receiving.integrations;
 
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
-import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
+import com.walmart.finance.ap.fds.receiving.exception.FinancialTransException;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestCombinations;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import org.junit.Before;
@@ -10,7 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.*;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
@@ -20,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class FinancialTxnIntegrationServiceImplTest {
@@ -136,7 +134,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         org.assertj.core.api.Assertions.assertThat(receivingInfoResponses.get(0)).isEqualToComparingFieldByFieldRecursively(result.get(0));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test(expected = FinancialTransException.class)
     public void httpStatusCodeException() {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987", "USER",
