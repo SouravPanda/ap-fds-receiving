@@ -57,7 +57,6 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
     @Value("${financialTxn.authorizationKey}")
     private String financialTxnAuthorizationKey;
 
-
     @Getter
     @Setter
     @Value("${financialTxn.authorizationValue}")
