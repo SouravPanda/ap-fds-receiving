@@ -3,13 +3,12 @@ package com.walmart.finance.ap.fds.receiving.integrations;
 import com.google.common.base.Enums;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.exception.FinancialTransException;
-import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestCombinations;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.ws.rs.InternalServerErrorException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,11 +61,19 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
         requestHeaders.set(ReceivingConstants.WM_CONSUMER, consumerId);
         requestHeaders.set(ReceivingConstants.WMAPIKEY, clientId);
         HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
-        List<FinancialTxnResponseData> financialTxnResponseDataList =  new ArrayList<>();
+        HttpHeaders basicAuthHeader = new HttpHeaders() {{
+            String auth = "fdservices" + ":" + "fdservices";
+            byte[] encodedAuth = Base64.encodeBase64(
+                    auth.getBytes(Charset.forName("US-ASCII")));
+            String authHeader = "Basic " + new String(encodedAuth);
+            set("Authorization", authHeader);
+        }};
+        HttpEntity<String> basicAuthEntity = new HttpEntity<>(basicAuthHeader);
+        List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         String url = makeUrl(allRequestParams);
         ResponseEntity<FinancialTxnResponse> response;
         try {
-            response = restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class);
+            response = restTemplate.exchange(url, HttpMethod.GET, basicAuthEntity, FinancialTxnResponse.class);
         } catch (HttpStatusCodeException e) {
             log.error("Failed to get response from Financial Transaction.", e);
             throw new FinancialTransException("Failed to get response from Financial Transaction.");
@@ -81,10 +88,8 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
 
     private String makeUrl(Map<String, String> allRequestParams) {
         Map<String, String> allRequestParamsClone = new HashMap<>(allRequestParams);
-
         //Removing 'Transaction Type' from params as it is not applicable for Financial Transactions
         allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.TRANSACTIONTYPE.getQueryParam());
-
         String url = financialTxnBaseUrl + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam()) + financialTxnBaseEndpoint;
         ReceivingInfoRequestCombinations combination = ReceivingInfoRequestCombinations.valueOf(allRequestParamsClone.remove("scenario"));
         switch (combination) {
