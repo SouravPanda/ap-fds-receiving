@@ -52,6 +52,17 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
     @Value("${financialTxn.base.endpoint}")
     private String financialTxnBaseEndpoint;
 
+    @Getter
+    @Setter
+    @Value("${financialTxn.authorizationKey}")
+    private String financialTxnAuthorizationKey;
+
+
+    @Getter
+    @Setter
+    @Value("${financialTxn.authorizationValue}")
+    private String financialTxnAuthorizationValue;
+
     @Autowired
     RestTemplate restTemplate;
 
@@ -62,7 +73,7 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
         requestHeaders.set(ReceivingConstants.WMAPIKEY, clientId);
         HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
         HttpHeaders basicAuthHeader = new HttpHeaders() {{
-            String auth = "fdservices" + ":" + "fdservices";
+            String auth = financialTxnAuthorizationKey + ":" + financialTxnAuthorizationValue;
             byte[] encodedAuth = Base64.encodeBase64(
                     auth.getBytes(Charset.forName("US-ASCII")));
             String authHeader = "Basic " + new String(encodedAuth);
