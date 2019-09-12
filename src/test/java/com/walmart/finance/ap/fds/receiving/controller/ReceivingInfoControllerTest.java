@@ -49,7 +49,7 @@ public class ReceivingInfoControllerTest {
 
     @Test
     public void getReceivingInfo() throws Exception {
-        ReceivingInfoLineResponse receivingInfoLineResponse = new ReceivingInfoLineResponse(new Long(30006), 1, 3777,
+        ReceivingInfoLineResponse receivingInfoLineResponse = new ReceivingInfoLineResponse("30006", 1, 3777,
                 2, 33.0,
                 33.84, 2, 0,
                 "N", "0000047875883980",
@@ -61,7 +61,7 @@ public class ReceivingInfoControllerTest {
         };
         ReceivingInfoResponse response = new ReceivingInfoResponse("USER", LocalDate.of(2019, 03, 14), null,
                 "0", 1, 99, 1, new Long(1), 3669,
-                new Long(999403403), LocalDate.of(2019, 03, 14), new Long(30006),
+                new Long(999403403), LocalDate.of(2019, 03, 14), "30006",
                 " ", 0.0, 0.0, null, 495742, "Memo",
                 0.0, 0, "USER", "1223",
                 "3669", null, "999403403", 411276735,
@@ -97,7 +97,7 @@ public class ReceivingInfoControllerTest {
                                 "\"locationNumber\": 3669,\n" +
                                 "\"purchaseOrderId\": 999403403,\n" +
                                 "\"receiptDate\": \"2019-03-14\",\n" +
-                                "\"receiptNumber\": 30006,\n" +
+                                "\"receiptNumber\": \"30006\",\n" +
                                 "\"receiptStatus\": \" \",\n" +
                                 "\"totalCostAmount\": 0,\n" +
                                 "\"totalRetailAmount\": 0,\n" +
@@ -115,7 +115,7 @@ public class ReceivingInfoControllerTest {
                                 "\"invoiceNumber\": \"411276735\",\n" +
                                 "\"receivingLine\": [\n" +
                                 "{\n" +
-                                "\"receiptNumber\": 30006,\n" +
+                                "\"receiptNumber\": \"30006\",\n" +
                                 "\"receiptLineNumber\": 1,\n" +
                                 "\"itemNumber\": 3777,\n" +
                                 "\"quantity\": 2,\n" +
@@ -146,7 +146,7 @@ public class ReceivingInfoControllerTest {
                 add(new ReceiveMDSResponse(1, 2, 400, "02"));
             }
         };
-        ReceivingInfoLineResponse receivingInfoLineResponse = new ReceivingInfoLineResponse(new Long(110950), 2, 575486609,
+        ReceivingInfoLineResponse receivingInfoLineResponse = new ReceivingInfoLineResponse("110950", 2, 575486609,
                 2, 30.0,
                 30.09, 2, 0,
                 "N", "0000047875883989",
@@ -293,7 +293,7 @@ public class ReceivingInfoControllerTest {
                                 "            ],\n" +
                                 "            \"receivingLine\": [\n" +
                                 "                {\n" +
-                                "                    \"receiptNumber\": 110950,\n" +
+                                "                    \"receiptNumber\": \"110950\",\n" +
                                 "                    \"receiptLineNumber\": 2,\n" +
                                 "                    \"itemNumber\": 575486609,\n" +
                                 "                    \"quantity\": 2,\n" +
