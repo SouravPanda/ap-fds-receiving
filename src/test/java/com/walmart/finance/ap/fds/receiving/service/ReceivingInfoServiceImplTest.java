@@ -53,7 +53,7 @@ public class ReceivingInfoServiceImplTest {
     @Test
     public void getSevice() {
         // Financial Txn mocking
-        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 999403403, "30006", 3669,
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 999403403, "0000030006", 3669,
                 495742, 1, 9.0, 7777, "99987", "USER",
                 null, "USER", "1223", 1828926897, "000000004147570", "Memo",
                 "3669", null, "999403403", null
@@ -105,7 +105,7 @@ public class ReceivingInfoServiceImplTest {
             {
                 add(new ReceivingInfoResponse("USER", null, "ARFW",
                         "4665267", 7777, 99, 1, new Long(1), 3669,
-                        new Long(999403403), LocalDate.of(2019, 03, 14), new Long(30006),
+                        new Long(999403403), LocalDate.of(2019, 03, 14), "0000030006",
                         "A", 0.0, 99.0, "972035", 495742, "Memo",
                         0.0, 0, "USER", "1223",
                         "3669", null, "999403403", 1828926897,
@@ -126,7 +126,7 @@ public class ReceivingInfoServiceImplTest {
     @Test
     public void getSeviceWithLineResponse() {
         // Financial Txn mocking
-        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 999403403, "30006", 3669,
+        FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 999403403, "0000030006", 3669,
                 495742, 1, 9.0, 7777, "99987", "USER",
                 null, "USER", "1223", 1828926897, "000000004147570", "Memo",
                 "3669", null, "999403403", null
@@ -175,7 +175,7 @@ public class ReceivingInfoServiceImplTest {
         // Receiving Info Response Creation
         List<ReceivingInfoLineResponse> receivingInfoLineResponses = new ArrayList<ReceivingInfoLineResponse>() {
             {
-                add(new ReceivingInfoLineResponse(new Long(30006), 1, 3777, 7, 30.0,
+                add(new ReceivingInfoLineResponse("0000030006", 1, 3777, 7, 30.0,
                         40.0, 7, 6,
                         "N", "1122",
                         "NSW CRASH TRNF", "LL", "ww", 1, "1.9", null
@@ -186,7 +186,7 @@ public class ReceivingInfoServiceImplTest {
             {
                 add(new ReceivingInfoResponse("USER", null, "ARFW",
                         "4665267", 7777, 99, 1, new Long(1), 3669,
-                        new Long(999403403), LocalDate.of(2019, 03, 14), new Long(30006),
+                        new Long(999403403), LocalDate.of(2019, 03, 14), "0000030006",
                         "A", 0.0, 99.0, "972035", 495742, "Memo",
                         0.0, 0, "USER", "1223",
                         "3669", null, "999403403", 1828926897,
@@ -302,7 +302,7 @@ public class ReceivingInfoServiceImplTest {
                 add(new ReceiveMDSResponse(1, 2, 400, "02"));
             }
         };
-        ReceivingInfoLineResponse receivingInfoLineResponse = new ReceivingInfoLineResponse(new Long(110950), 2, 575486609,
+        ReceivingInfoLineResponse receivingInfoLineResponse = new ReceivingInfoLineResponse("110950", 2, 575486609,
                 2, 30.0,
                 30.09, 2, 0,
                 "N", "0000047875883989",
@@ -330,7 +330,7 @@ public class ReceivingInfoServiceImplTest {
         };
         ReceivingInfoResponseV1 response = new ReceivingInfoResponseV1("ID123", null, null,
                 "0", 640, 99, 18, new Long(1), 6479,
-                new Long(972515962), LocalDate.of(2019, 01, 01), new Long(110950),
+                new Long(972515962), LocalDate.of(2019, 01, 01), "666666",
                 "A", 0.0, 0.0, null, 397646, null,
                 0.0, 0, "PEPSI MIDAMERICA", "1223",
                 null, null, null, 97166785,
@@ -339,7 +339,7 @@ public class ReceivingInfoServiceImplTest {
                 , null, null, "6854748957", null, 0, 538,
                 0, 0, "0", "del123", 6479,
                 7, 6479, 20, 64, 640, "N",
-                null, 10, 666666L,
+                null, 10, "666666",
                 invoiceFinTransProcessLogsResponse, invoiceFinTransAdjustLogsResponse, invoiceFinDelNoteChangeLogsResponse, lineResponses);
         List<ReceivingInfoResponseV1> list = new ArrayList<ReceivingInfoResponseV1>() {
             {

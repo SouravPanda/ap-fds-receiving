@@ -38,7 +38,7 @@ public class ReceivingInfoResponseV1 {
 
     private LocalDate receiptDate;
 
-    private Long receiptNumber;
+    private String receiptNumber;
 
     private String receiptStatus;
 
@@ -130,7 +130,7 @@ public class ReceivingInfoResponseV1 {
 
     private Integer processStatusCode;
 
-    private Long receiveId;
+    private String receiveId;
 
     @JsonProperty("invoiceFinTransProcessLogs")
     private List<InvoiceFinTransProcessLogs> invoiceFinTransProcessLogs;
