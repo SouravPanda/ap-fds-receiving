@@ -330,7 +330,7 @@ public class ReceivingInfoServiceImplTest {
         };
         ReceivingInfoResponseV1 response = new ReceivingInfoResponseV1("ID123", null, null,
                 "0", 640, 99, 18, new Long(1), 6479,
-                new Long(972515962), LocalDate.of(2019, 01, 01), new Long(110950),
+                new Long(972515962), LocalDate.of(2019, 01, 01), "666666",
                 "A", 0.0, 0.0, null, 397646, null,
                 0.0, 0, "PEPSI MIDAMERICA", "1223",
                 null, null, null, 97166785,
@@ -339,7 +339,7 @@ public class ReceivingInfoServiceImplTest {
                 , null, null, "6854748957", null, 0, 538,
                 0, 0, "0", "del123", 6479,
                 7, 6479, 20, 64, 640, "N",
-                null, 10, 666666L,
+                null, 10, "666666",
                 invoiceFinTransProcessLogsResponse, invoiceFinTransAdjustLogsResponse, invoiceFinDelNoteChangeLogsResponse, lineResponses);
         List<ReceivingInfoResponseV1> list = new ArrayList<ReceivingInfoResponseV1>() {
             {
