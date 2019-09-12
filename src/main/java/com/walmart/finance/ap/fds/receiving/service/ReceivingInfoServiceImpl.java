@@ -300,7 +300,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponse.setLocationNumber(receiveSummary.getStoreNumber());
         receivingInfoResponse.setPurchaseOrderId(receiveSummary.getPurchaseOrderId());
         receivingInfoResponse.setReceiptDate(receiveSummary.getDateReceived().atZone(ZoneId.of("GMT")).toLocalDate());
-        receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ? Long.valueOf(receiveSummary.getReceiveId()) : 0);
+        receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ?
+                        receiveSummary.getReceiveId() : "0");
         receivingInfoResponse.setTotalCostAmount(receiveSummary.getTotalCostAmount());
         receivingInfoResponse.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());
         receivingInfoResponse.setBottleDepositAmount(receiveSummary.getBottleDepositAmount());
@@ -316,7 +317,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     private ReceivingInfoLineResponse convertToLineResponse(ReceivingLine receivingLine) {
         ReceivingInfoLineResponse response = new ReceivingInfoLineResponse();
-        response.setReceiptNumber(StringUtils.isNotEmpty(receivingLine.getReceiveId()) ? Long.valueOf(receivingLine.getReceiveId()) : 0);
+        response.setReceiptNumber(StringUtils.isNotEmpty(receivingLine.getReceiveId()) ?
+                        receivingLine.getReceiveId() : "0");
         response.setReceiptLineNumber(receivingLine.getLineSequenceNumber());
         response.setItemNumber(receivingLine.getItemNumber());
         response.setQuantity(receivingLine.getReceivedQuantity());
@@ -377,6 +379,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
              */
             enrichQueryParams(allRequestParams, financialTxnResponseDataList);
             receivingInfoResponses = getDataWoFinancialTxnV1(allRequestParams);
+
             if (CollectionUtils.isEmpty(receivingInfoResponses)) {
                 throw new NotFoundException("Receiving data not found for given search criteria.");
             } else {
