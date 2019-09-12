@@ -11,7 +11,7 @@ public class SpringReceiveApplicationTest {
     @BeforeClass
     public static void setSystemProperty() {
         Properties properties = System.getProperties();
-        properties.setProperty("spring.profiles.active", "dev-us");
+        properties.setProperty("spring.profiles.active", "local");
     }
 
     @AfterClass

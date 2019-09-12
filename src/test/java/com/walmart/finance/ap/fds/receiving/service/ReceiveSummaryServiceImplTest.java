@@ -78,6 +78,8 @@ public class ReceiveSummaryServiceImplTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        receiveSummaryServiceImpl.setMonthsPerShard(1);
+        receiveSummaryServiceImpl.setMonthsToDisplay(12);
     }
 
     @Test

@@ -228,12 +228,12 @@
                     <linuxRuntime>jre8</linuxRuntime>
                 </configuration>
             </plugin>
-            <plugin>
+            <!--<plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.version}</version>
                 <executions>
-                    <!-- Instrumentation executions are added to handle code coverage using Power Mockito -->
+                    &lt;!&ndash; Instrumentation executions are added to handle code coverage using Power Mockito &ndash;&gt;
                     <execution>
                         <id>default-instrument</id>
                         <goals>
@@ -268,7 +268,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
         </plugins>
     </build>
 

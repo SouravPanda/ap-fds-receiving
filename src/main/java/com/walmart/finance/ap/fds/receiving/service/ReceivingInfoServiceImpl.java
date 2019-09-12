@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
+import com.walmart.finance.ap.fds.receiving.common.ReceivingUtils;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
@@ -16,6 +17,7 @@ import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLineParameters;
 import com.walmart.finance.ap.fds.receiving.response.*;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
+import lombok.Setter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -53,6 +55,14 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     @Value("${azure.cosmosdb.collection.freight}")
     private String freightCollection;
+
+    @Setter
+    @Value("${months.per.shard}")
+    private Integer monthsPerShard;
+
+    @Setter
+    @Value("${months.to.display}")
+    private Integer monthsToDisplay;
 
     @Autowired
     MongoTemplate mongoTemplate;
@@ -99,8 +109,11 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     private List<ReceiveSummary> getSummaryData(FinancialTxnResponseData financialTxnResponseData, Map<String, String> allRequestParams) {
         Integer storeNumber = ( financialTxnResponseData.getOrigStoreNbr() == null || financialTxnResponseData.getOrigStoreNbr() == 0)
                 ? financialTxnResponseData.getStoreNumber() : financialTxnResponseData.getOrigStoreNbr();
-        String id = (financialTxnResponseData.getPurchaseOrderId() == null ? 0 : financialTxnResponseData.getPurchaseOrderId()) + ReceivingConstants.PIPE_SEPARATOR
-                + (StringUtils.isEmpty(financialTxnResponseData.getReceiveId()) ? "0" : Long.valueOf(financialTxnResponseData.getReceiveId())) + ReceivingConstants.PIPE_SEPARATOR
+        String id = (financialTxnResponseData.getPurchaseOrderId() == null ? 0 : financialTxnResponseData.getPurchaseOrderId())
+                + ReceivingConstants.PIPE_SEPARATOR
+                + (StringUtils.isEmpty(financialTxnResponseData.getReceiveId()) ? "0" :
+                financialTxnResponseData.getReceiveId())
+                + ReceivingConstants.PIPE_SEPARATOR
                 + (storeNumber == null ? 0 : storeNumber) + ReceivingConstants.PIPE_SEPARATOR
                 + (financialTxnResponseData.getReceivingDate() == null ? "0" : financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
         Query query = new Query();
@@ -164,6 +177,13 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.LOCATIONNUMBER))) {
             Criteria storeNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.STORENUMBER.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.LOCATIONNUMBER)));
             dynamicQuery.addCriteria(storeNumberCriteria);
+
+            Criteria partitionKeyCriteria =
+                    Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD)
+                            .in(ReceivingUtils.getPartitionKeyList(paramMap.get(ReceivingConstants.LOCATIONNUMBER),
+                                    monthsToDisplay, monthsPerShard));
+            dynamicQuery.addCriteria(partitionKeyCriteria);
+
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.PURCHASEORDERNUMBER))) {
             Criteria purchaseOrderNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.PURCHASEORDERNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.PURCHASEORDERNUMBER));
@@ -186,8 +206,11 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             dynamicQuery.addCriteria(vendorNumberCriteria);
         }
         // log.info("query: " + dynamicQuery);
+
         return dynamicQuery;
     }
+
+
 
     /**
      * Put the null check for date parameter befor calling this method
@@ -393,7 +416,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                             financialTxnResponseData.getPurchaseOrderId())
                             + ReceivingConstants.PIPE_SEPARATOR
                             + (StringUtils.isEmpty(financialTxnResponseData.getReceiveId()) ? "0" :
-                            Long.valueOf(financialTxnResponseData.getReceiveId())) + ReceivingConstants.PIPE_SEPARATOR
+                            financialTxnResponseData.getReceiveId()) + ReceivingConstants.PIPE_SEPARATOR
                             + (storeNumber == null ? 0 : storeNumber) + ReceivingConstants.PIPE_SEPARATOR
                             + (financialTxnResponseData.getReceivingDate() == null ? "0" :
                             financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
@@ -464,7 +487,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                     receivingInfoResponseV1.getPurchaseOrderId())
                     + ReceivingConstants.PIPE_SEPARATOR
                     + (receivingInfoResponseV1.getReceiveId() == null ? "0" :
-                    Long.valueOf(receivingInfoResponseV1.getReceiveId()))
+                    receivingInfoResponseV1.getReceiveId())
                     + ReceivingConstants.PIPE_SEPARATOR
                     + (receivingInfoResponseV1.getOrigStoreNbr() == null ? 0 :
                     receivingInfoResponseV1.getOrigStoreNbr())
@@ -507,7 +530,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponseV1.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());
         receivingInfoResponseV1.setBottleDepositAmount(receiveSummary.getBottleDepositAmount());
         receivingInfoResponseV1.setControlSequenceNumber(receiveSummary.getControlSequenceNumber());
-        receivingInfoResponseV1.setReceiveId(Long.parseLong(receiveSummary.getReceiveId()));
+        receivingInfoResponseV1.setReceiveId(receiveSummary.getReceiveId());
         receivingInfoResponseV1.setReceiptStatus(receiveSummary.getBusinessStatusCode() != null ? receiveSummary.getBusinessStatusCode().toString() : null);
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()))
                 && allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()).equalsIgnoreCase("Y")) {

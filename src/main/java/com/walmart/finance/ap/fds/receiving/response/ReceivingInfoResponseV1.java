@@ -130,7 +130,7 @@ public class ReceivingInfoResponseV1 {
 
     private Integer processStatusCode;
 
-    private Long receiveId;
+    private String receiveId;
 
     @JsonProperty("invoiceFinTransProcessLogs")
     private List<InvoiceFinTransProcessLogs> invoiceFinTransProcessLogs;

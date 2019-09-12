@@ -3,6 +3,7 @@ package com.walmart.finance.ap.fds.receiving.service;
 import com.mongodb.client.result.UpdateResult;
 import com.walmart.finance.ap.fds.receiving.common.DB2SyncStatus;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
+import com.walmart.finance.ap.fds.receiving.common.ReceivingUtils;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
 import com.walmart.finance.ap.fds.receiving.exception.*;
 import com.walmart.finance.ap.fds.receiving.integrations.AdditionalResponse;
@@ -16,6 +17,7 @@ import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryLineValidator;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryValidator;
+import lombok.Setter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -70,6 +72,14 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     @Value("${azure.cosmosdb.collection.freight}")
     private String freightCollection;
+
+    @Setter
+    @Value("${months.per.shard}")
+    private Integer monthsPerShard;
+
+    @Setter
+    @Value("${months.to.display}")
+    private Integer monthsToDisplay;
 
     /**
      * Service layer to get the data based on the requested parameters and return pageable response.
@@ -420,7 +430,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         String id = formulateId(receivingSummaryRequest.getPurchaseOrderId(), receivingSummaryRequest.getReceiptNumber(), receivingSummaryRequest.getLocationNumber().toString(), isWareHouseData ? "0" : receivingSummaryRequest.getReceiptDate().toString());
         Query dynamicQuery = new Query();
         dynamicQuery.addCriteria(Criteria.where(ReceiveSummaryParameters.ID.getParameterName()).is(id));
-        dynamicQuery.addCriteria(Criteria.where(ReceiveSummaryParameters.STORENUMBER.getParameterName()).is(receivingSummaryRequest.getLocationNumber()));
+        addShardKeyQuery(dynamicQuery, String.valueOf(receivingSummaryRequest.getLocationNumber()));
         Update update = new Update();
         update.set(ReceiveSummaryParameters.BUSINESSSTATUSCODE.getParameterName(), receivingSummaryRequest.getBusinessStatusCode().charAt(0));
         update.set(ReceiveSummaryParameters.DATASYNCSTATUS.getParameterName(), DB2SyncStatus.UPDATE_SYNC_INITIATED);
@@ -454,8 +464,8 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         receiveSummaryLineValidator.validateReceiptLineNumber(receivingSummaryLineRequest.getReceiptLineNumber());
         String id = formulateId(receivingSummaryLineRequest.getPurchaseOrderId(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), isWareHouseData ? "0" : receivingSummaryLineRequest.getReceiptDate().toString());
         Query query = new Query();
-        query.addCriteria(Criteria.where(ReceiveSummaryParameters.STORENUMBER.getParameterName()).is(receivingSummaryLineRequest.getLocationNumber()));
         query.addCriteria(Criteria.where(ReceiveSummaryParameters.ID.getParameterName()).is(id));
+        addShardKeyQuery(query, String.valueOf(receivingSummaryLineRequest.getLocationNumber()));
         Update update = new Update();
         update.set(ReceiveSummaryParameters.DATASYNCSTATUS.getParameterName(), DB2SyncStatus.UPDATE_SYNC_INITIATED);
         update.set(ReceiveSummaryParameters.LASTUPDATEDDATE.getParameterName(), LocalDateTime.now());
@@ -473,16 +483,16 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         if (StringUtils.isNotEmpty(receivingSummaryLineRequest.getReceiptLineNumber())) {
             String lineId = id + ReceivingConstants.PIPE_SEPARATOR + receivingSummaryLineRequest.getReceiptLineNumber().toString();
             Query queryForLine = new Query();
-            queryForLine.addCriteria(Criteria.where(ReceivingLineParameters.STORENUMBER.getParameterName()).is(receivingSummaryLineRequest.getLocationNumber()));
             queryForLine.addCriteria(Criteria.where(ReceivingLineParameters.ID.getParameterName()).is(lineId));
+            addShardKeyQuery(queryForLine, String.valueOf(receivingSummaryLineRequest.getLocationNumber()));
             startTime = System.currentTimeMillis();
             ReceivingLine commitedRcvLine = mongoTemplate.findAndModify(queryForLine, updateLine, FindAndModifyOptions.options().returnNew(true), ReceivingLine.class, lineCollection);
             log.info("updateReceiveSummaryAndLine :: updateLineQueryTime :: findAndModify " + (System.currentTimeMillis() - startTime));
 
         } else {
             Query queryForLine = new Query();
-            queryForLine.addCriteria(Criteria.where(ReceivingLineParameters.STORENUMBER.getParameterName()).is(receivingSummaryLineRequest.getLocationNumber()));
             queryForLine.addCriteria(Criteria.where(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).is(id));
+            addShardKeyQuery(queryForLine, String.valueOf(receivingSummaryLineRequest.getLocationNumber()));
             startTime = System.currentTimeMillis();
             UpdateResult updateResult = mongoTemplate.updateMulti(queryForLine, updateLine, ReceivingLine.class, lineCollection);
             long endTime = System.currentTimeMillis();
@@ -501,4 +511,14 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             publisher.publishEvent(receivingSummaryLineRequest);
         return successMessage;
     }
+
+
+    private void addShardKeyQuery(Query query, String keyAttributeValue) {
+        Criteria partitionKeyCriteria =
+                Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD)
+                        .in(ReceivingUtils.getPartitionKeyList(keyAttributeValue,
+                                monthsToDisplay, monthsPerShard));
+        query.addCriteria(partitionKeyCriteria);
+    }
+
 }
