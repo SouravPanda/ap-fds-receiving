@@ -114,6 +114,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 + (StringUtils.isEmpty(financialTxnResponseData.getReceiveId()) ? "0" :
                 financialTxnResponseData.getReceiveId())
                 + ReceivingConstants.PIPE_SEPARATOR
+
                 + (storeNumber == null ? 0 : storeNumber) + ReceivingConstants.PIPE_SEPARATOR
                 + (financialTxnResponseData.getReceivingDate() == null ? "0" : financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
         Query query = new Query();
@@ -190,11 +191,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             dynamicQuery.addCriteria(purchaseOrderNumberCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTNUMBERS))) {
-            String[] receiptNbrs = paramMap.get(ReceivingConstants.RECEIPTNUMBERS).split(",");
-            for(int i = 0; i<receiptNbrs.length; i++) {
-                receiptNbrs[i] = String.valueOf(Long.parseLong(receiptNbrs[i]));
-            }
-            Criteria poReceiveIdCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVEID.getParameterName()).in(receiptNbrs);
+            Criteria poReceiveIdCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVEID.getParameterName()).in(paramMap.get(ReceivingConstants.RECEIPTNUMBERS).split(","));
             dynamicQuery.addCriteria(poReceiveIdCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.DEPARTMENTNUMBER))) {
@@ -327,7 +324,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponse.setLocationNumber(receiveSummary.getStoreNumber());
         receivingInfoResponse.setPurchaseOrderId(receiveSummary.getPurchaseOrderId());
         receivingInfoResponse.setReceiptDate(receiveSummary.getDateReceived().atZone(ZoneId.of("GMT")).toLocalDate());
-        receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ? Long.valueOf(receiveSummary.getReceiveId()) : 0);
+        receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ?
+                        receiveSummary.getReceiveId() : "0");
         receivingInfoResponse.setTotalCostAmount(receiveSummary.getTotalCostAmount());
         receivingInfoResponse.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());
         receivingInfoResponse.setBottleDepositAmount(receiveSummary.getBottleDepositAmount());
@@ -343,7 +341,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     private ReceivingInfoLineResponse convertToLineResponse(ReceivingLine receivingLine) {
         ReceivingInfoLineResponse response = new ReceivingInfoLineResponse();
-        response.setReceiptNumber(StringUtils.isNotEmpty(receivingLine.getReceiveId()) ? Long.valueOf(receivingLine.getReceiveId()) : 0);
+        response.setReceiptNumber(StringUtils.isNotEmpty(receivingLine.getReceiveId()) ?
+                        receivingLine.getReceiveId() : "0");
         response.setReceiptLineNumber(receivingLine.getLineSequenceNumber());
         response.setItemNumber(receivingLine.getItemNumber());
         response.setQuantity(receivingLine.getReceivedQuantity());
@@ -404,6 +403,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
              */
             enrichQueryParams(allRequestParams, financialTxnResponseDataList);
             receivingInfoResponses = getDataWoFinancialTxnV1(allRequestParams);
+
             if (CollectionUtils.isEmpty(receivingInfoResponses)) {
                 throw new NotFoundException("Receiving data not found for given search criteria.");
             } else {
@@ -525,12 +525,14 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponseV1.setLocationNumber(receiveSummary.getStoreNumber());
         receivingInfoResponseV1.setPurchaseOrderId(receiveSummary.getPurchaseOrderId());
         receivingInfoResponseV1.setReceiptDate(receiveSummary.getDateReceived().atZone(ZoneId.of("GMT")).toLocalDate());
-        receivingInfoResponseV1.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ? Long.valueOf(receiveSummary.getReceiveId()) : 0);
+        receivingInfoResponseV1.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ?
+                        receiveSummary.getReceiveId() : "0");
         receivingInfoResponseV1.setTotalCostAmount(receiveSummary.getTotalCostAmount());
         receivingInfoResponseV1.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());
         receivingInfoResponseV1.setBottleDepositAmount(receiveSummary.getBottleDepositAmount());
         receivingInfoResponseV1.setControlSequenceNumber(receiveSummary.getControlSequenceNumber());
-        receivingInfoResponseV1.setReceiveId(receiveSummary.getReceiveId());
+        receivingInfoResponseV1.setReceiveId(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ?
+                receiveSummary.getReceiveId() : "0");
         receivingInfoResponseV1.setReceiptStatus(receiveSummary.getBusinessStatusCode() != null ? receiveSummary.getBusinessStatusCode().toString() : null);
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()))
                 && allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()).equalsIgnoreCase("Y")) {

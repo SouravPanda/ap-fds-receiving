@@ -3,13 +3,12 @@ package com.walmart.finance.ap.fds.receiving.integrations;
 import com.google.common.base.Enums;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.exception.FinancialTransException;
-import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestCombinations;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.ws.rs.InternalServerErrorException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +52,16 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
     @Value("${financialTxn.base.endpoint}")
     private String financialTxnBaseEndpoint;
 
+    @Getter
+    @Setter
+    @Value("${financialTxn.authorizationKey}")
+    private String financialTxnAuthorizationKey;
+
+    @Getter
+    @Setter
+    @Value("${financialTxn.authorizationValue}")
+    private String financialTxnAuthorizationValue;
+
     @Autowired
     RestTemplate restTemplate;
 
@@ -62,11 +71,19 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
         requestHeaders.set(ReceivingConstants.WM_CONSUMER, consumerId);
         requestHeaders.set(ReceivingConstants.WMAPIKEY, clientId);
         HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
-        List<FinancialTxnResponseData> financialTxnResponseDataList =  new ArrayList<>();
+        HttpHeaders basicAuthHeader = new HttpHeaders() {{
+            String auth = financialTxnAuthorizationKey + ":" + financialTxnAuthorizationValue;
+            byte[] encodedAuth = Base64.encodeBase64(
+                    auth.getBytes(Charset.forName("US-ASCII")));
+            String authHeader = "Basic " + new String(encodedAuth);
+            set("Authorization", authHeader);
+        }};
+        HttpEntity<String> basicAuthEntity = new HttpEntity<>(basicAuthHeader);
+        List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         String url = makeUrl(allRequestParams);
         ResponseEntity<FinancialTxnResponse> response;
         try {
-            response = restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class);
+            response = restTemplate.exchange(url, HttpMethod.GET, basicAuthEntity, FinancialTxnResponse.class);
         } catch (HttpStatusCodeException e) {
             log.error("Failed to get response from Financial Transaction.", e);
             throw new FinancialTransException("Failed to get response from Financial Transaction.");
@@ -81,10 +98,8 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
 
     private String makeUrl(Map<String, String> allRequestParams) {
         Map<String, String> allRequestParamsClone = new HashMap<>(allRequestParams);
-
         //Removing 'Transaction Type' from params as it is not applicable for Financial Transactions
         allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.TRANSACTIONTYPE.getQueryParam());
-
         String url = financialTxnBaseUrl + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam()) + financialTxnBaseEndpoint;
         ReceivingInfoRequestCombinations combination = ReceivingInfoRequestCombinations.valueOf(allRequestParamsClone.remove("scenario"));
         switch (combination) {
@@ -104,16 +119,16 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
             case VENDORNUMBER_PURCHASEORDERNUMBER_LOCATIONNUMBER:
                 url += "vendorNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())
                         + "/poNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam())
-                        + "/storeNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam());
+                        + "/origStoreNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam());
                 break;
             case VENDORNUMBER_LOCATIONNUMBER_INVOICENUMBER:
                 url += "vendorNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())
                         + "/invoiceNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam())
-                        + "/storeNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam());
+                        + "/origStoreNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam());
                 break;
             case VENDORNUMBER_LOCATIONNUMBER_RECEIPTNUMBERS:
                 url += "vendorNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())
-                        + "/storeNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
+                        + "/origStoreNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
                         + "/receiptNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.RECEIPTNUMBERS.getQueryParam());
                 break;
             case VENDORNUMBER_PURCHASEORDERID:
@@ -121,15 +136,15 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
                         + "/purchaseOrderId/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.PURCHASEORDERID.getQueryParam());
                 break;
             case LOCATIONNUMBER_PURCHASEORDERNUMBER_RECEIPTDATESTART_RECEIPTDATEEND:
-                url += "storeNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
+                url += "origStoreNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
                         + "/poNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam());
                 break;
             case LOCATIONNUMBER_INVOICENUMBER_RECEIPTDATESTART_RECEIPTDATEEND:
-                url += "storeNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
+                url += "origStoreNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
                         + "/invoiceNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam());
                 break;
             case LOCATIONNUMBER_VENDORNUMBER_RECEIPTDATESTART_RECEIPTDATEEND:
-                url += "storeNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
+                url += "origStoreNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
                         + "/vendorNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam());
                 break;
         }

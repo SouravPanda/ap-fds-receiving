@@ -41,7 +41,7 @@ public class ReceivingInfoResponse {
 
     private LocalDate receiptDate;
 
-    private Long receiptNumber;
+    private String receiptNumber;
 
     private String receiptStatus;
 
