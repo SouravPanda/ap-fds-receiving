@@ -119,16 +119,16 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
             case VENDORNUMBER_PURCHASEORDERNUMBER_LOCATIONNUMBER:
                 url += "vendorNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())
                         + "/poNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam())
-                        + "/storeNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam());
+                        + "/origStoreNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam());
                 break;
             case VENDORNUMBER_LOCATIONNUMBER_INVOICENUMBER:
                 url += "vendorNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())
                         + "/invoiceNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam())
-                        + "/storeNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam());
+                        + "/origStoreNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam());
                 break;
             case VENDORNUMBER_LOCATIONNUMBER_RECEIPTNUMBERS:
                 url += "vendorNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())
-                        + "/storeNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
+                        + "/origStoreNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
                         + "/receiptNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.RECEIPTNUMBERS.getQueryParam());
                 break;
             case VENDORNUMBER_PURCHASEORDERID:
@@ -136,15 +136,15 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
                         + "/purchaseOrderId/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.PURCHASEORDERID.getQueryParam());
                 break;
             case LOCATIONNUMBER_PURCHASEORDERNUMBER_RECEIPTDATESTART_RECEIPTDATEEND:
-                url += "storeNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
+                url += "origStoreNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
                         + "/poNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam());
                 break;
             case LOCATIONNUMBER_INVOICENUMBER_RECEIPTDATESTART_RECEIPTDATEEND:
-                url += "storeNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
+                url += "origStoreNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
                         + "/invoiceNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam());
                 break;
             case LOCATIONNUMBER_VENDORNUMBER_RECEIPTDATESTART_RECEIPTDATEEND:
-                url += "storeNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
+                url += "origStoreNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
                         + "/vendorNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam());
                 break;
         }
