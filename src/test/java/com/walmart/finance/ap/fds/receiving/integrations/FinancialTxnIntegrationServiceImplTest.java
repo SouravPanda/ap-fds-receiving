@@ -171,7 +171,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         };
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
-        String url = financialTxnHost + "US/invoice/financial/transaction/vendorNumber/639050495/poNumber/99987/storeNumber/6302?invoiceNumber=1828926897";
+        String url = financialTxnHost + "US/invoice/financial/transaction/vendorNumber/639050495/poNumber/99987/origStoreNbr/6302?invoiceNumber=1828926897";
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
         requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
@@ -203,7 +203,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
         FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(financialTxnResponseDataList);
-        String url = financialTxnHost + "US/invoice/financial/transaction/vendorNumber/639050495/invoiceNumber/1828926897/storeNumber/6302";
+        String url = financialTxnHost + "US/invoice/financial/transaction/vendorNumber/639050495/invoiceNumber/1828926897/origStoreNbr/6302";
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
         requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
@@ -235,7 +235,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
         FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(financialTxnResponseDataList);
-        String url = financialTxnHost + "US/invoice/financial/transaction/vendorNumber/639050495/storeNumber/6302/receiptNumber/1828926897";
+        String url = financialTxnHost + "US/invoice/financial/transaction/vendorNumber/639050495/origStoreNbr/6302/receiptNumber/1828926897";
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
         requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
@@ -297,7 +297,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
         FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(financialTxnResponseDataList);
-        String url = financialTxnHost + "US/invoice/financial/transaction/storeNumber/6302/poNumber/1828926897";
+        String url = financialTxnHost + "US/invoice/financial/transaction/origStoreNbr/6302/poNumber/1828926897";
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
         requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
@@ -328,7 +328,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
         FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(financialTxnResponseDataList);
-        String url = financialTxnHost + "US/invoice/financial/transaction/storeNumber/6302/invoiceNumber/1828926897";
+        String url = financialTxnHost + "US/invoice/financial/transaction/origStoreNbr/6302/invoiceNumber/1828926897";
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
         requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
@@ -359,7 +359,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
         FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(financialTxnResponseDataList);
-        String url = financialTxnHost + "US/invoice/financial/transaction/storeNumber/6302/vendorNumber/2222";
+        String url = financialTxnHost + "US/invoice/financial/transaction/origStoreNbr/6302/vendorNumber/2222";
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
         requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
@@ -422,7 +422,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         };
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
-        String url = financialTxnHost + "US/invoice/financial/transaction/vendorNumber/639050495/poNumber/99987/storeNumber/6302?invoiceNumber=1828926897";
+        String url = financialTxnHost + "US/invoice/financial/transaction/vendorNumber/639050495/poNumber/99987/origStoreNbr/6302?invoiceNumber=1828926897";
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
         requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
