@@ -53,7 +53,7 @@ public class ReceiveSummaryListenerTest {
 
     @Test
     public void onReceiveSummaryCommitException() {
-        doThrow(JsonProcessingException.class).when(producer).sendToEventHub(Mockito.anyString(), Mockito.anyString());
+        doThrow(JsonProcessingException.class).when(producer).sendSummaryToEventHub(Mockito.anyString(), Mockito.anyString());
         receiveSummaryListener.onReceiveSummaryCommit(mock(ReceivingSummaryRequest.class));
     }
 }

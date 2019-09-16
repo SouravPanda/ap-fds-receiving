@@ -53,7 +53,7 @@ public class ReceiveLineListenerTest {
 
     @Test
     public void onReceiveLineCommitException() {
-        doThrow(JsonProcessingException.class).when(producer).sendToEventHub(Mockito.anyString(), Mockito.anyString());
+        doThrow(JsonProcessingException.class).when(producer).sendSummaryLineToEventHub(Mockito.anyString(), Mockito.anyString());
         receiveLineListener.onReceiveLineCommit(Mockito.any());
     }
 }
