@@ -36,13 +36,13 @@ public class ProducerTest {
     @Test(expected=Exception.class)
     public void sendSummaryToEventHubException() {
         when(customSource.summaryTopic().send(MessageBuilder.withPayload(Mockito.anyString()).build())).thenThrow(Exception.class);
-        producer.sendSummaryToEventHub(Mockito.anyString(), Mockito.anyString());
+        producer.sendSummaryToEventHub("test", "test");
     }
 
     @Test
     public void sendSummaryToEventHub()  {
         when(customSource.summaryTopic()).thenReturn(messageChannel);
         when(messageChannel.send(MessageBuilder.withPayload(Mockito.anyString()).build())).thenReturn(true);
-        producer.sendSummaryToEventHub(Mockito.anyString(), Mockito.anyString());
+        producer.sendSummaryToEventHub("test", "test");
     }
 }

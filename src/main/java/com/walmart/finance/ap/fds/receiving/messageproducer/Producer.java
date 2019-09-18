@@ -36,8 +36,8 @@ public class Producer {
             customSource.summaryTopic().send(MessageBuilder.withPayload(writeToTopic).build());
             log.info("Successfully produced Summary record to event " + topic);
 
-        } catch (Exception e) {
-            log.error("Error Producing summary record to event :" + writeToTopic + e.getMessage() + e.fillInStackTrace() + e.getStackTrace());
+        } catch (Exception ex) {
+            log.error("Error Producing summary record to event :" + writeToTopic + ex);
 
         }
     }
@@ -47,8 +47,8 @@ public class Producer {
             log.info("Inside Receive summaryLine producer ");
             customSource.lineSummaryTopic().send(MessageBuilder.withPayload(writeToTopic).build());
             log.info("Successfully produced summaryLine record to event " + topic);
-        } catch (Exception e) {
-            log.error("Error Producing summaryLine record to event :" + writeToTopic + e.getMessage() + e.fillInStackTrace() + e.getStackTrace());
+        } catch (Exception ex) {
+            log.error("Error Producing summaryLine record to event :" + writeToTopic + ex);
 
         }
     }
