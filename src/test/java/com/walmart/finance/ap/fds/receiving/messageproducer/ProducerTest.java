@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.springframework.cloud.stream.annotation.EnableBinding;
-import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -13,7 +12,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.mockito.Mockito.*;
 
 @EnableBinding(CustomSource.class)
-@EnableKafka
 @RunWith(SpringJUnit4ClassRunner.class)
 public class ProducerTest {
 
