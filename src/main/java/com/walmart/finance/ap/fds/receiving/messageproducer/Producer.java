@@ -1,16 +1,11 @@
 package com.walmart.finance.ap.fds.receiving.messageproducer;
 
-import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * Produces the record to destination topic.
@@ -19,13 +14,9 @@ import java.util.concurrent.TimeUnit;
  * The produces produces record with a sync call to destination event hub.
  * In case of error its logged with the contents.
  */
+@EnableBinding(CustomSource.class)
 @Component
-@EnableAsync
-@AllArgsConstructor
 public class Producer {
-
-    @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate;
 
     public static final Logger log = LoggerFactory.getLogger(Producer.class);
     //TODO The call to Kafka had to be made Async in future.
@@ -34,13 +25,31 @@ public class Producer {
      * @param writeToTopic data to write into topic
      * @param topic
      */
-    @Async
-    public void sendToEventHub(String writeToTopic, String topic) {
+
+    @Autowired
+    private CustomSource customSource;
+
+
+    public void sendSummaryToEventHub(String writeToTopic, String topic) {
         try {
-            SendResult<String, String> result = this.kafkaTemplate.send(topic, writeToTopic).get(10, TimeUnit.SECONDS);
-            log.info("Successfully produced" + writeToTopic + "RESULT DETAILS: DESTINATION EVENT HUB TOPIC" + result.getRecordMetadata().topic() + "DESTINATION EVENT HUB OFFSET" + result.getRecordMetadata().offset() + "RESULT PARTITION" + result.getRecordMetadata().partition());
-        } catch (Exception e) {
-            log.error("Error Processing the details from producer side :" + e.getMessage() + e.fillInStackTrace() + e.getStackTrace() + "Value" + writeToTopic);
+            log.info("Inside Receive Summary producer ");
+            customSource.summaryTopic().send(MessageBuilder.withPayload(writeToTopic).build());
+            log.info("Successfully produced Summary record to event " + topic);
+
+        } catch (Exception ex) {
+            log.error("Error Producing summary record to event :" + writeToTopic + ex);
+
+        }
+    }
+
+    public void sendSummaryLineToEventHub(String writeToTopic, String topic) {
+        try {
+            log.info("Inside Receive summaryLine producer ");
+            customSource.lineSummaryTopic().send(MessageBuilder.withPayload(writeToTopic).build());
+            log.info("Successfully produced summaryLine record to event " + topic);
+        } catch (Exception ex) {
+            log.error("Error Producing summaryLine record to event :" + writeToTopic + ex);
+
         }
     }
 }
