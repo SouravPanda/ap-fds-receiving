@@ -35,5 +35,4 @@ public class ReceivingUtils {
         return partitionKeyBuilder.toString();
 
     }
-
 }
