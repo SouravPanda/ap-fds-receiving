@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingUtils;
+import com.walmart.finance.ap.fds.receiving.config.DefaultValuesConfigProperties;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
@@ -66,6 +67,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     @Autowired
     MongoTemplate mongoTemplate;
+
+    @Autowired
+    private DefaultValuesConfigProperties defaultValuesConfigProperties;
 
     @Autowired
     FinancialTxnIntegrationService financialTxnIntegrationService;
@@ -330,20 +334,28 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             receivingInfoResponse.setInvoiceId(financialTxnResponseData.getInvoiceId());
             receivingInfoResponse.setInvoiceNumber(financialTxnResponseData.getInvoiceNumber());
         }
-        receivingInfoResponse.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ? new Long(lineResponseList.size()) : 0);
-        receivingInfoResponse.setCarrierCode(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getCarrierCode() : null);
-        receivingInfoResponse.setTrailerNumber(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getTrailerNbr() : null);
-        receivingInfoResponse.setControlNumber(receiveSummary.getReceivingControlNumber());
+        receivingInfoResponse.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ?
+                new Long(lineResponseList.size()) : defaultValuesConfigProperties.getLineCount());
+        receivingInfoResponse.setCarrierCode(CollectionUtils.isNotEmpty(freightResponseList)
+                ? freightResponseList.get(0).getCarrierCode() : defaultValuesConfigProperties.getCarrierCode());
+        receivingInfoResponse.setTrailerNumber(CollectionUtils.isNotEmpty(freightResponseList) ?
+                freightResponseList.get(0).getTrailerNbr() : defaultValuesConfigProperties.getTrailerNbr());
+        receivingInfoResponse.setControlNumber(StringUtils.isNotEmpty(receiveSummary.getReceivingControlNumber()) ?
+                receiveSummary.getReceivingControlNumber() : defaultValuesConfigProperties.getReceivingControlNumber());
         receivingInfoResponse.setTransactionType(receiveSummary.getTransactionType());
         receivingInfoResponse.setLocationNumber(receiveSummary.getStoreNumber());
         receivingInfoResponse.setPurchaseOrderId(receiveSummary.getPurchaseOrderId());
         receivingInfoResponse.setReceiptDate(receiveSummary.getDateReceived().atZone(ZoneId.of("GMT")).toLocalDate());
         receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ?
                         receiveSummary.getReceiveId() : "0");
-        receivingInfoResponse.setTotalCostAmount(receiveSummary.getTotalCostAmount());
-        receivingInfoResponse.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());
-        receivingInfoResponse.setBottleDepositAmount(receiveSummary.getBottleDepositAmount());
-        receivingInfoResponse.setControlSequenceNumber(receiveSummary.getControlSequenceNumber());
+        receivingInfoResponse.setTotalCostAmount(receiveSummary.getTotalCostAmount() != null ?
+                receiveSummary.getTotalCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
+        receivingInfoResponse.setTotalRetailAmount(receiveSummary.getTotalRetailAmount() != null ?
+                receiveSummary.getTotalRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
+        receivingInfoResponse.setBottleDepositAmount(receiveSummary.getBottleDepositAmount() != null ?
+                receiveSummary.getBottleDepositAmount() : defaultValuesConfigProperties.getBottleDepositAmount());
+        receivingInfoResponse.setControlSequenceNumber(receiveSummary.getControlSequenceNumber() != null ?
+                receiveSummary.getControlSequenceNumber() : defaultValuesConfigProperties.getControlSequenceNumber());
         receivingInfoResponse.setReceiptStatus(receiveSummary.getBusinessStatusCode() != null ? receiveSummary.getBusinessStatusCode().toString() : null);
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()))
                 && allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()).equalsIgnoreCase("Y")) {
@@ -358,18 +370,28 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         response.setReceiptNumber(StringUtils.isNotEmpty(receivingLine.getReceiveId()) ?
                         receivingLine.getReceiveId() : "0");
         response.setReceiptLineNumber(receivingLine.getLineSequenceNumber());
-        response.setItemNumber(receivingLine.getItemNumber());
-        response.setQuantity(receivingLine.getReceivedQuantity());
-        response.setEachCostAmount(receivingLine.getCostAmount());
-        response.setEachRetailAmount(receivingLine.getRetailAmount());
-        response.setNumberofCasesReceived(receivingLine.getReceivedQuantity());
-        response.setPackQuantity(receivingLine.getQuantity());
-        response.setBottleDepositFlag(receivingLine.getBottleDepositFlag());
-        response.setUpc(receivingLine.getUpcNumber());
+        response.setItemNumber(receivingLine.getItemNumber() != null ? receivingLine.getItemNumber() :
+                defaultValuesConfigProperties.getItemNumber());
+        response.setQuantity(receivingLine.getReceivedQuantity() != null ?
+                receivingLine.getReceivedQuantity() : defaultValuesConfigProperties.getReceivedQuantity() );
+        response.setEachCostAmount(receivingLine.getCostAmount() != null ?
+                receivingLine.getCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
+        response.setEachRetailAmount(receivingLine.getRetailAmount() != null ?
+                receivingLine.getRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
+        response.setNumberofCasesReceived(receivingLine.getReceivedQuantity() != null ?
+                receivingLine.getReceivedQuantity() : defaultValuesConfigProperties.getReceivedQuantity());
+        response.setPackQuantity(receivingLine.getQuantity() != null ?
+                receivingLine.getQuantity() : defaultValuesConfigProperties.getQuantity());
+        response.setBottleDepositFlag(StringUtils.isNotEmpty(receivingLine.getBottleDepositFlag()) ?
+                receivingLine.getBottleDepositFlag() : defaultValuesConfigProperties.getBottleDepositFlag());
+        response.setUpc(StringUtils.isNotEmpty(receivingLine.getUpcNumber()) ? receivingLine.getUpcNumber() :
+                defaultValuesConfigProperties.getUpcNumber());
         response.setItemDescription(receivingLine.getItemDescription());
         response.setUnitOfMeasure(receivingLine.getReceivedQuantityUnitOfMeasureCode());
-        response.setVariableWeightInd(receivingLine.getVariableWeightIndicator());
-        response.setCostMultiple(receivingLine.getCostMultiple());
+        response.setVariableWeightInd(StringUtils.isNotEmpty(receivingLine.getVariableWeightIndicator()) ?
+                receivingLine.getVariableWeightIndicator() : defaultValuesConfigProperties.getVariableWeightIndicator());
+        response.setCostMultiple(receivingLine.getCostMultiple() != null ?
+                receivingLine.getCostMultiple() : defaultValuesConfigProperties.getCostMultiple());
         response.setReceivedWeightQuantity(receivingLine.getReceivedWeightQuantity() == null ? null : receivingLine.getReceivedWeightQuantity().toString());
         if (StringUtils.isNotEmpty(receivingLine.getMerchandises())) {
             JsonObject jsonObject = gson.fromJson(receivingLine.getMerchandises(), JsonObject.class);
@@ -528,31 +550,43 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             updateReceivingInfoResponseV1(financialTxnResponseData, receivingInfoResponseV1);
         } else {
             if(NumberUtils.isDigits(receiveSummary.getDepartmentNumber())) {
-                receivingInfoResponseV1.setDepartmentNumber(Integer.parseInt(receiveSummary.getDepartmentNumber()));
+                receivingInfoResponseV1.setDepartmentNumber(receiveSummary.getDepartmentNumber() != null ?
+                        Integer.parseInt(receiveSummary.getDepartmentNumber()) :
+                        defaultValuesConfigProperties.getDepartmentNumber() );
             }
-            receivingInfoResponseV1.setDivisionNumber(receiveSummary.getBaseDivisionNumber());
+            receivingInfoResponseV1.setDivisionNumber(receiveSummary.getBaseDivisionNumber() != null ?
+                    receiveSummary.getBaseDivisionNumber() : defaultValuesConfigProperties.getBaseDivisionNumber());
             receivingInfoResponseV1.setVendorNumber(receiveSummary.getVendorNumber());
             if (receivingInfoResponseV1.getOrigStoreNbr() == null ) {
                 receivingInfoResponseV1.setOrigStoreNbr(receiveSummary.getStoreNumber());
             }
             if (receivingInfoResponseV1.getParentReceivingDate() == null ) {
-                receivingInfoResponseV1.setParentReceivingDate(receiveSummary.getReceivingDate());
+                receivingInfoResponseV1.setParentReceivingDate(receiveSummary.getReceivingDate() != null ?
+                        receiveSummary.getReceivingDate() : LocalDate.ofEpochDay(0));
             }
         }
-        receivingInfoResponseV1.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ? new Long(lineResponseList.size()) : 0);
-        receivingInfoResponseV1.setCarrierCode(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getCarrierCode() : null);
-        receivingInfoResponseV1.setTrailerNumber(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getTrailerNbr() : null);
-        receivingInfoResponseV1.setControlNumber(receiveSummary.getReceivingControlNumber());
+        receivingInfoResponseV1.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ?
+                new Long(lineResponseList.size()) : defaultValuesConfigProperties.getLineCount());
+        receivingInfoResponseV1.setCarrierCode(CollectionUtils.isNotEmpty(freightResponseList) ?
+                freightResponseList.get(0).getCarrierCode() : defaultValuesConfigProperties.getCarrierCode());
+        receivingInfoResponseV1.setTrailerNumber(CollectionUtils.isNotEmpty(freightResponseList) ?
+                freightResponseList.get(0).getTrailerNbr() : defaultValuesConfigProperties.getTrailerNbr());
+        receivingInfoResponseV1.setControlNumber(StringUtils.isNotEmpty(receiveSummary.getReceivingControlNumber()) ?
+                receiveSummary.getReceivingControlNumber() : defaultValuesConfigProperties.getReceivingControlNumber());
         receivingInfoResponseV1.setTransactionType(receiveSummary.getTransactionType());
         receivingInfoResponseV1.setLocationNumber(receiveSummary.getStoreNumber());
         receivingInfoResponseV1.setPurchaseOrderId(receiveSummary.getPurchaseOrderId());
         receivingInfoResponseV1.setReceiptDate(receiveSummary.getDateReceived().atZone(ZoneId.of("GMT")).toLocalDate());
         receivingInfoResponseV1.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ?
                         receiveSummary.getReceiveId() : "0");
-        receivingInfoResponseV1.setTotalCostAmount(receiveSummary.getTotalCostAmount());
-        receivingInfoResponseV1.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());
-        receivingInfoResponseV1.setBottleDepositAmount(receiveSummary.getBottleDepositAmount());
-        receivingInfoResponseV1.setControlSequenceNumber(receiveSummary.getControlSequenceNumber());
+        receivingInfoResponseV1.setTotalCostAmount(receiveSummary.getTotalCostAmount() != null ?
+                receiveSummary.getTotalCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
+        receivingInfoResponseV1.setTotalRetailAmount(receiveSummary.getTotalRetailAmount() != null ?
+                receiveSummary.getTotalRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
+        receivingInfoResponseV1.setBottleDepositAmount(receiveSummary.getBottleDepositAmount() != null ?
+                receiveSummary.getBottleDepositAmount() : defaultValuesConfigProperties.getBottleDepositAmount());
+        receivingInfoResponseV1.setControlSequenceNumber(receiveSummary.getControlSequenceNumber()!= null ?
+                receiveSummary.getControlSequenceNumber() : defaultValuesConfigProperties.getControlSequenceNumber());
         receivingInfoResponseV1.setReceiveId(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ?
                 receiveSummary.getReceiveId() : "0");
         receivingInfoResponseV1.setReceiptStatus(receiveSummary.getBusinessStatusCode() != null ? receiveSummary.getBusinessStatusCode().toString() : null);

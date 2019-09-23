@@ -4,6 +4,7 @@ import com.mongodb.client.result.UpdateResult;
 import com.walmart.finance.ap.fds.receiving.common.DB2SyncStatus;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingUtils;
+import com.walmart.finance.ap.fds.receiving.config.DefaultValuesConfigProperties;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
 import com.walmart.finance.ap.fds.receiving.exception.*;
 import com.walmart.finance.ap.fds.receiving.integrations.AdditionalResponse;
@@ -62,6 +63,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     ReceiveSummaryLineValidator receiveSummaryLineValidator;
 
     @Autowired
+    private DefaultValuesConfigProperties defaultValuesConfigProperties;
+
+    @Autowired
     private ApplicationEventPublisher publisher;
 
     @Value("${azure.cosmosdb.collection.summary}")
@@ -118,7 +122,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                             if (responseMap.get(t.get_id()) != null) {
                                 response.setCarrierCode(responseMap.get(t.get_id()).getCarrierCode());
                                 response.setTrailerNumber(responseMap.get(t.get_id()).getTrailerNumber());
-                                response.setLineCount(responseMap.get(t.get_id()).getLineCount());
+                                response.setLineCount(responseMap.get(t.get_id()).getLineCount() == null ?
+                                        defaultValuesConfigProperties.getLineCount() :
+                                        responseMap.get(t.get_id()).getLineCount() );
                                 response.setTotalCostAmount(responseMap.get(t.get_id()).getTotalCostAmount());
                                 response.setTotalRetailAmount(responseMap.get(t.get_id()).getTotalRetailAmount());
                             }
@@ -335,8 +341,10 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                     response.setTotalCostAmount(lineResponseList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount()).sum());
                     response.setTotalRetailAmount(lineResponseList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
                 } else {
-                    response.setTotalCostAmount(receiveSummary.getTotalCostAmount());
-                    response.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());
+                    response.setTotalCostAmount(receiveSummary.getTotalCostAmount() != null ?
+                            receiveSummary.getTotalCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
+                    response.setTotalRetailAmount(receiveSummary.getTotalRetailAmount() != null ?
+                            receiveSummary.getTotalRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
                 }
                 response.setLineCount((long) lineList.size());
                 getFreightResponse(receiveSummary, response);
@@ -345,8 +353,10 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 iterator.remove();
             } else {
                 getFreightResponse(receiveSummary, response);
-                response.setTotalCostAmount(receiveSummary.getTotalCostAmount());
-                response.setTotalRetailAmount(receiveSummary.getTotalRetailAmount());
+                response.setTotalCostAmount(receiveSummary.getTotalCostAmount()!= null ?
+                        receiveSummary.getTotalCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
+                response.setTotalRetailAmount(receiveSummary.getTotalRetailAmount() != null ?
+                        receiveSummary.getTotalRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
                 lineResponseMap.put(receiveSummary.get_id(), response);
             }
         }
@@ -370,8 +380,10 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     private void getFreightResponse(ReceiveSummary receiveSummary, AdditionalResponse additionalResponse) {
         List<FreightResponse> receiveFreights = makeQueryForFreight(receiveSummary);
         if (CollectionUtils.isNotEmpty(receiveFreights)) {
-            additionalResponse.setCarrierCode(receiveFreights.get(0).getCarrierCode() == null ? null : receiveFreights.get(0).getCarrierCode().trim());
-            additionalResponse.setTrailerNumber(receiveFreights.get(0).getTrailerNbr() == null ? null : receiveFreights.get(0).getTrailerNbr().trim());
+            additionalResponse.setCarrierCode(receiveFreights.get(0).getCarrierCode() == null ?
+                    defaultValuesConfigProperties.getCarrierCode() : receiveFreights.get(0).getCarrierCode().trim());
+            additionalResponse.setTrailerNumber(receiveFreights.get(0).getTrailerNbr() == null ?
+                    defaultValuesConfigProperties.getTrailerNbr() : receiveFreights.get(0).getTrailerNbr().trim());
         }
     }
 
