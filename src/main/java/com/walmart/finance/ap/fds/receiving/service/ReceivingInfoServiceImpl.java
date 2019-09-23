@@ -126,6 +126,13 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         if (storeNumber != null) {
             criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.STORENUMBER.getParameterName()).is(storeNumber);
             query.addCriteria(criteriaDefinition);
+
+
+            Criteria partitionKeyCriteria =
+                    Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD)
+                            .in(ReceivingUtils.getPartitionKeyList(String.valueOf(storeNumber),
+                                    monthsToDisplay, monthsPerShard));
+            query.addCriteria(partitionKeyCriteria);
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()))
                 && StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()))) {
