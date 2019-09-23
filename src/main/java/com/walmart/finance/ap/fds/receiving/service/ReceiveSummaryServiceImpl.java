@@ -112,7 +112,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                             if (responseMap.get(t.get_id()) != null) {
                                 response.setCarrierCode(responseMap.get(t.get_id()).getCarrierCode());
                                 response.setTrailerNumber(responseMap.get(t.get_id()).getTrailerNumber());
-                                response.setLineCount(responseMap.get(t.get_id()).getLineCount());
+                                response.setLineCount(responseMap.get(t.get_id()).getLineCount() == null ?
+                                        defaultValuesConfigProperties.getLineCount() :
+                                        responseMap.get(t.get_id()).getLineCount() );
                                 response.setTotalCostAmount(responseMap.get(t.get_id()).getTotalCostAmount());
                                 response.setTotalRetailAmount(responseMap.get(t.get_id()).getTotalRetailAmount());
                             }
@@ -368,8 +370,10 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     private void getFreightResponse(ReceiveSummary receiveSummary, AdditionalResponse additionalResponse) {
         List<FreightResponse> receiveFreights = makeQueryForFreight(receiveSummary);
         if (CollectionUtils.isNotEmpty(receiveFreights)) {
-            additionalResponse.setCarrierCode(receiveFreights.get(0).getCarrierCode() == null ? null : receiveFreights.get(0).getCarrierCode().trim());
-            additionalResponse.setTrailerNumber(receiveFreights.get(0).getTrailerNbr() == null ? null : receiveFreights.get(0).getTrailerNbr().trim());
+            additionalResponse.setCarrierCode(receiveFreights.get(0).getCarrierCode() == null ?
+                    defaultValuesConfigProperties.getCarrierCode() : receiveFreights.get(0).getCarrierCode().trim());
+            additionalResponse.setTrailerNumber(receiveFreights.get(0).getTrailerNbr() == null ?
+                    defaultValuesConfigProperties.getTrailerNbr() : receiveFreights.get(0).getTrailerNbr().trim());
         }
     }
 

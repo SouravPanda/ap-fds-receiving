@@ -296,9 +296,12 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             receivingInfoResponse.setInvoiceId(financialTxnResponseData.getInvoiceId());
             receivingInfoResponse.setInvoiceNumber(financialTxnResponseData.getInvoiceNumber());
         }
-        receivingInfoResponse.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ? new Long(lineResponseList.size()) : 0);
-        receivingInfoResponse.setCarrierCode(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getCarrierCode() : null);
-        receivingInfoResponse.setTrailerNumber(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getTrailerNbr() : null);
+        receivingInfoResponse.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ?
+                new Long(lineResponseList.size()) : defaultValuesConfigProperties.getLineCount());
+        receivingInfoResponse.setCarrierCode(CollectionUtils.isNotEmpty(freightResponseList)
+                ? freightResponseList.get(0).getCarrierCode() : defaultValuesConfigProperties.getCarrierCode());
+        receivingInfoResponse.setTrailerNumber(CollectionUtils.isNotEmpty(freightResponseList) ?
+                freightResponseList.get(0).getTrailerNbr() : defaultValuesConfigProperties.getTrailerNbr());
         receivingInfoResponse.setControlNumber(StringUtils.isNotEmpty(receiveSummary.getReceivingControlNumber()) ?
                 receiveSummary.getReceivingControlNumber() : defaultValuesConfigProperties.getReceivingControlNumber());
         receivingInfoResponse.setTransactionType(receiveSummary.getTransactionType());
@@ -329,12 +332,18 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         response.setReceiptNumber(StringUtils.isNotEmpty(receivingLine.getReceiveId()) ?
                         receivingLine.getReceiveId() : "0");
         response.setReceiptLineNumber(receivingLine.getLineSequenceNumber());
-        response.setItemNumber(receivingLine.getItemNumber());
-        response.setQuantity(receivingLine.getReceivedQuantity());
-        response.setEachCostAmount(receivingLine.getCostAmount());
-        response.setEachRetailAmount(receivingLine.getRetailAmount());
-        response.setNumberofCasesReceived(receivingLine.getReceivedQuantity());
-        response.setPackQuantity(receivingLine.getQuantity());
+        response.setItemNumber(receivingLine.getItemNumber() != null ? receivingLine.getItemNumber() :
+                defaultValuesConfigProperties.getItemNumber());
+        response.setQuantity(receivingLine.getReceivedQuantity() != null ?
+                receivingLine.getReceivedQuantity() : defaultValuesConfigProperties.getReceivedQuantity() );
+        response.setEachCostAmount(receivingLine.getCostAmount() != null ?
+                receivingLine.getCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
+        response.setEachRetailAmount(receivingLine.getRetailAmount() != null ?
+                receivingLine.getRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
+        response.setNumberofCasesReceived(receivingLine.getReceivedQuantity() != null ?
+                receivingLine.getReceivedQuantity() : defaultValuesConfigProperties.getReceivedQuantity());
+        response.setPackQuantity(receivingLine.getQuantity() != null ?
+                receivingLine.getQuantity() : defaultValuesConfigProperties.getQuantity());
         response.setBottleDepositFlag(StringUtils.isNotEmpty(receivingLine.getBottleDepositFlag()) ?
                 receivingLine.getBottleDepositFlag() : defaultValuesConfigProperties.getBottleDepositFlag());
         response.setUpc(StringUtils.isNotEmpty(receivingLine.getUpcNumber()) ? receivingLine.getUpcNumber() :
@@ -517,9 +526,12 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                         receiveSummary.getReceivingDate() : LocalDate.ofEpochDay(0));
             }
         }
-        receivingInfoResponseV1.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ? new Long(lineResponseList.size()) : 0);
-        receivingInfoResponseV1.setCarrierCode(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getCarrierCode() : null);
-        receivingInfoResponseV1.setTrailerNumber(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getTrailerNbr() : null);
+        receivingInfoResponseV1.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ?
+                new Long(lineResponseList.size()) : defaultValuesConfigProperties.getLineCount());
+        receivingInfoResponseV1.setCarrierCode(CollectionUtils.isNotEmpty(freightResponseList) ?
+                freightResponseList.get(0).getCarrierCode() : defaultValuesConfigProperties.getCarrierCode());
+        receivingInfoResponseV1.setTrailerNumber(CollectionUtils.isNotEmpty(freightResponseList) ?
+                freightResponseList.get(0).getTrailerNbr() : defaultValuesConfigProperties.getTrailerNbr());
         receivingInfoResponseV1.setControlNumber(StringUtils.isNotEmpty(receiveSummary.getReceivingControlNumber()) ?
                 receiveSummary.getReceivingControlNumber() : defaultValuesConfigProperties.getReceivingControlNumber());
         receivingInfoResponseV1.setTransactionType(receiveSummary.getTransactionType());

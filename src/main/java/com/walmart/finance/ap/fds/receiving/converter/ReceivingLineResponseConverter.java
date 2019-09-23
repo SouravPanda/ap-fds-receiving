@@ -35,18 +35,23 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
 
         response.setDivisionNumber(receivingLine.getBaseDivisionNumber() != null ?
                 receivingLine.getBaseDivisionNumber() : defaultValuesConfigProperties.getBaseDivisionNumber());
-        response.setEachCostAmount(receivingLine.getCostAmount());
         response.setReceiptNumber(Long.valueOf(receivingLine.getReceiveId()));
         response.setReceiptLineNumber(receivingLine.getLineNumber() != null ?
                 receivingLine.getLineNumber() : defaultValuesConfigProperties.getLineNumber());
-        response.setItemNumber(receivingLine.getItemNumber());
+        response.setItemNumber(receivingLine.getItemNumber() != null ?
+                receivingLine.getItemNumber() : defaultValuesConfigProperties.getItemNumber());
         response.setVendorNumber(receivingLine.getVendorNumber());
-        response.setQuantity(receivingLine.getReceivedQuantity());
-        response.setEachCostAmount(receivingLine.getCostAmount());
-        response.setEachRetailAmount(receivingLine.getRetailAmount());
-        response.setPackQuantity(receivingLine.getQuantity());
+        response.setQuantity(receivingLine.getReceivedQuantity() != null ?
+                receivingLine.getReceivedQuantity() : defaultValuesConfigProperties.getReceivedQuantity());
+        response.setEachCostAmount(receivingLine.getCostAmount() != null ?
+                receivingLine.getCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
+        response.setEachRetailAmount(receivingLine.getRetailAmount() != null ?
+                receivingLine.getRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
+        response.setPackQuantity(receivingLine.getQuantity() != null ?
+                receivingLine.getQuantity() : defaultValuesConfigProperties.getQuantity());
 
-        response.setNumberofCasesReceived(receivingLine.getReceivedQuantity());
+        response.setNumberofCasesReceived(receivingLine.getReceivedQuantity() != null ?
+                receivingLine.getReceivedQuantity() : defaultValuesConfigProperties.getReceivedQuantity());
 //        response.setVendorStockNumber(0);
 //        response.setBottleDepositAmount(0);
 
@@ -68,7 +73,8 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
         //TODO Need to check  it is present in DB2?
        response.setUnitOfMeasure(receivingLine.getReceivedQuantityUnitOfMeasureCode());
 
-        response.setReceivedWeightQuantity(receivingLine.getReceivedWeightQuantity()== null  ?  null : receivingLine.getReceivedWeightQuantity().toString());
+        response.setReceivedWeightQuantity(receivingLine.getReceivedWeightQuantity()== null  ?
+                defaultValuesConfigProperties.getReceivedWeightQuantity() : receivingLine.getReceivedWeightQuantity());
         // TODO default to 99 if not there
 
         response.setTransactionType(receivingLine.getTransactionType());

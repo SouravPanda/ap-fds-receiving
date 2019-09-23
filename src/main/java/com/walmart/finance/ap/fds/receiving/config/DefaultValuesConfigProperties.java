@@ -44,4 +44,20 @@ public class DefaultValuesConfigProperties {
 
     private String variableWeightIndicator;
 
+    private Integer itemNumber;
+
+    private Integer quantity;
+
+    private Integer receivedQuantity;
+
+    private Double receivedWeightQuantity;
+
+    private Integer lineCount;
+
+    private String carrierCode;
+
+    private String trailerNbr;
+
+
+
 }

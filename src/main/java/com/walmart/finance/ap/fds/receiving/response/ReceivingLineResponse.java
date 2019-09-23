@@ -31,7 +31,7 @@ public class ReceivingLineResponse {
 //    private String itemDescription;
     private String unitOfMeasure;
     private String variableWeightInd;
-    private String receivedWeightQuantity;
+    private Double receivedWeightQuantity;
     private Integer transactionType;
     private String controlNumber;
     private Integer locationNumber;
