@@ -506,7 +506,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                     + (receivingInfoResponseV1.getOrigStoreNbr() == null ? 0 :
                     receivingInfoResponseV1.getOrigStoreNbr())
                     + ReceivingConstants.PIPE_SEPARATOR
-                    + (receivingInfoResponseV1.getParentReceivingDate().isEqual(LocalDate.of(1970,1,1)) ? "0" :
+                    + (receivingInfoResponseV1.getParentReceivingDate() == null ? "0" :
                     receivingInfoResponseV1.getParentReceivingDate());
             receivingInfoResponseV1Map.put(id, receivingInfoResponseV1);
         }
