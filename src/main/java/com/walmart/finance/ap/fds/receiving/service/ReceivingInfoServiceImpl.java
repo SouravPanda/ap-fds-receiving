@@ -423,6 +423,10 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             } else {
                 Map<String, ReceivingInfoResponseV1> receivingInfoResponseV1Map =
                         getReceivingInfoMap(receivingInfoResponses);
+
+                List<ReceivingInfoResponseV1> receivingInfoResponsesList = new ArrayList<>();
+                List<String> receivingInfoResponsesKeyList = new ArrayList<>();
+
                 for (FinancialTxnResponseData financialTxnResponseData : financialTxnResponseDataList) {
                     Integer storeNumber = (financialTxnResponseData.getOrigStoreNbr() == null || financialTxnResponseData.getOrigStoreNbr() == 0)
                             ? financialTxnResponseData.getStoreNumber() : financialTxnResponseData.getOrigStoreNbr();
@@ -438,9 +442,13 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                     ReceivingInfoResponseV1 receivingInfoResponseV1 = receivingInfoResponseV1Map.get(id);
                     if (receivingInfoResponseV1 != null) {
                         updateReceivingInfoResponseV1(financialTxnResponseData, receivingInfoResponseV1);
+                        receivingInfoResponsesList.add(receivingInfoResponseV1);
+                        receivingInfoResponsesKeyList.add(id);
                     }
                 }
-                receivingInfoResponses = new ArrayList<>(receivingInfoResponseV1Map.values());
+                receivingInfoResponsesKeyList.forEach(key -> receivingInfoResponseV1Map.remove(key));
+                receivingInfoResponsesList.addAll(new ArrayList<>(receivingInfoResponseV1Map.values()));
+                receivingInfoResponses = receivingInfoResponsesList;
             }
         }
 

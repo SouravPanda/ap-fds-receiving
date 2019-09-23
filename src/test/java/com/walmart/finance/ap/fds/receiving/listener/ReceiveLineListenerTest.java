@@ -15,8 +15,6 @@ import org.mockito.Spy;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.mockito.Mockito.doThrow;
 
@@ -53,7 +51,7 @@ public class ReceiveLineListenerTest {
 
     @Test
     public void onReceiveLineCommitException() {
-        doThrow(JsonProcessingException.class).when(producer).sendToEventHub(Mockito.anyString(), Mockito.anyString());
+        doThrow(JsonProcessingException.class).when(producer).sendSummaryLineToEventHub(Mockito.anyString(), Mockito.anyString());
         receiveLineListener.onReceiveLineCommit(Mockito.any());
     }
 }

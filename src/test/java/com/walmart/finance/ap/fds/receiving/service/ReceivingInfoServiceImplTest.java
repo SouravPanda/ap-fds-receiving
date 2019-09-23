@@ -12,10 +12,13 @@ import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestCombin
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 
@@ -30,6 +33,8 @@ import java.util.Map;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
+@PrepareForTest(ReceivingInfoServiceImpl.class)
+@RunWith(PowerMockRunner.class)
 public class ReceivingInfoServiceImplTest {
 
     @Mock

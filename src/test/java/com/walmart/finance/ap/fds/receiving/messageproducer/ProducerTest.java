@@ -1,25 +1,17 @@
 package com.walmart.finance.ap.fds.receiving.messageproducer;
 
-import org.apache.kafka.clients.producer.RecordMetadata;
-import org.apache.kafka.common.TopicPartition;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
-import org.springframework.kafka.annotation.EnableKafka;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
+import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.concurrent.ListenableFuture;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import static org.mockito.Mockito.*;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-@EnableKafka
+@EnableBinding(CustomSource.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class ProducerTest {
 
@@ -28,27 +20,27 @@ public class ProducerTest {
     private Producer producer;
 
     @Mock
-    KafkaTemplate<String, String> kafkaTemplate;
+    private CustomSource customSource;
+
+    @Mock
+    private MessageChannel messageChannel;
+
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
 
-    @Test
-    public void sendToEventHubException() {
-        when(kafkaTemplate.send(Mockito.anyString(), Mockito.anyString())).thenThrow(Exception.class);
-        producer.sendToEventHub(Mockito.anyString(), Mockito.anyString());
+    @Test(expected=Exception.class)
+    public void sendSummaryToEventHubException() {
+        when(customSource.summaryTopic().send(MessageBuilder.withPayload(Mockito.anyString()).build())).thenThrow(Exception.class);
+        producer.sendSummaryToEventHub("test", "test");
     }
 
     @Test
-    public void sendToEventHub() throws InterruptedException, ExecutionException, TimeoutException {
-        TopicPartition topicPartition = new TopicPartition("topic", 2);
-        RecordMetadata recordMetadata = new RecordMetadata(topicPartition, 1, 2, 0, null, 0, 0);
-        SendResult<String, String> sendResult = new SendResult<>(null, recordMetadata);
-        ListenableFuture<SendResult<String, String>> listenableFuture = mock(ListenableFuture.class);
-        when(kafkaTemplate.send(Mockito.anyString(), Mockito.anyString())).thenReturn(listenableFuture);
-        when(listenableFuture.get(10, TimeUnit.SECONDS)).thenReturn(sendResult);
-        producer.sendToEventHub(Mockito.anyString(), Mockito.anyString());
+    public void sendSummaryToEventHub()  {
+        when(customSource.summaryTopic()).thenReturn(messageChannel);
+        when(messageChannel.send(MessageBuilder.withPayload(Mockito.anyString()).build())).thenReturn(true);
+        producer.sendSummaryToEventHub("test", "test");
     }
 }

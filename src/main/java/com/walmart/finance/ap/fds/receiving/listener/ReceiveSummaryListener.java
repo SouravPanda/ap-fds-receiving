@@ -26,7 +26,7 @@ public class ReceiveSummaryListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onReceiveSummaryCommit(ReceivingSummaryRequest event) {
         try {
-            producer.sendToEventHub(new ObjectMapper().writeValueAsString(event), ReceivingConstants.RECEIVESUMMARYWAREHOUSE);
+            producer.sendSummaryToEventHub(new ObjectMapper().writeValueAsString(event), ReceivingConstants.RECEIVESUMMARYWAREHOUSE);
         } catch (JsonProcessingException e) {
             log.error(ExceptionUtils.getStackTrace(e));
         }
