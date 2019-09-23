@@ -1,6 +1,7 @@
 
 package com.walmart.finance.ap.fds.receiving.controller;
 
+import com.walmart.finance.ap.fds.receiving.config.DefaultValuesConfigProperties;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveLineServiceImpl;
@@ -38,6 +39,9 @@ public class ReceivingLineControllerTest {
 
     @MockBean
     private ReceiveLineServiceImpl receiveLineService;
+
+    @MockBean
+    DefaultValuesConfigProperties defaultValuesConfigProperties;
 
     @Before
     public void setup() {
@@ -90,7 +94,7 @@ public class ReceivingLineControllerTest {
                                 "\"purchaseOrderId\": \"553683865\",\n" +
                                 "\"unitOfMeasure\": \"lbs\",\n" +
                                 "\"variableWeightInd\": \" \",\n" +
-                                "\"receivedWeightQuantity\": \" \",\n" +
+                                "\"receivedWeightQuantity\": 0.0,\n" +
                                 "\"transactionType\": 99,\n" +
                                 "\"locationNumber\": 6565,\n" +
                                 "\"divisionNumber\": 0,\n" +
