@@ -71,8 +71,7 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
         response.setReceivedWeightQuantity(receivingLine.getReceivedWeightQuantity()== null  ?  null : receivingLine.getReceivedWeightQuantity().toString());
         // TODO default to 99 if not there
 
-        response.setTransactionType(receivingLine.getTransactionType() != null ?
-                receivingLine.getTransactionType() : defaultValuesConfigProperties.getTransactionType());
+        response.setTransactionType(receivingLine.getTransactionType());
 //        response.setControlNumber(receivingLine.getReceivingControlNumber());
         response.setLocationNumber(receivingLine.getStoreNumber());
         response.setDivisionNumber(receivingLine.getBaseDivisionNumber() != null ?

@@ -22,8 +22,6 @@ public class DefaultValuesConfigProperties {
 
     private String receivingControlNumber;
 
-    private Integer transactionType;
-
     private Double totalCostAmount;
 
     private Double totalRetailAmount;

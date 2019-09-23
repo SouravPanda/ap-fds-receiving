@@ -301,8 +301,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponse.setTrailerNumber(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getTrailerNbr() : null);
         receivingInfoResponse.setControlNumber(StringUtils.isNotEmpty(receiveSummary.getReceivingControlNumber()) ?
                 receiveSummary.getReceivingControlNumber() : defaultValuesConfigProperties.getReceivingControlNumber());
-        receivingInfoResponse.setTransactionType(receiveSummary.getTransactionType() != null ?
-                receiveSummary.getTransactionType() : defaultValuesConfigProperties.getTransactionType());
+        receivingInfoResponse.setTransactionType(receiveSummary.getTransactionType());
         receivingInfoResponse.setLocationNumber(receiveSummary.getStoreNumber());
         receivingInfoResponse.setPurchaseOrderId(receiveSummary.getPurchaseOrderId());
         receivingInfoResponse.setReceiptDate(receiveSummary.getDateReceived().atZone(ZoneId.of("GMT")).toLocalDate());
@@ -523,8 +522,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponseV1.setTrailerNumber(CollectionUtils.isNotEmpty(freightResponseList) ? freightResponseList.get(0).getTrailerNbr() : null);
         receivingInfoResponseV1.setControlNumber(StringUtils.isNotEmpty(receiveSummary.getReceivingControlNumber()) ?
                 receiveSummary.getReceivingControlNumber() : defaultValuesConfigProperties.getReceivingControlNumber());
-        receivingInfoResponseV1.setTransactionType(receiveSummary.getTransactionType() != null ?
-                receiveSummary.getTransactionType() : defaultValuesConfigProperties.getTransactionType());
+        receivingInfoResponseV1.setTransactionType(receiveSummary.getTransactionType());
         receivingInfoResponseV1.setLocationNumber(receiveSummary.getStoreNumber());
         receivingInfoResponseV1.setPurchaseOrderId(receiveSummary.getPurchaseOrderId());
         receivingInfoResponseV1.setReceiptDate(receiveSummary.getDateReceived().atZone(ZoneId.of("GMT")).toLocalDate());
