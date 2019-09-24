@@ -116,14 +116,10 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     private List<ReceiveSummary> getSummaryData(FinancialTxnResponseData financialTxnResponseData, Map<String, String> allRequestParams) {
         Integer storeNumber = ( financialTxnResponseData.getOrigStoreNbr() == null || financialTxnResponseData.getOrigStoreNbr() == 0)
                 ? financialTxnResponseData.getStoreNumber() : financialTxnResponseData.getOrigStoreNbr();
-        String id = (financialTxnResponseData.getPurchaseOrderId() == null ? 0 : financialTxnResponseData.getPurchaseOrderId())
-                + ReceivingConstants.PIPE_SEPARATOR
-                + (StringUtils.isEmpty(financialTxnResponseData.getReceiveId()) ? "0" :
-                financialTxnResponseData.getReceiveId())
-                + ReceivingConstants.PIPE_SEPARATOR
+        String id = (financialTxnResponseData.getPurchaseOrderId() == null ? 0 : financialTxnResponseData.getPurchaseOrderId()) + ReceivingConstants.PIPE_SEPARATOR
+                + (StringUtils.isEmpty(financialTxnResponseData.getReceiveId()) ? "0" : financialTxnResponseData.getReceiveId()) + ReceivingConstants.PIPE_SEPARATOR
                 + (storeNumber == null ? 0 : storeNumber) + ReceivingConstants.PIPE_SEPARATOR
-                + (financialTxnResponseData.getReceivingDate() == null ? "0" :
-                financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
+                + (financialTxnResponseData.getReceivingDate() == null ? "0" : financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
         Query query = new Query();
         CriteriaDefinition criteriaDefinition = null;
         if (StringUtils.isNotEmpty(id) && !id.equalsIgnoreCase("0|0|0|0")) {
@@ -207,11 +203,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             dynamicQuery.addCriteria(vendorNumberCriteria);
         }
         // log.info("query: " + dynamicQuery);
-
         return dynamicQuery;
     }
-
-
 
     /**
      * Put the null check for date parameter befor calling this method
@@ -418,11 +411,13 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 }
             }
         } else {
+
             /*
             As the request has parameters which are available in Receiving,
             we can get response from 'Fin Trans' and 'Receiving Info' independently
              */
             receivingInfoResponses = getDataWoFinancialTxnV1(allRequestParams);
+
             if (CollectionUtils.isEmpty(receivingInfoResponses)) {
                 throw new NotFoundException("Receiving data not found for given search criteria.");
             } else {
@@ -513,8 +508,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             String id = (receivingInfoResponseV1.getPurchaseOrderId() == null ? 0 :
                     receivingInfoResponseV1.getPurchaseOrderId())
                     + ReceivingConstants.PIPE_SEPARATOR
-                    + (receivingInfoResponseV1.getReceiveId() == null ? "0" :
-                    receivingInfoResponseV1.getReceiveId())
+                    + (receivingInfoResponseV1.getReceiveId() == null ? "0" : receivingInfoResponseV1.getReceiveId())
                     + ReceivingConstants.PIPE_SEPARATOR
                     + (receivingInfoResponseV1.getOrigStoreNbr() == null ? 0 :
                     receivingInfoResponseV1.getOrigStoreNbr())
