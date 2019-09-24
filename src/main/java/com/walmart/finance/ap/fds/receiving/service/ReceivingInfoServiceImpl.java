@@ -23,6 +23,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.joda.time.Months;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +36,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -118,9 +121,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 + (StringUtils.isEmpty(financialTxnResponseData.getReceiveId()) ? "0" :
                 financialTxnResponseData.getReceiveId())
                 + ReceivingConstants.PIPE_SEPARATOR
-
                 + (storeNumber == null ? 0 : storeNumber) + ReceivingConstants.PIPE_SEPARATOR
-                + (financialTxnResponseData.getReceivingDate() == null ? "0" : financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
+                + (financialTxnResponseData.getReceivingDate() == null ? "0" :
+                financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
         Query query = new Query();
         CriteriaDefinition criteriaDefinition = null;
         if (StringUtils.isNotEmpty(id) && !id.equalsIgnoreCase("0|0|0|0")) {
@@ -128,15 +131,12 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             query.addCriteria(criteriaDefinition);
         }
         if (storeNumber != null) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.STORENUMBER.getParameterName()).is(storeNumber);
-            query.addCriteria(criteriaDefinition);
-
-
-            Criteria partitionKeyCriteria =
-                    Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD)
-                            .in(ReceivingUtils.getPartitionKeyList(String.valueOf(storeNumber),
-                                    monthsToDisplay, monthsPerShard));
-            query.addCriteria(partitionKeyCriteria);
+            LocalDate receivingDate =  null;
+            if (financialTxnResponseData.getReceivingDate() != null) {
+                receivingDate =
+                        financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate();
+            }
+            updateQueryForPartitionKey(receivingDate, allRequestParams, storeNumber, query);
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()))
                 && StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()))) {
@@ -187,15 +187,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             dynamicQuery.addCriteria(transactionTypeCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.LOCATIONNUMBER))) {
-            Criteria storeNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.STORENUMBER.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.LOCATIONNUMBER)));
-            dynamicQuery.addCriteria(storeNumberCriteria);
-
-            Criteria partitionKeyCriteria =
-                    Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD)
-                            .in(ReceivingUtils.getPartitionKeyList(paramMap.get(ReceivingConstants.LOCATIONNUMBER),
-                                    monthsToDisplay, monthsPerShard));
-            dynamicQuery.addCriteria(partitionKeyCriteria);
-
+            updateQueryForPartitionKey(null, paramMap,
+                    Integer.valueOf(paramMap.get(ReceivingConstants.LOCATIONNUMBER)), dynamicQuery);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.PURCHASEORDERNUMBER))) {
             Criteria purchaseOrderNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.PURCHASEORDERNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.PURCHASEORDERNUMBER));
@@ -279,15 +272,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             query.addCriteria(criteriaDefinition);
         }
         if (receiveSummary.getStoreNumber() != null) {
-            criteriaDefinition = Criteria.where(ReceivingLineParameters.STORENUMBER.getParameterName()).is(receiveSummary.getStoreNumber());
-            query.addCriteria(criteriaDefinition);
-
-            Criteria partitionKeyCriteria =
-                    Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD)
-                            .in(ReceivingUtils.getPartitionKeyList(String.valueOf(receiveSummary.getStoreNumber()),
-                                    monthsToDisplay, monthsPerShard));
-            query.addCriteria(partitionKeyCriteria);
-
+            updateQueryForPartitionKey(null, allRequestParams, receiveSummary.getStoreNumber(), query);
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()))) {
             List<String> itemNumbers = Arrays.asList(allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()).split(","));
@@ -416,6 +401,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     public ReceivingResponse getInfoSeviceDataV1(Map<String, String> allRequestParams) {
         List<ReceivingInfoResponseV1> receivingInfoResponses;
         List<FinancialTxnResponseData> financialTxnResponseDataList = financialTxnIntegrationService.getFinancialTxnDetails(allRequestParams);
+        enrichQueryParams(allRequestParams, financialTxnResponseDataList);
 
         if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.INVOICEID.getQueryParam()) ||
                 allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam())) {
@@ -432,14 +418,11 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 }
             }
         } else {
-
             /*
             As the request has parameters which are available in Receiving,
             we can get response from 'Fin Trans' and 'Receiving Info' independently
              */
-            enrichQueryParams(allRequestParams, financialTxnResponseDataList);
             receivingInfoResponses = getDataWoFinancialTxnV1(allRequestParams);
-
             if (CollectionUtils.isEmpty(receivingInfoResponses)) {
                 throw new NotFoundException("Receiving data not found for given search criteria.");
             } else {
@@ -674,6 +657,41 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                         ))
                         .collect(Collectors.toList()));
     }
+
+
+    private void updateQueryForPartitionKey(LocalDate receiptDate, Map<String, String> allParams,
+                                            Integer storeNumber, Query queryToUpdate) {
+        Criteria partitionKeyCriteria;
+
+        if (receiptDate != null) {
+            /* This scenario will be applicable */
+            partitionKeyCriteria =
+                    Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD)
+                            .is(ReceivingUtils.getPartitionKey(String.valueOf(storeNumber),
+                                    receiptDate, monthsPerShard));
+        } else if (allParams.containsKey(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam())
+                && allParams.containsKey(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam())) {
+            LocalDateTime startDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATESTART) + " 00:00:00");
+            LocalDateTime endDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATEEND) + " 00:00:00");
+
+            Period diff = Period.between(startDate.toLocalDate(), endDate.toLocalDate());
+
+            int adjustedMonthsTodDisplay =
+                    new Double(Math.ceil((diff.getMonths() + 2) / monthsPerShard.doubleValue()) * monthsPerShard)
+                            .intValue();
+            partitionKeyCriteria =
+                    Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD)
+                            .in(ReceivingUtils.getPartitionKeyList(String.valueOf(storeNumber),
+                                    endDate.toLocalDate(), adjustedMonthsTodDisplay, monthsPerShard));
+        } else {
+            partitionKeyCriteria =
+                    Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD)
+                            .in(ReceivingUtils.getPartitionKeyList(String.valueOf(storeNumber),
+                                    monthsToDisplay, monthsPerShard));
+        }
+        queryToUpdate.addCriteria(partitionKeyCriteria);
+    }
+
     /*************************** Version 1 Methods ***********************************/
 
 }
