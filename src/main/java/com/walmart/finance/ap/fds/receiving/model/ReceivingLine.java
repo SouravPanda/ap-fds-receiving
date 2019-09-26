@@ -1,12 +1,15 @@
 package com.walmart.finance.ap.fds.receiving.model;
 
+import com.walmart.finance.ap.fds.receiving.response.ReceiveMDSResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -47,7 +50,7 @@ public class ReceivingLine   {
     private String receivedQuantityUnitOfMeasureCode;//RECV_QTY_UOM_CODE(Column)INITIAL_RECV_ITEM(Table)
     private Integer inventoryMatchStatus;
     private String variableWeightIndicator;
-    private String merchandises;
+    private Map<String, ReceiveMDSResponse> merchandises;
     private Integer lineSequenceNumber;
     private String bottleDepositFlag;
     private String itemDescription;

@@ -84,18 +84,8 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
                 receivingLine.getBaseDivisionNumber() : defaultValuesConfigProperties.getBaseDivisionNumber());
         response.setBottleDepositFlag(StringUtils.isNotEmpty(receivingLine.getBottleDepositFlag()) ?
                 receivingLine.getBottleDepositFlag() : defaultValuesConfigProperties.getBottleDepositFlag());
-        if(StringUtils.isNotEmpty(receivingLine.getMerchandises())){
-            JsonObject jsonObject = gson.fromJson(receivingLine.getMerchandises(), JsonObject.class);
-            response.setMerchandises(new ArrayList<>());
-            for (Map.Entry<String, JsonElement> jsonElementEntry : jsonObject.entrySet()) {
-                JsonObject innerJsonObject = (JsonObject) jsonElementEntry.getValue();
-                ReceiveMDSResponse receiveMDSResponse = new ReceiveMDSResponse(
-                        innerJsonObject.get("mdseDisplayCode").getAsInt(),
-                        innerJsonObject.get("mdseConditionCode").getAsInt(),
-                        innerJsonObject.get("mdseQuantity").getAsInt(),
-                        innerJsonObject.get("mdseQuantityUnitOfMeasureCode").getAsString());
-                response.getMerchandises().add(receiveMDSResponse);
-            }
+        if (receivingLine.getMerchandises() != null) {
+            response.setMerchandises(new ArrayList<>(receivingLine.getMerchandises().values()));
         }
         return response;
     }
