@@ -20,7 +20,7 @@ flows:
   default:
     - shell: echo "build_push_latest_img_dev"
     - call: readpom
-    - mvn clean install
+    - mvn clean install -DskipTests
     - call: build_push_latest_img_dev
     - call: runsonar
   pr:

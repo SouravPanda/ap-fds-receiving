@@ -79,8 +79,6 @@ public class FinancialTxnIntegrationServiceImplTest {
         financialTxnResponseDataList.add(financialTxnResponseData);
         FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(financialTxnResponseDataList);
         String url = financialTxnHost + "US/invoice/financial/transaction/invoiceId/639050495";
-        HttpHeaders requestHeaders = new HttpHeaders();
-
         HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
