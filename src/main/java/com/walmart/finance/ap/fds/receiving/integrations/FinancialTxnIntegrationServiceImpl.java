@@ -68,13 +68,13 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
         requestHeaders.set(ReceivingConstants.SM_WM_CONSUMER, consumerId);
         requestHeaders.set(ReceivingConstants.SM_WM_APP_NAME, appName);
         requestHeaders.set(ReceivingConstants.SM_WM_ENV, appEnv);
-        HttpEntity<String> basicAuthEntity = new HttpEntity<>(requestHeaders);
+        HttpEntity<String> httpEntity = new HttpEntity<>(requestHeaders);
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         String url = makeUrl(allRequestParams);
         log.info("Financial URL : " + url);
         ResponseEntity<FinancialTxnResponse> response;
         try {
-            response = restTemplate.exchange(url, HttpMethod.GET, basicAuthEntity, FinancialTxnResponse.class);
+            response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, FinancialTxnResponse.class);
         } catch (HttpStatusCodeException e) {
             log.error("Failed to get response from Financial Transaction.", e);
             throw new FinancialTransException("Failed to get response from Financial Transaction.");
