@@ -333,19 +333,11 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         response.setVariableWeightInd(receivingLine.getVariableWeightIndicator());
         response.setCostMultiple(receivingLine.getCostMultiple());
         response.setReceivedWeightQuantity(receivingLine.getReceivedWeightQuantity() == null ? null : receivingLine.getReceivedWeightQuantity().toString());
-        if (StringUtils.isNotEmpty(receivingLine.getMerchandises())) {
-            JsonObject jsonObject = gson.fromJson(receivingLine.getMerchandises(), JsonObject.class);
-            response.setMerchandises(new ArrayList<>());
-            for (Map.Entry<String, JsonElement> jsonElementEntry : jsonObject.entrySet()) {
-                JsonObject innerJsonObject = (JsonObject) jsonElementEntry.getValue();
-                ReceiveMDSResponse receiveMDSResponse = new ReceiveMDSResponse(
-                        innerJsonObject.get("mdseDisplayCode").getAsInt(),
-                        innerJsonObject.get("mdseConditionCode").getAsInt(),
-                        innerJsonObject.get("mdseQuantity").getAsInt(),
-                        innerJsonObject.get("mdseQuantityUnitOfMeasureCode").getAsString());
-                response.getMerchandises().add(receiveMDSResponse);
-            }
+
+        if (receivingLine.getMerchandises() != null) {
+            response.setMerchandises(new ArrayList<>(receivingLine.getMerchandises().values()));
         }
+
         return response;
     }
     /*************************** Conversion Methods ***********************************/

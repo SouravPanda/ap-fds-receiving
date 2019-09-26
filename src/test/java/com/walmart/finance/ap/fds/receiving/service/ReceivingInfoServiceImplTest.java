@@ -281,6 +281,10 @@ public class ReceivingInfoServiceImplTest {
                 add(receiveSummary);
             }
         });
+
+        ReceiveMDSResponse receiveMDSResponse = new ReceiveMDSResponse(1,1,350L,"01");
+        Map<String, ReceiveMDSResponse> receiveMDSResponseMap = new HashMap<>();
+        receiveMDSResponseMap.put("1", receiveMDSResponse);
         List<ReceivingLine> receivingLines = new ArrayList<ReceivingLine>() {
             {
                 add(new ReceivingLine("972515962|110950|6479|2019-06-11|2", "110950",
@@ -289,11 +293,12 @@ public class ReceivingInfoServiceImplTest {
                         LocalDate.of(2019, 06, 20), LocalDateTime.of(2019, 07, 14, 16, 50, 17), null,
                         null, 'W', "DB2", null, 0, LocalDate.of(2019, 06, 11),
                         null, 0.0, null, null, "",
-                        "{ \"1\" : { \"mdseConditionCode\" : 1.0, \"mdseQuantity\" : 350.0, \"mdseQuantityUnitOfMeasureCode\" : \"01\" }, \"2\" : { \"mdseConditionCode\" : 2.0, \"mdseQuantity\" : 400.0, \"mdseQuantityUnitOfMeasureCode\" : \"02\" } }",
-                        2, "N", "NSW CRASH TRNF", 1, new Long(972515962), "972515962|110950|6479|2019-06-11", null, null, null));
+                        receiveMDSResponseMap, 2, "N", "NSW CRASH TRNF", 1, new Long(972515962), "972515962|110950" +
+                        "|6479|2019-06-11", null, null, null));
             }
         };
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(receivingLines);
+
         List<FreightResponse> freightResponses = new ArrayList<FreightResponse>() {
             {
                 add(new FreightResponse(null, null, null));
@@ -303,8 +308,8 @@ public class ReceivingInfoServiceImplTest {
         // Receiving Info Response Creation
         List<ReceiveMDSResponse> merchandises = new ArrayList<ReceiveMDSResponse>() {
             {
-                add(new ReceiveMDSResponse(1,1, 350, "01"));
-                add(new ReceiveMDSResponse(1, 2, 400, "02"));
+                add(new ReceiveMDSResponse(1,1, 350L, "01"));
+                add(new ReceiveMDSResponse(1, 2, 400L, "02"));
             }
         };
         ReceivingInfoLineResponse receivingInfoLineResponse = new ReceivingInfoLineResponse("110950", 2, 575486609,

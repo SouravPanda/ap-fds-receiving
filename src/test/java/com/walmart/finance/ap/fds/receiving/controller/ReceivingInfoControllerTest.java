@@ -142,8 +142,8 @@ public class ReceivingInfoControllerTest {
     public void getReceivingInfoV1() throws Exception {
         List<ReceiveMDSResponse> merchandises = new ArrayList<ReceiveMDSResponse>() {
             {
-                add(new ReceiveMDSResponse(1, 1, 350, "01"));
-                add(new ReceiveMDSResponse(1, 2, 400, "02"));
+                add(new ReceiveMDSResponse(1, 1, 350L, "01"));
+                add(new ReceiveMDSResponse(1, 2, 400L, "02"));
             }
         };
         ReceivingInfoLineResponse receivingInfoLineResponse = new ReceivingInfoLineResponse("110950", 2, 575486609,
