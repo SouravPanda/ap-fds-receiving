@@ -39,6 +39,13 @@ public class FinancialTxnIntegrationServiceImplTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         financialTxnHost = "https://invc-fin-tran-d.dev01.gbs.ase.southcentralus.us.walmart.net/";
+        financialTxnIntegrationService.setAppName("AP-FDS-INVOICE-FINANCIAL-TRANSACTION");
+        financialTxnIntegrationService.setAppEnv("dev-us");
+        financialTxnIntegrationService.setConsumerId("3fa1e5b2-6c55-4d0f-8ae5-634dbbb72865");
+        financialTxnIntegrationService.setFinancialTxnBaseEndpoint("/invoice/financial/transaction/");
+        financialTxnIntegrationService.setFinancialTxnBaseUrl("https://invc-fin-tran-d.dev01.gbs.ase.southcentralus.us.walmart.net/");
+        financialTxnIntegrationService.setFinancialTxnAuthorizationKey("fdservices");
+        financialTxnIntegrationService.setFinancialTxnAuthorizationValue("fdservices");
         requestHeaders = new HttpHeaders() {{
             String auth = "fdservices" + ":" + "fdservices";
             byte[] encodedAuth = Base64.encodeBase64(
@@ -49,13 +56,6 @@ public class FinancialTxnIntegrationServiceImplTest {
         requestHeaders.set(ReceivingConstants.SM_WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
         requestHeaders.set(ReceivingConstants.SM_WM_APP_NAME, financialTxnIntegrationService.getAppName());
         requestHeaders.set(ReceivingConstants.SM_WM_ENV, financialTxnIntegrationService.getAppEnv());
-        financialTxnIntegrationService.setAppName("AP-FDS-INVOICE-FINANCIAL-TRANSACTION");
-        financialTxnIntegrationService.setAppEnv("dev-us");
-        financialTxnIntegrationService.setConsumerId("3fa1e5b2-6c55-4d0f-8ae5-634dbbb72865");
-        financialTxnIntegrationService.setFinancialTxnBaseEndpoint("/invoice/financial/transaction/");
-        financialTxnIntegrationService.setFinancialTxnBaseUrl("https://invc-fin-tran-d.dev01.gbs.ase.southcentralus.us.walmart.net/");
-        financialTxnIntegrationService.setFinancialTxnAuthorizationKey("fdservices");
-        financialTxnIntegrationService.setFinancialTxnAuthorizationValue("fdservices");
     }
 
     @Test
