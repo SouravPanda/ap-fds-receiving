@@ -135,7 +135,7 @@ public class ReceiveSummaryValidatorTest {
         allRequestParams.put(ReceivingConstants.PURCHASEORDERID, "111");
         allRequestParams.put(ReceivingConstants.TRANSACTIONTYPE, "99");
         allRequestParams.put(ReceivingConstants.COUNTRYCODE, "US");
-        allRequestParams.put(ReceivingConstants.WM_ENV, "113");
+        allRequestParams.put(ReceivingConstants.SM_WM_ENV, "113");
         ReceiveSummaryValidator.validate("US", allRequestParams);
     }
 

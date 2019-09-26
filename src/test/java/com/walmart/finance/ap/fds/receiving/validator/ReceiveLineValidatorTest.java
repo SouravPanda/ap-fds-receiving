@@ -41,7 +41,7 @@ public class ReceiveLineValidatorTest {
         Map<String, String> allRequestParams = new HashMap<>();
         allRequestParams.put(ReceivingConstants.PURCHASEORDERID, "111");
         allRequestParams.put(ReceivingConstants.TRANSACTIONTYPE, "99");
-        allRequestParams.put(ReceivingConstants.WM_ENV, "113");
+        allRequestParams.put(ReceivingConstants.SM_WM_ENV, "113");
         ReceiveLineValidator.validate("US", allRequestParams);
     }
 
