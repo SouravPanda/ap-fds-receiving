@@ -58,19 +58,17 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
 
     @Override
     public List<FinancialTxnResponseData> getFinancialTxnDetails(Map<String, String> allRequestParams) {
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.set(ReceivingConstants.SM_WM_CONSUMER, consumerId);
-        requestHeaders.set(ReceivingConstants.SM_WM_APP_NAME, appName);
-        requestHeaders.set(ReceivingConstants.SM_WM_ENV, appEnv);
-        HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
-        HttpHeaders basicAuthHeader = new HttpHeaders() {{
+        HttpHeaders requestHeaders = new HttpHeaders() {{
             String auth = financialTxnAuthorizationKey + ":" + financialTxnAuthorizationValue;
             byte[] encodedAuth = Base64.encodeBase64(
                     auth.getBytes(Charset.forName("US-ASCII")));
             String authHeader = "Basic " + new String(encodedAuth);
             set("Authorization", authHeader);
         }};
-        HttpEntity<String> basicAuthEntity = new HttpEntity<>(basicAuthHeader);
+        requestHeaders.set(ReceivingConstants.SM_WM_CONSUMER, consumerId);
+        requestHeaders.set(ReceivingConstants.SM_WM_APP_NAME, appName);
+        requestHeaders.set(ReceivingConstants.SM_WM_ENV, appEnv);
+        HttpEntity<String> basicAuthEntity = new HttpEntity<>(requestHeaders);
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         String url = makeUrl(allRequestParams);
         log.info("Financial URL : " + url);
