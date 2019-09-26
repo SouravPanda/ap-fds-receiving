@@ -12,17 +12,16 @@ public class ReceivingConstants {
     public static final String STORE = "ReceiveSummary";
     public static final String AP_FDS_CLIENT_ID = "client_id";
     public static final String CORRELATION_ID_HEADER_KEY = "X-Correlation-ID" ;
-    public static final String CLIENT_SECRET_ID_HEADER_KEY ="X-IBM-Client-Secret";
-    public static final String CLIENT_ID_HEADER_KEY ="X-IBM-Client-Id";
     public static final String PIPE_SEPARATOR = "|";
-    public static final String WM_SVC = "WM_SVC.NAME";
+
+    public static final String SM_WM_CONSUMER = "WM_CONSUMER.ID";
+    public static final String SM_WM_ENV = "WM_SVC.ENV";
+    public static final String SM_WM_APP_NAME = "WM_SVC.NAME";
+
     public static final String WM_CONSUMER = "WMT-API-SECRET";  //"WM_CONSUMER.ID";
-    public static final String WM_QOS = "WM_QOS.CORRELATION_ID";
-    public static final String WM_ENV = "WM_SVC.ENV";
-    public static final String WM_SVC_VERSION = "WM_SVC.VERSION";
     public static final String WMAPIKEY = "WMT-API-KEY";
-    public static final String RECEIVESUMMARYWAREHOUSE = "receiving_wh_summary_write_db2";
-    public static final String RECEIVELINEWAREHOUSE = "receiving_wh_summaryline_write_db2";
+    public static final String RECEIVESUMMARYWAREHOUSE = "receiving-wh-summary-db2";
+    public static final String RECEIVELINEWAREHOUSE = "receiving-wh-summaryline-db2";
     public static final int XSS_FILTER_ORDER = 1;
     public static final int MDC_FILTER_ORDER = 2;
     public static final int LOGGING_FILTER_ORDER = 3;

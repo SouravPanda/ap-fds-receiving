@@ -33,25 +33,29 @@ public class FinancialTxnIntegrationServiceImplTest {
 
     private String financialTxnHost;
 
-    private HttpHeaders basicAuthHeader;
+    private HttpHeaders requestHeaders;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         financialTxnHost = "https://invc-fin-tran-d.dev01.gbs.ase.southcentralus.us.walmart.net/";
-        basicAuthHeader = new HttpHeaders() {{
+        financialTxnIntegrationService.setAppName("AP-FDS-INVOICE-FINANCIAL-TRANSACTION");
+        financialTxnIntegrationService.setAppEnv("dev-us");
+        financialTxnIntegrationService.setConsumerId("3fa1e5b2-6c55-4d0f-8ae5-634dbbb72865");
+        financialTxnIntegrationService.setFinancialTxnBaseEndpoint("/invoice/financial/transaction/");
+        financialTxnIntegrationService.setFinancialTxnBaseUrl("https://invc-fin-tran-d.dev01.gbs.ase.southcentralus.us.walmart.net/");
+        financialTxnIntegrationService.setFinancialTxnAuthorizationKey("fdservices");
+        financialTxnIntegrationService.setFinancialTxnAuthorizationValue("fdservices");
+        requestHeaders = new HttpHeaders() {{
             String auth = "fdservices" + ":" + "fdservices";
             byte[] encodedAuth = Base64.encodeBase64(
                     auth.getBytes(Charset.forName("US-ASCII")));
             String authHeader = "Basic " + new String(encodedAuth);
             set("Authorization", authHeader);
         }};
-        financialTxnIntegrationService.setClientId("2c47c821-72b9-48cb-89b0-ea97d8fbb250");
-        financialTxnIntegrationService.setConsumerId("lJ3hR4wL3nI7wH2qI4vI5cS2lF2bU3kH4dR4kI8yX0oL5jC2wW");
-        financialTxnIntegrationService.setFinancialTxnBaseEndpoint("/invoice/financial/transaction/");
-        financialTxnIntegrationService.setFinancialTxnBaseUrl("https://invc-fin-tran-d.dev01.gbs.ase.southcentralus.us.walmart.net/");
-        financialTxnIntegrationService.setFinancialTxnAuthorizationKey("fdservices");
-        financialTxnIntegrationService.setFinancialTxnAuthorizationValue("fdservices");
+        requestHeaders.set(ReceivingConstants.SM_WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
+        requestHeaders.set(ReceivingConstants.SM_WM_APP_NAME, financialTxnIntegrationService.getAppName());
+        requestHeaders.set(ReceivingConstants.SM_WM_ENV, financialTxnIntegrationService.getAppEnv());
     }
 
     @Test
@@ -75,10 +79,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         financialTxnResponseDataList.add(financialTxnResponseData);
         FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(financialTxnResponseDataList);
         String url = financialTxnHost + "US/invoice/financial/transaction/invoiceId/639050495";
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
-        requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
-        HttpEntity<String> entity = new HttpEntity<>(basicAuthHeader);
+        HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
         compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
@@ -106,10 +107,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
         String url = financialTxnHost + "US/invoice/financial/transaction/vendorNumber/2222/poNumber/99987/invoiceNumber/1828926897";
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
-        requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
-        HttpEntity<String> entity = new HttpEntity<>(basicAuthHeader);
+        HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         HttpStatusCodeException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenThrow(exception);
         org.assertj.core.api.Assertions.assertThat(financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap).isEmpty());
@@ -137,10 +135,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
         String url = financialTxnHost + "US/invoice/financial/transaction/vendorNumber/2222/poNumber/99987/receiptNumber/6302?invoiceNumber=1828926897";
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
-        requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
-        HttpEntity<String> entity = new HttpEntity<>(basicAuthHeader);
+        HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         ResponseEntity<FinancialTxnResponse> response = null;
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
         org.assertj.core.api.Assertions.assertThat(financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap).isEmpty());
@@ -172,10 +167,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
         String url = financialTxnHost + "US/invoice/financial/transaction/vendorNumber/639050495/poNumber/99987/origStoreNbr/6302?invoiceNumber=1828926897";
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
-        requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
-        HttpEntity<String> entity = new HttpEntity<>(basicAuthHeader);
+        HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         HttpStatusCodeException exception = new HttpClientErrorException(HttpStatus.BAD_REQUEST);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenThrow(exception);
         financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap);
@@ -204,10 +196,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         financialTxnResponseDataList.add(financialTxnResponseData);
         FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(financialTxnResponseDataList);
         String url = financialTxnHost + "US/invoice/financial/transaction/vendorNumber/639050495/invoiceNumber/1828926897/origStoreNbr/6302";
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
-        requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
-        HttpEntity<String> entity = new HttpEntity<>(basicAuthHeader);
+        HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
         compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
@@ -236,10 +225,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         financialTxnResponseDataList.add(financialTxnResponseData);
         FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(financialTxnResponseDataList);
         String url = financialTxnHost + "US/invoice/financial/transaction/vendorNumber/639050495/origStoreNbr/6302/receiptNumber/1828926897";
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
-        requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
-        HttpEntity<String> entity = new HttpEntity<>(basicAuthHeader);
+        HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
         compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
@@ -267,10 +253,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         financialTxnResponseDataList.add(financialTxnResponseData);
         FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(financialTxnResponseDataList);
         String url = financialTxnHost + "US/invoice/financial/transaction/vendorNumber/639050495/purchaseOrderId/1828926897";
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
-        requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
-        HttpEntity<String> entity = new HttpEntity<>(basicAuthHeader);
+        HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
         compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
@@ -298,10 +281,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         financialTxnResponseDataList.add(financialTxnResponseData);
         FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(financialTxnResponseDataList);
         String url = financialTxnHost + "US/invoice/financial/transaction/origStoreNbr/6302/poNumber/1828926897";
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
-        requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
-        HttpEntity<String> entity = new HttpEntity<>(basicAuthHeader);
+        HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
         compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
@@ -329,10 +309,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         financialTxnResponseDataList.add(financialTxnResponseData);
         FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(financialTxnResponseDataList);
         String url = financialTxnHost + "US/invoice/financial/transaction/origStoreNbr/6302/invoiceNumber/1828926897";
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
-        requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
-        HttpEntity<String> entity = new HttpEntity<>(basicAuthHeader);
+        HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
         compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
@@ -360,10 +337,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         financialTxnResponseDataList.add(financialTxnResponseData);
         FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(financialTxnResponseDataList);
         String url = financialTxnHost + "US/invoice/financial/transaction/origStoreNbr/6302/vendorNumber/2222";
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
-        requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
-        HttpEntity<String> entity = new HttpEntity<>(basicAuthHeader);
+        HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
         compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
@@ -392,10 +366,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         financialTxnResponseDataList.add(financialTxnResponseData);
         FinancialTxnResponse financialTxnResponse = new FinancialTxnResponse(financialTxnResponseDataList);
         String url = financialTxnHost + "US/invoice/financial/transaction/vendorNumber/2222/poNumber/164680544/invoiceNumber/1828926897";
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
-        requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
-        HttpEntity<String> entity = new HttpEntity<>(basicAuthHeader);
+        HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
         compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
@@ -423,10 +394,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
         String url = financialTxnHost + "US/invoice/financial/transaction/vendorNumber/639050495/poNumber/99987/origStoreNbr/6302?invoiceNumber=1828926897";
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.set(ReceivingConstants.WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
-        requestHeaders.set(ReceivingConstants.WMAPIKEY, financialTxnIntegrationService.getClientId());
-        HttpEntity<String> entity = new HttpEntity<>(basicAuthHeader);
+        HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(null);
         financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap);
     }

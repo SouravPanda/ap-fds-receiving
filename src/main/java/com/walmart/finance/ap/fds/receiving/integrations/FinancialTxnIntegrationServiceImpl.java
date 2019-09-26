@@ -5,8 +5,7 @@ import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.exception.FinancialTransException;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestCombinations;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -29,36 +28,28 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Data
 public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrationService {
     public static final Logger log = LoggerFactory.getLogger(FinancialTxnIntegrationServiceImpl.class);
 
-    @Getter
-    @Setter
-    @Value("${financialTxn.clientId}")
-    private String clientId;
-
-    @Getter
-    @Setter
     @Value("${financialTxn.consumerId}")
     private String consumerId;
 
-    @Getter
-    @Setter
+    @Value("${financialTxn.appName}")
+    private String appName;
+
+    @Value("${financialTxn.appEnv}")
+    private String appEnv;
+
     @Value("${financialTxn.base.url}")
     private String financialTxnBaseUrl;
 
-    @Getter
-    @Setter
     @Value("${financialTxn.base.endpoint}")
     private String financialTxnBaseEndpoint;
 
-    @Getter
-    @Setter
     @Value("${financialTxn.authorizationKey}")
     private String financialTxnAuthorizationKey;
 
-    @Getter
-    @Setter
     @Value("${financialTxn.authorizationValue}")
     private String financialTxnAuthorizationValue;
 
@@ -67,24 +58,23 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
 
     @Override
     public List<FinancialTxnResponseData> getFinancialTxnDetails(Map<String, String> allRequestParams) {
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.set(ReceivingConstants.WM_CONSUMER, consumerId);
-        requestHeaders.set(ReceivingConstants.WMAPIKEY, clientId);
-        HttpEntity<String> entity = new HttpEntity<>(requestHeaders);
-        HttpHeaders basicAuthHeader = new HttpHeaders() {{
+        HttpHeaders requestHeaders = new HttpHeaders() {{
             String auth = financialTxnAuthorizationKey + ":" + financialTxnAuthorizationValue;
             byte[] encodedAuth = Base64.encodeBase64(
                     auth.getBytes(Charset.forName("US-ASCII")));
             String authHeader = "Basic " + new String(encodedAuth);
             set("Authorization", authHeader);
         }};
-        HttpEntity<String> basicAuthEntity = new HttpEntity<>(basicAuthHeader);
+        requestHeaders.set(ReceivingConstants.SM_WM_CONSUMER, consumerId);
+        requestHeaders.set(ReceivingConstants.SM_WM_APP_NAME, appName);
+        requestHeaders.set(ReceivingConstants.SM_WM_ENV, appEnv);
+        HttpEntity<String> httpEntity = new HttpEntity<>(requestHeaders);
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         String url = makeUrl(allRequestParams);
         log.info("Financial URL : " + url);
         ResponseEntity<FinancialTxnResponse> response;
         try {
-            response = restTemplate.exchange(url, HttpMethod.GET, basicAuthEntity, FinancialTxnResponse.class);
+            response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, FinancialTxnResponse.class);
         } catch (HttpStatusCodeException e) {
             log.error("Failed to get response from Financial Transaction.", e);
             throw new FinancialTransException("Failed to get response from Financial Transaction.");
