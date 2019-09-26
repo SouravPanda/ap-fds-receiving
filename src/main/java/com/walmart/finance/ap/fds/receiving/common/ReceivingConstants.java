@@ -46,4 +46,6 @@ public class ReceivingConstants {
     public static final String UPCNUMBERS="upcNumbers";
     public static final String DATEFORMATTER="yyyy-MM-dd HH:mm:ss";
 
+    public static final String RECEIVING_SHARD_KEY_FIELD = "partitionKey";
+
 }

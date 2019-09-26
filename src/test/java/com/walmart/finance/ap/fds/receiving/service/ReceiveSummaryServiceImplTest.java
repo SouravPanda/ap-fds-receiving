@@ -1,6 +1,7 @@
 package com.walmart.finance.ap.fds.receiving.service;
 
 import com.mongodb.client.result.UpdateResult;
+import com.walmart.finance.ap.fds.receiving.config.DefaultValuesConfigProperties;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
@@ -75,9 +76,14 @@ public class ReceiveSummaryServiceImplTest {
     @Mock
     InvoiceIntegrationService invoiceIntegrationService;
 
+    @Mock
+    DefaultValuesConfigProperties defaultValuesConfigProperties;
+
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        receiveSummaryServiceImpl.setMonthsPerShard(1);
+        receiveSummaryServiceImpl.setMonthsToDisplay(12);
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.walmart.finance.ap.fds.receiving.controller;
 
+import com.walmart.finance.ap.fds.receiving.config.DefaultValuesConfigProperties;
 import com.walmart.finance.ap.fds.receiving.response.*;
 import com.walmart.finance.ap.fds.receiving.service.ReceivingInfoServiceImpl;
 import org.junit.AfterClass;
@@ -35,6 +36,9 @@ public class ReceivingInfoControllerTest {
 
     @MockBean
     ReceivingInfoServiceImpl receivingInfoService;
+
+    @MockBean
+    DefaultValuesConfigProperties defaultValuesConfigProperties;
 
     @BeforeClass
     public static void setSystemProperty() {
