@@ -49,6 +49,8 @@ public class ReceivingInfoServiceImplTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        receivingInfoService.setMonthsPerShard(1);
+        receivingInfoService.setMonthsToDisplay(12);
     }
 
     /**

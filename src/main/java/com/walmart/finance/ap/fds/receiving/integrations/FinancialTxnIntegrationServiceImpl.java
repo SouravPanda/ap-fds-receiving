@@ -73,6 +73,7 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
         HttpEntity<String> basicAuthEntity = new HttpEntity<>(basicAuthHeader);
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         String url = makeUrl(allRequestParams);
+        log.info("Financial URL : " + url);
         ResponseEntity<FinancialTxnResponse> response;
         try {
             response = restTemplate.exchange(url, HttpMethod.GET, basicAuthEntity, FinancialTxnResponse.class);

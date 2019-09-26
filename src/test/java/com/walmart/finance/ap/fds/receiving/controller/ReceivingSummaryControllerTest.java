@@ -1,6 +1,7 @@
 
 package com.walmart.finance.ap.fds.receiving.controller;
 
+import com.walmart.finance.ap.fds.receiving.config.DefaultValuesConfigProperties;
 import com.walmart.finance.ap.fds.receiving.request.Meta;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
@@ -41,6 +42,9 @@ public class ReceivingSummaryControllerTest {
 
     @MockBean
     private ReceiveSummaryServiceImpl receiveSummaryService;
+
+    @MockBean
+    DefaultValuesConfigProperties defaultValuesConfigProperties;
 
     @Before
     public void setup() {
