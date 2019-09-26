@@ -27,14 +27,13 @@ public class ReceivingUtils {
                 monthsPerShard );
     }
 
-    public static String getPartitionKey(String docKeyField, LocalDate mdseRecvDate, Integer monthsPerShard) {
+    public static String getPartitionKey(String docKeyField, LocalDate dateForPartitionKey, Integer monthsPerShard) {
 
         StringBuilder partitionKeyBuilder = new StringBuilder();
         partitionKeyBuilder
                 .append(docKeyField).append("|")
-                .append(mdseRecvDate.getYear()).append("|")
-                .append((mdseRecvDate.getMonth().getValue() - 1) / monthsPerShard);
-
+                .append(dateForPartitionKey.getYear()).append("|")
+                .append((dateForPartitionKey.getMonth().getValue() - 1) / monthsPerShard);
         return partitionKeyBuilder.toString();
 
     }

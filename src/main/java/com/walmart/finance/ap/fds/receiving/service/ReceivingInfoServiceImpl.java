@@ -658,18 +658,19 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         Criteria partitionKeyCriteria;
 
         if (receiptDate != null) {
-            /* This scenario will be applicable */
+            /* This scenario will be applicable in case of 'Stores', where we get 'Receiving Date' as a part of
+            response from FinTrans*/
             partitionKeyCriteria =
                     Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD)
                             .is(ReceivingUtils.getPartitionKey(String.valueOf(storeNumber),
                                     receiptDate, monthsPerShard));
         } else if (allParams.containsKey(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam())
                 && allParams.containsKey(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam())) {
+            /* This flow will be applicable for requests which has 'receipt start date' and 'receipt end date' as a
+            part of the request */
             LocalDateTime startDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATESTART) + " 00:00:00");
             LocalDateTime endDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATEEND) + " 00:00:00");
-
             Period diff = Period.between(startDate.toLocalDate(), endDate.toLocalDate());
-
             int adjustedMonthsTodDisplay =
                     new Double(Math.ceil((diff.getMonths() + 2) / monthsPerShard.doubleValue()) * monthsPerShard)
                             .intValue();
@@ -678,6 +679,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                             .in(ReceivingUtils.getPartitionKeyList(String.valueOf(storeNumber),
                                     endDate.toLocalDate(), adjustedMonthsTodDisplay, monthsPerShard));
         } else {
+            /* If non of the above conditions match, we search across all the shards for the configured number of
+            months */
             partitionKeyCriteria =
                     Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD)
                             .in(ReceivingUtils.getPartitionKeyList(String.valueOf(storeNumber),

@@ -36,7 +36,9 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -442,7 +444,8 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         String id = formulateId(receivingSummaryRequest.getPurchaseOrderId(), receivingSummaryRequest.getReceiptNumber(), receivingSummaryRequest.getLocationNumber().toString(), isWareHouseData ? "0" : receivingSummaryRequest.getReceiptDate().toString());
         Query dynamicQuery = new Query();
         dynamicQuery.addCriteria(Criteria.where(ReceiveSummaryParameters.ID.getParameterName()).is(id));
-        addShardKeyQuery(dynamicQuery, String.valueOf(receivingSummaryRequest.getLocationNumber()));
+        addShardKeyQuery(dynamicQuery, String.valueOf(receivingSummaryRequest.getLocationNumber()),
+                receivingSummaryRequest.getReceiptDate());
         Update update = new Update();
         update.set(ReceiveSummaryParameters.BUSINESSSTATUSCODE.getParameterName(), receivingSummaryRequest.getBusinessStatusCode().charAt(0));
         update.set(ReceiveSummaryParameters.DATASYNCSTATUS.getParameterName(), DB2SyncStatus.UPDATE_SYNC_INITIATED);
@@ -477,10 +480,11 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         String id = formulateId(receivingSummaryLineRequest.getPurchaseOrderId(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), isWareHouseData ? "0" : receivingSummaryLineRequest.getReceiptDate().toString());
         Query query = new Query();
         query.addCriteria(Criteria.where(ReceiveSummaryParameters.ID.getParameterName()).is(id));
-        addShardKeyQuery(query, String.valueOf(receivingSummaryLineRequest.getLocationNumber()));
+        addShardKeyQuery(query, String.valueOf(receivingSummaryLineRequest.getLocationNumber()),
+                receivingSummaryLineRequest.getReceiptDate());
         Update update = new Update();
         update.set(ReceiveSummaryParameters.DATASYNCSTATUS.getParameterName(), DB2SyncStatus.UPDATE_SYNC_INITIATED);
-        update.set(ReceiveSummaryParameters.LASTUPDATEDDATE.getParameterName(), LocalDateTime.now());
+        update.set(ReceiveSummaryParameters.LASTUPDATEDDATE.getParameterName(), LocalDateTime.now(ZoneId.of("UTC")));
         update.set(ReceiveSummaryParameters.BUSINESSSTATUSCODE.getParameterName(), receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
         long startTime = System.currentTimeMillis();
         ReceiveSummary commitedRcvSummary = mongoTemplate.findAndModify(query, update, FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
@@ -490,13 +494,14 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         }
         Update updateLine = new Update();
         updateLine.set(ReceivingLineParameters.DATASYNCSTATUS.getParameterName(), DB2SyncStatus.UPDATE_SYNC_INITIATED);
-        updateLine.set(ReceivingLineParameters.LASTUPDATEDDATE.getParameterName(), LocalDateTime.now());
+        updateLine.set(ReceivingLineParameters.LASTUPDATEDDATE.getParameterName(), LocalDateTime.now(ZoneId.of("UTC")));
         updateLine.set(ReceivingLineParameters.INVENTORYMATCHSTATUS.getParameterName(), Integer.parseInt(receivingSummaryLineRequest.getInventoryMatchStatus()));
         if (StringUtils.isNotEmpty(receivingSummaryLineRequest.getReceiptLineNumber())) {
             String lineId = id + ReceivingConstants.PIPE_SEPARATOR + receivingSummaryLineRequest.getReceiptLineNumber().toString();
             Query queryForLine = new Query();
             queryForLine.addCriteria(Criteria.where(ReceivingLineParameters.ID.getParameterName()).is(lineId));
-            addShardKeyQuery(queryForLine, String.valueOf(receivingSummaryLineRequest.getLocationNumber()));
+            addShardKeyQuery(queryForLine, String.valueOf(receivingSummaryLineRequest.getLocationNumber()),
+                    receivingSummaryLineRequest.getReceiptDate());
             startTime = System.currentTimeMillis();
             ReceivingLine commitedRcvLine = mongoTemplate.findAndModify(queryForLine, updateLine, FindAndModifyOptions.options().returnNew(true), ReceivingLine.class, lineCollection);
             log.info("updateReceiveSummaryAndLine :: updateLineQueryTime :: findAndModify " + (System.currentTimeMillis() - startTime));
@@ -504,7 +509,8 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         } else {
             Query queryForLine = new Query();
             queryForLine.addCriteria(Criteria.where(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).is(id));
-            addShardKeyQuery(queryForLine, String.valueOf(receivingSummaryLineRequest.getLocationNumber()));
+            addShardKeyQuery(queryForLine, String.valueOf(receivingSummaryLineRequest.getLocationNumber()),
+                    receivingSummaryLineRequest.getReceiptDate());
             startTime = System.currentTimeMillis();
             UpdateResult updateResult = mongoTemplate.updateMulti(queryForLine, updateLine, ReceivingLine.class, lineCollection);
             long endTime = System.currentTimeMillis();
@@ -525,11 +531,10 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     }
 
 
-    private void addShardKeyQuery(Query query, String keyAttributeValue) {
+    private void addShardKeyQuery(Query query, String keyAttributeValue, LocalDate dateForPartitionKey) {
         Criteria partitionKeyCriteria =
                 Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD)
-                        .in(ReceivingUtils.getPartitionKeyList(keyAttributeValue,
-                                monthsToDisplay, monthsPerShard));
+                    .is(ReceivingUtils.getPartitionKey(keyAttributeValue, dateForPartitionKey, monthsPerShard));
         query.addCriteria(partitionKeyCriteria);
     }
 
