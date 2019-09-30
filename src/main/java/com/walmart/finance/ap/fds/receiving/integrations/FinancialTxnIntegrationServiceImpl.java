@@ -73,9 +73,12 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
         String url = makeUrl(allRequestParams);
         log.info("Financial URL : " + url);
         ResponseEntity<FinancialTxnResponse> response;
+        long startTime = System.currentTimeMillis();
         try {
             response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, FinancialTxnResponse.class);
+            log.info("financialTransactionResponseTime :: "+(System.currentTimeMillis()-startTime));
         } catch (HttpStatusCodeException e) {
+            log.info("financialTransactionResponseTime :: "+(System.currentTimeMillis()-startTime));
             log.error("Failed to get response from Financial Transaction.", e);
             throw new FinancialTransException("Failed to get response from Financial Transaction.");
         }
