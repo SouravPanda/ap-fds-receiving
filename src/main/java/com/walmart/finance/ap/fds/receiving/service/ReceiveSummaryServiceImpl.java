@@ -9,8 +9,6 @@ import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseCo
 import com.walmart.finance.ap.fds.receiving.exception.*;
 import com.walmart.finance.ap.fds.receiving.integrations.AdditionalResponse;
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
-import com.walmart.finance.ap.fds.receiving.integrations.InvoiceIntegrationService;
-import com.walmart.finance.ap.fds.receiving.integrations.InvoiceResponseData;
 import com.walmart.finance.ap.fds.receiving.model.*;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
@@ -30,7 +28,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
@@ -54,9 +51,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     @Autowired
     ReceivingSummaryResponseConverter receivingSummaryResponseConverter;
-
-    @Autowired
-    InvoiceIntegrationService invoiceIntegrationService;
 
     @Autowired
     ReceiveSummaryValidator receiveSummaryValidator;
@@ -97,14 +91,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         List<ReceiveSummary> receiveSummaries;
         List<ReceivingSummaryResponse> responseList;
         try {
-//            if (allRequestParams.containsKey(ReceivingConstants.INVOICENUMBER) || allRequestParams.containsKey(ReceivingConstants.INVOICEID) || allRequestParams.containsKey(ReceivingConstants.PURCHASEORDERNUMBER)) {
-//                receiveSummaries = getInvoiceFromInvoiceSummary(allRequestParams);
-//                if (allRequestParams.containsKey((ReceivingConstants.PURCHASEORDERNUMBER)) && receiveSummaries.isEmpty()) {
-//                    receiveSummaries = getSearchCriteriaForGet(allRequestParams);
-//                }
-//            } else {
-                receiveSummaries = getSearchCriteriaForGet(allRequestParams);
-//            }
+            receiveSummaries = getSearchCriteriaForGet(allRequestParams);
             log.info(ReceivingLogs.BEFORESIZESUMMARY.getParameterName() + receiveSummaries.size());
             if (CollectionUtils.isNotEmpty(receiveSummaries) && receiveSummaries.size() > 1000) {
                 receiveSummaries.subList(1000, receiveSummaries.size()).clear();
@@ -224,82 +211,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         }
     }
     /*******  Search Criteria methods  *********/
-
-    /******* Invoice Summary Integration *********/
-
-    private List<ReceiveSummary> getInvoiceFromInvoiceSummary(Map<String, String> paramMap) {
-        log.info(ReceivingLogs.INVOICEFROMINVSUMMARY.getParameterName());
-        List<InvoiceResponseData> invoiceResponseDataList = invoiceIntegrationService.getInvoice(paramMap);
-        HashMap<String, ReceiveSummary> receiveSummaryHashMap = new HashMap<>();
-        if (CollectionUtils.isNotEmpty(invoiceResponseDataList)) {
-            for (InvoiceResponseData invoiceResponseData : invoiceResponseDataList) {
-                setPONumberData(invoiceResponseData);
-                listToMapConversion(callRecvSmryAllAttributes(invoiceResponseData), receiveSummaryHashMap);
-                listToMapConversion(callRecvSmryByPOId(invoiceResponseData), receiveSummaryHashMap);
-                listToMapConversion(callRecvSmryByInvoiceNum(invoiceResponseData), receiveSummaryHashMap);
-            }
-        }
-        return receiveSummaryHashMap.values().stream().collect(Collectors.toList());
-    }
-
-    private void setPONumberData(InvoiceResponseData invoiceResponseData) {
-        if (CollectionUtils.isNotEmpty(invoiceResponseData.getInvoiceReferenceResponseList())) {
-            invoiceResponseData.getInvoiceReferenceResponseList().stream()
-                    .filter((t) -> t.getInvoiceRefTypeCd().equalsIgnoreCase("PO"))
-                    .forEach(y -> invoiceResponseData.setPurchaseOrderNumber(y.getInvoiceRefNbr()));
-        }
-    }
-
-    private List<ReceiveSummary> callRecvSmryAllAttributes(InvoiceResponseData invoiceResponseData) {
-        Query query = new Query();
-        CriteriaDefinition criteriaDefinition = null;
-        if (StringUtils.isNotEmpty(invoiceResponseData.getPurchaseOrderNumber())) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.PURCHASEORDERNUMBER.getParameterName()).is(invoiceResponseData.getPurchaseOrderNumber().trim());
-            query.addCriteria(criteriaDefinition);
-        }
-        if (StringUtils.isNotEmpty(invoiceResponseData.getPurchaseOrderId())) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.PURCHASEORDERID.getParameterName()).is(Long.valueOf(invoiceResponseData.getPurchaseOrderId().trim()));
-            query.addCriteria(criteriaDefinition);
-        }
-        if (StringUtils.isNotEmpty(invoiceResponseData.getDestDivNbr())) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.STORENUMBER.getParameterName()).is(Integer.parseInt(invoiceResponseData.getDestStoreNbr().trim()));
-            query.addCriteria(criteriaDefinition);
-        }
-        //TODO  : Commented due to dilemma of 6 digits and 9 digits, According to conversion with Anurag, this has been commented (29/May/2019)
-
-        /*   if (StringUtils.isNotEmpty(invoiceResponse.getVendorNumber())) {
-            query.addCriteria(Criteria.where(ReceiveSummaryCosmosDBParameters.VENDORNUMBER.getParameterName()).is(Integer.parseInt(invoiceResponse.getVendorNumber().trim())));
-        }*/
-        if (StringUtils.isNotEmpty(invoiceResponseData.getInvoiceDeptNumber())) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.DEPARTMENTNUMBER.getParameterName()).is(invoiceResponseData.getInvoiceDeptNumber().trim());
-            query.addCriteria(criteriaDefinition);
-        }
-        log.info("query: " + query);
-        return criteriaDefinition == null ? null : executeQueryForReceiveSummary(query);
-    }
-
-    private List<ReceiveSummary> callRecvSmryByPOId(InvoiceResponseData invoiceResponseData) {
-        Query query = null;
-        if (StringUtils.isNotEmpty(invoiceResponseData.getPurchaseOrderNumber())) {
-            query = new Query();
-            query.addCriteria(Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponseData.getPurchaseOrderNumber().trim()));
-            query.addCriteria(Criteria.where(ReceiveSummaryCosmosDBParameters.TRANSACTIONTYPE.getParameterName()).is(0));
-        }
-        log.info("query: " + query);
-        return executeQueryForReceiveSummary(query);
-    }
-
-    private List<ReceiveSummary> callRecvSmryByInvoiceNum(InvoiceResponseData invoiceResponseData) {
-        Query query = null;
-        if (StringUtils.isNotEmpty(invoiceResponseData.getInvoiceNumber())) {
-            query = new Query();
-            query.addCriteria(Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(invoiceResponseData.getInvoiceNumber().trim()));
-            query.addCriteria(Criteria.where(ReceiveSummaryCosmosDBParameters.TRANSACTIONTYPE.getParameterName()).is(1));
-        }
-        log.info("query: " + query);
-        return executeQueryForReceiveSummary(query);
-    }
-    /******* Invoice Summary Integration *********/
 
     /******* receive -line data fetching   *********/
 

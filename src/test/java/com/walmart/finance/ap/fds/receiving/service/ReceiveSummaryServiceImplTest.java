@@ -8,9 +8,6 @@ import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
 import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
-import com.walmart.finance.ap.fds.receiving.integrations.InvoiceIntegrationService;
-import com.walmart.finance.ap.fds.receiving.integrations.InvoiceReferenceResponse;
-import com.walmart.finance.ap.fds.receiving.integrations.InvoiceResponseData;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveLineRequestParams;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryRequestParams;
@@ -74,9 +71,6 @@ public class ReceiveSummaryServiceImplTest {
     ReceiveSummaryLineValidator receiveSummaryLineValidator;
 
     @Mock
-    InvoiceIntegrationService invoiceIntegrationService;
-
-    @Mock
     DefaultValuesConfigProperties defaultValuesConfigProperties;
 
     @Before
@@ -137,18 +131,6 @@ public class ReceiveSummaryServiceImplTest {
         content.add(receivingSummaryResponse);
         content.add(receivingSummaryResponseAt);
 
-        List<InvoiceReferenceResponse> invoiceReferenceResponses = new ArrayList<InvoiceReferenceResponse>() {
-            {
-                add(new InvoiceReferenceResponse("PO", "000"));
-                add(new InvoiceReferenceResponse("AD", "123"));
-            }
-        };
-        List<InvoiceResponseData> invoiceResponseDataList = new ArrayList<>();
-        invoiceResponseDataList.add(new InvoiceResponseData("656", "267", "000", null,
-                "777", "0", "998", "9986", "098", invoiceReferenceResponses));
-        invoiceResponseDataList.add(new InvoiceResponseData("656", "267", "000", null,
-                "77", "0", "98", "9986", "098", invoiceReferenceResponses));
-
         List<ReceivingLine> listOfReceiveLines = new ArrayList<>();
 
         listOfReceiveLines.add(new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0,
@@ -161,7 +143,6 @@ public class ReceiveSummaryServiceImplTest {
         Criteria criteriaNew = Criteria.where(ReceiveSummaryRequestParams.PURCHASEORDERNUMBER.getParameterName()).is("999").and(ReceiveSummaryRequestParams.CONTROLNUMBER.getParameterName()).is("000").and(ReceiveSummaryRequestParams.LOCATIONNUMBER.getParameterName())
                 .is(998).and(ReceiveSummaryRequestParams.DEPARTMENTNUMBER.getParameterName()).is(98);
         dynamicQuery.addCriteria(criteriaNew);
-        Mockito.when(invoiceIntegrationService.getInvoice(Mockito.any())).thenReturn(invoiceResponseDataList);
         when(receivingSummaryResponseConverter.convert(Mockito.any(ReceiveSummary.class))).thenReturn(receivingSummaryResponse);
         when(mongoTemplate.count(query, ReceiveSummary.class)).thenReturn(2L);
         Query mockQuery = Mockito.mock(Query.class);
@@ -389,8 +370,6 @@ public class ReceiveSummaryServiceImplTest {
         Criteria criteriaNew = Criteria.where(ReceiveSummaryRequestParams.PURCHASEORDERNUMBER.getParameterName()).is("999").and(ReceiveSummaryRequestParams.CONTROLNUMBER.getParameterName()).is("000").and(ReceiveSummaryRequestParams.LOCATIONNUMBER.getParameterName())
                 .is(998).and(ReceiveSummaryRequestParams.DEPARTMENTNUMBER.getParameterName()).is(98);
         dynamicQuery.addCriteria(criteriaNew);
-        List<InvoiceResponseData> invoiceResponseDataList = new ArrayList<>();
-        Mockito.when(invoiceIntegrationService.getInvoice(Mockito.any())).thenReturn(invoiceResponseDataList);
         when(receivingSummaryResponseConverter.convert(Mockito.any(ReceiveSummary.class))).thenReturn(receivingSummaryResponse);
         when(mongoTemplate.count(dynamicQuery, ReceiveSummary.class)).thenReturn(2L);
         Query mockQuery = Mockito.mock(Query.class);
