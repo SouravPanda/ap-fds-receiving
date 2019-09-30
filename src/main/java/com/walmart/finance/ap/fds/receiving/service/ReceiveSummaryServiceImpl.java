@@ -97,14 +97,14 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         List<ReceiveSummary> receiveSummaries;
         List<ReceivingSummaryResponse> responseList;
         try {
-            if (allRequestParams.containsKey(ReceivingConstants.INVOICENUMBER) || allRequestParams.containsKey(ReceivingConstants.INVOICEID) || allRequestParams.containsKey(ReceivingConstants.PURCHASEORDERNUMBER)) {
-                receiveSummaries = getInvoiceFromInvoiceSummary(allRequestParams);
-                if (allRequestParams.containsKey((ReceivingConstants.PURCHASEORDERNUMBER)) && receiveSummaries.isEmpty()) {
-                    receiveSummaries = getSearchCriteriaForGet(allRequestParams);
-                }
-            } else {
+//            if (allRequestParams.containsKey(ReceivingConstants.INVOICENUMBER) || allRequestParams.containsKey(ReceivingConstants.INVOICEID) || allRequestParams.containsKey(ReceivingConstants.PURCHASEORDERNUMBER)) {
+//                receiveSummaries = getInvoiceFromInvoiceSummary(allRequestParams);
+//                if (allRequestParams.containsKey((ReceivingConstants.PURCHASEORDERNUMBER)) && receiveSummaries.isEmpty()) {
+//                    receiveSummaries = getSearchCriteriaForGet(allRequestParams);
+//                }
+//            } else {
                 receiveSummaries = getSearchCriteriaForGet(allRequestParams);
-            }
+//            }
             log.info(ReceivingLogs.BEFORESIZESUMMARY.getParameterName() + receiveSummaries.size());
             if (CollectionUtils.isNotEmpty(receiveSummaries) && receiveSummaries.size() > 1000) {
                 receiveSummaries.subList(1000, receiveSummaries.size()).clear();

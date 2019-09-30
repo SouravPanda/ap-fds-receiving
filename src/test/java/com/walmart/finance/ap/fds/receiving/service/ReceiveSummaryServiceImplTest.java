@@ -166,7 +166,7 @@ public class ReceiveSummaryServiceImplTest {
         when(mongoTemplate.count(query, ReceiveSummary.class)).thenReturn(2L);
         Query mockQuery = Mockito.mock(Query.class);
         when(mockQuery.limit(Mockito.anyInt())).thenReturn(mockQuery);
-        when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.any())).thenReturn(listOfContent, listOfContent, listOfContent, listOfContent, listOfContent, listOfContent, listOfReceiveLines, listOfFreight);
+        when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.any())).thenReturn(listOfContent, listOfReceiveLines, listOfFreight);
         ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setData(content);
         successMessage.setSuccess(true);
