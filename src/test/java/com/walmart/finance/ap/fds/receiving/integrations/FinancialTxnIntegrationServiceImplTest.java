@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.springframework.http.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -23,6 +24,7 @@ import java.util.Map;
 
 import static org.mockito.Mockito.when;
 
+@PrepareForTest(FinancialTxnIntegrationServiceImpl.class)
 public class FinancialTxnIntegrationServiceImplTest {
 
     @Mock
