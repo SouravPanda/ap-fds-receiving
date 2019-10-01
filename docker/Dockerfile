@@ -1,5 +1,7 @@
 # We need to run it from base project directory i.e ap-fds-receive
+# Use command 'docker build -f docker/Dockerfile . -t ap-fds-receive'
 FROM hub.docker.prod.walmart.com/library/openjdk:8
+
 RUN mkdir certificate
 ADD ./target/ap-fds-receive-*-SNAPSHOT.jar  /app.jar
 ADD ./docker/api.wal-mart.com.crt certificate/clientauthentication.crt
@@ -21,10 +23,9 @@ RUN apt-get install -y --allow-unauthenticated openssh-server traceroute telnet
 RUN echo "$SSH_PASSWD" | chpasswd
 
 ADD ./docker/sshd_config /etc/ssh/sshd_config
-
-RUN chmod u+x /usr/local/bin/init.sh
 EXPOSE 2222
 ## SSH Config ends
 
 ADD ./docker/init.sh /usr/local/bin/init.sh
+RUN chmod u+x /usr/local/bin/init.sh
 ENTRYPOINT ["/usr/local/bin/init.sh"]
