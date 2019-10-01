@@ -530,8 +530,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 receivingInfoResponseV1.setOrigStoreNbr(receiveSummary.getStoreNumber());
             }
             if (receivingInfoResponseV1.getParentReceivingDate() == null ) {
-                receivingInfoResponseV1.setParentReceivingDate(receiveSummary.getReceivingDate() != null ?
-                        receiveSummary.getReceivingDate() : LocalDate.ofEpochDay(0));
+                receivingInfoResponseV1.setParentReceivingDate(receiveSummary.getReceivingDate());
             }
         }
         receivingInfoResponseV1.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ?
