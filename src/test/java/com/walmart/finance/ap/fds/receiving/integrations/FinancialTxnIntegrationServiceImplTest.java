@@ -7,10 +7,10 @@ import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryP
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -24,7 +24,7 @@ import java.util.Map;
 
 import static org.mockito.Mockito.when;
 
-@PrepareForTest(FinancialTxnIntegrationServiceImpl.class)
+@RunWith(MockitoJUnitRunner.class)
 public class FinancialTxnIntegrationServiceImplTest {
 
     @Mock
@@ -39,7 +39,6 @@ public class FinancialTxnIntegrationServiceImplTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         financialTxnHost = "https://invc-fin-tran-d.dev01.gbs.ase.southcentralus.us.walmart.net/";
         financialTxnIntegrationService.setAppName("AP-FDS-INVOICE-FINANCIAL-TRANSACTION");
         financialTxnIntegrationService.setAppEnv("dev-us");
@@ -111,7 +110,6 @@ public class FinancialTxnIntegrationServiceImplTest {
         String url = financialTxnHost + "US/invoice/financial/transaction/vendorNumber/2222/poNumber/99987/invoiceNumber/1828926897";
         HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         HttpStatusCodeException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND);
-        when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenThrow(exception);
         org.assertj.core.api.Assertions.assertThat(financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap).isEmpty());
     }
 
@@ -136,10 +134,6 @@ public class FinancialTxnIntegrationServiceImplTest {
         };
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
-        String url = financialTxnHost + "US/invoice/financial/transaction/vendorNumber/2222/poNumber/99987/receiptNumber/6302?invoiceNumber=1828926897";
-        HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
-        ResponseEntity<FinancialTxnResponse> response = null;
-        when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
         org.assertj.core.api.Assertions.assertThat(financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap).isEmpty());
     }
 
