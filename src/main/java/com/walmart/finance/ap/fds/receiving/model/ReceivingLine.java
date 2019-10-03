@@ -47,7 +47,7 @@ public class ReceivingLine   {
     private LocalDate receivingDate;//RPR_DATE
     private Integer receiveSequenceNumber;// RPR_SEQ_NBR
     private Double receivedWeightQuantity;//RECV_WEIGHT_QTY(Column)INITIAL_RECV_ITEM(Table)
-    private String receivedQuantityUnitOfMeasureCode;//RECV_QTY_UOM_CODE(Column)INITIAL_RECV_ITEM(Table)
+    private String receivedQuantityUOMCode;//RECV_QTY_UOM_CODE(Column)INITIAL_RECV_ITEM(Table)
     private Integer inventoryMatchStatus;
     private String variableWeightIndicator;
     private Map<String, ReceiveMDSResponse> merchandises;
