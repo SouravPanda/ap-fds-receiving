@@ -162,10 +162,8 @@ public class ReceiveSummaryServiceImplTest {
         mockMap.put(ReceiveSummaryRequestParams.VENDORNUMBER.getParameterName(), "0987");
         mockMap.put(ReceiveSummaryRequestParams.DIVISIONNUMBER.getParameterName(), "90");
         mockMap.put(ReceiveSummaryRequestParams.ITEMNUMBERS.getParameterName(), "9880");
-        mockMap.put(ReceiveSummaryRequestParams.INVOICEID.getParameterName(), "098");
         mockMap.put(ReceiveSummaryRequestParams.PURCHASEORDERID.getParameterName(), "456");
         mockMap.put(ReceiveSummaryRequestParams.RECEIPTNUMBERS.getParameterName(), "234");
-        mockMap.put(ReceiveSummaryRequestParams.INVOICENUMBER.getParameterName(), "134");
         mockMap.put(ReceiveSummaryRequestParams.RECEIPTDATEEND.getParameterName(), "2017-12-12");
         mockMap.put(ReceiveSummaryRequestParams.RECEIPTDATESTART.getParameterName(), "2015-12-12");
         mockMap.put(ReceiveSummaryRequestParams.TRANSACTIONTYPE.getParameterName(), "0");
@@ -240,10 +238,8 @@ public class ReceiveSummaryServiceImplTest {
         mockMap.put(ReceiveSummaryRequestParams.VENDORNUMBER.getParameterName(), "0987");
         mockMap.put(ReceiveSummaryRequestParams.DIVISIONNUMBER.getParameterName(), "90");
         mockMap.put(ReceiveSummaryRequestParams.ITEMNUMBERS.getParameterName(), "9880");
-        mockMap.put(ReceiveSummaryRequestParams.INVOICEID.getParameterName(), "098");
         mockMap.put(ReceiveSummaryRequestParams.PURCHASEORDERID.getParameterName(), "456");
         mockMap.put(ReceiveSummaryRequestParams.RECEIPTNUMBERS.getParameterName(), "234");
-        mockMap.put(ReceiveSummaryRequestParams.INVOICENUMBER.getParameterName(), "134");
         mockMap.put(ReceiveSummaryRequestParams.RECEIPTDATEEND.getParameterName(), "2017-12-12");
         mockMap.put(ReceiveSummaryRequestParams.RECEIPTDATESTART.getParameterName(), "2015-12-12");
         mockMap.put(ReceiveSummaryRequestParams.TRANSACTIONTYPE.getParameterName(), "0");
