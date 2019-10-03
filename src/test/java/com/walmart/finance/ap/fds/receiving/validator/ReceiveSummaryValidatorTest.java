@@ -112,7 +112,6 @@ public class ReceiveSummaryValidatorTest {
         allRequestParams.put(ReceivingConstants.RECEIPTNUMBERS, "555");
         allRequestParams.put(ReceivingConstants.CONTROLNUMBER, "999");
         allRequestParams.put(ReceivingConstants.PURCHASEORDERID, "88");
-        allRequestParams.put(ReceivingConstants.INVOICEID, "97");
         allRequestParams.put(ReceivingConstants.VENDORNUMBER, "111");
         allRequestParams.put(ReceivingConstants.RECEIVINGCONTROLNUMBER, "00");
         allRequestParams.put(ReceivingConstants.DIVISIONNUMBER, "77");
@@ -121,7 +120,6 @@ public class ReceiveSummaryValidatorTest {
         allRequestParams.put(ReceivingConstants.RECEIPTDATESTART, "08-09-2017");
         allRequestParams.put(ReceivingConstants.RECEIPTDATEEND, "09-09-2018");
         allRequestParams.put(ReceivingConstants.DEPARTMENTNUMBER, "0");
-        allRequestParams.put(ReceivingConstants.INVOICENUMBER, "134");
         allRequestParams.put(ReceiveSummaryRequestParams.ORDER.getParameterName(), "");
         allRequestParams.put(ReceiveSummaryRequestParams.ORDERBY.getParameterName(), "");
         allRequestParams.put(ReceiveSummaryRequestParams.PAGENBR.getParameterName(), "");
