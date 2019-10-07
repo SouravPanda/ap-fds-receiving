@@ -14,7 +14,7 @@ import java.util.List;
 public class ReceivingLineResponse {
     private Long receiptNumber;
     private Integer receiptLineNumber;
-    private Integer itemNumber;
+    private Long itemNumber;
     private Integer vendorNumber;
     private Integer quantity;
     private Double eachCostAmount;
