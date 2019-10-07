@@ -1,11 +1,8 @@
 package com.walmart.finance.ap.fds.receiving.converter;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.walmart.finance.ap.fds.receiving.config.DefaultValuesConfigProperties;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
-import com.walmart.finance.ap.fds.receiving.response.ReceiveMDSResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +10,6 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 @Component
 public class ReceivingLineResponseConverter implements Converter<ReceivingLine, ReceivingLineResponse> {
@@ -71,7 +67,7 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
                 receivingLine.getVariableWeightIndicator() : defaultValuesConfigProperties.getVariableWeightIndicator());
 
         //TODO Need to check  it is present in DB2?
-       response.setUnitOfMeasure(receivingLine.getReceivedQuantityUnitOfMeasureCode());
+       response.setUnitOfMeasure(receivingLine.getReceivedQuantityUOMCode());
 
         response.setReceivedWeightQuantity(receivingLine.getReceivedWeightQuantity()== null  ?
                 defaultValuesConfigProperties.getReceivedWeightQuantity() : receivingLine.getReceivedWeightQuantity());

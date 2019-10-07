@@ -19,7 +19,7 @@ public class ReceivingInfoLineResponse {
 
     private Integer receiptLineNumber;
 
-    private Integer itemNumber;
+    private Long itemNumber;
 
     private Integer quantity;
 

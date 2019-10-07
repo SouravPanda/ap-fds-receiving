@@ -22,7 +22,7 @@ public class ReceivingLine   {
     private String _id;
     private String receiveId;     //BASE_DIV_NBR + RPR_DATE(month) + RPR_SEQ_NBR from BKRM_PROC_XMIT_HDR
     private Integer lineNumber;     //BKRM_PROC_XMIT_DTL.LINE_NBR
-    private Integer itemNumber;     //BKRM_PROC_XMIT_DTL.ITEM_NBR
+    private Long itemNumber;     //BKRM_PROC_XMIT_DTL.ITEM_NBR
     private Integer vendorNumber;   //BKRM_PROC_XMIT_HDR.ORIG_DEST_ID
     private Integer receivedQuantity;   //BKRM_PROC_XMIT_DTL.ITEM_QTY
     private Double costAmount;      //BKRM_PROC_XMIT_DTL.COST_AMT
@@ -47,7 +47,7 @@ public class ReceivingLine   {
     private LocalDate receivingDate;//RPR_DATE
     private Integer receiveSequenceNumber;// RPR_SEQ_NBR
     private Double receivedWeightQuantity;//RECV_WEIGHT_QTY(Column)INITIAL_RECV_ITEM(Table)
-    private String receivedQuantityUnitOfMeasureCode;//RECV_QTY_UOM_CODE(Column)INITIAL_RECV_ITEM(Table)
+    private String receivedQuantityUOMCode;//RECV_QTY_UOM_CODE(Column)INITIAL_RECV_ITEM(Table)
     private Integer inventoryMatchStatus;
     private String variableWeightIndicator;
     private Map<String, ReceiveMDSResponse> merchandises;

@@ -7,9 +7,12 @@ import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryP
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.http.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -23,6 +26,8 @@ import java.util.Map;
 
 import static org.mockito.Mockito.when;
 
+@PrepareForTest(FinancialTxnIntegrationServiceImpl.class)
+@RunWith(PowerMockRunner.class)
 public class FinancialTxnIntegrationServiceImplTest {
 
     @Mock

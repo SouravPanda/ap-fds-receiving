@@ -4,9 +4,12 @@ import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.http.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -19,6 +22,9 @@ import java.util.List;
 import static org.junit.Assert.assertNull;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+
+@PrepareForTest(InvoiceIntegrationServiceImpl.class)
+@RunWith(PowerMockRunner.class)
 public class InvoiceIntegrationServiceImplTest {
 
     @Mock

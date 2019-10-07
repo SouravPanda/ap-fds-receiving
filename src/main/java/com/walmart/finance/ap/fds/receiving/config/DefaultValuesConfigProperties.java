@@ -44,7 +44,7 @@ public class DefaultValuesConfigProperties {
 
     private String variableWeightIndicator;
 
-    private Integer itemNumber;
+    private Long itemNumber;
 
     private Integer quantity;
 
