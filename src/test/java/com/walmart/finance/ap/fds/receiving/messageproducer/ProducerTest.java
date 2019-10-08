@@ -34,7 +34,7 @@ public class ProducerTest {
     @Test
     public void sendSummaryToEventHub()  {
         when(customSource.summaryTopic()).thenReturn(messageChannel);
-        when(messageChannel.send(MessageBuilder.withPayload(Mockito.anyString()).build())).thenReturn(true);
+        when(messageChannel.send(MessageBuilder.withPayload("test").build())).thenReturn(Boolean.TRUE);
         producer.sendSummaryToEventHub("test", "test");
     }
 }

@@ -17,12 +17,6 @@ public enum ReceiveSummaryRequestParams {
     DIVISIONNUMBER("divisionNumber"),
     VENDORNUMBER("vendorNumber"),
     DEPARTMENTNUMBER("departmentNumber"),
-    INVOICEID("invoiceId"),
-    INVOICENUMBER("invoiceNumber"),
-    ORDERBY("orderBy"),
-    ORDER("order"),
-    PAGENBR("pageNbr"),
-    PAGESIZE("pageSize"),
     RECEIPTDATESTART("receiptDateStart"),
     RECEIPTDATEEND("receiptDateEnd");
 

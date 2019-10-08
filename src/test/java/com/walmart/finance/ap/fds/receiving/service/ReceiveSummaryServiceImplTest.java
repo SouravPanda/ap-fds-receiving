@@ -8,9 +8,6 @@ import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
 import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
-import com.walmart.finance.ap.fds.receiving.integrations.InvoiceIntegrationService;
-import com.walmart.finance.ap.fds.receiving.integrations.InvoiceReferenceResponse;
-import com.walmart.finance.ap.fds.receiving.integrations.InvoiceResponseData;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveLineRequestParams;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryRequestParams;
@@ -74,9 +71,6 @@ public class ReceiveSummaryServiceImplTest {
     ReceiveSummaryLineValidator receiveSummaryLineValidator;
 
     @Mock
-    InvoiceIntegrationService invoiceIntegrationService;
-
-    @Mock
     DefaultValuesConfigProperties defaultValuesConfigProperties;
 
     @Before
@@ -137,18 +131,6 @@ public class ReceiveSummaryServiceImplTest {
         content.add(receivingSummaryResponse);
         content.add(receivingSummaryResponseAt);
 
-        List<InvoiceReferenceResponse> invoiceReferenceResponses = new ArrayList<InvoiceReferenceResponse>() {
-            {
-                add(new InvoiceReferenceResponse("PO", "000"));
-                add(new InvoiceReferenceResponse("AD", "123"));
-            }
-        };
-        List<InvoiceResponseData> invoiceResponseDataList = new ArrayList<>();
-        invoiceResponseDataList.add(new InvoiceResponseData("656", "267", "000", null,
-                "777", "0", "998", "9986", "098", invoiceReferenceResponses));
-        invoiceResponseDataList.add(new InvoiceResponseData("656", "267", "000", null,
-                "77", "0", "98", "9986", "098", invoiceReferenceResponses));
-
         List<ReceivingLine> listOfReceiveLines = new ArrayList<>();
 
         listOfReceiveLines.add(new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0,
@@ -161,12 +143,11 @@ public class ReceiveSummaryServiceImplTest {
         Criteria criteriaNew = Criteria.where(ReceiveSummaryRequestParams.PURCHASEORDERNUMBER.getParameterName()).is("999").and(ReceiveSummaryRequestParams.CONTROLNUMBER.getParameterName()).is("000").and(ReceiveSummaryRequestParams.LOCATIONNUMBER.getParameterName())
                 .is(998).and(ReceiveSummaryRequestParams.DEPARTMENTNUMBER.getParameterName()).is(98);
         dynamicQuery.addCriteria(criteriaNew);
-        Mockito.when(invoiceIntegrationService.getInvoice(Mockito.any())).thenReturn(invoiceResponseDataList);
         when(receivingSummaryResponseConverter.convert(Mockito.any(ReceiveSummary.class))).thenReturn(receivingSummaryResponse);
         when(mongoTemplate.count(query, ReceiveSummary.class)).thenReturn(2L);
         Query mockQuery = Mockito.mock(Query.class);
         when(mockQuery.limit(Mockito.anyInt())).thenReturn(mockQuery);
-        when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.any())).thenReturn(listOfContent, listOfContent, listOfContent, listOfContent, listOfContent, listOfContent, listOfReceiveLines, listOfFreight);
+        when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.any())).thenReturn(listOfContent, listOfReceiveLines, listOfFreight);
         ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setData(content);
         successMessage.setSuccess(true);
@@ -181,10 +162,8 @@ public class ReceiveSummaryServiceImplTest {
         mockMap.put(ReceiveSummaryRequestParams.VENDORNUMBER.getParameterName(), "0987");
         mockMap.put(ReceiveSummaryRequestParams.DIVISIONNUMBER.getParameterName(), "90");
         mockMap.put(ReceiveSummaryRequestParams.ITEMNUMBERS.getParameterName(), "9880");
-        mockMap.put(ReceiveSummaryRequestParams.INVOICEID.getParameterName(), "098");
         mockMap.put(ReceiveSummaryRequestParams.PURCHASEORDERID.getParameterName(), "456");
         mockMap.put(ReceiveSummaryRequestParams.RECEIPTNUMBERS.getParameterName(), "234");
-        mockMap.put(ReceiveSummaryRequestParams.INVOICENUMBER.getParameterName(), "134");
         mockMap.put(ReceiveSummaryRequestParams.RECEIPTDATEEND.getParameterName(), "2017-12-12");
         mockMap.put(ReceiveSummaryRequestParams.RECEIPTDATESTART.getParameterName(), "2015-12-12");
         mockMap.put(ReceiveSummaryRequestParams.TRANSACTIONTYPE.getParameterName(), "0");
@@ -261,10 +240,8 @@ public class ReceiveSummaryServiceImplTest {
         mockMap.put(ReceiveSummaryRequestParams.VENDORNUMBER.getParameterName(), "0987");
         mockMap.put(ReceiveSummaryRequestParams.DIVISIONNUMBER.getParameterName(), "90");
         mockMap.put(ReceiveSummaryRequestParams.ITEMNUMBERS.getParameterName(), "9880");
-        mockMap.put(ReceiveSummaryRequestParams.INVOICEID.getParameterName(), "098");
         mockMap.put(ReceiveSummaryRequestParams.PURCHASEORDERID.getParameterName(), "456");
         mockMap.put(ReceiveSummaryRequestParams.RECEIPTNUMBERS.getParameterName(), "234");
-        mockMap.put(ReceiveSummaryRequestParams.INVOICENUMBER.getParameterName(), "134");
         mockMap.put(ReceiveSummaryRequestParams.RECEIPTDATEEND.getParameterName(), "2017-12-12");
         mockMap.put(ReceiveSummaryRequestParams.RECEIPTDATESTART.getParameterName(), "2015-12-12");
         mockMap.put(ReceiveSummaryRequestParams.TRANSACTIONTYPE.getParameterName(), "0");
@@ -394,8 +371,6 @@ public class ReceiveSummaryServiceImplTest {
         Criteria criteriaNew = Criteria.where(ReceiveSummaryRequestParams.PURCHASEORDERNUMBER.getParameterName()).is("999").and(ReceiveSummaryRequestParams.CONTROLNUMBER.getParameterName()).is("000").and(ReceiveSummaryRequestParams.LOCATIONNUMBER.getParameterName())
                 .is(998).and(ReceiveSummaryRequestParams.DEPARTMENTNUMBER.getParameterName()).is(98);
         dynamicQuery.addCriteria(criteriaNew);
-        List<InvoiceResponseData> invoiceResponseDataList = new ArrayList<>();
-        Mockito.when(invoiceIntegrationService.getInvoice(Mockito.any())).thenReturn(invoiceResponseDataList);
         when(receivingSummaryResponseConverter.convert(Mockito.any(ReceiveSummary.class))).thenReturn(receivingSummaryResponse);
         when(mongoTemplate.count(dynamicQuery, ReceiveSummary.class)).thenReturn(2L);
         Query mockQuery = Mockito.mock(Query.class);
