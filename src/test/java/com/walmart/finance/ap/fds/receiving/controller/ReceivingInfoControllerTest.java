@@ -53,7 +53,7 @@ public class ReceivingInfoControllerTest {
 
     @Test
     public void getReceivingInfo() throws Exception {
-        ReceivingInfoLineResponse receivingInfoLineResponse = new ReceivingInfoLineResponse("30006", 1, 3777,
+        ReceivingInfoLineResponse receivingInfoLineResponse = new ReceivingInfoLineResponse("30006", 1, 3777L,
                 2, 33.0,
                 33.84, 2, 0,
                 "N", "0000047875883980",
@@ -150,7 +150,7 @@ public class ReceivingInfoControllerTest {
                 add(new ReceiveMDSResponse(1, 2, 400L, "02"));
             }
         };
-        ReceivingInfoLineResponse receivingInfoLineResponse = new ReceivingInfoLineResponse("110950", 2, 575486609,
+        ReceivingInfoLineResponse receivingInfoLineResponse = new ReceivingInfoLineResponse("110950", 2, 575486609L,
                 2, 30.0,
                 30.09, 2, 0,
                 "N", "0000047875883989",

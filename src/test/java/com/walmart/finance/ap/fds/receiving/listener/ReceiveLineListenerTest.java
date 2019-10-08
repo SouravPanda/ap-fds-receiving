@@ -1,27 +1,27 @@
 package com.walmart.finance.ap.fds.receiving.listener;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.messageproducer.Producer;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
-import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.request.Meta;
+import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.request.SorRoutingCtx;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.time.LocalDate;
 
-import static org.mockito.Mockito.doThrow;
-
-@RunWith(SpringJUnit4ClassRunner.class)
+@PrepareForTest(ReceiveLineListener.class)
+@RunWith(PowerMockRunner.class)
 public class ReceiveLineListenerTest {
 
-    @Spy
     @InjectMocks
     private ReceiveLineListener receiveLineListener;
 
@@ -50,8 +50,18 @@ public class ReceiveLineListenerTest {
     }
 
     @Test
-    public void onReceiveLineCommitException() {
-        doThrow(JsonProcessingException.class).when(producer).sendSummaryLineToEventHub(Mockito.anyString(), Mockito.anyString());
-        receiveLineListener.onReceiveLineCommit(Mockito.any());
+    public void onReceiveLineCommitException() throws JsonProcessingException {
+        Meta meta = new Meta();
+        SorRoutingCtx sorRoutingCtx = new SorRoutingCtx();
+        sorRoutingCtx.setInvProcAreaCode(36);
+        sorRoutingCtx.setLocationCountryCd("US");
+        sorRoutingCtx.setReplnTypCd("R");
+        meta.setSorRoutingCtx(sorRoutingCtx);
+        ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
+                "1", "1", meta);
+        Mockito.doThrow(JsonProcessingException.class).when(producer).sendSummaryLineToEventHub(new ObjectMapper().writeValueAsString(receivingSummaryLineRequest),
+                ReceivingConstants.RECEIVELINEWAREHOUSE);
+        receiveLineListener.onReceiveLineCommit(receivingSummaryLineRequest);
     }
+
 }

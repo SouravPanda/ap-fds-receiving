@@ -31,12 +31,6 @@ public class ProducerTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    @Test(expected=Exception.class)
-    public void sendSummaryToEventHubException() {
-        when(customSource.summaryTopic().send(MessageBuilder.withPayload("test").build())).thenThrow(Exception.class);
-        producer.sendSummaryToEventHub("test", "test");
-    }
-
     @Test
     public void sendSummaryToEventHub()  {
         when(customSource.summaryTopic()).thenReturn(messageChannel);
