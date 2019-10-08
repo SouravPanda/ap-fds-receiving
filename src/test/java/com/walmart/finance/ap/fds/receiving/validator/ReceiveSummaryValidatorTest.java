@@ -120,10 +120,6 @@ public class ReceiveSummaryValidatorTest {
         allRequestParams.put(ReceivingConstants.RECEIPTDATESTART, "08-09-2017");
         allRequestParams.put(ReceivingConstants.RECEIPTDATEEND, "09-09-2018");
         allRequestParams.put(ReceivingConstants.DEPARTMENTNUMBER, "0");
-        allRequestParams.put(ReceiveSummaryRequestParams.ORDER.getParameterName(), "");
-        allRequestParams.put(ReceiveSummaryRequestParams.ORDERBY.getParameterName(), "");
-        allRequestParams.put(ReceiveSummaryRequestParams.PAGENBR.getParameterName(), "");
-        allRequestParams.put(ReceiveSummaryRequestParams.PAGESIZE.getParameterName(), "");
         ReceiveSummaryValidator.validate("US", allRequestParams);
     }
 
