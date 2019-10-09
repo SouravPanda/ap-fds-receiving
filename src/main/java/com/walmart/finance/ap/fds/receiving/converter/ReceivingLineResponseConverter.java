@@ -31,14 +31,14 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
 
         response.setDivisionNumber(receivingLine.getBaseDivisionNumber() != null ?
                 receivingLine.getBaseDivisionNumber() : defaultValuesConfigProperties.getBaseDivisionNumber());
-        response.setReceiptNumber(Long.valueOf(receivingLine.getReceiveId()));
+        response.setReceiptNumber(receivingLine.getReceiveId());
         response.setReceiptLineNumber(receivingLine.getLineNumber() != null ?
                 receivingLine.getLineNumber() : defaultValuesConfigProperties.getLineNumber());
         response.setItemNumber(receivingLine.getItemNumber() != null ?
                 receivingLine.getItemNumber() : defaultValuesConfigProperties.getItemNumber());
         response.setVendorNumber(receivingLine.getVendorNumber());
         response.setQuantity(receivingLine.getReceivedQuantity() != null ?
-                receivingLine.getReceivedQuantity() : defaultValuesConfigProperties.getReceivedQuantity());
+                receivingLine.getReceivedQuantity().intValue() : defaultValuesConfigProperties.getReceivedQuantity());
         response.setEachCostAmount(receivingLine.getCostAmount() != null ?
                 receivingLine.getCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
         response.setEachRetailAmount(receivingLine.getRetailAmount() != null ?

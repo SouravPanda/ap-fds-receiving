@@ -92,7 +92,7 @@ public class ReceiveSummary {
 
     // default value is zero
     //To be checked, not present in search or response
-    private Long freightBillExpandID;
+    private Long freightBillExpandId;
 
     // default value is space
     //To be checked, not present in search or response

@@ -55,7 +55,7 @@ public class ReceivingInfoControllerTest {
     public void getReceivingInfo() throws Exception {
         ReceivingInfoLineResponse receivingInfoLineResponse = new ReceivingInfoLineResponse("30006", 1, 3777L,
                 2, 33.0,
-                33.84, 2, 0,
+                33.84, 2.0, 0,
                 "N", "0000047875883980",
                 "NSW CRASH TRNF", "LL", "ww", 1, "1.9", null);
         List<ReceivingInfoLineResponse> lineResponses = new ArrayList<ReceivingInfoLineResponse>() {
@@ -152,7 +152,7 @@ public class ReceivingInfoControllerTest {
         };
         ReceivingInfoLineResponse receivingInfoLineResponse = new ReceivingInfoLineResponse("110950", 2, 575486609L,
                 2, 30.0,
-                30.09, 2, 0,
+                30.09, 2.0, 0,
                 "N", "0000047875883989",
                 "NSW CRASH TRNF", null, "ww", 1, "0.0", merchandises);
         List<ReceivingInfoLineResponse> lineResponses = new ArrayList<ReceivingInfoLineResponse>() {
