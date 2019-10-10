@@ -1,0 +1,50 @@
+package com.walmart.finance.ap.fds.receiving.common;
+
+
+public class ReceivingConstants {
+
+    public static final String ACCEPT = "Accept";
+    public static final String WALMART_ITEM_JSON_ACCEPT = "application/json";
+    public static final String RECEIVINGCONTROLNUMBER = "controlNumber";
+    public static final String RECEIVEID = "receiveId";
+    public static final String STORENUMBER = "locationNumber";
+    public static final String BASEDIVISONNUMBER = "baseDivisionNumber";
+    public static final String STORE = "ReceiveSummary";
+    public static final String AP_FDS_CLIENT_ID = "client_id";
+    public static final String CORRELATION_ID_HEADER_KEY = "X-Correlation-ID" ;
+    public static final String PIPE_SEPARATOR = "|";
+
+    public static final String SM_WM_CONSUMER = "WM_CONSUMER.ID";
+    public static final String SM_WM_ENV = "WM_SVC.ENV";
+    public static final String SM_WM_APP_NAME = "WM_SVC.NAME";
+
+    public static final String WM_CONSUMER = "WMT-API-SECRET";  //"WM_CONSUMER.ID";
+    public static final String WMAPIKEY = "WMT-API-KEY";
+    public static final String RECEIVESUMMARYWAREHOUSE = "receiving-wh-summary-db2";
+    public static final String RECEIVELINEWAREHOUSE = "receiving-wh-summaryline-db2";
+    public static final int XSS_FILTER_ORDER = 1;
+    public static final int MDC_FILTER_ORDER = 2;
+    public static final int LOGGING_FILTER_ORDER = 3;
+    public static final int PERF_LOGGING_FILTER_ORDER = 4;
+    public static final String COUNTRYCODE = "countryCode";
+    public static final String INVOICENUMBER = "invoiceNumber";
+    public static final String PURCHASEORDERNUMBER = "purchaseOrderNumber";
+    public static final String PURCHASEORDERID = "purchaseOrderId";
+    public static final String RECEIPTNUMBERS = "receiptNumbers";
+    public static final String RECEIPTNUMBER = "receiptNumber";
+    public static final String TRANSACTIONTYPE = "transactionType";
+    public static final String CONTROLNUMBER = "controlNumber";
+    public static final String LOCATIONNUMBER = "locationNumber";
+    public static final String DIVISIONNUMBER = "divisionNumber";
+    public static final String VENDORNUMBER = "vendorNumber";
+    public static final String DEPARTMENTNUMBER = "departmentNumber";
+    public static final String INVOICEID = "invoiceId";
+    public static final String RECEIPTDATEEND = "receiptDateEnd";
+    public static final String RECEIPTDATESTART = "receiptDateStart";
+    public static final String ITEMNUMBERS="itemNumbers";
+    public static final String UPCNUMBERS="upcNumbers";
+    public static final String DATEFORMATTER="yyyy-MM-dd HH:mm:ss";
+
+    public static final String RECEIVING_SHARD_KEY_FIELD = "partitionKey";
+
+}
