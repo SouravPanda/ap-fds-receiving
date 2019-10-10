@@ -2,6 +2,7 @@
 package com.walmart.finance.ap.fds.receiving.service;
 
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
+import com.walmart.finance.ap.fds.receiving.common.ReceivingUtils;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineResponseConverter;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
@@ -44,6 +45,14 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
     @Getter
     @Value("${azure.cosmosdb.collection.line}")
     private String lineCollection;
+
+    @Setter
+    @Value("${months.per.shard}")
+    private Integer monthsPerShard;
+
+    @Setter
+    @Value("${months.to.display}")
+    private Integer monthsToDisplay;
 
     public ReceivingResponse getLineSummary(Map<String, String> allRequestParams) {
         try {
@@ -95,6 +104,9 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.LOCATIONNUMBER))) {
             criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.STORENUMBER.getParameterName()).is(Integer.parseInt(paramMap.get(ReceivingConstants.LOCATIONNUMBER.trim())));
             dynamicQuery.addCriteria(criteriaDefinition);
+            ReceivingUtils.updateQueryForPartitionKey(null, paramMap,
+                    Integer.parseInt(paramMap.get(ReceivingConstants.LOCATIONNUMBER.trim())), dynamicQuery,
+                    monthsPerShard, monthsToDisplay);
         }
         return dynamicQuery;
     }

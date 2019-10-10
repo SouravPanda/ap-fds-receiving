@@ -92,7 +92,7 @@ public class ReceivingInfoServiceImplTest {
         List<ReceivingLine> receivingLines = new ArrayList<ReceivingLine>() {
             {
                 add(new ReceivingLine("999403403|0000030006|3669|2019-06-19|1", "0000030006",
-                        10, 3777L, 94493, 7, 30.0, 40.0, "9",
+                        10, 3777L, 94493, 7.0, 30.0, 40.0, "9",
                         89, 12, "1122", 99, 3669, 18,
                         LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                         LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 6, LocalDate.now(),
@@ -164,7 +164,7 @@ public class ReceivingInfoServiceImplTest {
         List<ReceivingLine> receivingLines = new ArrayList<ReceivingLine>() {
             {
                 add(new ReceivingLine("999403403|0000030006|3669|2019-06-19|1", "0000030006",
-                        10, 3777L, 94493, 7, 30.0, 40.0, "9",
+                        10, 3777L, 94493, 7.0, 30.0, 40.0, "9",
                         89, 12, "1122", 99, 3669, 18,
                         LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                         LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 6, LocalDate.now(),
@@ -183,7 +183,7 @@ public class ReceivingInfoServiceImplTest {
         List<ReceivingInfoLineResponse> receivingInfoLineResponses = new ArrayList<ReceivingInfoLineResponse>() {
             {
                 add(new ReceivingInfoLineResponse("0000030006", 1, 3777L, 7, 30.0,
-                        40.0, 7, 6,
+                        40.0, 7.0, 6,
                         "N", "1122",
                         "NSW CRASH TRNF", "LL", "ww", 1, "1.9", null
                 ));
@@ -290,7 +290,7 @@ public class ReceivingInfoServiceImplTest {
         List<ReceivingLine> receivingLines = new ArrayList<ReceivingLine>() {
             {
                 add(new ReceivingLine("972515962|110950|6479|2019-06-11|2", "110950",
-                        1, 575486609L, 495742, 2, 30.0, 30.09, null,
+                        1, 575486609L, 495742, 2.0, 30.0, 30.09, null,
                         null, null, "0000047875883989", 0, 6479, 1,
                         LocalDate.of(2019, 06, 20), LocalDateTime.of(2019, 07, 14, 16, 50, 17), null,
                         null, 'W', "DB2", null, 0, LocalDate.of(2019, 06, 11),
@@ -316,7 +316,7 @@ public class ReceivingInfoServiceImplTest {
         };
         ReceivingInfoLineResponse receivingInfoLineResponse = new ReceivingInfoLineResponse("110950", 2, 575486609L,
                 2, 30.0,
-                30.09, 2, 0,
+                30.09, 2.0, 0,
                 "N", "0000047875883989",
                 "NSW CRASH TRNF", null, "", 1, "0.0", merchandises);
         List<ReceivingInfoLineResponse> lineResponses = new ArrayList<ReceivingInfoLineResponse>() {

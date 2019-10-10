@@ -24,7 +24,7 @@ public class ReceivingLine   {
     private Integer lineNumber;     //BKRM_PROC_XMIT_DTL.LINE_NBR
     private Long itemNumber;     //BKRM_PROC_XMIT_DTL.ITEM_NBR
     private Integer vendorNumber;   //BKRM_PROC_XMIT_HDR.ORIG_DEST_ID
-    private Integer receivedQuantity;   //BKRM_PROC_XMIT_DTL.ITEM_QTY
+    private Double receivedQuantity;   //BKRM_PROC_XMIT_DTL.ITEM_QTY
     private Double costAmount;      //BKRM_PROC_XMIT_DTL.COST_AMT
     private Double retailAmount;    //BKRM_PROC_XMIT_DTL.STORE_SALE_AMT
 

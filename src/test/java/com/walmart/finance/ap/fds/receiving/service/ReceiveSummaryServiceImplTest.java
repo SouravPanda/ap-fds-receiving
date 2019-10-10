@@ -110,13 +110,13 @@ public class ReceiveSummaryServiceImplTest {
         listOfUpcNumbers.add("9");
         listOfUpcNumbers.add("89");
         Query query = new Query();
-        ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", new Long(1122), 99, "776",
+        ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", "1122", 99, "776",
                 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",
                 9.0, 7.0,
                 1L, 0, 0, 10.0);
 
-        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", new Long(1122), 99,
+        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", "1122", 99,
                 "776", 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77",
                 9.0, 7.0,
@@ -134,7 +134,7 @@ public class ReceiveSummaryServiceImplTest {
         List<ReceivingLine> listOfReceiveLines = new ArrayList<>();
 
         listOfReceiveLines.add(new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0,
-                0L, 0, 0, 0.0, 0.0, "776", 0,
+                0L, 0, 0.0, 0.0, 0.0, "776", 0,
                 0, "444", 1, 1, 1, null, null, 2,
                 null, 'W', "DB2", null, 2, null, 1, 0.0,
                 null, null, null, null, null, null,
@@ -189,13 +189,13 @@ public class ReceiveSummaryServiceImplTest {
         List<String> listOfUpcNumbers = new ArrayList<>();
         listOfItemNumbers.add("9");
         listOfItemNumbers.add("89");
-        ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", new Long(1122), 99, "776",
+        ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", "1122", 99, "776",
                 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",
                 9.0, 7.0,
                 0L, 0, 0, 10.0);
 
-        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", new Long(1122), 99,
+        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", "1122", 99,
                 "776", 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77",
                 9.0, 7.0,
@@ -211,9 +211,11 @@ public class ReceiveSummaryServiceImplTest {
         content.add(receivingSummaryResponseAt);
 
         ReceivingLine receivingLine = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0,
-                0L, 0, 0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null, null, 2, null, 'W', "DB2", null, 2, null, 1, 0.0, null, null, null, null, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21", null, null, null);
+                0L, 0, 0.0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null, null, 2, null, 'W', "DB2", null, 2, null, 1,
+                0.0, null, null, null, null, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21", null, null, null);
         ReceivingLine receivingLineAt = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|1", "JJJ",
-                0, 0L, 0, 0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null, null, 2, null, 'W', "DB2", null, 2, null, 1, 0.0, null, null, null, null, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21", null, null, null);
+                0, 0L, 0, 0.0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null, null, 2, null, 'W', "DB2", null, 2, null,
+                1, 0.0, null, null, null, null, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21", null, null, null);
 
         List<ReceivingLine> listOfReceiveLines = new ArrayList<>();
         listOfReceiveLines.add(receivingLine);
@@ -267,13 +269,13 @@ public class ReceiveSummaryServiceImplTest {
         List<String> listOfUpcNumbers = new ArrayList<>();
         listOfItemNumbers.add("9");
         listOfItemNumbers.add("89");
-        ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", new Long(1122), 99, "776",
+        ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", "1122", 99, "776",
                 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",
                 9.0, 7.0,
                 0L, 0, 0, 10.0);
 
-        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", new Long(1122), 99,
+        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", "1122", 99,
                 "776", 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77",
                 9.0, 7.0,
@@ -289,9 +291,11 @@ public class ReceiveSummaryServiceImplTest {
         content.add(receivingSummaryResponseAt);
 
         ReceivingLine receivingLine = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0,
-                0L, 0, 0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null, null, 2, null, 'W', "DB2", null, 2, null, 1, 0.0, null, null, null, null, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21", null, null, null);
+                0L, 0, 0.0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null, null, 2, null, 'W', "DB2", null, 2, null, 1,
+                0.0, null, null, null, null, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21", null, null, null);
         ReceivingLine receivingLineAt = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|1", "JJJ",
-                0, 0L, 0, 0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null, null, 2, null, 'W', "DB2", null, 2, null, 1, 0.0, null, null, null, null, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21", null, null, null);
+                0, 0L, 0, 0.0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null, null, 2, null, 'W', "DB2", null, 2, null,
+                1, 0.0, null, null, null, null, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21", null, null, null);
 
         List<ReceivingLine> listOfReceiveLines = new ArrayList<>();
         listOfReceiveLines.add(receivingLine);
@@ -345,12 +349,12 @@ public class ReceiveSummaryServiceImplTest {
         List<String> listOfUpcNumbers = new ArrayList<>();
         listOfItemNumbers.add("9");
         listOfItemNumbers.add("89");
-        ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", new Long(1122), 99, "776",
+        ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", "1122", 99, "776",
                 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",
                 9.0, 7.0,
                 0L, 0, 0, 10.0);
-        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", new Long(1122), 99,
+        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", "1122", 99,
                 "776", 3680, 0,
                 LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77",
                 9.0, 7.0,
@@ -364,7 +368,8 @@ public class ReceiveSummaryServiceImplTest {
         content.add(receivingSummaryResponse);
         content.add(receivingSummaryResponseAt);
         ReceivingLine receivingLine = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0,
-                0L, 0, 0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null, null, 2, null, 'W', "DB2", null, 2, null, 1, 0.0, null, null, null, null, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21", null, null, null);
+                0L, 0, 0.0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null, null, 2, null, 'W', "DB2", null, 2, null, 1,
+                0.0, null, null, null, null, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21", null, null, null);
         List<ReceivingLine> listOfReceiveLines = new ArrayList<>();
         listOfReceiveLines.add(receivingLine);
         Query dynamicQuery = new Query();
@@ -561,7 +566,7 @@ public class ReceiveSummaryServiceImplTest {
                 , 'K', "LLL", null, null, null, null, null, LocalDateTime.now());
 
         ReceivingLine receivingLine = new ReceivingLine("9|8|1|0|1", "8",
-                0, 3777L, 94493, 0, 0.0, 0.0, "9",
+                0, 3777L, 94493, 0.0, 0.0, 0.0, "9",
                 89, 12, "1122", 99, 8264, 18,
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 1,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
@@ -618,7 +623,7 @@ public class ReceiveSummaryServiceImplTest {
                 , 'K', "LLL", null, null, null, null, null, LocalDateTime.now());
 
         ReceivingLine receivingLine = new ReceivingLine("9|8|1|0|1", "8",
-                0, 3777L, 94493, 0, 0.0, 0.0, "9",
+                0, 3777L, 94493, 0.0, 0.0, 0.0, "9",
                 89, 12, "1122", 99, 8264, 18,
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 1,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
@@ -660,7 +665,7 @@ public class ReceiveSummaryServiceImplTest {
                 , 'K', "LLL", null, null, null, null, null, LocalDateTime.now());
 
         ReceivingLine receivingLine = new ReceivingLine("9|8|1|0|1", "8",
-                0, 3777L, 94493, 0, 0.0, 0.0, "9",
+                0, 3777L, 94493, 0.0, 0.0, 0.0, "9",
                 89, 12, "1122", 99, 8264, 18,
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 1,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
@@ -702,7 +707,7 @@ public class ReceiveSummaryServiceImplTest {
                 , 'K', "LLL", null, null, null, null, null, LocalDateTime.now());
 
         ReceivingLine receivingLine = new ReceivingLine("9|8|1|0|1", "8",
-                0, 3777L, 94493, 0, 0.0, 0.0, "9",
+                0, 3777L, 94493, 0.0, 0.0, 0.0, "9",
                 89, 12, "1122", 99, 8264, 18,
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 1,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),

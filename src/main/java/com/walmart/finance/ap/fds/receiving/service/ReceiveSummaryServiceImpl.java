@@ -178,8 +178,8 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             dynamicQuery.addCriteria(transactionTypeCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.LOCATIONNUMBER))) {
-            Criteria storeNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.STORENUMBER.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.LOCATIONNUMBER)));
-            dynamicQuery.addCriteria(storeNumberCriteria);
+            ReceivingUtils.updateQueryForPartitionKey(null, paramMap,
+                    Integer.valueOf(paramMap.get(ReceivingConstants.LOCATIONNUMBER)), dynamicQuery, monthsPerShard,monthsToDisplay);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.PURCHASEORDERNUMBER))) {
             Criteria purchaseOrderNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.PURCHASEORDERNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.PURCHASEORDERNUMBER));
@@ -197,7 +197,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             Criteria vendorNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.VENDORNUMBER.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.VENDORNUMBER)));
             dynamicQuery.addCriteria(vendorNumberCriteria);
         }
-        // log.info("query: " + dynamicQuery);
+        log.info("query: " + dynamicQuery);
         return dynamicQuery;
     }
 
@@ -226,7 +226,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         }
         if (CollectionUtils.isNotEmpty(criteriaList)) {
             Query query = new Query(new Criteria().orOperator(criteriaList.toArray(new Criteria[criteriaList.size()])));
-            //  log.info("query: " + query);
+            log.info("query: " + query);
             lineResponseList = executeQueryReceiveline(query);
         }
         Map<String, List<ReceivingLine>> receivingLineMap = new HashMap<>();
@@ -279,7 +279,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     private Criteria queryForLineResponse(ReceiveSummary receiveSummary, List<String> itemNumbers, List<String> upcNumbers) {
         Criteria criteriaDefinition = new Criteria(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).is(receiveSummary.get_id());
         if (CollectionUtils.isNotEmpty(itemNumbers)) {
-            criteriaDefinition.and(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Integer::parseInt).collect(Collectors.toList()));
+            criteriaDefinition.and(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Long::parseLong).collect(Collectors.toList()));
         }
         if (CollectionUtils.isNotEmpty(upcNumbers)) {
             criteriaDefinition.and(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(upcNumbers);
@@ -297,13 +297,16 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                     defaultValuesConfigProperties.getCarrierCode() : receiveFreights.get(0).getCarrierCode().trim());
             additionalResponse.setTrailerNumber(receiveFreights.get(0).getTrailerNbr() == null ?
                     defaultValuesConfigProperties.getTrailerNbr() : receiveFreights.get(0).getTrailerNbr().trim());
+        } else {
+            additionalResponse.setCarrierCode(defaultValuesConfigProperties.getCarrierCode());
+            additionalResponse.setTrailerNumber(defaultValuesConfigProperties.getTrailerNbr());
         }
     }
 
     private List<FreightResponse> makeQueryForFreight(ReceiveSummary receiveSummary) {
-        if (receiveSummary.getFreightBillExpandID() != null) {
+        if (receiveSummary.getFreightBillExpandId() != null) {
             Query query = new Query();
-            query.addCriteria(Criteria.where("_id").is(receiveSummary.getFreightBillExpandID()));
+            query.addCriteria(Criteria.where("_id").is(receiveSummary.getFreightBillExpandId()));
             return executeQueryReceiveFreight(query);
         }
         return null;

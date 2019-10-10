@@ -21,7 +21,7 @@ public class ReceivingSummaryResponseConverter implements Converter<ReceiveSumma
 
         ReceivingSummaryResponse response = new ReceivingSummaryResponse();
         response.setPurchaseOrderId(receiveSummary.getPurchaseOrderId() == null ? "0" : receiveSummary.getPurchaseOrderId().toString());
-        response.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ? Long.valueOf(receiveSummary.getReceiveId()) : 0);
+        response.setReceiptNumber(receiveSummary.getReceiveId());
         response.setTransactionType(receiveSummary.getTransactionType());
         response.setControlNumber(receiveSummary.getReceivingControlNumber() != null ?
                 receiveSummary.getReceivingControlNumber() : defaultValuesConfigProperties.getReceivingControlNumber());

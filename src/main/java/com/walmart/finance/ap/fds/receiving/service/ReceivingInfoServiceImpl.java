@@ -128,7 +128,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 receivingDate =
                         financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate();
             }
-            updateQueryForPartitionKey(receivingDate, allRequestParams, storeNumber, query);
+            ReceivingUtils.updateQueryForPartitionKey(receivingDate, allRequestParams, storeNumber, query,
+                    monthsPerShard, monthsToDisplay);
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()))
                 && StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()))) {
@@ -179,8 +180,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             dynamicQuery.addCriteria(transactionTypeCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.LOCATIONNUMBER))) {
-            updateQueryForPartitionKey(null, paramMap,
-                    Integer.valueOf(paramMap.get(ReceivingConstants.LOCATIONNUMBER)), dynamicQuery);
+            ReceivingUtils.updateQueryForPartitionKey(null, paramMap,
+                    Integer.valueOf(paramMap.get(ReceivingConstants.LOCATIONNUMBER)), dynamicQuery, monthsPerShard, monthsToDisplay);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.PURCHASEORDERNUMBER))) {
             Criteria purchaseOrderNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.PURCHASEORDERNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.PURCHASEORDERNUMBER));
@@ -261,7 +262,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             query.addCriteria(criteriaDefinition);
         }
         if (receiveSummary.getStoreNumber() != null) {
-            updateQueryForPartitionKey(null, allRequestParams, receiveSummary.getStoreNumber(), query);
+            ReceivingUtils.updateQueryForPartitionKey(null, allRequestParams, receiveSummary.getStoreNumber(), query,
+                    monthsPerShard, monthsToDisplay);
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()))) {
             List<String> itemNumbers = Arrays.asList(allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()).split(","));
@@ -280,9 +282,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     /******* receive-freight data *********/
     private List<FreightResponse> getFreightData(ReceiveSummary receiveSummary) {
-        if (receiveSummary.getFreightBillExpandID() != null) {
+        if (receiveSummary.getFreightBillExpandId() != null) {
             Query query = new Query();
-            query.addCriteria(Criteria.where("_id").is(receiveSummary.getFreightBillExpandID()));
+            query.addCriteria(Criteria.where("_id").is(receiveSummary.getFreightBillExpandId()));
             return executeQueryInFreight(query);
         }
         return new ArrayList<>();
@@ -348,7 +350,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         response.setItemNumber(receivingLine.getItemNumber() != null ? receivingLine.getItemNumber() :
                 defaultValuesConfigProperties.getItemNumber());
         response.setQuantity(receivingLine.getReceivedQuantity() != null ?
-                receivingLine.getReceivedQuantity() : defaultValuesConfigProperties.getReceivedQuantity() );
+                receivingLine.getReceivedQuantity().intValue() : defaultValuesConfigProperties.getReceivedQuantity() );
         response.setEachCostAmount(receivingLine.getCostAmount() != null ?
                 receivingLine.getCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
         response.setEachRetailAmount(receivingLine.getRetailAmount() != null ?
@@ -638,43 +640,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                                 , t.getOrgDelNoteId()
                         ))
                         .collect(Collectors.toList()));
-    }
-
-
-    private void updateQueryForPartitionKey(LocalDate receiptDate, Map<String, String> allParams,
-                                            Integer storeNumber, Query queryToUpdate) {
-        Criteria partitionKeyCriteria;
-
-        if (receiptDate != null) {
-            /* This scenario will be applicable in case of 'Stores', where we get 'Receiving Date' as a part of
-            response from FinTrans*/
-            partitionKeyCriteria =
-                    Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD)
-                            .is(ReceivingUtils.getPartitionKey(String.valueOf(storeNumber),
-                                    receiptDate, monthsPerShard));
-        } else if (allParams.containsKey(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam())
-                && allParams.containsKey(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam())) {
-            /* This flow will be applicable for requests which has 'receipt start date' and 'receipt end date' as a
-            part of the request */
-            LocalDateTime startDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATESTART) + " 00:00:00");
-            LocalDateTime endDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATEEND) + " 00:00:00");
-            Period diff = Period.between(startDate.toLocalDate(), endDate.toLocalDate());
-            int adjustedMonthsTodDisplay =
-                    new Double(Math.ceil((diff.getMonths() + 2) / monthsPerShard.doubleValue()) * monthsPerShard)
-                            .intValue();
-            partitionKeyCriteria =
-                    Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD)
-                            .in(ReceivingUtils.getPartitionKeyList(String.valueOf(storeNumber),
-                                    endDate.toLocalDate(), adjustedMonthsTodDisplay, monthsPerShard));
-        } else {
-            /* If non of the above conditions match, we search across all the shards for the configured number of
-            months */
-            partitionKeyCriteria =
-                    Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD)
-                            .in(ReceivingUtils.getPartitionKeyList(String.valueOf(storeNumber),
-                                    monthsToDisplay, monthsPerShard));
-        }
-        queryToUpdate.addCriteria(partitionKeyCriteria);
     }
 
     /*************************** Version 1 Methods ***********************************/
