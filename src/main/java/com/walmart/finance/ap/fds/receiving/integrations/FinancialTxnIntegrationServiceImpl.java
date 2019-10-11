@@ -32,15 +32,6 @@ import java.util.Map;
 public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrationService {
     public static final Logger log = LoggerFactory.getLogger(FinancialTxnIntegrationServiceImpl.class);
 
-    @Value("${financialTxn.consumerId}")
-    private String consumerId;
-
-    @Value("${financialTxn.appName}")
-    private String appName;
-
-    @Value("${financialTxn.appEnv}")
-    private String appEnv;
-
     @Value("${financialTxn.base.url}")
     private String financialTxnBaseUrl;
 
