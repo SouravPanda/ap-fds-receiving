@@ -20,7 +20,7 @@ public class ReceivingLineResponse {
     private Double eachCostAmount;
     private Double eachRetailAmount;
     private Integer packQuantity;
-    private Double numberofCasesReceived;
+    private Double numberOfCasesReceived;
 //    private Integer vendorStockNumber;
 //    private Integer bottleDepositAmount;
 //    private String damaged;

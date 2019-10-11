@@ -125,7 +125,7 @@ public class ReceivingInfoControllerTest {
                                 "\"quantity\": 2,\n" +
                                 "\"eachCostAmount\": 33,\n" +
                                 "\"eachRetailAmount\": 33.84,\n" +
-                                "\"numberofCasesReceived\": 2,\n" +
+                                "\"numberOfCasesReceived\": 2,\n" +
                                 "\"packQuantity\": 0,\n" +
                                 "\"bottleDepositFlag\": \"N\",\n" +
                                 "\"upc\": \"0000047875883980\",\n" +
@@ -303,7 +303,7 @@ public class ReceivingInfoControllerTest {
                                 "                    \"quantity\": 2,\n" +
                                 "                    \"eachCostAmount\": 30.0,\n" +
                                 "                    \"eachRetailAmount\": 30.09,\n" +
-                                "                    \"numberofCasesReceived\": 2,\n" +
+                                "                    \"numberOfCasesReceived\": 2,\n" +
                                 "                    \"packQuantity\": 0,\n" +
                                 "                    \"bottleDepositFlag\": \"N\",\n" +
                                 "                    \"upc\": \"0000047875883989\",\n" +

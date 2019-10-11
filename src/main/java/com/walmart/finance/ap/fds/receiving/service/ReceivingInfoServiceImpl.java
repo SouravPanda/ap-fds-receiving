@@ -33,7 +33,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -352,7 +351,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 receivingLine.getCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
         response.setEachRetailAmount(receivingLine.getRetailAmount() != null ?
                 receivingLine.getRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
-        response.setNumberofCasesReceived(receivingLine.getReceivedQuantity() != null ?
+        response.setNumberOfCasesReceived(receivingLine.getReceivedQuantity() != null ?
                 receivingLine.getReceivedQuantity() : defaultValuesConfigProperties.getReceivedQuantity());
         response.setPackQuantity(receivingLine.getQuantity() != null ?
                 receivingLine.getQuantity() : defaultValuesConfigProperties.getQuantity());
