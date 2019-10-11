@@ -27,7 +27,7 @@ public class ReceivingInfoLineResponse {
 
     private Double eachRetailAmount;
 
-    private Double numberofCasesReceived;
+    private Double numberOfCasesReceived;
 
     private Integer packQuantity;
 
