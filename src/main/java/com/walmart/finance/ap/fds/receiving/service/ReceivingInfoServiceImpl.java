@@ -308,9 +308,11 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         }
         receivingInfoResponse.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ?
                 new Long(lineResponseList.size()) : defaultValuesConfigProperties.getLineCount());
-        receivingInfoResponse.setCarrierCode(freightResponse != null ? freightResponse.getCarrierCode() :
+        receivingInfoResponse.setCarrierCode(freightResponse != null
+                && StringUtils.isNotEmpty(freightResponse.getCarrierCode())? freightResponse.getCarrierCode() :
                 defaultValuesConfigProperties.getCarrierCode());
-        receivingInfoResponse.setTrailerNumber(freightResponse != null ? freightResponse.getTrailerNbr() :
+        receivingInfoResponse.setTrailerNumber(freightResponse != null
+                && StringUtils.isNotEmpty(freightResponse.getTrailerNbr()) ? freightResponse.getTrailerNbr() :
                 defaultValuesConfigProperties.getTrailerNbr());
         receivingInfoResponse.setControlNumber(StringUtils.isNotEmpty(receiveSummary.getReceivingControlNumber()) ?
                 receiveSummary.getReceivingControlNumber() : defaultValuesConfigProperties.getReceivingControlNumber());
@@ -529,9 +531,11 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         }
         receivingInfoResponseV1.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ?
                 new Long(lineResponseList.size()) : defaultValuesConfigProperties.getLineCount());
-        receivingInfoResponseV1.setCarrierCode(freightResponse != null ?
+        receivingInfoResponseV1.setCarrierCode(freightResponse != null
+                && StringUtils.isNotEmpty(freightResponse.getCarrierCode()) ?
                 freightResponse.getCarrierCode() : defaultValuesConfigProperties.getCarrierCode());
-        receivingInfoResponseV1.setTrailerNumber(freightResponse != null ?
+        receivingInfoResponseV1.setTrailerNumber(freightResponse != null
+                && StringUtils.isNotEmpty(freightResponse.getTrailerNbr())?
                 freightResponse.getTrailerNbr() : defaultValuesConfigProperties.getTrailerNbr());
         receivingInfoResponseV1.setControlNumber(StringUtils.isNotEmpty(receiveSummary.getReceivingControlNumber()) ?
                 receiveSummary.getReceivingControlNumber() : defaultValuesConfigProperties.getReceivingControlNumber());
