@@ -17,6 +17,9 @@ public class ReceivingConstants {
     public static final String SM_WM_CONSUMER = "WM_CONSUMER.ID";
     public static final String SM_WM_ENV = "WM_SVC.ENV";
     public static final String SM_WM_APP_NAME = "WM_SVC.NAME";
+    public static final String SM_WM_KEY_VERSION = "WM_SEC.KEY_VERSION";
+    public static final String SM_AUTH_SIGN = "WM_SEC.AUTH_SIGNATURE";
+    public static final String SM_INVOCATION_TS = "WM_CONSUMER.INTIMESTAMP";
 
     public static final String WM_CONSUMER = "WMT-API-SECRET";  //"WM_CONSUMER.ID";
     public static final String WMAPIKEY = "WMT-API-KEY";

@@ -1,8 +1,8 @@
 package com.walmart.finance.ap.fds.receiving.integrations;
 
 import com.google.common.base.Enums;
-import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.exception.FinancialTransException;
+import com.walmart.finance.ap.fds.receiving.mesh.FinancialTxnMeshHeadersGenerator;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestCombinations;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import lombok.Data;
@@ -56,18 +56,20 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
     @Autowired
     RestTemplate restTemplate;
 
+    @Autowired
+    private FinancialTxnMeshHeadersGenerator meshHeadersGenerator;
+
     @Override
     public List<FinancialTxnResponseData> getFinancialTxnDetails(Map<String, String> allRequestParams) {
-        HttpHeaders requestHeaders = new HttpHeaders() {{
-            String auth = financialTxnAuthorizationKey + ":" + financialTxnAuthorizationValue;
-            byte[] encodedAuth = Base64.encodeBase64(
-                    auth.getBytes(Charset.forName("US-ASCII")));
-            String authHeader = "Basic " + new String(encodedAuth);
-            set("Authorization", authHeader);
-        }};
-        requestHeaders.set(ReceivingConstants.SM_WM_CONSUMER, consumerId);
-        requestHeaders.set(ReceivingConstants.SM_WM_APP_NAME, appName);
-        requestHeaders.set(ReceivingConstants.SM_WM_ENV, appEnv);
+        HttpHeaders requestHeaders = meshHeadersGenerator.getRequestHeaders();
+
+        // Adding headers for Azure Basic Authentication
+        String auth = financialTxnAuthorizationKey + ":" + financialTxnAuthorizationValue;
+        byte[] encodedAuth = Base64.encodeBase64(
+                auth.getBytes(Charset.forName("US-ASCII")));
+        String authHeader = "Basic " + new String(encodedAuth);
+        requestHeaders.set("Authorization", authHeader);
+
         HttpEntity<String> httpEntity = new HttpEntity<>(requestHeaders);
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         String url = makeUrl(allRequestParams);
