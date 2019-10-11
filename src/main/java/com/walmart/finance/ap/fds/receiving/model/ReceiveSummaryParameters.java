@@ -22,7 +22,7 @@ public enum ReceiveSummaryParameters {
     TOTALCOSTAMOUNT("totalCostAmount"),
     TOTALRETAILAMOUNT("totalRetailAmount"),
     BUSINESSSTATUSCODE("businessStatusCode"),
-    FREIGHTBILLEXPANDID("freightBillExpandID"),
+    FREIGHTBILLEXPANDID("freightBillExpandId"),
     CLAIMPENDINGINDICATOR("claimPendingIndicator"),
     FREEASTRAYINDICATOR("freeAstrayIndicator"),
     FREIGHTCONSLINDICATOR("freightConslIndicator"),

@@ -19,7 +19,7 @@ public class ReceivingSummaryResponse {
     private String purchaseOrderId;
 
     @NotEmpty
-    private Long receiptNumber;
+    private String receiptNumber;
 
     @NotEmpty
     private Integer transactionType;

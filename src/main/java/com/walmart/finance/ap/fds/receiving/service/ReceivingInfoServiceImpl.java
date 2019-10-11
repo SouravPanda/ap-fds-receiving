@@ -101,8 +101,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             List<ReceiveSummary> receiveSummaries = getSummaryData(financialTxnResponseData, allRequestParams);
             if (CollectionUtils.isNotEmpty(receiveSummaries)) {
                 List<ReceivingLine> lineResponseList = getLineData(receiveSummaries.get(0), allRequestParams);
-                List<FreightResponse> freightResponseList = getFreightData(receiveSummaries.get(0));
-                ReceivingInfoResponse receivingInfoResponse = conversionToReceivingInfo(receiveSummaries.get(0), financialTxnResponseData, lineResponseList, freightResponseList, allRequestParams);
+                FreightResponse freightResponse = getFreightData(receiveSummaries.get(0));
+                ReceivingInfoResponse receivingInfoResponse = conversionToReceivingInfo(receiveSummaries.get(0), financialTxnResponseData, lineResponseList, freightResponse, allRequestParams);
                 receivingInfoResponses.add(receivingInfoResponse);
             }
         }
@@ -128,7 +128,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 receivingDate =
                         financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate();
             }
-            updateQueryForPartitionKey(receivingDate, allRequestParams, storeNumber, query);
+            ReceivingUtils.updateQueryForPartitionKey(receivingDate, allRequestParams, storeNumber, query,
+                    monthsPerShard, monthsToDisplay);
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()))
                 && StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()))) {
@@ -179,8 +180,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             dynamicQuery.addCriteria(transactionTypeCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.LOCATIONNUMBER))) {
-            updateQueryForPartitionKey(null, paramMap,
-                    Integer.valueOf(paramMap.get(ReceivingConstants.LOCATIONNUMBER)), dynamicQuery);
+            ReceivingUtils.updateQueryForPartitionKey(null, paramMap,
+                    Integer.valueOf(paramMap.get(ReceivingConstants.LOCATIONNUMBER)), dynamicQuery, monthsPerShard, monthsToDisplay);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.PURCHASEORDERNUMBER))) {
             Criteria purchaseOrderNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.PURCHASEORDERNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.PURCHASEORDERNUMBER));
@@ -241,14 +242,14 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         return receiveLines;
     }
 
-    private List<FreightResponse> executeQueryInFreight(Query query) {
-        List<FreightResponse> receiveFreights = new ArrayList<>();
-        if (query != null) {
+    private FreightResponse executeQueryInFreight(Long id) {
+        FreightResponse receiveFreight = null;
+        if (id != null) {
             long startTime = System.currentTimeMillis();
-            receiveFreights = mongoTemplate.find(query.limit(1000), FreightResponse.class, freightCollection);
+            receiveFreight = mongoTemplate.findById(id, FreightResponse.class, freightCollection);
             log.info(" executeQueryInFreight :: queryTime :: "+(System.currentTimeMillis()-startTime));
         }
-        return receiveFreights;
+        return receiveFreight;
     }
     /*************************** General Methods ***********************************/
 
@@ -261,7 +262,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             query.addCriteria(criteriaDefinition);
         }
         if (receiveSummary.getStoreNumber() != null) {
-            updateQueryForPartitionKey(null, allRequestParams, receiveSummary.getStoreNumber(), query);
+            ReceivingUtils.updateQueryForPartitionKey(null, allRequestParams, receiveSummary.getStoreNumber(), query,
+                    monthsPerShard, monthsToDisplay);
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()))) {
             List<String> itemNumbers = Arrays.asList(allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()).split(","));
@@ -279,18 +281,13 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     /******* receive-line data   *********/
 
     /******* receive-freight data *********/
-    private List<FreightResponse> getFreightData(ReceiveSummary receiveSummary) {
-        if (receiveSummary.getFreightBillExpandID() != null) {
-            Query query = new Query();
-            query.addCriteria(Criteria.where("_id").is(receiveSummary.getFreightBillExpandID()));
-            return executeQueryInFreight(query);
-        }
-        return new ArrayList<>();
+    private FreightResponse getFreightData(ReceiveSummary receiveSummary) {
+        return executeQueryInFreight(receiveSummary.getFreightBillExpandId());
     }
     /******* receive-freight data   *********/
 
     /*************************** Conversion Methods ***********************************/
-    private ReceivingInfoResponse conversionToReceivingInfo(ReceiveSummary receiveSummary, FinancialTxnResponseData financialTxnResponseData, List<ReceivingLine> lineResponseList, List<FreightResponse> freightResponseList, Map<String, String> allRequestParams) {
+    private ReceivingInfoResponse conversionToReceivingInfo(ReceiveSummary receiveSummary, FinancialTxnResponseData financialTxnResponseData, List<ReceivingLine> lineResponseList, FreightResponse freightResponse, Map<String, String> allRequestParams) {
         ReceivingInfoResponse receivingInfoResponse = new ReceivingInfoResponse();
         if (financialTxnResponseData != null) {
             receivingInfoResponse.setAuthorizedBy(financialTxnResponseData.getAuthorizedBy());
@@ -311,10 +308,12 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         }
         receivingInfoResponse.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ?
                 new Long(lineResponseList.size()) : defaultValuesConfigProperties.getLineCount());
-        receivingInfoResponse.setCarrierCode(CollectionUtils.isNotEmpty(freightResponseList)
-                ? freightResponseList.get(0).getCarrierCode() : defaultValuesConfigProperties.getCarrierCode());
-        receivingInfoResponse.setTrailerNumber(CollectionUtils.isNotEmpty(freightResponseList) ?
-                freightResponseList.get(0).getTrailerNbr() : defaultValuesConfigProperties.getTrailerNbr());
+        receivingInfoResponse.setCarrierCode(freightResponse != null
+                && StringUtils.isNotEmpty(freightResponse.getCarrierCode())? freightResponse.getCarrierCode() :
+                defaultValuesConfigProperties.getCarrierCode());
+        receivingInfoResponse.setTrailerNumber(freightResponse != null
+                && StringUtils.isNotEmpty(freightResponse.getTrailerNbr()) ? freightResponse.getTrailerNbr() :
+                defaultValuesConfigProperties.getTrailerNbr());
         receivingInfoResponse.setControlNumber(StringUtils.isNotEmpty(receiveSummary.getReceivingControlNumber()) ?
                 receiveSummary.getReceivingControlNumber() : defaultValuesConfigProperties.getReceivingControlNumber());
         receivingInfoResponse.setTransactionType(receiveSummary.getTransactionType());
@@ -348,7 +347,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         response.setItemNumber(receivingLine.getItemNumber() != null ? receivingLine.getItemNumber() :
                 defaultValuesConfigProperties.getItemNumber());
         response.setQuantity(receivingLine.getReceivedQuantity() != null ?
-                receivingLine.getReceivedQuantity() : defaultValuesConfigProperties.getReceivedQuantity() );
+                receivingLine.getReceivedQuantity().intValue() : defaultValuesConfigProperties.getReceivedQuantity() );
         response.setEachCostAmount(receivingLine.getCostAmount() != null ?
                 receivingLine.getCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
         response.setEachRetailAmount(receivingLine.getRetailAmount() != null ?
@@ -466,8 +465,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             List<ReceiveSummary> receiveSummaries = getSummaryData(financialTxnResponseData, allRequestParams);
             if (CollectionUtils.isNotEmpty(receiveSummaries)) {
                 List<ReceivingLine> lineResponseList = getLineData(receiveSummaries.get(0), allRequestParams);
-                List<FreightResponse> freightResponseList = getFreightData(receiveSummaries.get(0));
-                ReceivingInfoResponseV1 receivingInfoResponseV1 = conversionToReceivingInfoV1(receiveSummaries.get(0), financialTxnResponseData, lineResponseList, freightResponseList, allRequestParams);
+                FreightResponse freightResponse = getFreightData(receiveSummaries.get(0));
+                ReceivingInfoResponseV1 receivingInfoResponseV1 = conversionToReceivingInfoV1(receiveSummaries.get(0), financialTxnResponseData, lineResponseList, freightResponse, allRequestParams);
                 receivingInfoResponses.add(receivingInfoResponseV1);
             }
         }
@@ -480,9 +479,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         for (ReceiveSummary receiveSummary : receiveSummaries) {
             if (CollectionUtils.isNotEmpty(receiveSummaries)) {
                 List<ReceivingLine> lineResponseList = getLineData(receiveSummary, allRequestParams);
-                List<FreightResponse> freightResponseList = getFreightData(receiveSummary);
+                FreightResponse freightResponse = getFreightData(receiveSummary);
                 ReceivingInfoResponseV1 receivingInfoResponseV1 = conversionToReceivingInfoV1(receiveSummary, null,
-                        lineResponseList, freightResponseList, allRequestParams);
+                        lineResponseList, freightResponse, allRequestParams);
                 receivingInfoResponses.add(receivingInfoResponseV1);
             }
         }
@@ -510,7 +509,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     }
 
-    private ReceivingInfoResponseV1 conversionToReceivingInfoV1(ReceiveSummary receiveSummary, FinancialTxnResponseData financialTxnResponseData, List<ReceivingLine> lineResponseList, List<FreightResponse> freightResponseList, Map<String, String> allRequestParams) {
+    private ReceivingInfoResponseV1 conversionToReceivingInfoV1(ReceiveSummary receiveSummary, FinancialTxnResponseData financialTxnResponseData, List<ReceivingLine> lineResponseList, FreightResponse freightResponse, Map<String, String> allRequestParams) {
         ReceivingInfoResponseV1 receivingInfoResponseV1 = new ReceivingInfoResponseV1();
         if (financialTxnResponseData != null) {
             updateReceivingInfoResponseV1(financialTxnResponseData, receivingInfoResponseV1);
@@ -532,10 +531,12 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         }
         receivingInfoResponseV1.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ?
                 new Long(lineResponseList.size()) : defaultValuesConfigProperties.getLineCount());
-        receivingInfoResponseV1.setCarrierCode(CollectionUtils.isNotEmpty(freightResponseList) ?
-                freightResponseList.get(0).getCarrierCode() : defaultValuesConfigProperties.getCarrierCode());
-        receivingInfoResponseV1.setTrailerNumber(CollectionUtils.isNotEmpty(freightResponseList) ?
-                freightResponseList.get(0).getTrailerNbr() : defaultValuesConfigProperties.getTrailerNbr());
+        receivingInfoResponseV1.setCarrierCode(freightResponse != null
+                && StringUtils.isNotEmpty(freightResponse.getCarrierCode()) ?
+                freightResponse.getCarrierCode() : defaultValuesConfigProperties.getCarrierCode());
+        receivingInfoResponseV1.setTrailerNumber(freightResponse != null
+                && StringUtils.isNotEmpty(freightResponse.getTrailerNbr())?
+                freightResponse.getTrailerNbr() : defaultValuesConfigProperties.getTrailerNbr());
         receivingInfoResponseV1.setControlNumber(StringUtils.isNotEmpty(receiveSummary.getReceivingControlNumber()) ?
                 receiveSummary.getReceivingControlNumber() : defaultValuesConfigProperties.getReceivingControlNumber());
         receivingInfoResponseV1.setTransactionType(receiveSummary.getTransactionType());
@@ -638,43 +639,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                                 , t.getOrgDelNoteId()
                         ))
                         .collect(Collectors.toList()));
-    }
-
-
-    private void updateQueryForPartitionKey(LocalDate receiptDate, Map<String, String> allParams,
-                                            Integer storeNumber, Query queryToUpdate) {
-        Criteria partitionKeyCriteria;
-
-        if (receiptDate != null) {
-            /* This scenario will be applicable in case of 'Stores', where we get 'Receiving Date' as a part of
-            response from FinTrans*/
-            partitionKeyCriteria =
-                    Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD)
-                            .is(ReceivingUtils.getPartitionKey(String.valueOf(storeNumber),
-                                    receiptDate, monthsPerShard));
-        } else if (allParams.containsKey(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam())
-                && allParams.containsKey(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam())) {
-            /* This flow will be applicable for requests which has 'receipt start date' and 'receipt end date' as a
-            part of the request */
-            LocalDateTime startDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATESTART) + " 00:00:00");
-            LocalDateTime endDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATEEND) + " 00:00:00");
-            Period diff = Period.between(startDate.toLocalDate(), endDate.toLocalDate());
-            int adjustedMonthsTodDisplay =
-                    new Double(Math.ceil((diff.getMonths() + 2) / monthsPerShard.doubleValue()) * monthsPerShard)
-                            .intValue();
-            partitionKeyCriteria =
-                    Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD)
-                            .in(ReceivingUtils.getPartitionKeyList(String.valueOf(storeNumber),
-                                    endDate.toLocalDate(), adjustedMonthsTodDisplay, monthsPerShard));
-        } else {
-            /* If non of the above conditions match, we search across all the shards for the configured number of
-            months */
-            partitionKeyCriteria =
-                    Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD)
-                            .in(ReceivingUtils.getPartitionKeyList(String.valueOf(storeNumber),
-                                    monthsToDisplay, monthsPerShard));
-        }
-        queryToUpdate.addCriteria(partitionKeyCriteria);
     }
 
     /*************************** Version 1 Methods ***********************************/
