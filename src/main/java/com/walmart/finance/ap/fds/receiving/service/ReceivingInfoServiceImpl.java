@@ -365,7 +365,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 receivingLine.getVariableWeightIndicator() : defaultValuesConfigProperties.getVariableWeightIndicator());
         response.setCostMultiple(receivingLine.getCostMultiple() != null ?
                 receivingLine.getCostMultiple() : defaultValuesConfigProperties.getCostMultiple());
-        response.setReceivedWeightQuantity(receivingLine.getReceivedWeightQuantity() == null ? null : receivingLine.getReceivedWeightQuantity().toString());
+        response.setReceivedWeightQuantity(receivingLine.getReceivedWeightQuantity() == null ?
+                defaultValuesConfigProperties.getReceivedWeightQuantity().toString() :
+                receivingLine.getReceivedWeightQuantity().toString());
 
         if (receivingLine.getMerchandises() != null) {
             response.setMerchandises(new ArrayList<>(receivingLine.getMerchandises().values()));
