@@ -8,6 +8,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 import java.security.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +37,9 @@ public class FinancialTxnMeshHeadersGenerator implements MeshHeadersGenerator {
     @Value("${receiving-mesh-consumer-private-key}")
     private String consumerPrivateKey;
 
+    @Override
     public HttpHeaders getRequestHeaders() {
+        log.info("Started generating headers at " + LocalDateTime.now());
         HttpHeaders requestHeaders = new HttpHeaders();
 
         Long invocationTs = System.currentTimeMillis();
@@ -45,6 +49,7 @@ public class FinancialTxnMeshHeadersGenerator implements MeshHeadersGenerator {
         requestHeaders.set(ReceivingConstants.SM_WM_KEY_VERSION, consumerKeyVersion);
         requestHeaders.set(ReceivingConstants.SM_INVOCATION_TS, invocationTs.toString());
         requestHeaders.set(ReceivingConstants.SM_AUTH_SIGN, getSignature(invocationTs.toString()));
+        log.info("Completed generating headers at " + LocalDateTime.now());
         return requestHeaders;
     }
 
@@ -66,6 +71,7 @@ public class FinancialTxnMeshHeadersGenerator implements MeshHeadersGenerator {
 
     private String generateSignature(String data) {
         try {
+            log.info("setting signature instance: " + LocalDateTime.now());
             Signature signatureInstance = Signature.getInstance("SHA256WithRSA");
 
             ServiceKeyRep keyRep = new ServiceKeyRep(KeyRep.Type.PRIVATE, "RSA", "PKCS#8",
@@ -75,11 +81,13 @@ public class FinancialTxnMeshHeadersGenerator implements MeshHeadersGenerator {
 
             signatureInstance.initSign(resolvedPrivateKey);
 
+            log.info("Starting to sign : " + LocalDateTime.now());
             byte[] bytesToSign = data.getBytes("UTF-8");
             signatureInstance.update(bytesToSign);
             byte[] signatureBytes = signatureInstance.sign();
-
-            return Base64.getEncoder().encodeToString(signatureBytes);
+            String string = Base64.getEncoder().encodeToString(signatureBytes);
+            log.info("Completed encoding of signature: " + LocalDateTime.now());
+            return string;
         } catch (InvalidKeyException ex) {
             log.error("Invalid Consumer Private Key \n" + ex.getMessage());
         } catch (Exception ex) {
