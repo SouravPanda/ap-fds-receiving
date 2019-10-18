@@ -12,10 +12,10 @@ public enum FinancialTxnRequestQueryParameters {
 
     DIVISIONNUMBER("divNbr"),
     INVOICENUMBER("invoiceNumber"),
-    DEPARTMENTNUMBER("poDeptNbr"),
+    DEPARTMENTNUMBER("deptNbr"),
     PURCHASEORDERID("purchaseOrderId"),
     RECEIPTNUMBERS("receiverNbr"),
-    LOCATIONNUMBER("storeNbr"),
+    LOCATIONNUMBER("origStoreNbr"),
     CONTROLNUMBER("txnControlNbr"),
     TRANSACTIONTYPE("txnTypeCode"),
     VENDORNUMBER("vendorNumber"),

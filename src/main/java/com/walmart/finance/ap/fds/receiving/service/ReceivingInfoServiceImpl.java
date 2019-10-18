@@ -569,7 +569,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponseV1.setAuthorizedBy(financialTxnResponseData.getAuthorizedBy());
         receivingInfoResponseV1.setAuthorizedDate(financialTxnResponseData.getAuthorizedDate() != null ?
                 financialTxnResponseData.getAuthorizedDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate() : null);
-        receivingInfoResponseV1.setDepartmentNumber(financialTxnResponseData.getDepartmentNumber());
+        receivingInfoResponseV1.setDepartmentNumber(financialTxnResponseData.getPoDeptNbr());
         receivingInfoResponseV1.setDivisionNumber(financialTxnResponseData.getDivisionNumber());
         receivingInfoResponseV1.setVendorNumber(financialTxnResponseData.getVendorNumber());
         receivingInfoResponseV1.setMemo(financialTxnResponseData.getMemo());
