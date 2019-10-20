@@ -1,3 +1,0 @@
-deb https://repository.walmart.com/repository/ubuntu-archive/ bionic main restricted universe
-deb https://repository.walmart.com/repository/ubuntu-archive/ bionic-updates main restricted
-deb https://repository.walmart.com/repository/ubuntu-security/ bionic-security main restricted
