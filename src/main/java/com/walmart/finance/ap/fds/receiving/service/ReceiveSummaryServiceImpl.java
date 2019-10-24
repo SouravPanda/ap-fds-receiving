@@ -250,9 +250,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             AdditionalResponse response = new AdditionalResponse();
             List<ReceivingLine> lineList = receivingLineMap.get(receiveSummary.get_id());
             if (CollectionUtils.isNotEmpty(lineList)) {
-                if (receiveSummary.getTypeIndicator().equals("W")) {
-                    response.setTotalCostAmount(lineResponseList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount()).sum());
-                    response.setTotalRetailAmount(lineResponseList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
+                if (receiveSummary.getTypeIndicator().equals('W')) {
+                    response.setTotalCostAmount(lineList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount()).sum());
+                    response.setTotalRetailAmount(lineList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
                 } else {
                     response.setTotalCostAmount(receiveSummary.getTotalCostAmount() != null ?
                             receiveSummary.getTotalCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
