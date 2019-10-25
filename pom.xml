@@ -278,18 +278,18 @@
                 <version>${jacoco.version}</version>
                 <executions>
                     <!-- Instrumentation executions are added to handle code coverage using Power Mockito -->
-                    <execution>
-                        <id>default-instrument</id>
-                        <goals>
-                            <goal>instrument</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>default-restore-instrumented-classes</id>
-                        <goals>
-                            <goal>restore-instrumented-classes</goal>
-                        </goals>
-                    </execution>
+                    <!--<execution>-->
+                        <!--<id>default-instrument</id>-->
+                        <!--<goals>-->
+                            <!--<goal>instrument</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                    <!--<execution>-->
+                        <!--<id>default-restore-instrumented-classes</id>-->
+                        <!--<goals>-->
+                            <!--<goal>restore-instrumented-classes</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
                     <execution>
                         <id>agent-for-ut</id>
                         <goals>
