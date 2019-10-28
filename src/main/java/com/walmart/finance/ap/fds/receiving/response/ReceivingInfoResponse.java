@@ -1,7 +1,6 @@
 package com.walmart.finance.ap.fds.receiving.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.models.auth.In;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -69,7 +68,7 @@ public class ReceivingInfoResponse {
 
     private String parentPurchaseOrderId;
 
-    private Integer invoiceId;
+    private Long invoiceId;
 
     private String invoiceNumber;
 

@@ -62,7 +62,7 @@ public class ReceivingInfoServiceImplTest {
         // Financial Txn mocking
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 999403403, "0000030006", 3669,
                 495742, 1, 9.0, 7777, "99987", "USER",
-                null, "USER", "1223", 1828926897, "000000004147570", "Memo",
+                null, "USER", "1223", 1828926897L, "000000004147570", "Memo",
                 "3669", null, "999403403", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -112,7 +112,7 @@ public class ReceivingInfoServiceImplTest {
                         new Long(999403403), LocalDate.of(2019, 03, 14), "0000030006",
                         "A", 0.0, 99.0, "972035", 495742, "Memo",
                         0.0, 0, "USER", "1223",
-                        "3669", null, "999403403", 1828926897,
+                        "3669", null, "999403403", 1828926897L,
                         "000000004147570", null));
             }
         };
@@ -132,7 +132,7 @@ public class ReceivingInfoServiceImplTest {
         // Financial Txn mocking
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 999403403, "0000030006", 3669,
                 495742, 1, 9.0, 7777, "99987", "USER",
-                null, "USER", "1223", 1828926897, "000000004147570", "Memo",
+                null, "USER", "1223", 1828926897L, "000000004147570", "Memo",
                 "3669", null, "999403403", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, 0, null, null, null, null, null, null, null, null, null
@@ -190,7 +190,7 @@ public class ReceivingInfoServiceImplTest {
                         new Long(999403403), LocalDate.of(2019, 03, 14), "0000030006",
                         "A", 0.0, 99.0, "972035", 495742, "Memo",
                         0.0, 0, "USER", "1223",
-                        "3669", null, "999403403", 1828926897,
+                        "3669", null, "999403403", 1828926897L,
                         "000000004147570", receivingInfoLineResponses));
             }
         };
@@ -249,7 +249,7 @@ public class ReceivingInfoServiceImplTest {
                 };
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(724201901), 972515962, "110950", 6480,
                 397646, 18, -5743.12, 640, "6854748957", "ID123",
-                null, "PEPSI MIDAMERICA", "1223", 97166785, "1832721624", null,
+                null, "PEPSI MIDAMERICA", "1223", 97166785L, "1832721624", null,
                 null, null, null, null
                 , 538, 1, 0, "US", null, null, 0, "del123",
                 null, null, "N", invoiceFinDelNoteChangeLogs, invoiceFinTransAdjustLogs
@@ -339,7 +339,7 @@ public class ReceivingInfoServiceImplTest {
                 new Long(972515962), LocalDate.of(2019, 01, 01), "666666",
                 "A", 0.0, 0.0, null, 397646, null,
                 0.0, 0, "PEPSI MIDAMERICA", "1223",
-                null, null, null, 97166785,
+                null, null, null, 97166785L,
                 "1832721624", new Long(724201901), 0, null, "6854748957", "US",
                 1, 0.0, -5743.12, 0.0, 0.0, 640
                 , null, null, "6854748957", null, 0, 538,
@@ -368,7 +368,7 @@ public class ReceivingInfoServiceImplTest {
     public void formulateIdReceiptStartDateException() {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(724201901), null, null, null,
                 397646, 18, -5743.12, 640, "6854748957", "ID123",
-                null, "PEPSI MIDAMERICA", "1223", 97166785, "1832721624", null,
+                null, "PEPSI MIDAMERICA", "1223", 97166785L, "1832721624", null,
                 null, null, null, null
                 , 538, 1, 0, "US", null, null, 0, "del123",
                 null, null, "N", null, null
@@ -393,7 +393,7 @@ public class ReceivingInfoServiceImplTest {
     public void formulateIdReceiptEndDateException() {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(724201901), null, null, null,
                 397646, 18, -5743.12, 640, "6854748957", "ID123",
-                null, "PEPSI MIDAMERICA", "1223", 97166785, "1832721624", null,
+                null, "PEPSI MIDAMERICA", "1223", 97166785L, "1832721624", null,
                 null, null, null, null
                 , 538, 1, 0, "US", null, null, 0, "del123",
                 null, null, "N", null, null
@@ -418,7 +418,7 @@ public class ReceivingInfoServiceImplTest {
     public void formulateIdReceiptEndDateBeforeStartDateException() {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(724201901), null, null, null,
                 397646, 18, -5743.12, 640, "6854748957", "ID123",
-                null, "PEPSI MIDAMERICA", "1223", 97166785, "1832721624", null,
+                null, "PEPSI MIDAMERICA", "1223", 97166785L, "1832721624", null,
                 null, null, null, null
                 , 538, 1, 0, "US", null, null, 0, "del123",
                 null, null, "N", null, null
