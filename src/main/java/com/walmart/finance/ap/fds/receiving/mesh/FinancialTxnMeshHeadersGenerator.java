@@ -25,6 +25,9 @@ public class FinancialTxnMeshHeadersGenerator implements MeshHeadersGenerator {
     @Value("${mesh.consumerId}")
     private String consumerId;
 
+    @Value("${mesh.producerHostName}")
+    private String producerHostName;
+
     @Value("${financialTxn.appName}")
     private String appName;
 
@@ -46,9 +49,10 @@ public class FinancialTxnMeshHeadersGenerator implements MeshHeadersGenerator {
         requestHeaders.set(ReceivingConstants.SM_WM_CONSUMER, consumerId);
         requestHeaders.set(ReceivingConstants.SM_WM_APP_NAME, appName);
         requestHeaders.set(ReceivingConstants.SM_WM_ENV, appEnv);
-        requestHeaders.set(ReceivingConstants.SM_WM_KEY_VERSION, consumerKeyVersion);
-        requestHeaders.set(ReceivingConstants.SM_INVOCATION_TS, invocationTs.toString());
-        requestHeaders.set(ReceivingConstants.SM_AUTH_SIGN, getSignature(invocationTs.toString()));
+        requestHeaders.set("Host", producerHostName); // This is to override host as localhost:4140
+//        requestHeaders.set(ReceivingConstants.SM_WM_KEY_VERSION, consumerKeyVersion);
+//        requestHeaders.set(ReceivingConstants.SM_INVOCATION_TS, invocationTs.toString());
+//        requestHeaders.set(ReceivingConstants.SM_AUTH_SIGN, getSignature(invocationTs.toString()));
         log.info("Completed generating headers at " + LocalDateTime.now());
         return requestHeaders;
     }
