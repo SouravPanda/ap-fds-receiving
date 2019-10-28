@@ -55,7 +55,7 @@ public class FinancialTxnResponseData {
     private String parentReceivingNbr;
 
     @JsonProperty("invoiceId")
-    private Integer invoiceId;
+    private Long invoiceId;
 
     @JsonProperty("invoiceNbr")
     private String invoiceNumber;

@@ -64,7 +64,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
-                "1234", 1828926897, "1828926897", "Memo", "1223",
+                "1234", 1828926897L, "1828926897", "Memo", "1223",
                 null, "164680544", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -92,7 +92,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987"
                 , "USER", null, "VendorName", "1234",
-                1828926897, "1828926897", "Memo", "1223", null,
+                1828926897L, "1828926897", "Memo", "1223", null,
                 "164680544", null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -119,7 +119,7 @@ public class FinancialTxnIntegrationServiceImplTest {
     public void getFinancialTxnDetailsResponseNullCheck() {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987", "USER",
-                null, "VendorName", "1234", 1828926897,
+                null, "VendorName", "1234", 1828926897L,
                 "1828926897", "Memo", "1223", null, "164680544", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -148,7 +148,7 @@ public class FinancialTxnIntegrationServiceImplTest {
     public void httpStatusCodeException() {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987", "USER",
-                null, "VendorName", "1234", 1828926897,
+                null, "VendorName", "1234", 1828926897L,
                 "1828926897", "Memo", "1223", null, "164680544", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -178,7 +178,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
-                "1234", 1828926897, "1828926897", "Memo", "1223",
+                "1234", 1828926897L, "1828926897", "Memo", "1223",
                 null, "164680544", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -208,7 +208,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
-                "1234", 1828926897, "1828926897", "Memo", "1223",
+                "1234", 1828926897L, "1828926897", "Memo", "1223",
                 null, "164680544", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -238,7 +238,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
-                "1234", 1828926897, "1828926897", "Memo", "1223",
+                "1234", 1828926897L, "1828926897", "Memo", "1223",
                 null, "164680544", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -267,7 +267,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
-                "1234", 1828926897, "1828926897", "Memo", "1223",
+                "1234", 1828926897L, "1828926897", "Memo", "1223",
                 null, "164680544", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -296,7 +296,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
-                "1234", 1828926897, "1828926897", "Memo", "1223",
+                "1234", 1828926897L, "1828926897", "Memo", "1223",
                 null, "164680544", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -325,7 +325,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
-                "1234", 1828926897, "1828926897", "Memo", "1223",
+                "1234", 1828926897L, "1828926897", "Memo", "1223",
                 null, "164680544", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -354,7 +354,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
-                "1234", 1828926897, "1828926897", "Memo", "1223",
+                "1234", 1828926897L, "1828926897", "Memo", "1223",
                 null, "164680544", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -383,7 +383,7 @@ public class FinancialTxnIntegrationServiceImplTest {
     public void httpStatusCodeExceptionTest2() {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987", "USER",
-                null, "VendorName", "1234", 1828926897,
+                null, "VendorName", "1234", 1828926897L,
                 "1828926897", "Memo", "1223", null, "164680544", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
