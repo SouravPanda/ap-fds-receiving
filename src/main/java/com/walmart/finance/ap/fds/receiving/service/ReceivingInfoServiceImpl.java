@@ -254,6 +254,12 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     /*************************** receive-line data ***************************/
     private List<ReceivingLine> getLineData(ReceiveSummary receiveSummary, Map<String, String> allRequestParams) {
+
+        /*
+        * Change 13 Digit UPC Number to 16 Digit GTIN Number
+        * Attempt 1 : Add "00" to beginning and "0" to the end
+        * Attempt 2 : Add "000" to the beginning
+        */
         Query query = new Query();
         CriteriaDefinition criteriaDefinition = null;
         if (StringUtils.isNotEmpty(receiveSummary.get_id())) {
@@ -271,7 +277,14 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             query.addCriteria(criteriaDefinition);
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()))) {
-            criteriaDefinition = Criteria.where(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(Arrays.asList(allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()).split(",")));
+            List<String> upcNumberList =
+                    Arrays.asList(allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()).split(","));
+            List<String> updatedUpcNumberList = new ArrayList<>();
+            for (String upcNumber : upcNumberList) {
+                updatedUpcNumberList.add("00" + upcNumber + "0");
+                updatedUpcNumberList.add("000" + upcNumber);
+            }
+            criteriaDefinition = Criteria.where(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(updatedUpcNumberList);
             query.addCriteria(criteriaDefinition);
         }
         log.info("queryForLineResponse :: Query is " + query);
@@ -570,6 +583,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponseV1.setReceiptStatus(receiveSummary.getBusinessStatusCode() != null ? receiveSummary.getBusinessStatusCode().toString() : null);
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()))
                 && allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()).equalsIgnoreCase("Y")) {
+            ReceivingUtils.updateLineResponse(lineResponseList);
             List<ReceivingInfoLineResponse> lineInfoList = lineResponseList.stream().map(t -> convertToLineResponse(t)).collect(Collectors.toList());
             receivingInfoResponseV1.setReceivingInfoLineResponses(lineInfoList);
         }
