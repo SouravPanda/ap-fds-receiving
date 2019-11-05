@@ -254,12 +254,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     /*************************** receive-line data ***************************/
     private List<ReceivingLine> getLineData(ReceiveSummary receiveSummary, Map<String, String> allRequestParams) {
-
-        /*
-        * Change 13 Digit UPC Number to 16 Digit GTIN Number
-        * Attempt 1 : Add "00" to beginning and "0" to the end
-        * Attempt 2 : Add "000" to the beginning
-        */
         Query query = new Query();
         CriteriaDefinition criteriaDefinition = null;
         if (StringUtils.isNotEmpty(receiveSummary.get_id())) {
@@ -280,6 +274,11 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             List<String> upcNumberList =
                     Arrays.asList(allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()).split(","));
             List<String> updatedUpcNumberList = new ArrayList<>();
+            /*
+             * Change 13 Digit UPC Number to 16 Digit GTIN Number while hitting line
+             * Combination 1 : Add "00" to beginning and "0" to the end
+             * Combination 2 : Add "000" to the beginning
+             */
             for (String upcNumber : upcNumberList) {
                 updatedUpcNumberList.add("00" + upcNumber + "0");
                 updatedUpcNumberList.add("000" + upcNumber);
