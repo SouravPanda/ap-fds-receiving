@@ -533,11 +533,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         if (financialTxnResponseData != null) {
             updateReceivingInfoResponseV1(financialTxnResponseData, receivingInfoResponseV1);
         } else {
-            if(NumberUtils.isDigits(receiveSummary.getDepartmentNumber())) {
-                receivingInfoResponseV1.setDepartmentNumber(receiveSummary.getDepartmentNumber() != null ?
-                        Integer.parseInt(receiveSummary.getDepartmentNumber()) :
-                        defaultValuesConfigProperties.getDepartmentNumber() );
-            }
+            receivingInfoResponseV1.setDepartmentNumber(NumberUtils.isDigits(receiveSummary.getDepartmentNumber()) ?
+                    Integer.parseInt(receiveSummary.getDepartmentNumber()) :
+                    defaultValuesConfigProperties.getDepartmentNumber());
             receivingInfoResponseV1.setDivisionNumber(receiveSummary.getBaseDivisionNumber() != null ?
                     receiveSummary.getBaseDivisionNumber() : defaultValuesConfigProperties.getBaseDivisionNumber());
             receivingInfoResponseV1.setVendorNumber(receiveSummary.getVendorNumber());
