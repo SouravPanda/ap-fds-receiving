@@ -38,12 +38,6 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
     @Value("${financialTxn.base.endpoint}")
     private String financialTxnBaseEndpoint;
 
-    @Value("${financialTxn.authorizationKey}")
-    private String financialTxnAuthorizationKey;
-
-    @Value("${financialTxn.authorizationValue}")
-    private String financialTxnAuthorizationValue;
-
     @Autowired
     RestTemplate restTemplate;
 
@@ -53,14 +47,6 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
     @Override
     public List<FinancialTxnResponseData> getFinancialTxnDetails(Map<String, String> allRequestParams) {
         HttpHeaders requestHeaders = meshHeadersGenerator.getRequestHeaders();
-
-        // Adding headers for Azure Basic Authentication
-        String auth = financialTxnAuthorizationKey + ":" + financialTxnAuthorizationValue;
-        byte[] encodedAuth = Base64.encodeBase64(
-                auth.getBytes(Charset.forName("US-ASCII")));
-        String authHeader = "Basic " + new String(encodedAuth);
-        requestHeaders.set("Authorization", authHeader);
-
         HttpEntity<String> httpEntity = new HttpEntity<>(requestHeaders);
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         String url = makeUrl(allRequestParams);

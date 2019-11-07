@@ -1,4 +1,4 @@
-FROM docker.prod.walmart.com/ap-fds-mesh/servicemesh:1.14
+FROM docker.prod.walmart.com/ap-fds-mesh/servicemesh:1.18
 
 
 #Adding certificates

@@ -8,7 +8,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 import java.security.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.HashMap;
@@ -25,9 +24,6 @@ public class FinancialTxnMeshHeadersGenerator implements MeshHeadersGenerator {
     @Value("${mesh.consumerId}")
     private String consumerId;
 
-    @Value("${mesh.producerHostName}")
-    private String producerHostName;
-
     @Value("${financialTxn.appName}")
     private String appName;
 
@@ -40,21 +36,16 @@ public class FinancialTxnMeshHeadersGenerator implements MeshHeadersGenerator {
     @Value("${receiving-mesh-consumer-private-key}")
     private String consumerPrivateKey;
 
-    @Value(("${mesh.useHostHeader}"))
-    private Boolean useHostHeader;
-
     @Override
     public HttpHeaders getRequestHeaders() {
         log.info("Started generating headers at " + LocalDateTime.now());
         HttpHeaders requestHeaders = new HttpHeaders();
 
-        Long invocationTs = System.currentTimeMillis();
         requestHeaders.set(ReceivingConstants.SM_WM_CONSUMER, consumerId);
         requestHeaders.set(ReceivingConstants.SM_WM_APP_NAME, appName);
         requestHeaders.set(ReceivingConstants.SM_WM_ENV, appEnv);
-        if(useHostHeader) {
-            requestHeaders.set("Host", producerHostName); // This is to override host as localhost:4140
-        }
+
+//        Long invocationTs = System.currentTimeMillis();
 //        requestHeaders.set(ReceivingConstants.SM_WM_KEY_VERSION, consumerKeyVersion);
 //        requestHeaders.set(ReceivingConstants.SM_INVOCATION_TS, invocationTs.toString());
 //        requestHeaders.set(ReceivingConstants.SM_AUTH_SIGN, getSignature(invocationTs.toString()));

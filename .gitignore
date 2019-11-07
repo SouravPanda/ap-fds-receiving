@@ -31,3 +31,5 @@ mvn*
 /dist/
 /nbdist/
 /.nb-gradle/
+
+docker-compose.yml
