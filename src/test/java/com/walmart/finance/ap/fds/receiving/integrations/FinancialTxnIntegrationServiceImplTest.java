@@ -48,15 +48,9 @@ public class FinancialTxnIntegrationServiceImplTest {
         financialTxnHost = "https://invc-fin-tran-d.dev01.gbs.ase.southcentralus.us.walmart.net/";
         financialTxnIntegrationService.setFinancialTxnBaseEndpoint("/invoice/financial/transaction/");
         financialTxnIntegrationService.setFinancialTxnBaseUrl("https://invc-fin-tran-d.dev01.gbs.ase.southcentralus.us.walmart.net/");
-        financialTxnIntegrationService.setFinancialTxnAuthorizationKey("fdservices");
-        financialTxnIntegrationService.setFinancialTxnAuthorizationValue("fdservices");
-        requestHeaders = new HttpHeaders() {{
-            String auth = "fdservices" + ":" + "fdservices";
-            byte[] encodedAuth = Base64.encodeBase64(
-                    auth.getBytes(Charset.forName("US-ASCII")));
-            String authHeader = "Basic " + new String(encodedAuth);
-            set("Authorization", authHeader);
-        }};
+//        financialTxnIntegrationService.setFinancialTxnAuthorizationKey("fdservices");
+//        financialTxnIntegrationService.setFinancialTxnAuthorizationValue("fdservices");
+        requestHeaders = new HttpHeaders();
     }
 
     @Test
