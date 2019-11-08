@@ -334,14 +334,13 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ?
                         receiveSummary.getReceiveId() : "0");
         if (receiveSummary.getTypeIndicator().equals('W') && CollectionUtils.isNotEmpty(lineResponseList)) {
-            receivingInfoResponse.setTotalCostAmount(lineResponseList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount()).sum());
-            receivingInfoResponse.setTotalRetailAmount(lineResponseList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
-        } else {
-            receivingInfoResponse.setTotalCostAmount(receiveSummary.getTotalCostAmount() != null ?
-                    receiveSummary.getTotalCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
-            receivingInfoResponse.setTotalRetailAmount(receiveSummary.getTotalRetailAmount() != null ?
-                    receiveSummary.getTotalRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
+            receivingInfoResponse.setTotalCostAmount(lineResponseList.stream().filter(t-> t.getReceivedQuantity() != null &&  t.getCostAmount() != null ).mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount()).sum());
+            receivingInfoResponse.setTotalRetailAmount(lineResponseList.stream().filter(t -> t.getReceivedQuantity() != null && t.getRetailAmount() != null).mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
         }
+        receivingInfoResponse.setTotalCostAmount(receiveSummary.getTotalCostAmount() != null ?
+                receiveSummary.getTotalCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
+        receivingInfoResponse.setTotalRetailAmount(receiveSummary.getTotalRetailAmount() != null ?
+                receiveSummary.getTotalRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
         receivingInfoResponse.setBottleDepositAmount(receiveSummary.getBottleDepositAmount() != null ?
                 receiveSummary.getBottleDepositAmount() : defaultValuesConfigProperties.getBottleDepositAmount());
         receivingInfoResponse.setControlSequenceNumber(receiveSummary.getControlSequenceNumber() != null ?
@@ -563,14 +562,14 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponseV1.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ?
                         receiveSummary.getReceiveId() : "0");
         if (receiveSummary.getTypeIndicator().equals('W') && CollectionUtils.isNotEmpty(lineResponseList)) {
-            receivingInfoResponseV1.setTotalCostAmount(lineResponseList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount()).sum());
-            receivingInfoResponseV1.setTotalRetailAmount(lineResponseList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
-        } else {
-            receivingInfoResponseV1.setTotalCostAmount(receiveSummary.getTotalCostAmount() != null ?
-                    receiveSummary.getTotalCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
-            receivingInfoResponseV1.setTotalRetailAmount(receiveSummary.getTotalRetailAmount() != null ?
-                    receiveSummary.getTotalRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
+            receivingInfoResponseV1.setTotalCostAmount(lineResponseList.stream().filter(t-> t.getReceivedQuantity() != null && t.getCostAmount() != null ).mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount()).sum());
+            receivingInfoResponseV1.setTotalRetailAmount(lineResponseList.stream().filter(t ->t.getReceivedQuantity()!= null &&  t.getRetailAmount() != null).mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
         }
+        receivingInfoResponseV1.setTotalCostAmount(receiveSummary.getTotalCostAmount() != null ?
+                receiveSummary.getTotalCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
+        receivingInfoResponseV1.setTotalRetailAmount(receiveSummary.getTotalRetailAmount() != null ?
+                receiveSummary.getTotalRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
+
         receivingInfoResponseV1.setBottleDepositAmount(receiveSummary.getBottleDepositAmount() != null ?
                 receiveSummary.getBottleDepositAmount() : defaultValuesConfigProperties.getBottleDepositAmount());
         receivingInfoResponseV1.setControlSequenceNumber(receiveSummary.getControlSequenceNumber()!= null ?
