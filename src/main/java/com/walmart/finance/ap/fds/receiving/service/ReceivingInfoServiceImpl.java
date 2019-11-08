@@ -561,15 +561,23 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponseV1.setReceiptDate(receiveSummary.getDateReceived().atZone(ZoneId.of("GMT")).toLocalDate());
         receivingInfoResponseV1.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ?
                         receiveSummary.getReceiveId() : "0");
-        if (receiveSummary.getTypeIndicator().equals('W') && CollectionUtils.isNotEmpty(lineResponseList)) {
-            receivingInfoResponseV1.setTotalCostAmount(lineResponseList.stream().filter(t-> t.getReceivedQuantity() != null && t.getCostAmount() != null ).mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount()).sum());
-            receivingInfoResponseV1.setTotalRetailAmount(lineResponseList.stream().filter(t ->t.getReceivedQuantity()!= null &&  t.getRetailAmount() != null).mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
+        if (receiveSummary.getTypeIndicator().equals('W')) {
+            if (CollectionUtils.isNotEmpty(lineResponseList)) {
+                receivingInfoResponseV1.setTotalCostAmount(lineResponseList.stream().filter(t -> t.getReceivedQuantity() != null && t.getCostAmount() != null).mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount()).sum());
+                receivingInfoResponseV1.setTotalRetailAmount(lineResponseList.stream().filter(t -> t.getReceivedQuantity() != null && t.getRetailAmount() != null).mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
+            }
+            if (receivingInfoResponseV1.getTotalCostAmount() == null) {
+                receivingInfoResponseV1.setTotalCostAmount(defaultValuesConfigProperties.getTotalCostAmount());
+            }
+            if (receivingInfoResponseV1.getTotalRetailAmount() == null) {
+                receivingInfoResponseV1.setTotalRetailAmount(defaultValuesConfigProperties.getTotalRetailAmount());
+            }
+        } else {
+            receivingInfoResponseV1.setTotalCostAmount(receiveSummary.getTotalCostAmount() != null ?
+                    receiveSummary.getTotalCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
+            receivingInfoResponseV1.setTotalRetailAmount(receiveSummary.getTotalRetailAmount() != null ?
+                    receiveSummary.getTotalRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
         }
-        receivingInfoResponseV1.setTotalCostAmount(receiveSummary.getTotalCostAmount() != null ?
-                receiveSummary.getTotalCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
-        receivingInfoResponseV1.setTotalRetailAmount(receiveSummary.getTotalRetailAmount() != null ?
-                receiveSummary.getTotalRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
-
         receivingInfoResponseV1.setBottleDepositAmount(receiveSummary.getBottleDepositAmount() != null ?
                 receiveSummary.getBottleDepositAmount() : defaultValuesConfigProperties.getBottleDepositAmount());
         receivingInfoResponseV1.setControlSequenceNumber(receiveSummary.getControlSequenceNumber()!= null ?
