@@ -476,12 +476,10 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     private void enrichQueryParams(Map<String, String> allRequestParams, List<FinancialTxnResponseData> financialTxnResponseDataList) {
         if (CollectionUtils.isNotEmpty(financialTxnResponseDataList)) {
             Integer storeNumber =
-                    (financialTxnResponseDataList.get(0).getOrigStoreNbr() == null ||
-                            financialTxnResponseDataList.get(0).getOrigStoreNbr() == 0)
-                    ? financialTxnResponseDataList.get(0).getStoreNumber() :
-                            financialTxnResponseDataList.get(0).getOrigStoreNbr();
-            allRequestParams.put("locationNumber",
-                    String.valueOf(storeNumber));
+                    financialTxnResponseDataList.get(0).getOrigStoreNbr() == null
+                            ? financialTxnResponseDataList.get(0).getStoreNumber()
+                            : financialTxnResponseDataList.get(0).getOrigStoreNbr();
+            allRequestParams.put("locationNumber", String.valueOf(storeNumber));
         }
     }
 
