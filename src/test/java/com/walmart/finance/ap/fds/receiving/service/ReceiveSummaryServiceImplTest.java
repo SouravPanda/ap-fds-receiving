@@ -122,8 +122,8 @@ public class ReceiveSummaryServiceImplTest {
                 9.0, 7.0,
                 0L, 0, 0, 10.0);
 
-        FreightResponse freightResponse = new FreightResponse("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "0", "0");
-        FreightResponse freightResponseAt = new FreightResponse("46652|18048|8264|18|18|1995-10-17|18:45:21", "0", "0");
+        FreightResponse freightResponse = new FreightResponse(new Long(4665267), "0", "0");
+        FreightResponse freightResponseAt = new FreightResponse(new Long(4665267), "0", "0");
         List<FreightResponse> listOfFreight = new ArrayList<>();
         listOfFreight.add(freightResponse);
         listOfFreight.add(freightResponseAt);
@@ -201,8 +201,8 @@ public class ReceiveSummaryServiceImplTest {
                 9.0, 7.0,
                 0L, 0, 0, 10.0);
 
-        FreightResponse freightResponse = new FreightResponse("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "0", "0");
-        FreightResponse freightResponseAt = new FreightResponse("46652|18048|8264|18|18|1995-10-17|18:45:21", "0", "0");
+        FreightResponse freightResponse = new FreightResponse(new Long(4665267), "0", "0");
+        FreightResponse freightResponseAt = new FreightResponse(new Long(4665267), "0", "0");
         List<FreightResponse> listOfFreight = new ArrayList<>();
         listOfFreight.add(freightResponse);
         listOfFreight.add(freightResponseAt);
@@ -281,8 +281,8 @@ public class ReceiveSummaryServiceImplTest {
                 9.0, 7.0,
                 0L, 0, 0, 10.0);
 
-        FreightResponse freightResponse = new FreightResponse("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "0", "0");
-        FreightResponse freightResponseAt = new FreightResponse("46652|18048|8264|18|18|1995-10-17|18:45:21", "0", "0");
+        FreightResponse freightResponse = new FreightResponse(new Long(4665267), "0", "0");
+        FreightResponse freightResponseAt = new FreightResponse(new Long(4665267), "0", "0");
         List<FreightResponse> listOfFreight = new ArrayList<>();
         listOfFreight.add(freightResponse);
         listOfFreight.add(freightResponseAt);
@@ -359,8 +359,8 @@ public class ReceiveSummaryServiceImplTest {
                 LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77",
                 9.0, 7.0,
                 0L, 0, 0, 10.0);
-        FreightResponse freightResponse = new FreightResponse("4665267|1804823|8264|18|18|1995-10-17|18:45:21", "0", "0");
-        FreightResponse freightResponseAt = new FreightResponse("46652|18048|8264|18|18|1995-10-17|18:45:21", "0", "0");
+        FreightResponse freightResponse = new FreightResponse(new Long(4665267), "0", "0");
+        FreightResponse freightResponseAt = new FreightResponse(new Long(4665267), "0", "0");
         List<FreightResponse> listOfFreight = new ArrayList<>();
         listOfFreight.add(freightResponse);
         listOfFreight.add(freightResponseAt);
