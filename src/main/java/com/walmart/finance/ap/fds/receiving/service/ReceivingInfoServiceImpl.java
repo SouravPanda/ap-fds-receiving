@@ -31,6 +31,8 @@ import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -334,8 +336,14 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ?
                         receiveSummary.getReceiveId() : "0");
         if (receiveSummary.getTypeIndicator().equals('W') && CollectionUtils.isNotEmpty(lineResponseList)) {
-            receivingInfoResponse.setTotalCostAmount(lineResponseList.stream().filter(t-> t.getReceivedQuantity() != null &&  t.getCostAmount() != null ).mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount()).sum());
-            receivingInfoResponse.setTotalRetailAmount(lineResponseList.stream().filter(t -> t.getReceivedQuantity() != null && t.getRetailAmount() != null).mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
+            receivingInfoResponse.setTotalCostAmount(lineResponseList.stream()
+                    .filter(t -> t.getReceivedQuantity() != null && t.getCostAmount() != null)
+                    .mapToDouble(t -> BigDecimal.valueOf(t.getReceivedQuantity() * t.getCostAmount()).setScale(2, RoundingMode.HALF_UP).doubleValue())
+                    .sum());
+            receivingInfoResponse.setTotalRetailAmount(lineResponseList.stream()
+                    .filter(t -> t.getReceivedQuantity() != null && t.getRetailAmount() != null)
+                    .mapToDouble(t -> BigDecimal.valueOf(t.getReceivedQuantity() * t.getRetailAmount()).setScale(2, RoundingMode.HALF_UP).doubleValue())
+                    .sum());
         }
         receivingInfoResponse.setTotalCostAmount(receiveSummary.getTotalCostAmount() != null ?
                 receiveSummary.getTotalCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
@@ -563,8 +571,14 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                         receiveSummary.getReceiveId() : "0");
         if (receiveSummary.getTypeIndicator().equals('W')) {
             if (CollectionUtils.isNotEmpty(lineResponseList)) {
-                receivingInfoResponseV1.setTotalCostAmount(lineResponseList.stream().filter(t -> t.getReceivedQuantity() != null && t.getCostAmount() != null).mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount()).sum());
-                receivingInfoResponseV1.setTotalRetailAmount(lineResponseList.stream().filter(t -> t.getReceivedQuantity() != null && t.getRetailAmount() != null).mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
+                receivingInfoResponseV1.setTotalCostAmount(lineResponseList.stream()
+                        .filter(t -> t.getReceivedQuantity() != null && t.getCostAmount() != null)
+                        .mapToDouble(t -> BigDecimal.valueOf(t.getReceivedQuantity() * t.getCostAmount()).setScale(2, RoundingMode.HALF_UP).doubleValue())
+                        .sum());
+                receivingInfoResponseV1.setTotalRetailAmount(lineResponseList.stream()
+                        .filter(t -> t.getReceivedQuantity() != null && t.getRetailAmount() != null)
+                        .mapToDouble(t -> BigDecimal.valueOf(t.getReceivedQuantity() * t.getRetailAmount()).setScale(2, RoundingMode.HALF_UP).doubleValue())
+                        .sum());
             }
             if (receivingInfoResponseV1.getTotalCostAmount() == null) {
                 receivingInfoResponseV1.setTotalCostAmount(defaultValuesConfigProperties.getTotalCostAmount());
