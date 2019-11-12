@@ -547,9 +547,11 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         Iterator<ReceiveSummary> iteratorSummary = allReceiveSummaries.iterator();
         while (iteratorSummary.hasNext()) {
             ReceiveSummary receiveSummary = iteratorSummary.next();
-            ReceivingInfoResponseV1 receivingInfoResponseV1 = conversionToReceivingInfoV1(receiveSummary,
-                    financialTxnResponseMap.get(receiveSummary.get_id()),
-                    receivingLineMap.get(receiveSummary.get_id()), freightResponseMap.get(receiveSummary.getFreightBillExpandId()), allRequestParams);
+            ReceivingInfoResponseV1 receivingInfoResponseV1 = conversionToReceivingInfoV1(receiveSummary
+                    , financialTxnResponseMap.get(receiveSummary.get_id())
+                    , receivingLineMap.containsKey(receiveSummary.get_id()) ? receivingLineMap.get(receiveSummary.get_id()) : new ArrayList<>()
+                    , freightResponseMap.containsKey(receiveSummary.getFreightBillExpandId()) ? freightResponseMap.get(receiveSummary.getFreightBillExpandId()) : new FreightResponse()
+                    , allRequestParams);
             receivingInfoResponses.add(receivingInfoResponseV1);
         }
         return receivingInfoResponses;
@@ -571,7 +573,19 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             criteria.and(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Long::parseLong).collect(Collectors.toList()));
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()))) {
-            criteria.and(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(Arrays.asList(allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()).split(",")));
+            List<String> upcNumberList =
+                    Arrays.asList(allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()).split(","));
+            List<String> updatedUpcNumberList = new ArrayList<>();
+            /*
+             * Change 13 Digit UPC Number to 16 Digit GTIN Number while hitting line
+             * Combination 1 : Add "00" to beginning and "0" to the end
+             * Combination 2 : Add "000" to the beginning
+             */
+            for (String upcNumber : upcNumberList) {
+                updatedUpcNumberList.add("00" + upcNumber + "0");
+                updatedUpcNumberList.add("000" + upcNumber);
+            }
+            criteria.and(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(updatedUpcNumberList);
         }
         log.info("queryForLineResponse :: Query is " + criteria);
         return criteria;
@@ -607,18 +621,17 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     /********* Optimised method ************/
 
     private List<ReceivingInfoResponseV1> getDataWoFinancialTxnV1Optimised(Map<String, String> allRequestParams) {
-
         List<ReceivingInfoResponseV1> receivingInfoResponses = new ArrayList<>();
         List<Criteria> lineCriteriaList = new ArrayList<>();
         List<Criteria> freightCriteriaList = new ArrayList<>();
 //        List<ReceiveSummary> allReceiveSummaries = new ArrayList<>();
         List<ReceiveSummary> receiveSummaries = getSummaryData(allRequestParams);
         for (ReceiveSummary receiveSummary : receiveSummaries) {
-                // Assumed :  receive summary id will never be null.
-                lineCriteriaList.add(getLineDataOptimised(receiveSummary, allRequestParams));
-                if (receiveSummary.getFreightBillExpandId() != null) {
-                    freightCriteriaList.add(Criteria.where("_id").is(receiveSummary.getFreightBillExpandId()));
-                }
+            // Assumed :  receive summary id will never be null.
+            lineCriteriaList.add(getLineDataOptimised(receiveSummary, allRequestParams));
+            if (receiveSummary.getFreightBillExpandId() != null) {
+                freightCriteriaList.add(Criteria.where("_id").is(receiveSummary.getFreightBillExpandId()));
+            }
         }
         List<ReceivingLine> lineResponseList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(lineCriteriaList)) {
@@ -651,8 +664,10 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         while (iteratorSummary.hasNext()) {
             ReceiveSummary receiveSummary = iteratorSummary.next();
             ReceivingInfoResponseV1 receivingInfoResponseV1 = conversionToReceivingInfoV1(receiveSummary,
-                    null,
-                    receivingLineMap.get(receiveSummary.get_id()), freightResponseMap.get(receiveSummary.getFreightBillExpandId()), allRequestParams);
+                    null
+                    , receivingLineMap.containsKey(receiveSummary.get_id()) ? receivingLineMap.get(receiveSummary.get_id()) : new ArrayList<>()
+                    , freightResponseMap.containsKey(receiveSummary.getFreightBillExpandId()) ? freightResponseMap.get(receiveSummary.getFreightBillExpandId()): new FreightResponse()
+                    , allRequestParams);
             receivingInfoResponses.add(receivingInfoResponseV1);
         }
         return receivingInfoResponses;
