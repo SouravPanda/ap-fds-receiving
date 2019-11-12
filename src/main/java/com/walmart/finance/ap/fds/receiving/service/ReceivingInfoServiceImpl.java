@@ -483,6 +483,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         }
     }
 
+    /*
     private List<ReceivingInfoResponseV1> getDataForFinancialTxnV1(List<FinancialTxnResponseData> financialTxnResponseDataList, Map<String, String> allRequestParams) {
         List<ReceivingInfoResponseV1> receivingInfoResponses = new ArrayList<>();
         for (FinancialTxnResponseData financialTxnResponseData : financialTxnResponseDataList) {
@@ -495,9 +496,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             }
         }
         return receivingInfoResponses;
-    }
+    }*/
 
-    /********* Optimised method ************/
+    /********* Optimised method : Start ************/
 
     private List<ReceivingInfoResponseV1> getDataForFinancialTxnV1Optimised(List<FinancialTxnResponseData> financialTxnResponseDataList, Map<String, String> allRequestParams) {
         List<ReceivingInfoResponseV1> receivingInfoResponses = new ArrayList<>();
@@ -602,8 +603,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         return receiveFreights;
     }
 
-    /********* Optimised method ************/
+    /********* Optimised method : End ************/
 
+/*
     private List<ReceivingInfoResponseV1> getDataWoFinancialTxnV1(Map<String, String> allRequestParams) {
         List<ReceivingInfoResponseV1> receivingInfoResponses = new ArrayList<>();
         List<ReceiveSummary> receiveSummaries = getSummaryData(allRequestParams);
@@ -618,7 +620,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         }
         return receivingInfoResponses;
     }
-    /********* Optimised method ************/
+*/
+    /********* Optimised method : Start ************/
 
     private List<ReceivingInfoResponseV1> getDataWoFinancialTxnV1Optimised(Map<String, String> allRequestParams) {
         List<ReceivingInfoResponseV1> receivingInfoResponses = new ArrayList<>();
@@ -672,7 +675,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         }
         return receivingInfoResponses;
     }
-    /********* Optimised method ************/
+    /********* Optimised method : End ************/
 
     private Map<String, ReceivingInfoResponseV1> getReceivingInfoMap(List<ReceivingInfoResponseV1> receivingInfoResponseV1List) {
 
