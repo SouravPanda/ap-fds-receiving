@@ -13,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection="receive-freight")
 public class FreightResponse {
 
-    private String id;
+    private Long id;
 
     private String carrierCode;
 
