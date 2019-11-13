@@ -1,6 +1,8 @@
 package com.walmart.finance.ap.fds.receiving.common;
 
 
+import com.google.common.collect.ImmutableList;
+
 public class ReceivingConstants {
 
     public static final String ACCEPT = "Accept";
@@ -49,5 +51,7 @@ public class ReceivingConstants {
     public static final String DATEFORMATTER="yyyy-MM-dd HH:mm:ss";
 
     public static final String RECEIVING_SHARD_KEY_FIELD = "partitionKey";
+
+    public static final ImmutableList<Integer> PROCESS_STATUS_CODE_FOR_AUTH_FIELDS = ImmutableList.of(3, 5);
 
 }
