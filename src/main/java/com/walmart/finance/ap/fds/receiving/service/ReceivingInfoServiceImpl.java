@@ -725,9 +725,13 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     }
 
     private void updateReceivingInfoResponseV1(FinancialTxnResponseData financialTxnResponseData, ReceivingInfoResponseV1 receivingInfoResponseV1) {
-        receivingInfoResponseV1.setAuthorizedBy(financialTxnResponseData.getAuthorizedBy());
-        receivingInfoResponseV1.setAuthorizedDate(financialTxnResponseData.getAuthorizedDate() != null ?
-                financialTxnResponseData.getAuthorizedDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate() : null);
+
+        if (ReceivingConstants.PROCESS_STATUS_CODE_FOR_AUTH_FIELDS.contains(financialTxnResponseData.getProcessStatusCode())) {
+            receivingInfoResponseV1.setAuthorizedBy(financialTxnResponseData.getAuthorizedBy());
+            receivingInfoResponseV1.setAuthorizedDate(financialTxnResponseData.getAuthorizedDate() != null ?
+                    financialTxnResponseData.getAuthorizedDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate() : null);
+        }
+
         receivingInfoResponseV1.setDepartmentNumber(financialTxnResponseData.getPoDeptNbr());
         receivingInfoResponseV1.setDivisionNumber(financialTxnResponseData.getDivisionNumber());
         receivingInfoResponseV1.setVendorNumber(financialTxnResponseData.getVendorNumber());
