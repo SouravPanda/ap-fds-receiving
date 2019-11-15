@@ -1,7 +1,7 @@
 package com.walmart.finance.ap.fds.receiving.integrations;
 
-import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.exception.FinancialTransException;
+import com.walmart.finance.ap.fds.receiving.mesh.FinancialTxnMeshHeadersGenerator;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestCombinations;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import org.apache.commons.codec.binary.Base64;
@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.http.*;
@@ -34,6 +33,9 @@ public class FinancialTxnIntegrationServiceImplTest {
     @Mock
     RestTemplate restTemplate;
 
+    @Mock
+    FinancialTxnMeshHeadersGenerator headersGenerator;
+
     @InjectMocks
     FinancialTxnIntegrationServiceImpl financialTxnIntegrationService;
 
@@ -44,23 +46,11 @@ public class FinancialTxnIntegrationServiceImplTest {
     @Before
     public void setup() {
         financialTxnHost = "https://invc-fin-tran-d.dev01.gbs.ase.southcentralus.us.walmart.net/";
-        financialTxnIntegrationService.setAppName("AP-FDS-INVOICE-FINANCIAL-TRANSACTION");
-        financialTxnIntegrationService.setAppEnv("dev-us");
-        financialTxnIntegrationService.setConsumerId("3fa1e5b2-6c55-4d0f-8ae5-634dbbb72865");
         financialTxnIntegrationService.setFinancialTxnBaseEndpoint("/invoice/financial/transaction/");
         financialTxnIntegrationService.setFinancialTxnBaseUrl("https://invc-fin-tran-d.dev01.gbs.ase.southcentralus.us.walmart.net/");
-        financialTxnIntegrationService.setFinancialTxnAuthorizationKey("fdservices");
-        financialTxnIntegrationService.setFinancialTxnAuthorizationValue("fdservices");
-        requestHeaders = new HttpHeaders() {{
-            String auth = "fdservices" + ":" + "fdservices";
-            byte[] encodedAuth = Base64.encodeBase64(
-                    auth.getBytes(Charset.forName("US-ASCII")));
-            String authHeader = "Basic " + new String(encodedAuth);
-            set("Authorization", authHeader);
-        }};
-        requestHeaders.set(ReceivingConstants.SM_WM_CONSUMER, financialTxnIntegrationService.getConsumerId());
-        requestHeaders.set(ReceivingConstants.SM_WM_APP_NAME, financialTxnIntegrationService.getAppName());
-        requestHeaders.set(ReceivingConstants.SM_WM_ENV, financialTxnIntegrationService.getAppEnv());
+//        financialTxnIntegrationService.setFinancialTxnAuthorizationKey("fdservices");
+//        financialTxnIntegrationService.setFinancialTxnAuthorizationValue("fdservices");
+        requestHeaders = new HttpHeaders();
     }
 
     @Test
@@ -68,7 +58,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
-                "1234", 1828926897, "1828926897", "Memo", "1223",
+                "1234", 1828926897L, "1828926897", "Memo", "1223",
                 null, "164680544", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -87,6 +77,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
+        when(headersGenerator.getRequestHeaders()).thenReturn(this.requestHeaders);
         compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
     }
 
@@ -95,7 +86,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987"
                 , "USER", null, "VendorName", "1234",
-                1828926897, "1828926897", "Memo", "1223", null,
+                1828926897L, "1828926897", "Memo", "1223", null,
                 "164680544", null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -114,6 +105,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         String url = financialTxnHost + "US/invoice/financial/transaction/vendorNumber/2222/poNumber/99987/invoiceNumber/1828926897";
         HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         HttpStatusCodeException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND);
+        when(headersGenerator.getRequestHeaders()).thenReturn(this.requestHeaders);
         org.assertj.core.api.Assertions.assertThat(financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap).isEmpty());
     }
 
@@ -121,7 +113,7 @@ public class FinancialTxnIntegrationServiceImplTest {
     public void getFinancialTxnDetailsResponseNullCheck() {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987", "USER",
-                null, "VendorName", "1234", 1828926897,
+                null, "VendorName", "1234", 1828926897L,
                 "1828926897", "Memo", "1223", null, "164680544", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -138,6 +130,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         };
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
+        when(headersGenerator.getRequestHeaders()).thenReturn(this.requestHeaders);
         org.assertj.core.api.Assertions.assertThat(financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap).isEmpty());
     }
 
@@ -149,7 +142,7 @@ public class FinancialTxnIntegrationServiceImplTest {
     public void httpStatusCodeException() {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987", "USER",
-                null, "VendorName", "1234", 1828926897,
+                null, "VendorName", "1234", 1828926897L,
                 "1828926897", "Memo", "1223", null, "164680544", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -170,6 +163,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         HttpStatusCodeException exception = new HttpClientErrorException(HttpStatus.BAD_REQUEST);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenThrow(exception);
+        when(headersGenerator.getRequestHeaders()).thenReturn(this.requestHeaders);
         financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap);
     }
 
@@ -178,7 +172,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
-                "1234", 1828926897, "1828926897", "Memo", "1223",
+                "1234", 1828926897L, "1828926897", "Memo", "1223",
                 null, "164680544", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -199,6 +193,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
+        when(headersGenerator.getRequestHeaders()).thenReturn(this.requestHeaders);
         compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
     }
 
@@ -207,7 +202,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
-                "1234", 1828926897, "1828926897", "Memo", "1223",
+                "1234", 1828926897L, "1828926897", "Memo", "1223",
                 null, "164680544", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -228,6 +223,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
+        when(headersGenerator.getRequestHeaders()).thenReturn(this.requestHeaders);
         compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
     }
 
@@ -236,7 +232,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
-                "1234", 1828926897, "1828926897", "Memo", "1223",
+                "1234", 1828926897L, "1828926897", "Memo", "1223",
                 null, "164680544", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -256,6 +252,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
+        when(headersGenerator.getRequestHeaders()).thenReturn(this.requestHeaders);
         compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
     }
 
@@ -264,7 +261,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
-                "1234", 1828926897, "1828926897", "Memo", "1223",
+                "1234", 1828926897L, "1828926897", "Memo", "1223",
                 null, "164680544", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -284,6 +281,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
+        when(headersGenerator.getRequestHeaders()).thenReturn(this.requestHeaders);
         compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
     }
 
@@ -292,7 +290,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
-                "1234", 1828926897, "1828926897", "Memo", "1223",
+                "1234", 1828926897L, "1828926897", "Memo", "1223",
                 null, "164680544", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -312,6 +310,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
+        when(headersGenerator.getRequestHeaders()).thenReturn(this.requestHeaders);
         compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
     }
 
@@ -320,7 +319,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
-                "1234", 1828926897, "1828926897", "Memo", "1223",
+                "1234", 1828926897L, "1828926897", "Memo", "1223",
                 null, "164680544", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -340,6 +339,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
+        when(headersGenerator.getRequestHeaders()).thenReturn(this.requestHeaders);
         compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
     }
 
@@ -348,7 +348,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987",
                 "USER", null, "VendorName",
-                "1234", 1828926897, "1828926897", "Memo", "1223",
+                "1234", 1828926897L, "1828926897", "Memo", "1223",
                 null, "164680544", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -369,6 +369,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         ResponseEntity<FinancialTxnResponse> response = new ResponseEntity<>(financialTxnResponse, HttpStatus.OK);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(response);
+        when(headersGenerator.getRequestHeaders()).thenReturn(this.requestHeaders);
         compareResults(financialTxnResponseDataList, financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap));
     }
 
@@ -376,7 +377,7 @@ public class FinancialTxnIntegrationServiceImplTest {
     public void httpStatusCodeExceptionTest2() {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(123), 164680544, "10441", 6302,
                 2222, 0, 9.0, 0, "99987", "USER",
-                null, "VendorName", "1234", 1828926897,
+                null, "VendorName", "1234", 1828926897L,
                 "1828926897", "Memo", "1223", null, "164680544", null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null
                 , null, null, null, null, null, null, null, null, null, null, null, null, null, null
@@ -396,6 +397,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         String url = financialTxnHost + "US/invoice/financial/transaction/vendorNumber/639050495/poNumber/99987/origStoreNbr/6302?invoiceNumber=1828926897";
         HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(null);
+        when(headersGenerator.getRequestHeaders()).thenReturn(this.requestHeaders);
         financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap);
     }
 }

@@ -55,7 +55,7 @@ public class ReceivingSummaryController {
      * @param
      * @return
      */
-    //@PutMapping   // Enable with update feature release
+    @PutMapping
     @ApiOperation(value = "API to update Stores based on the payload")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
     public ResponseEntity<ReceivingResponse> updateSummary(@PathVariable("countryCode") String countryCode, @RequestBody @Valid ReceivingSummaryRequest receivingSummaryRequest) {
@@ -69,7 +69,7 @@ public class ReceivingSummaryController {
      * @param
      * @return
      */
-    //@PutMapping("/line")   // Enable with update feature release
+    @PutMapping("/line")
     @ApiOperation(value = "API to update Stores based on the payload")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
     public ResponseEntity<ReceivingResponse> updateSummaryAndLine(@PathVariable("countryCode") String countryCode, @RequestBody @Valid ReceivingSummaryLineRequest receiveSummaryLineRequest) {

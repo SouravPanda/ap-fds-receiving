@@ -91,7 +91,7 @@ public class ReceivingLineControllerTest {
                                 "\"eachCostAmount\": 0,\n" +
                                 "\"eachRetailAmount\": 0,\n" +
                                 "\"packQuantity\": 1,\n" +
-                                "\"numberofCasesReceived\": 0,\n" +
+                                "\"numberOfCasesReceived\": 0,\n" +
                                 "\"purchaseOrderId\": \"553683865\",\n" +
                                 "\"unitOfMeasure\": \"lbs\",\n" +
                                 "\"variableWeightInd\": \" \",\n" +

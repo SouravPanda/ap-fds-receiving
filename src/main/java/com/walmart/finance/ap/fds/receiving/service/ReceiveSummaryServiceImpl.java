@@ -222,7 +222,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         List<String> upcNumbers = allRequestParams.containsKey(ReceiveSummaryRequestParams.UPCNUMBERS.getParameterName()) ? Arrays.asList(allRequestParams.get(ReceiveSummaryRequestParams.UPCNUMBERS.getParameterName()).split(",")) : null;
         for (ReceiveSummary receiveSummary : receiveSummaries) {
             criteriaList.add(queryForLineResponse(receiveSummary,
-                    itemNumbers, upcNumbers));
+                    itemNumbers, upcNumbers,allRequestParams));
         }
         if (CollectionUtils.isNotEmpty(criteriaList)) {
             Query query = new Query(new Criteria().orOperator(criteriaList.toArray(new Criteria[criteriaList.size()])));
@@ -250,9 +250,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             AdditionalResponse response = new AdditionalResponse();
             List<ReceivingLine> lineList = receivingLineMap.get(receiveSummary.get_id());
             if (CollectionUtils.isNotEmpty(lineList)) {
-                if (receiveSummary.getTypeIndicator().equals("W")) {
-                    response.setTotalCostAmount(lineResponseList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount()).sum());
-                    response.setTotalRetailAmount(lineResponseList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
+                if (receiveSummary.getTypeIndicator().equals('W')) {
+                    response.setTotalCostAmount(lineList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount()).sum());
+                    response.setTotalRetailAmount(lineList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
                 } else {
                     response.setTotalCostAmount(receiveSummary.getTotalCostAmount() != null ?
                             receiveSummary.getTotalCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
@@ -276,8 +276,16 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         return lineResponseMap;
     }
 
-    private Criteria queryForLineResponse(ReceiveSummary receiveSummary, List<String> itemNumbers, List<String> upcNumbers) {
-        Criteria criteriaDefinition = new Criteria(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).is(receiveSummary.get_id());
+    private Criteria queryForLineResponse(ReceiveSummary receiveSummary, List<String> itemNumbers, List<String> upcNumbers, Map<String, String> allRequestParams) {
+        Criteria criteriaDefinition = null;
+        if (receiveSummary.getStoreNumber() != null) {
+            criteriaDefinition = ReceivingUtils.getCriteriaForPartitionKey(null, allRequestParams, receiveSummary.getStoreNumber(), monthsPerShard, monthsToDisplay);
+        }
+        if (criteriaDefinition != null) {
+            criteriaDefinition.and(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).is(receiveSummary.get_id());
+        } else {
+            criteriaDefinition = new Criteria(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).is(receiveSummary.get_id());
+        }
         if (CollectionUtils.isNotEmpty(itemNumbers)) {
             criteriaDefinition.and(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Long::parseLong).collect(Collectors.toList()));
         }
@@ -286,6 +294,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         }
         return criteriaDefinition;
     }
+
     /******* receive -line data fetching   *********/
 
     /******* receive -freight data fetching   *********/

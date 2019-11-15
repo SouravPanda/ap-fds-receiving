@@ -1,3 +1,0 @@
-deb http://repository.cache.walmart.com/repository/debian-security/ stretch/updates main
-deb http://repository.cache.walmart.com/repository/debian-releases/ stretch-updates main
-deb http://repository.cache.walmart.com/repository/debian-releases/ stretch main

@@ -53,7 +53,7 @@ flows:
             tags:
               - '${releaseAcrName}/${MAVEN_ARTIFACT_ID}:${version}'
             push: true
-            dockerfile: 'docker/Dockerfile'
+            dockerfile: 'Dockerfile'
             creds:
               apfsregistryrelease.azurecr.io: '${releaseAcrCred}'
 
@@ -65,7 +65,7 @@ flows:
             tags:
               - '${devAcrName}/${MAVEN_ARTIFACT_ID}:${MAVEN_VERSION}'
             push: true
-            dockerfile: 'docker/Dockerfile'
+            dockerfile: 'Dockerfile'
             creds:
               apfsregistrydev.azurecr.io: '${devAcrCred}'
   runsonar:

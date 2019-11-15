@@ -2,7 +2,9 @@ package com.walmart.finance.ap.fds.receiving.common;
 
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
+import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
@@ -98,5 +100,22 @@ public class ReceivingUtils {
                                     monthsToDisplay, monthsPerShard));
         }
         return partitionKeyCriteria;
+    }
+
+    public static void updateLineResponse(List<ReceivingLine> lineResponseList) {
+        for (ReceivingLine receivingLine : lineResponseList) {
+            if (StringUtils.isNotEmpty(receivingLine.getUpcNumber())) {
+                /* Change 16 Digit GTIN number to 13 Digit UPC number */
+                int lastDigit =
+                        Integer.parseInt(
+                                String.valueOf(receivingLine.getUpcNumber().charAt(receivingLine.getUpcNumber().length() - 1)));
+                if (lastDigit > 0) {
+                    receivingLine.setUpcNumber(receivingLine.getUpcNumber().substring(3));
+                } else {
+                    receivingLine.setUpcNumber(receivingLine.getUpcNumber().substring(2,
+                            receivingLine.getUpcNumber().length() - 1));
+                }
+            }
+        }
     }
 }

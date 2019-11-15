@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @AllArgsConstructor
@@ -66,7 +65,7 @@ public class ReceivingInfoResponseV1 {
 
     private String parentPurchaseOrderId;
 
-    private Integer invoiceId;
+    private Long invoiceId;
 
     private String invoiceNumber;
 

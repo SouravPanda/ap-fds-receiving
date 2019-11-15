@@ -68,7 +68,7 @@ public class ReceivingInfoControllerTest {
                 new Long(999403403), LocalDate.of(2019, 03, 14), "30006",
                 " ", 0.0, 0.0, null, 495742, "Memo",
                 0.0, 0, "USER", "1223",
-                "3669", null, "999403403", 411276735,
+                "3669", null, "999403403", 411276735L,
                 "411276735", lineResponses);
         List<ReceivingInfoResponse> list = new ArrayList<ReceivingInfoResponse>() {
             {
@@ -125,7 +125,7 @@ public class ReceivingInfoControllerTest {
                                 "\"quantity\": 2,\n" +
                                 "\"eachCostAmount\": 33,\n" +
                                 "\"eachRetailAmount\": 33.84,\n" +
-                                "\"numberofCasesReceived\": 2,\n" +
+                                "\"numberOfCasesReceived\": 2,\n" +
                                 "\"packQuantity\": 0,\n" +
                                 "\"bottleDepositFlag\": \"N\",\n" +
                                 "\"upc\": \"0000047875883980\",\n" +
@@ -181,7 +181,7 @@ public class ReceivingInfoControllerTest {
                 new Long(972515962), LocalDate.of(2019, 01, 01), "110950",
                 "A", 0.0, 0.0, null, 397646, null,
                 0.0, 0, "PEPSI MIDAMERICA", "1223",
-                null, null, null, 97166785,
+                null, null, null, 97166785L,
                 "1832721624", new Long(724201901), 0, null, "6854748957", "US",
                 1, 0.0, -5743.12, 0.0, 0.0, 640
                 , LocalDate.of(2018, 11, 23), LocalDate.of(2018, 12, 23), "6854748957", LocalDate.of(2018, 11, 24), 0, 538,
@@ -303,7 +303,7 @@ public class ReceivingInfoControllerTest {
                                 "                    \"quantity\": 2,\n" +
                                 "                    \"eachCostAmount\": 30.0,\n" +
                                 "                    \"eachRetailAmount\": 30.09,\n" +
-                                "                    \"numberofCasesReceived\": 2,\n" +
+                                "                    \"numberOfCasesReceived\": 2,\n" +
                                 "                    \"packQuantity\": 0,\n" +
                                 "                    \"bottleDepositFlag\": \"N\",\n" +
                                 "                    \"upc\": \"0000047875883989\",\n" +
