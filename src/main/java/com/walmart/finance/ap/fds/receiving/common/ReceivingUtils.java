@@ -118,4 +118,24 @@ public class ReceivingUtils {
             }
         }
     }
+
+    public static Object[] getPossibleDeptNbrCombos(String providedDeptNbr) {
+
+        List<Object> deptNbrCombosList = new ArrayList<>();
+
+        if (providedDeptNbr.length() == 1 ||
+                (providedDeptNbr.length() == 2 && providedDeptNbr.charAt(0) == '0')) {
+            Integer number = Integer.parseInt(providedDeptNbr);
+            deptNbrCombosList.add(number);
+            deptNbrCombosList.add(String.valueOf(number));
+            deptNbrCombosList.add("0" + String.valueOf(number));
+        } else if (providedDeptNbr.length() == 2) {
+            deptNbrCombosList.add(providedDeptNbr);
+            deptNbrCombosList.add(Integer.parseInt(providedDeptNbr));
+        } else {
+            deptNbrCombosList.add(providedDeptNbr);
+        }
+        return deptNbrCombosList.toArray();
+
+    }
 }
