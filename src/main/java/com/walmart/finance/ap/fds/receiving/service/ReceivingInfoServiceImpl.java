@@ -189,11 +189,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             dynamicQuery.addCriteria(poReceiveIdCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.DEPARTMENTNUMBER))) {
-            Object[] departmentNumberCombos =
-                    ReceivingUtils.getPossibleDeptNbrCombos(paramMap.get(ReceivingConstants.DEPARTMENTNUMBER));
             Criteria departmentNumberCriteria =
-                    Criteria.where(ReceiveSummaryCosmosDBParameters.DEPARTMENTNUMBER.getParameterName()).in(departmentNumberCombos);
-
+                    ReceivingUtils.getCriteriaForDepartmentNbr(paramMap.get(ReceivingConstants.DEPARTMENTNUMBER));
             dynamicQuery.addCriteria(departmentNumberCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.VENDORNUMBER))) {

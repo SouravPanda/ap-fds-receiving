@@ -2,6 +2,7 @@ package com.walmart.finance.ap.fds.receiving.common;
 
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
+import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryCosmosDBParameters;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import org.apache.commons.lang.StringUtils;
@@ -119,23 +120,19 @@ public class ReceivingUtils {
         }
     }
 
-    public static Object[] getPossibleDeptNbrCombos(String providedDeptNbr) {
+    public static Criteria getCriteriaForDepartmentNbr(String providedDeptNbr) {
+        if (providedDeptNbr.length() == 1 || providedDeptNbr.charAt(0) == '0') {
 
-        List<Object> deptNbrCombosList = new ArrayList<>();
-
-        if (providedDeptNbr.length() == 1 ||
-                (providedDeptNbr.length() == 2 && providedDeptNbr.charAt(0) == '0')) {
+            List<Object> deptNbrCombosList = new ArrayList<>();
             Integer number = Integer.parseInt(providedDeptNbr);
-            deptNbrCombosList.add(number);
             deptNbrCombosList.add(String.valueOf(number));
             deptNbrCombosList.add("0" + String.valueOf(number));
-        } else if (providedDeptNbr.length() == 2) {
-            deptNbrCombosList.add(providedDeptNbr);
-            deptNbrCombosList.add(Integer.parseInt(providedDeptNbr));
+            return Criteria.where(ReceiveSummaryCosmosDBParameters.DEPARTMENTNUMBER.getParameterName())
+                    .in(deptNbrCombosList.toArray());
         } else {
-            deptNbrCombosList.add(providedDeptNbr);
+            return Criteria.where(ReceiveSummaryCosmosDBParameters.DEPARTMENTNUMBER.getParameterName())
+                    .is(providedDeptNbr);
         }
-        return deptNbrCombosList.toArray();
 
     }
 }
