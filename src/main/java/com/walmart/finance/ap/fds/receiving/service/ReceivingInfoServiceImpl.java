@@ -443,13 +443,11 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                             + (financialTxnResponseData.getReceivingDate() == null ? "0" :
                             financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
                     ReceivingInfoResponseV1 receivingInfoResponseV1 =
-                            receivingInfoResponseV1Map.containsKey(id) ?  receivingInfoResponseV1Map.get(id) :
+                            receivingInfoResponseV1Map.containsKey(id) ? receivingInfoResponseV1Map.get(id) :
                                     new ReceivingInfoResponseV1();
-                    if (receivingInfoResponseV1 != null) {
-                        updateReceivingInfoResponseV1(financialTxnResponseData, receivingInfoResponseV1);
-                        receivingInfoResponsesList.add(receivingInfoResponseV1);
-                        receivingInfoResponsesKeyList.add(id);
-                    }
+                    updateReceivingInfoResponseV1(financialTxnResponseData, receivingInfoResponseV1);
+                    receivingInfoResponsesList.add(receivingInfoResponseV1);
+                    receivingInfoResponsesKeyList.add(id);
                 }
                 receivingInfoResponsesKeyList.forEach(key -> receivingInfoResponseV1Map.remove(key));
                 receivingInfoResponsesList.addAll(new ArrayList<>(receivingInfoResponseV1Map.values()));
