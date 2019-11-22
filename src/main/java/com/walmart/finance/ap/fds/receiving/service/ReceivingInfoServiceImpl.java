@@ -407,31 +407,26 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     public ReceivingResponse getInfoSeviceDataV1(Map<String, String> allRequestParams) {
         List<ReceivingInfoResponseV1> receivingInfoResponses;
         List<FinancialTxnResponseData> financialTxnResponseDataList = financialTxnIntegrationService.getFinancialTxnDetails(allRequestParams);
-        enrichQueryParams(allRequestParams, financialTxnResponseDataList);
-        if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.INVOICEID.getQueryParam()) ||
-                allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam())) {
-            /*
-            As the request has InvoiceId/InvoiceNumber,
-            we need response from Fin Trans response to get Receiving Info
-             */
-            if (financialTxnResponseDataList.isEmpty()) {
-                throw new NotFoundException("Financial Transaction data not found for given search criteria.");
-            } else {
+        if (CollectionUtils.isNotEmpty(financialTxnResponseDataList)) {
+            enrichQueryParams(allRequestParams, financialTxnResponseDataList);
+            if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.INVOICEID.getQueryParam()) ||
+                    allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam())) {
+                /*
+                As the request has InvoiceId/InvoiceNumber,
+                we need response from Fin Trans response to get Receiving Info
+                 */
                 receivingInfoResponses = getDataForFinancialTxnV1(financialTxnResponseDataList, allRequestParams);
                 if (CollectionUtils.isEmpty(receivingInfoResponses)) {
                     throw new NotFoundException("Receiving data not found for given search criteria.");
                 }
-            }
-        } else {
+            } else {
 
             /*
             As the request has parameters which are available in Receiving,
             we can get response from 'Fin Trans' and 'Receiving Info' independently
              */
-            receivingInfoResponses = getDataWoFinancialTxnV1(allRequestParams);
-            if (CollectionUtils.isEmpty(receivingInfoResponses)) {
-                throw new NotFoundException("Receiving data not found for given search criteria.");
-            } else {
+                receivingInfoResponses = getDataWoFinancialTxnV1(allRequestParams);
+
                 Map<String, ReceivingInfoResponseV1> receivingInfoResponseV1Map =
                         getReceivingInfoMap(receivingInfoResponses);
                 List<ReceivingInfoResponseV1> receivingInfoResponsesList = new ArrayList<>();
@@ -447,7 +442,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                             + (storeNumber == null ? 0 : storeNumber) + ReceivingConstants.PIPE_SEPARATOR
                             + (financialTxnResponseData.getReceivingDate() == null ? "0" :
                             financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
-                    ReceivingInfoResponseV1 receivingInfoResponseV1 = receivingInfoResponseV1Map.get(id);
+                    ReceivingInfoResponseV1 receivingInfoResponseV1 =
+                            receivingInfoResponseV1Map.containsKey(id) ?  receivingInfoResponseV1Map.get(id) :
+                                    new ReceivingInfoResponseV1();
                     if (receivingInfoResponseV1 != null) {
                         updateReceivingInfoResponseV1(financialTxnResponseData, receivingInfoResponseV1);
                         receivingInfoResponsesList.add(receivingInfoResponseV1);
@@ -458,6 +455,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 receivingInfoResponsesList.addAll(new ArrayList<>(receivingInfoResponseV1Map.values()));
                 receivingInfoResponses = receivingInfoResponsesList;
             }
+        } else {
+            log.warn("Financial Transaction data not found for given search criteria. Not checking Receiving data.");
+            throw new NotFoundException("Financial Transaction data not found for given search criteria.");
         }
         ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setData(receivingInfoResponses);
@@ -488,18 +488,20 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         List<ReceiveSummary> allReceiveSummaries = new ArrayList<>();
         List<Criteria> lineCriteriaList = new ArrayList<>();
         List<Criteria> freightCriteriaList = new ArrayList<>();
-        Map<String, FinancialTxnResponseData> financialTxnResponseMap = new HashMap<>();
+
+        Map<FinancialTxnResponseData, ReceiveSummary> financialTxnReceivingMap = new HashMap<>();
         for (FinancialTxnResponseData financialTxnResponseData : financialTxnResponseDataList) {
             List<ReceiveSummary> receiveSummaries = getSummaryData(financialTxnResponseData, allRequestParams);
             if (CollectionUtils.isNotEmpty(receiveSummaries)) {
                 allReceiveSummaries.add(receiveSummaries.get(0));
-                financialTxnResponseMap.put(receiveSummaries.get(0).get_id(), financialTxnResponseData);
+                financialTxnReceivingMap.put(financialTxnResponseData, receiveSummaries.get(0));
                 lineCriteriaList.add(getLineDataCriteria(receiveSummaries.get(0), allRequestParams));
                 if (receiveSummaries.get(0).getFreightBillExpandId() != null) {
                     freightCriteriaList.add(Criteria.where("_id").is(receiveSummaries.get(0).getFreightBillExpandId()));
                 }
             }
         }
+
         List<ReceivingLine> lineResponseList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(lineCriteriaList)) {
             Query query = new Query(new Criteria().orOperator(lineCriteriaList.toArray(new Criteria[lineCriteriaList.size()])));
@@ -527,16 +529,18 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             iteratorLine.remove();
         }
         Map<Long, FreightResponse> freightResponseMap = freightResponseList.stream().collect(Collectors.toMap(FreightResponse::getId, freightResponse -> freightResponse));
-        Iterator<ReceiveSummary> iteratorSummary = allReceiveSummaries.iterator();
-        while (iteratorSummary.hasNext()) {
-            ReceiveSummary receiveSummary = iteratorSummary.next();
-            ReceivingInfoResponseV1 receivingInfoResponseV1 = conversionToReceivingInfoV1(receiveSummary
-                    , financialTxnResponseMap.get(receiveSummary.get_id())
-                    , receivingLineMap.containsKey(receiveSummary.get_id()) ? receivingLineMap.get(receiveSummary.get_id()) : new ArrayList<>()
-                    , freightResponseMap.containsKey(receiveSummary.getFreightBillExpandId()) ? freightResponseMap.get(receiveSummary.getFreightBillExpandId()) : new FreightResponse()
+        for (FinancialTxnResponseData financialTxnResponseData : financialTxnResponseDataList) {
+            ReceivingInfoResponseV1 receivingInfoResponseV1 =
+                    conversionToReceivingInfoV1(financialTxnReceivingMap.get(financialTxnResponseData)
+                    , financialTxnResponseData
+                    , receivingLineMap.containsKey(financialTxnReceivingMap.get(financialTxnResponseData).get_id())
+                                    ? receivingLineMap.get(financialTxnReceivingMap.get(financialTxnResponseData).get_id()) : new ArrayList<>()
+                    , freightResponseMap.containsKey(financialTxnReceivingMap.get(financialTxnResponseData).getFreightBillExpandId())
+                                    ? freightResponseMap.get(financialTxnReceivingMap.get(financialTxnResponseData).getFreightBillExpandId()) : new FreightResponse()
                     , allRequestParams);
             receivingInfoResponses.add(receivingInfoResponseV1);
         }
+
         return receivingInfoResponses;
     }
 
