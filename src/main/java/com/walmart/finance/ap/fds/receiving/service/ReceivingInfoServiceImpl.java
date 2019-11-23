@@ -432,7 +432,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 List<ReceivingInfoResponseV1> receivingInfoResponsesList = new ArrayList<>();
                 List<String> receivingInfoResponsesKeyList = new ArrayList<>();
                 for (FinancialTxnResponseData financialTxnResponseData : financialTxnResponseDataList) {
-                    Integer storeNumber = (financialTxnResponseData.getOrigStoreNbr() == null || financialTxnResponseData.getOrigStoreNbr() == 0)
+                    Integer storeNumber = (financialTxnResponseData.getOrigStoreNbr() == null)
                             ? financialTxnResponseData.getStoreNumber() : financialTxnResponseData.getOrigStoreNbr();
                     String id = (financialTxnResponseData.getPurchaseOrderId() == null ? 0 :
                             financialTxnResponseData.getPurchaseOrderId())
