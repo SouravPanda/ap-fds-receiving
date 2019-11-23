@@ -449,8 +449,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                     receivingInfoResponsesList.add(receivingInfoResponseV1);
                     receivingInfoResponsesKeyList.add(id);
                 }
-                //receivingInfoResponsesKeyList.forEach(key -> receivingInfoResponseV1Map.remove(key));
-                //receivingInfoResponsesList.addAll(new ArrayList<>(receivingInfoResponseV1Map.values()));
                 receivingInfoResponses = receivingInfoResponsesList;
             }
         } else {
