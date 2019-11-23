@@ -234,7 +234,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         List<ReceivingLine> receiveLines = new ArrayList<>();
         if (query != null) {
             long startTime = System.currentTimeMillis();
-            receiveLines = mongoTemplate.find(query.limit(1000), ReceivingLine.class, lineCollection);
+            receiveLines = mongoTemplate.find(query.limit(5000), ReceivingLine.class, lineCollection);
             log.info(" executeQueryInLine :: queryTime :: " + (System.currentTimeMillis() - startTime));
         }
         return receiveLines;
@@ -449,8 +449,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                     receivingInfoResponsesList.add(receivingInfoResponseV1);
                     receivingInfoResponsesKeyList.add(id);
                 }
-                receivingInfoResponsesKeyList.forEach(key -> receivingInfoResponseV1Map.remove(key));
-                receivingInfoResponsesList.addAll(new ArrayList<>(receivingInfoResponseV1Map.values()));
+                //receivingInfoResponsesKeyList.forEach(key -> receivingInfoResponseV1Map.remove(key));
+                //receivingInfoResponsesList.addAll(new ArrayList<>(receivingInfoResponseV1Map.values()));
                 receivingInfoResponses = receivingInfoResponsesList;
             }
         } else {

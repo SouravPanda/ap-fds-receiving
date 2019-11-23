@@ -18,6 +18,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -56,7 +57,7 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
         try {
             response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, FinancialTxnResponse.class);
             log.info("financialTransactionResponseTime :: "+(System.currentTimeMillis()-startTime));
-        } catch (HttpStatusCodeException e) {
+        } catch (RestClientResponseException e) {
             log.info("financialTransactionResponseTime :: "+(System.currentTimeMillis()-startTime));
             log.error("Failed to get response from Financial Transaction.", e);
             throw new FinancialTransException("Failed to get response from Financial Transaction.");
