@@ -1,5 +1,10 @@
 package com.walmart.finance.ap.fds.receiving.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.walmart.finance.ap.fds.receiving.deserializer.LocalDateDeserializer;
+import com.walmart.finance.ap.fds.receiving.serializer.LocalDateSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +17,8 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class InvoiceFinDelNoteChangeLogs {
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate changeTimestamp;
 
     private String changeUserId;

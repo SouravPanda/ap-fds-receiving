@@ -1,6 +1,11 @@
 package com.walmart.finance.ap.fds.receiving.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.walmart.finance.ap.fds.receiving.deserializer.LocalDateDeserializer;
+import com.walmart.finance.ap.fds.receiving.serializer.LocalDateSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +22,7 @@ public class ReceivingInfoResponseV1 {
 
     private String authorizedBy;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate authorizedDate;
 
     private String carrierCode;
@@ -35,6 +41,8 @@ public class ReceivingInfoResponseV1 {
 
     private Long purchaseOrderId;
 
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate receiptDate;
 
     private String receiptNumber;
@@ -61,6 +69,8 @@ public class ReceivingInfoResponseV1 {
 
     private String parentReceivingStoreNbr;
 
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate parentReceivingDate;
 
     private String parentPurchaseOrderId;
@@ -91,12 +101,18 @@ public class ReceivingInfoResponseV1 {
 
     private Integer vendorDeptNbr;
 
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate postDate;
 
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate dueDate;
 
     private String poNbr;
 
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate transactionDate;
 
     private Integer claimNbr;
@@ -125,6 +141,8 @@ public class ReceivingInfoResponseV1 {
 
     private String grocinvoiceInd;
 
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate matchDate;
 
     private Integer processStatusCode;

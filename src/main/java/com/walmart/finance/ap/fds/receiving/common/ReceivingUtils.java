@@ -1,9 +1,12 @@
 package com.walmart.finance.ap.fds.receiving.common;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryCosmosDBParameters;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
+import com.walmart.finance.ap.fds.receiving.response.ReceivingInfoResponseV1;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -134,5 +137,15 @@ public class ReceivingUtils {
                     .is(providedDeptNbr);
         }
 
+    }
+
+    public static ReceivingInfoResponseV1 getRecvInfoRespV1Copy(ReceivingInfoResponseV1 receivingInfoResponseV1) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.readValue(objectMapper.writeValueAsString(receivingInfoResponseV1),
+                    ReceivingInfoResponseV1.class);
+        } catch (java.io.IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

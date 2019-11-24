@@ -11,6 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
+@ToString
 public class FinancialTxnResponseData {
 
     @JsonProperty("transactionId")
