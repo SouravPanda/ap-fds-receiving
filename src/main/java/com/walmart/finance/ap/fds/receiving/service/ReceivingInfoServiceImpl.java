@@ -189,8 +189,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             dynamicQuery.addCriteria(poReceiveIdCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.DEPARTMENTNUMBER))) {
-            Criteria departmentNumberCriteria =
-                    ReceivingUtils.getCriteriaForDepartmentNbr(paramMap.get(ReceivingConstants.DEPARTMENTNUMBER));
+            Criteria departmentNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.DEPARTMENTNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.DEPARTMENTNUMBER));
             dynamicQuery.addCriteria(departmentNumberCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.VENDORNUMBER))) {
@@ -234,7 +233,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         List<ReceivingLine> receiveLines = new ArrayList<>();
         if (query != null) {
             long startTime = System.currentTimeMillis();
-            receiveLines = mongoTemplate.find(query.limit(5000), ReceivingLine.class, lineCollection);
+            receiveLines = mongoTemplate.find(query.limit(1000), ReceivingLine.class, lineCollection);
             log.info(" executeQueryInLine :: queryTime :: " + (System.currentTimeMillis() - startTime));
         }
         return receiveLines;

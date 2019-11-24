@@ -123,22 +123,6 @@ public class ReceivingUtils {
         }
     }
 
-    public static Criteria getCriteriaForDepartmentNbr(String providedDeptNbr) {
-        if (providedDeptNbr.length() == 1 || providedDeptNbr.charAt(0) == '0') {
-
-            List<Object> deptNbrCombosList = new ArrayList<>();
-            Integer number = Integer.parseInt(providedDeptNbr);
-            deptNbrCombosList.add(String.valueOf(number));
-            deptNbrCombosList.add("0" + String.valueOf(number));
-            return Criteria.where(ReceiveSummaryCosmosDBParameters.DEPARTMENTNUMBER.getParameterName())
-                    .in(deptNbrCombosList.toArray());
-        } else {
-            return Criteria.where(ReceiveSummaryCosmosDBParameters.DEPARTMENTNUMBER.getParameterName())
-                    .is(providedDeptNbr);
-        }
-
-    }
-
     public static ReceivingInfoResponseV1 getRecvInfoRespV1Copy(ReceivingInfoResponseV1 receivingInfoResponseV1) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
