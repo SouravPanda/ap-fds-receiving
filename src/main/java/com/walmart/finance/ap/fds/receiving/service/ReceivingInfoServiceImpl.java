@@ -760,6 +760,10 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponseV1.setReceiptNumber(financialTxnResponseData.getReceiveId());
         receivingInfoResponseV1.setLocationNumber(financialTxnResponseData.getOrigStoreNbr());
         receivingInfoResponseV1.setPurchaseOrderId(financialTxnResponseData.getPurchaseOrderId());
+        if (financialTxnResponseData.getReceivingDate() != null) {
+            receivingInfoResponseV1.setReceiptDate(financialTxnResponseData.getReceivingDate()
+                    .toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
+        }
         receivingInfoResponseV1.setTransactionId(financialTxnResponseData.getTransactionId());
         receivingInfoResponseV1.setTxnSeqNbr(financialTxnResponseData.getTxnSeqNbr());
         receivingInfoResponseV1.setF6ASeqNbr(financialTxnResponseData.getF6ASeqNbr());
