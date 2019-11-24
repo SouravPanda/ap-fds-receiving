@@ -664,22 +664,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     private ReceivingInfoResponseV1 conversionToReceivingInfoV1(ReceiveSummary receiveSummary, FinancialTxnResponseData financialTxnResponseData, List<ReceivingLine> lineResponseList, FreightResponse freightResponse, Map<String, String> allRequestParams) {
         ReceivingInfoResponseV1 receivingInfoResponseV1 = new ReceivingInfoResponseV1();
-        if (financialTxnResponseData != null) {
-            updateReceivingInfoResponseV1(financialTxnResponseData, receivingInfoResponseV1);
-        } else {
-            receivingInfoResponseV1.setDepartmentNumber(NumberUtils.isDigits(receiveSummary.getDepartmentNumber()) ?
-                    Integer.parseInt(receiveSummary.getDepartmentNumber()) :
-                    defaultValuesConfigProperties.getDepartmentNumber());
-            receivingInfoResponseV1.setDivisionNumber(receiveSummary.getBaseDivisionNumber() != null ?
-                    receiveSummary.getBaseDivisionNumber() : defaultValuesConfigProperties.getBaseDivisionNumber());
-            receivingInfoResponseV1.setVendorNumber(receiveSummary.getVendorNumber());
-            if (receivingInfoResponseV1.getOrigStoreNbr() == null) {
-                receivingInfoResponseV1.setOrigStoreNbr(receiveSummary.getStoreNumber());
-            }
-            if (receivingInfoResponseV1.getParentReceivingDate() == null) {
-                receivingInfoResponseV1.setParentReceivingDate(receiveSummary.getReceivingDate());
-            }
-        }
+
         receivingInfoResponseV1.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ?
                 new Long(lineResponseList.size()) : defaultValuesConfigProperties.getLineCount());
         receivingInfoResponseV1.setCarrierCode(freightResponse != null
@@ -729,12 +714,27 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             receivingInfoResponseV1.setReceiveId(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ?
                     receiveSummary.getReceiveId() : "0");
             receivingInfoResponseV1.setReceiptStatus(receiveSummary.getBusinessStatusCode() != null ? receiveSummary.getBusinessStatusCode().toString() : null);
+            receivingInfoResponseV1.setDepartmentNumber(NumberUtils.isDigits(receiveSummary.getDepartmentNumber()) ?
+                    Integer.parseInt(receiveSummary.getDepartmentNumber()) :
+                    defaultValuesConfigProperties.getDepartmentNumber());
+            receivingInfoResponseV1.setDivisionNumber(receiveSummary.getBaseDivisionNumber() != null ?
+                    receiveSummary.getBaseDivisionNumber() : defaultValuesConfigProperties.getBaseDivisionNumber());
+            receivingInfoResponseV1.setVendorNumber(receiveSummary.getVendorNumber());
+            if (receivingInfoResponseV1.getOrigStoreNbr() == null) {
+                receivingInfoResponseV1.setOrigStoreNbr(receiveSummary.getStoreNumber());
+            }
+            if (receivingInfoResponseV1.getParentReceivingDate() == null) {
+                receivingInfoResponseV1.setParentReceivingDate(receiveSummary.getReceivingDate());
+            }
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()))
                 && allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()).equalsIgnoreCase("Y")) {
             ReceivingUtils.updateLineResponse(lineResponseList);
             List<ReceivingInfoLineResponse> lineInfoList = lineResponseList.stream().map(t -> convertToLineResponse(t)).collect(Collectors.toList());
             receivingInfoResponseV1.setReceivingInfoLineResponses(lineInfoList);
+        }
+        if (financialTxnResponseData != null) {
+            updateReceivingInfoResponseV1(financialTxnResponseData, receivingInfoResponseV1);
         }
         return receivingInfoResponseV1;
     }
@@ -760,6 +760,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponseV1.setInvoiceId(financialTxnResponseData.getInvoiceId());
         receivingInfoResponseV1.setInvoiceNumber(financialTxnResponseData.getInvoiceNumber());
         // Version V1 additional fields
+        receivingInfoResponseV1.setReceiptNumber(financialTxnResponseData.getReceiveId());
+        receivingInfoResponseV1.setLocationNumber(financialTxnResponseData.getOrigStoreNbr());
+        receivingInfoResponseV1.setPurchaseOrderId(financialTxnResponseData.getPurchaseOrderId());
         receivingInfoResponseV1.setTransactionId(financialTxnResponseData.getTransactionId());
         receivingInfoResponseV1.setTxnSeqNbr(financialTxnResponseData.getTxnSeqNbr());
         receivingInfoResponseV1.setF6ASeqNbr(financialTxnResponseData.getF6ASeqNbr());

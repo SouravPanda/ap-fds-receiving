@@ -18,7 +18,7 @@ public class FinancialTxnResponseData {
     private Long transactionId;
 
     @JsonProperty("purchaseOrderId")
-    private Integer purchaseOrderId;
+    private Long purchaseOrderId;
 
     @JsonProperty("receiverNbr")
     private String receiveId;
