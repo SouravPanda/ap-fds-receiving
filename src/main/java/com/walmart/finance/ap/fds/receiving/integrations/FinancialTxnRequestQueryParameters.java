@@ -11,18 +11,18 @@ import lombok.Getter;
 public enum FinancialTxnRequestQueryParameters {
 
     DIVISIONNUMBER("divNbr"),
-    INVOICENUMBER("invoiceNumber"),
+    INVOICENUMBER("invoiceNbr"),
     DEPARTMENTNUMBER("deptNbr"),
     PURCHASEORDERID("purchaseOrderId"),
     RECEIPTNUMBERS("receiverNbr"),
     LOCATIONNUMBER("origStoreNbr"),
     CONTROLNUMBER("txnControlNbr"),
     TRANSACTIONTYPE("txnTypeCode"),
-    VENDORNUMBER("vendorNumber"),
+    VENDORNUMBER("vendorNbr"),
     INVOICEID("invoiceId"),
     RECEIPTDATESTART("txnStartDate"),
     RECEIPTDATEEND("txnEndDate"),
-    PURCHASEORDERNUMBER("poNumber");
+    PURCHASEORDERNUMBER("poNbr");
 
     @Getter
     private String finTxnRequestQueryParam;
