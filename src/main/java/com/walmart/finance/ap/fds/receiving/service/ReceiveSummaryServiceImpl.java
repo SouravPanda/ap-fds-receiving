@@ -220,12 +220,19 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         List<Criteria> criteriaList = new ArrayList<>();
         List<String> itemNumbers = allRequestParams.containsKey(ReceiveSummaryRequestParams.ITEMNUMBERS.getParameterName()) ? Arrays.asList(allRequestParams.get(ReceiveSummaryRequestParams.ITEMNUMBERS.getParameterName()).split(",")) : null;
         List<String> upcNumbers = allRequestParams.containsKey(ReceiveSummaryRequestParams.UPCNUMBERS.getParameterName()) ? Arrays.asList(allRequestParams.get(ReceiveSummaryRequestParams.UPCNUMBERS.getParameterName()).split(",")) : null;
+        List<String> partitionNumbers = new ArrayList<>();
+        List<String> summaryReferences = new ArrayList<>();
         for (ReceiveSummary receiveSummary : receiveSummaries) {
-            criteriaList.add(queryForLineResponse(receiveSummary,
-                    itemNumbers, upcNumbers,allRequestParams));
+            partitionNumbers.addAll(ReceivingUtils
+                    .getPartitionKeyList(null, allRequestParams, receiveSummary.getStoreNumber(), monthsPerShard, monthsToDisplay));
+            summaryReferences.add(receiveSummary.get_id());
         }
-        if (CollectionUtils.isNotEmpty(criteriaList)) {
-            Query query = new Query(new Criteria().orOperator(criteriaList.toArray(new Criteria[criteriaList.size()])));
+
+        Criteria criteriaDefinition = queryForLineResponse(partitionNumbers, itemNumbers, upcNumbers,
+                summaryReferences);
+
+        if (criteriaDefinition != null) {
+            Query query = new Query(criteriaDefinition);
             log.info("query: " + query);
             lineResponseList = executeQueryReceiveline(query);
         }
@@ -276,15 +283,13 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         return lineResponseMap;
     }
 
-    private Criteria queryForLineResponse(ReceiveSummary receiveSummary, List<String> itemNumbers, List<String> upcNumbers, Map<String, String> allRequestParams) {
-        Criteria criteriaDefinition = null;
-        if (receiveSummary.getStoreNumber() != null) {
-            criteriaDefinition = ReceivingUtils.getCriteriaForPartitionKey(null, allRequestParams, receiveSummary.getStoreNumber(), monthsPerShard, monthsToDisplay);
+    private Criteria queryForLineResponse(List<String> partitionNumbers, List<String> itemNumbers, List<String> upcNumbers, List<String> summaryReferences) {
+        Criteria criteriaDefinition = new Criteria();
+        if (CollectionUtils.isNotEmpty(partitionNumbers)) {
+            criteriaDefinition.and(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD).in(partitionNumbers);
         }
-        if (criteriaDefinition != null) {
-            criteriaDefinition.and(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).is(receiveSummary.get_id());
-        } else {
-            criteriaDefinition = new Criteria(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).is(receiveSummary.get_id());
+        if (CollectionUtils.isNotEmpty(summaryReferences)) {
+            criteriaDefinition.and(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).in(summaryReferences);
         }
         if (CollectionUtils.isNotEmpty(itemNumbers)) {
             criteriaDefinition.and(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Long::parseLong).collect(Collectors.toList()));
