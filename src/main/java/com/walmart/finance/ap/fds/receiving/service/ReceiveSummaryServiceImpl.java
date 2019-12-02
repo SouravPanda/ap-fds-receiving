@@ -220,13 +220,15 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         List<Criteria> criteriaList = new ArrayList<>();
         List<String> itemNumbers = allRequestParams.containsKey(ReceiveSummaryRequestParams.ITEMNUMBERS.getParameterName()) ? Arrays.asList(allRequestParams.get(ReceiveSummaryRequestParams.ITEMNUMBERS.getParameterName()).split(",")) : null;
         List<String> upcNumbers = allRequestParams.containsKey(ReceiveSummaryRequestParams.UPCNUMBERS.getParameterName()) ? Arrays.asList(allRequestParams.get(ReceiveSummaryRequestParams.UPCNUMBERS.getParameterName()).split(",")) : null;
-        List<String> partitionNumbers = new ArrayList<>();
+        Set<String> partitionNumbers = new HashSet<>();
         List<String> summaryReferences = new ArrayList<>();
         for (ReceiveSummary receiveSummary : receiveSummaries) {
             partitionNumbers.addAll(ReceivingUtils
                     .getPartitionKeyList(null, allRequestParams, receiveSummary.getStoreNumber(), monthsPerShard, monthsToDisplay));
             summaryReferences.add(receiveSummary.get_id());
         }
+
+
 
         Criteria criteriaDefinition = queryForLineResponse(partitionNumbers, itemNumbers, upcNumbers,
                 summaryReferences);
@@ -283,7 +285,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         return lineResponseMap;
     }
 
-    private Criteria queryForLineResponse(List<String> partitionNumbers, List<String> itemNumbers, List<String> upcNumbers, List<String> summaryReferences) {
+    private Criteria queryForLineResponse(Set<String> partitionNumbers, List<String> itemNumbers, List<String> upcNumbers, List<String> summaryReferences) {
         Criteria criteriaDefinition = new Criteria();
         if (CollectionUtils.isNotEmpty(partitionNumbers)) {
             criteriaDefinition.and(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD).in(partitionNumbers);
