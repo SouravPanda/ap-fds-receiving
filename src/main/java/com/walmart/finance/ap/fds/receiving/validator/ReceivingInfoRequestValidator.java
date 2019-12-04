@@ -6,6 +6,8 @@ import org.apache.commons.lang.StringUtils;
 import java.util.Iterator;
 import java.util.Map;
 
+import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.LOCATION_TYPE_STORE;
+
 public class ReceivingInfoRequestValidator {
     private ReceivingInfoRequestValidator() {
     }
@@ -65,6 +67,9 @@ public class ReceivingInfoRequestValidator {
                 allRequestParams.put("scenario", ReceivingInfoRequestCombinations.LOCATIONNUMBER_INVOICENUMBER_RECEIPTDATESTART_RECEIPTDATEEND.name());
             } else if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())) {
                 allRequestParams.put("scenario", ReceivingInfoRequestCombinations.LOCATIONNUMBER_VENDORNUMBER_RECEIPTDATESTART_RECEIPTDATEEND.name());
+            } else if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
+                && allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam()).equals(LOCATION_TYPE_STORE)) {
+                allRequestParams.put("scenario", ReceivingInfoRequestCombinations.LOCATIONNUMBER_RECEIPTDATESTART_RECEIPTDATEEND.name());
             }
         }
 //        if (!allRequestParams.containsKey("scenario") && allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())) {
