@@ -544,7 +544,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                     Criteria.where(ReceiveSummaryCosmosDBParameters.ID.getParameterName()).in(ids);
             query.addCriteria(criteriaDefinition);
             criteriaDefinition =
-                    Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD).in(ids);
+                    Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD).in(partitionKeys);
             query.addCriteria(criteriaDefinition);
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()))
