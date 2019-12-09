@@ -433,15 +433,59 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         List<Criteria> freightCriteriaList = new ArrayList<>();
 
         Map<FinancialTxnResponseData, ReceiveSummary> financialTxnReceivingMap = new HashMap<>();
+        List<String> ids = new ArrayList<>();
+        Set<String> partitionKeys = new HashSet<>();
         for (FinancialTxnResponseData financialTxnResponseData : financialTxnResponseDataList) {
-            List<ReceiveSummary> receiveSummaries = getSummaryData(financialTxnResponseData, allRequestParams);
-            if (CollectionUtils.isNotEmpty(receiveSummaries)) {
-                allReceiveSummaries.add(receiveSummaries.get(0));
-                financialTxnReceivingMap.put(financialTxnResponseData, receiveSummaries.get(0));
-                if (receiveSummaries.get(0).getFreightBillExpandId() != null) {
-                    freightCriteriaList.add(Criteria.where("_id").is(receiveSummaries.get(0).getFreightBillExpandId()));
+
+            Integer storeNumber = financialTxnResponseData.getOrigStoreNbr() == null
+                    ? financialTxnResponseData.getStoreNumber() : financialTxnResponseData.getOrigStoreNbr();
+            String id = (financialTxnResponseData.getPurchaseOrderId() == null ? 0 : financialTxnResponseData.getPurchaseOrderId()) + ReceivingConstants.PIPE_SEPARATOR
+                    + (StringUtils.isEmpty(financialTxnResponseData.getReceiveId()) ? "0" : financialTxnResponseData.getReceiveId()) + ReceivingConstants.PIPE_SEPARATOR
+                    + (storeNumber == null ? 0 : storeNumber) + ReceivingConstants.PIPE_SEPARATOR
+                    + (financialTxnResponseData.getReceivingDate() == null ? "0" : financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
+            if (StringUtils.isNotEmpty(id) && !id.equalsIgnoreCase("0|0|0|0")) {
+                ids.add(id);
+            }
+
+            if (storeNumber != null) {
+                LocalDate receivingDate = null;
+                if (financialTxnResponseData.getReceivingDate() != null) {
+                    receivingDate =
+                            financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate();
+                }
+                partitionKeys.addAll(ReceivingUtils.getPartitionKeyList(receivingDate, allRequestParams,
+                         storeNumber,  monthsPerShard,  monthsToDisplay));
+            }
+        }
+
+        allReceiveSummaries = getSummaryData(ids, partitionKeys, allRequestParams);
+
+
+
+        if (CollectionUtils.isNotEmpty(allReceiveSummaries)) {
+            //Map<String, ReceiveSummary> receiveSummaryMap = getReceiveSummaryMap(allReceiveSummaries);
+            //allReceiveSummaries.add(receiveSummaries.get(0));
+            Map<String, ReceiveSummary> receiveSummaryMap = new HashMap<>();
+            for (ReceiveSummary receiveSummary : allReceiveSummaries) {
+                String id = (receiveSummary.getPurchaseOrderId() == null ? 0 :
+                        receiveSummary.getPurchaseOrderId())
+                        + ReceivingConstants.PIPE_SEPARATOR
+                        + (receiveSummary.getReceiveId() == null ? "0" : receiveSummary.getReceiveId())
+                        + ReceivingConstants.PIPE_SEPARATOR
+                        + (receiveSummary.getStoreNumber() == null ? 0 :
+                        receiveSummary.getStoreNumber())
+                        + ReceivingConstants.PIPE_SEPARATOR
+                        + (receiveSummary.getDateReceived() == null ? "0" :
+                        receiveSummary.getDateReceived().toLocalDate());
+                receiveSummaryMap.put(id, receiveSummary);
+
+                if (receiveSummary.getFreightBillExpandId() != null) {
+                    freightCriteriaList.add(Criteria.where("_id").is(receiveSummary.getFreightBillExpandId()));
                 }
             }
+
+            financialTxnReceivingMap = getFinTransRecvSummaryMap(financialTxnResponseDataList, receiveSummaryMap);
+
         }
 
         List<ReceivingLine> lineResponseList = getLineResponseList(allReceiveSummaries, allRequestParams);
@@ -489,6 +533,75 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         }
 
         return receivingInfoResponses;
+    }
+
+    private List<ReceiveSummary> getSummaryData(List<String> ids, Set<String> partitionKeys,
+                                                Map<String, String> allRequestParams) {
+        Query query = new Query();
+        CriteriaDefinition criteriaDefinition = null;
+        if (CollectionUtils.isNotEmpty(ids) && CollectionUtils.isNotEmpty(partitionKeys)) {
+            criteriaDefinition =
+                    Criteria.where(ReceiveSummaryCosmosDBParameters.ID.getParameterName()).in(ids);
+            query.addCriteria(criteriaDefinition);
+            criteriaDefinition =
+                    Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD).in(ids);
+            query.addCriteria(criteriaDefinition);
+        }
+        if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()))
+                && StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()))) {
+            LocalDateTime startDate = getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()) + " 00:00:00");
+            LocalDateTime endDate = getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()) + " 23:59:59");
+            if (endDate.isAfter(startDate)) {
+                criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.DATERECEIVED.getParameterName()).
+                        gte(startDate).
+                        lte(endDate);
+                query.addCriteria(criteriaDefinition);
+            } else {
+                throw new BadRequestException("Receipt end date should be greater than receipt start date.", "Please enter valid query parameters");
+            }
+        }
+        log.info("queryForSummaryResponse :: Query is " + query);
+        return executeQueryInSummary(query);
+    }
+
+    private Map<String, ReceiveSummary> getReceiveSummaryMap(List<ReceiveSummary> receiveSummaryList) {
+        Map<String, ReceiveSummary> receiveSummaryMap = new HashMap<>();
+        for (ReceiveSummary receiveSummary : receiveSummaryList) {
+            String id = (receiveSummary.getPurchaseOrderId() == null ? 0 :
+                    receiveSummary.getPurchaseOrderId())
+                    + ReceivingConstants.PIPE_SEPARATOR
+                    + (receiveSummary.getReceiveId() == null ? "0" : receiveSummary.getReceiveId())
+                    + ReceivingConstants.PIPE_SEPARATOR
+                    + (receiveSummary.getStoreNumber() == null ? 0 :
+                    receiveSummary.getStoreNumber())
+                    + ReceivingConstants.PIPE_SEPARATOR
+                    + (receiveSummary.getDateReceived() == null ? "0" :
+                    receiveSummary.getDateReceived().toLocalDate());
+            receiveSummaryMap.put(id, receiveSummary);
+        }
+        return receiveSummaryMap;
+    }
+
+    private Map<FinancialTxnResponseData, ReceiveSummary> getFinTransRecvSummaryMap(List<FinancialTxnResponseData> financialTxnResponseDataList,
+                                                                                    Map<String, ReceiveSummary> receiveSummaryMap) {
+        Map<FinancialTxnResponseData, ReceiveSummary> finTransRecvSummaryMap = new HashMap<>();
+        for (FinancialTxnResponseData financialTxnResponseData : financialTxnResponseDataList) {
+            Integer storeNumber = (financialTxnResponseData.getOrigStoreNbr() == null)
+                    ? financialTxnResponseData.getStoreNumber() : financialTxnResponseData.getOrigStoreNbr();
+            String id = (financialTxnResponseData.getPurchaseOrderId() == null ? 0 :
+                    financialTxnResponseData.getPurchaseOrderId())
+                    + ReceivingConstants.PIPE_SEPARATOR
+                    + (StringUtils.isEmpty(financialTxnResponseData.getReceiveId()) ? "0" :
+                    financialTxnResponseData.getReceiveId()) + ReceivingConstants.PIPE_SEPARATOR
+                    + (storeNumber == null ? 0 : storeNumber) + ReceivingConstants.PIPE_SEPARATOR
+                    + (financialTxnResponseData.getReceivingDate() == null ? "0" :
+                    financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
+
+            if (receiveSummaryMap.containsKey(id)) {
+                finTransRecvSummaryMap.put(financialTxnResponseData, receiveSummaryMap.getOrDefault(id, new ReceiveSummary()));
+            }
+        }
+        return finTransRecvSummaryMap;
     }
 
     private List<ReceivingLine> getLineResponseList(List<ReceiveSummary> receiveSummaries, Map<String,
