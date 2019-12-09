@@ -467,17 +467,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             //allReceiveSummaries.add(receiveSummaries.get(0));
             Map<String, ReceiveSummary> receiveSummaryMap = new HashMap<>();
             for (ReceiveSummary receiveSummary : allReceiveSummaries) {
-                String id = (receiveSummary.getPurchaseOrderId() == null ? 0 :
-                        receiveSummary.getPurchaseOrderId())
-                        + ReceivingConstants.PIPE_SEPARATOR
-                        + (receiveSummary.getReceiveId() == null ? "0" : receiveSummary.getReceiveId())
-                        + ReceivingConstants.PIPE_SEPARATOR
-                        + (receiveSummary.getStoreNumber() == null ? 0 :
-                        receiveSummary.getStoreNumber())
-                        + ReceivingConstants.PIPE_SEPARATOR
-                        + (receiveSummary.getDateReceived() == null ? "0" :
-                        receiveSummary.getDateReceived().toLocalDate());
-                receiveSummaryMap.put(id, receiveSummary);
+                receiveSummaryMap.put(receiveSummary.get_id(), receiveSummary);
 
                 if (receiveSummary.getFreightBillExpandId() != null) {
                     freightCriteriaList.add(Criteria.where("_id").is(receiveSummary.getFreightBillExpandId()));
@@ -562,24 +552,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         }
         log.info("queryForSummaryResponse :: Query is " + query);
         return executeQueryInSummary(query);
-    }
-
-    private Map<String, ReceiveSummary> getReceiveSummaryMap(List<ReceiveSummary> receiveSummaryList) {
-        Map<String, ReceiveSummary> receiveSummaryMap = new HashMap<>();
-        for (ReceiveSummary receiveSummary : receiveSummaryList) {
-            String id = (receiveSummary.getPurchaseOrderId() == null ? 0 :
-                    receiveSummary.getPurchaseOrderId())
-                    + ReceivingConstants.PIPE_SEPARATOR
-                    + (receiveSummary.getReceiveId() == null ? "0" : receiveSummary.getReceiveId())
-                    + ReceivingConstants.PIPE_SEPARATOR
-                    + (receiveSummary.getStoreNumber() == null ? 0 :
-                    receiveSummary.getStoreNumber())
-                    + ReceivingConstants.PIPE_SEPARATOR
-                    + (receiveSummary.getDateReceived() == null ? "0" :
-                    receiveSummary.getDateReceived().toLocalDate());
-            receiveSummaryMap.put(id, receiveSummary);
-        }
-        return receiveSummaryMap;
     }
 
     private Map<FinancialTxnResponseData, ReceiveSummary> getFinTransRecvSummaryMap(List<FinancialTxnResponseData> financialTxnResponseDataList,
