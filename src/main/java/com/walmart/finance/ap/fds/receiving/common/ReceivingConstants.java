@@ -55,5 +55,6 @@ public class ReceivingConstants {
     public static final ImmutableList<Integer> PROCESS_STATUS_CODE_FOR_AUTH_FIELDS = ImmutableList.of(3, 5);
 
     public static final String LOCATION_TYPE_STORE="S";
+    public static final String LOCATION_TYPE_WAREHOUSE="W";
 
 }

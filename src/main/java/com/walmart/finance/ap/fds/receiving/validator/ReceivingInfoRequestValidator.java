@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.LOCATION_TYPE_STORE;
+import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.LOCATION_TYPE_WAREHOUSE;
 
 public class ReceivingInfoRequestValidator {
     private ReceivingInfoRequestValidator() {
@@ -27,7 +28,9 @@ public class ReceivingInfoRequestValidator {
             }
         }
 
-        if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())) {
+        if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam()) &&
+                ( allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam()).equals(LOCATION_TYPE_STORE) ||
+                        allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam()).equals(LOCATION_TYPE_WAREHOUSE))) {
 
         /*
          Here parameter is valid : Checking below conditions
@@ -96,7 +99,7 @@ public class ReceivingInfoRequestValidator {
             }
         } else {
             throw new MandatoryPatameterMissingException("Please refine request criteria.", "Please provide " +
-                    "locationType");
+                    "'locationType' as 'S' or 'W'");
         }
     }
 }
