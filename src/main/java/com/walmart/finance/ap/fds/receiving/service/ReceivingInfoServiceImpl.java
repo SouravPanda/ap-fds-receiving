@@ -528,7 +528,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     private List<ReceiveSummary> getSummaryData(List<String> ids, Set<String> partitionKeys,
                                                 Map<String, String> allRequestParams) {
         Query query = new Query();
-        CriteriaDefinition criteriaDefinition = null;
+        CriteriaDefinition criteriaDefinition;
         if (CollectionUtils.isNotEmpty(ids) && CollectionUtils.isNotEmpty(partitionKeys)) {
             criteriaDefinition =
                     Criteria.where(ReceiveSummaryCosmosDBParameters.ID.getParameterName()).in(ids);
