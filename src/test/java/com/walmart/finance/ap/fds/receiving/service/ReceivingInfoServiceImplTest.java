@@ -417,7 +417,7 @@ public class ReceivingInfoServiceImplTest {
         receivingInfoService.getInfoSeviceDataV1(allRequestParams);
     }
 
-    @Test//(expected = NotFoundException.class)
+    @Test(expected = Exception.class)
     public void formulateIdReceiptEndDateBeforeStartDateException() {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(724201901), null, null, null,
                 397646, 18, -5743.12, 640, "6854748957", "ID123",
@@ -439,6 +439,7 @@ public class ReceivingInfoServiceImplTest {
         allRequestParams.put("scenario", ReceivingInfoRequestCombinations.INVOICEID.name());
         allRequestParams.put(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam(), "2019-01-03");
         allRequestParams.put(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam(), "2019-01-01");
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam(), "S");
         receivingInfoService.getInfoSeviceDataV1(allRequestParams);
     }
 

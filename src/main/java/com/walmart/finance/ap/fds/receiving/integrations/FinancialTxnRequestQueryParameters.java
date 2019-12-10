@@ -20,8 +20,8 @@ public enum FinancialTxnRequestQueryParameters {
     TRANSACTIONTYPE("txnTypeCode"),
     VENDORNUMBER("vendorNbr"),
     INVOICEID("invoiceId"),
-    RECEIPTDATESTART("txnStartDate"),
-    RECEIPTDATEEND("txnEndDate"),
+    RECEIPTDATESTART("startDate"),
+    RECEIPTDATEEND("endDate"),
     PURCHASEORDERNUMBER("poNbr"),
     LOCATIONTYPE("locationType");
 

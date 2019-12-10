@@ -1,8 +1,10 @@
 package com.walmart.finance.ap.fds.receiving.controller;
 
+import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.config.DefaultValuesConfigProperties;
 import com.walmart.finance.ap.fds.receiving.response.*;
 import com.walmart.finance.ap.fds.receiving.service.ReceivingInfoServiceImpl;
+import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -81,6 +83,7 @@ public class ReceivingInfoControllerTest {
                 .get("/US/receiving/info")
                 .param("invoiceId", "411276735")
                 .param("lineNumberFlag", "Y")
+                .param(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam(), ReceivingConstants.LOCATION_TYPE_STORE)
                 .accept(MediaType.APPLICATION_JSON);
         mockMvc.perform(requestBuilder)
                 .andExpect(status().isOk())
@@ -200,6 +203,7 @@ public class ReceivingInfoControllerTest {
                 .get("/US/receiving/info/v1")
                 .param("invoiceId", "97166785")
                 .param("lineNumberFlag", "Y")
+                .param(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam(), ReceivingConstants.LOCATION_TYPE_STORE)
                 .accept(MediaType.APPLICATION_JSON);
         mockMvc.perform(requestBuilder)
                 .andExpect(status().isOk())
