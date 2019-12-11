@@ -681,8 +681,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                     receiveSummary.getBottleDepositAmount() : defaultValuesConfigProperties.getBottleDepositAmount());
             receivingInfoResponseV1.setControlSequenceNumber(receiveSummary.getControlSequenceNumber() != null ?
                     receiveSummary.getControlSequenceNumber() : defaultValuesConfigProperties.getControlSequenceNumber());
-            receivingInfoResponseV1.setReceiveId(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ?
-                    receiveSummary.getReceiveId() : "0");
             receivingInfoResponseV1.setReceiptStatus(receiveSummary.getBusinessStatusCode() != null ? receiveSummary.getBusinessStatusCode().toString() : null);
             receivingInfoResponseV1.setDepartmentNumber(NumberUtils.isDigits(receiveSummary.getDepartmentNumber()) ?
                     Integer.parseInt(receiveSummary.getDepartmentNumber()) :
