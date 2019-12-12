@@ -9,10 +9,7 @@ import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
 import com.walmart.finance.ap.fds.receiving.integrations.FinancialTxnIntegrationService;
 import com.walmart.finance.ap.fds.receiving.integrations.FinancialTxnResponseData;
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
-import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
-import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryCosmosDBParameters;
-import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
-import com.walmart.finance.ap.fds.receiving.model.ReceivingLineParameters;
+import com.walmart.finance.ap.fds.receiving.model.*;
 import com.walmart.finance.ap.fds.receiving.response.*;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import lombok.Setter;
@@ -108,7 +105,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     }
 
     private List<ReceiveSummary> getSummaryData(FinancialTxnResponseData financialTxnResponseData, Map<String, String> allRequestParams) {
-        Integer storeNumber = (financialTxnResponseData.getOrigStoreNbr() == null || financialTxnResponseData.getOrigStoreNbr() == 0)
+        Integer storeNumber = financialTxnResponseData.getOrigStoreNbr() == null
                 ? financialTxnResponseData.getStoreNumber() : financialTxnResponseData.getOrigStoreNbr();
         String id = (financialTxnResponseData.getPurchaseOrderId() == null ? 0 : financialTxnResponseData.getPurchaseOrderId()) + ReceivingConstants.PIPE_SEPARATOR
                 + (StringUtils.isEmpty(financialTxnResponseData.getReceiveId()) ? "0" : financialTxnResponseData.getReceiveId()) + ReceivingConstants.PIPE_SEPARATOR
@@ -406,73 +403,20 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     public ReceivingResponse getInfoSeviceDataV1(Map<String, String> allRequestParams) {
         List<ReceivingInfoResponseV1> receivingInfoResponses;
         List<FinancialTxnResponseData> financialTxnResponseDataList = financialTxnIntegrationService.getFinancialTxnDetails(allRequestParams);
-        enrichQueryParams(allRequestParams, financialTxnResponseDataList);
-        if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.INVOICEID.getQueryParam()) ||
-                allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam())) {
-            /*
-            As the request has InvoiceId/InvoiceNumber,
-            we need response from Fin Trans response to get Receiving Info
-             */
-            if (financialTxnResponseDataList.isEmpty()) {
-                throw new NotFoundException("Financial Transaction data not found for given search criteria.");
-            } else {
-                receivingInfoResponses = getDataForFinancialTxnV1(financialTxnResponseDataList, allRequestParams);
-                if (CollectionUtils.isEmpty(receivingInfoResponses)) {
-                    throw new NotFoundException("Receiving data not found for given search criteria.");
-                }
-            }
-        } else {
-
-            /*
-            As the request has parameters which are available in Receiving,
-            we can get response from 'Fin Trans' and 'Receiving Info' independently
-             */
-            receivingInfoResponses = getDataWoFinancialTxnV1(allRequestParams);
+        if (CollectionUtils.isNotEmpty(financialTxnResponseDataList)) {
+            receivingInfoResponses = getDataForFinancialTxnV1(financialTxnResponseDataList, allRequestParams);
             if (CollectionUtils.isEmpty(receivingInfoResponses)) {
                 throw new NotFoundException("Receiving data not found for given search criteria.");
-            } else {
-                Map<String, ReceivingInfoResponseV1> receivingInfoResponseV1Map =
-                        getReceivingInfoMap(receivingInfoResponses);
-                List<ReceivingInfoResponseV1> receivingInfoResponsesList = new ArrayList<>();
-                List<String> receivingInfoResponsesKeyList = new ArrayList<>();
-                for (FinancialTxnResponseData financialTxnResponseData : financialTxnResponseDataList) {
-                    Integer storeNumber = (financialTxnResponseData.getOrigStoreNbr() == null || financialTxnResponseData.getOrigStoreNbr() == 0)
-                            ? financialTxnResponseData.getStoreNumber() : financialTxnResponseData.getOrigStoreNbr();
-                    String id = (financialTxnResponseData.getPurchaseOrderId() == null ? 0 :
-                            financialTxnResponseData.getPurchaseOrderId())
-                            + ReceivingConstants.PIPE_SEPARATOR
-                            + (StringUtils.isEmpty(financialTxnResponseData.getReceiveId()) ? "0" :
-                            financialTxnResponseData.getReceiveId()) + ReceivingConstants.PIPE_SEPARATOR
-                            + (storeNumber == null ? 0 : storeNumber) + ReceivingConstants.PIPE_SEPARATOR
-                            + (financialTxnResponseData.getReceivingDate() == null ? "0" :
-                            financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
-                    ReceivingInfoResponseV1 receivingInfoResponseV1 = receivingInfoResponseV1Map.get(id);
-                    if (receivingInfoResponseV1 != null) {
-                        updateReceivingInfoResponseV1(financialTxnResponseData, receivingInfoResponseV1);
-                        receivingInfoResponsesList.add(receivingInfoResponseV1);
-                        receivingInfoResponsesKeyList.add(id);
-                    }
-                }
-                receivingInfoResponsesKeyList.forEach(key -> receivingInfoResponseV1Map.remove(key));
-                receivingInfoResponsesList.addAll(new ArrayList<>(receivingInfoResponseV1Map.values()));
-                receivingInfoResponses = receivingInfoResponsesList;
             }
+        } else {
+            log.warn("Financial Transaction data not found for given search criteria. Not checking Receiving data.");
+            throw new NotFoundException("Financial Transaction data not found for given search criteria.");
         }
         ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setData(receivingInfoResponses);
         successMessage.setSuccess(true);
         successMessage.setTimestamp(LocalDateTime.now());
         return successMessage;
-    }
-
-    private void enrichQueryParams(Map<String, String> allRequestParams, List<FinancialTxnResponseData> financialTxnResponseDataList) {
-        if (CollectionUtils.isNotEmpty(financialTxnResponseDataList)) {
-            Integer storeNumber =
-                    financialTxnResponseDataList.get(0).getOrigStoreNbr() == null
-                            ? financialTxnResponseDataList.get(0).getStoreNumber()
-                            : financialTxnResponseDataList.get(0).getOrigStoreNbr();
-            allRequestParams.put("locationNumber", String.valueOf(storeNumber));
-        }
     }
 
     /**
@@ -485,26 +429,61 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     private List<ReceivingInfoResponseV1> getDataForFinancialTxnV1(List<FinancialTxnResponseData> financialTxnResponseDataList, Map<String, String> allRequestParams) {
         List<ReceivingInfoResponseV1> receivingInfoResponses = new ArrayList<>();
         List<ReceiveSummary> allReceiveSummaries = new ArrayList<>();
-        List<Criteria> lineCriteriaList = new ArrayList<>();
         List<Criteria> freightCriteriaList = new ArrayList<>();
-        Map<String, FinancialTxnResponseData> financialTxnResponseMap = new HashMap<>();
+        Map<FinancialTxnResponseData, ReceiveSummary> financialTxnReceivingMap = new HashMap<>();
+        List<String> ids = new ArrayList<>();
+        Set<String> partitionKeys = new HashSet<>();
+        Set<String> partitionNumbers = new HashSet<>();
+        List<String> summaryReferences = new ArrayList<>();
+        Map<String, ReceiveSummary> receiveSummaryMap = new HashMap<>();
+
         for (FinancialTxnResponseData financialTxnResponseData : financialTxnResponseDataList) {
-            List<ReceiveSummary> receiveSummaries = getSummaryData(financialTxnResponseData, allRequestParams);
-            if (CollectionUtils.isNotEmpty(receiveSummaries)) {
-                allReceiveSummaries.add(receiveSummaries.get(0));
-                financialTxnResponseMap.put(receiveSummaries.get(0).get_id(), financialTxnResponseData);
-                lineCriteriaList.add(getLineDataCriteria(receiveSummaries.get(0), allRequestParams));
-                if (receiveSummaries.get(0).getFreightBillExpandId() != null) {
-                    freightCriteriaList.add(Criteria.where("_id").is(receiveSummaries.get(0).getFreightBillExpandId()));
+
+            Integer storeNumber = financialTxnResponseData.getOrigStoreNbr() == null
+                    ? financialTxnResponseData.getStoreNumber() : financialTxnResponseData.getOrigStoreNbr();
+            String id = (financialTxnResponseData.getPurchaseOrderId() == null ? 0 : financialTxnResponseData.getPurchaseOrderId()) + ReceivingConstants.PIPE_SEPARATOR
+                    + (StringUtils.isEmpty(financialTxnResponseData.getReceiveId()) ? "0" : financialTxnResponseData.getReceiveId()) + ReceivingConstants.PIPE_SEPARATOR
+                    + (storeNumber == null ? 0 : storeNumber) + ReceivingConstants.PIPE_SEPARATOR
+                    + (financialTxnResponseData.getReceivingDate() == null ? "0" : financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
+            if (StringUtils.isNotEmpty(id) && !id.equalsIgnoreCase("0|0|0|0")) {
+                ids.add(id);
+            }
+
+            if (storeNumber != null) {
+                LocalDate receivingDate = null;
+                if (financialTxnResponseData.getReceivingDate() != null) {
+                    receivingDate =
+                            financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate();
                 }
+                partitionKeys.addAll(ReceivingUtils.getPartitionKeyList(receivingDate, allRequestParams,
+                        storeNumber,  monthsPerShard,  monthsToDisplay));
             }
         }
-        List<ReceivingLine> lineResponseList = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(lineCriteriaList)) {
-            Query query = new Query(new Criteria().orOperator(lineCriteriaList.toArray(new Criteria[lineCriteriaList.size()])));
-            log.info("query: " + query);
-            lineResponseList = executeQueryInLine(query);
+
+        allReceiveSummaries = getSummaryData(ids, partitionKeys, allRequestParams);
+
+        if (CollectionUtils.isNotEmpty(allReceiveSummaries)) {
+
+            for (ReceiveSummary receiveSummary : allReceiveSummaries) {
+                receiveSummaryMap.put(receiveSummary.get_id(), receiveSummary);
+
+                if (receiveSummary.getFreightBillExpandId() != null) {
+                    freightCriteriaList.add(Criteria.where("_id").is(receiveSummary.getFreightBillExpandId()));
+                }
+
+                if (null!=receiveSummary.getStoreNumber()) {
+                    partitionNumbers.addAll(ReceivingUtils
+                            .getPartitionKeyList(null, allRequestParams, receiveSummary.getStoreNumber(), monthsPerShard, monthsToDisplay));
+                }
+                if(null!=receiveSummary.get_id()) {
+                    summaryReferences.add(receiveSummary.get_id());
+                }
+            }
+
         }
+
+        List<ReceivingLine> lineResponseList = getLineResponseList(allRequestParams,partitionNumbers,summaryReferences);
+
         List<FreightResponse> freightResponseList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(freightCriteriaList)) {
             Query query = new Query(new Criteria().orOperator(freightCriteriaList.toArray(new Criteria[freightCriteriaList.size()])));
@@ -526,32 +505,64 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             iteratorLine.remove();
         }
         Map<Long, FreightResponse> freightResponseMap = freightResponseList.stream().collect(Collectors.toMap(FreightResponse::getId, freightResponse -> freightResponse));
-        Iterator<ReceiveSummary> iteratorSummary = allReceiveSummaries.iterator();
-        while (iteratorSummary.hasNext()) {
-            ReceiveSummary receiveSummary = iteratorSummary.next();
-            ReceivingInfoResponseV1 receivingInfoResponseV1 = conversionToReceivingInfoV1(receiveSummary
-                    , financialTxnResponseMap.get(receiveSummary.get_id())
-                    , receivingLineMap.containsKey(receiveSummary.get_id()) ? receivingLineMap.get(receiveSummary.get_id()) : new ArrayList<>()
-                    , freightResponseMap.containsKey(receiveSummary.getFreightBillExpandId()) ? freightResponseMap.get(receiveSummary.getFreightBillExpandId()) : new FreightResponse()
-                    , allRequestParams);
+
+        //Map<FinancialTxnResponseData, ReceiveSummary> finTransRecvSummaryMap = new HashMap<>();
+        for (FinancialTxnResponseData financialTxnResponseData : financialTxnResponseDataList) {
+            Integer storeNumber = (financialTxnResponseData.getOrigStoreNbr() == null)
+                    ? financialTxnResponseData.getStoreNumber() : financialTxnResponseData.getOrigStoreNbr();
+            String id = (financialTxnResponseData.getPurchaseOrderId() == null ? 0 :
+                    financialTxnResponseData.getPurchaseOrderId())
+                    + ReceivingConstants.PIPE_SEPARATOR
+                    + (StringUtils.isEmpty(financialTxnResponseData.getReceiveId()) ? "0" :
+                    financialTxnResponseData.getReceiveId()) + ReceivingConstants.PIPE_SEPARATOR
+                    + (storeNumber == null ? 0 : storeNumber) + ReceivingConstants.PIPE_SEPARATOR
+                    + (financialTxnResponseData.getReceivingDate() == null ? "0" :
+                    financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
+
+            if (receiveSummaryMap.containsKey(id)) {
+                financialTxnReceivingMap.put(financialTxnResponseData, receiveSummaryMap.getOrDefault(id, new ReceiveSummary()));
+            }
+
+
+
+            ReceivingInfoResponseV1 receivingInfoResponseV1;
+            if (financialTxnReceivingMap.containsKey(financialTxnResponseData)) {
+                receivingInfoResponseV1 =
+                        conversionToReceivingInfoV1(financialTxnReceivingMap.get(financialTxnResponseData)
+                                , financialTxnResponseData
+                                , receivingLineMap.containsKey(financialTxnReceivingMap.get(financialTxnResponseData).get_id())
+                                        ? receivingLineMap.get(financialTxnReceivingMap.get(financialTxnResponseData).get_id()) : new ArrayList<>()
+                                , freightResponseMap.containsKey(financialTxnReceivingMap.get(financialTxnResponseData).getFreightBillExpandId())
+                                        ? freightResponseMap.get(financialTxnReceivingMap.get(financialTxnResponseData).getFreightBillExpandId()) : new FreightResponse()
+                                , allRequestParams);
+            } else {
+                receivingInfoResponseV1 =
+                        conversionToReceivingInfoV1(null
+                                , financialTxnResponseData
+                                , new ArrayList<>()
+                                , new FreightResponse()
+                                , allRequestParams);
+            }
             receivingInfoResponses.add(receivingInfoResponseV1);
         }
+
         return receivingInfoResponses;
     }
 
-    private Criteria getLineDataCriteria(ReceiveSummary receiveSummary, Map<String, String> allRequestParams) {
-        Criteria criteria = null;
-        if (receiveSummary.getStoreNumber() != null) {
-            criteria = ReceivingUtils.getCriteriaForPartitionKey(null, allRequestParams, receiveSummary.getStoreNumber(), monthsPerShard, monthsToDisplay);
+
+    private List<ReceivingLine> getLineResponseList(Map<String,
+            String> allRequestParams, Set<String> partitionNumbers,List<String> summaryReferences) {
+        List<ReceivingLine> lineResponseList;
+        Criteria criteriaDefinition = new Criteria();
+        if (CollectionUtils.isNotEmpty(partitionNumbers)) {
+            criteriaDefinition.and(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD).in(partitionNumbers);
         }
-        if (criteria != null) {
-            criteria.and(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).is(receiveSummary.get_id());
-        } else {
-            criteria = new Criteria(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).is(receiveSummary.get_id());
+        if (CollectionUtils.isNotEmpty(summaryReferences)) {
+            criteriaDefinition.and(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).in(summaryReferences);
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()))) {
             List<String> itemNumbers = Arrays.asList(allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()).split(","));
-            criteria.and(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Long::parseLong).collect(Collectors.toList()));
+            criteriaDefinition.and(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Long::parseLong).collect(Collectors.toList()));
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()))) {
             List<String> upcNumberList =
@@ -566,11 +577,45 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 updatedUpcNumberList.add("00" + upcNumber + "0");
                 updatedUpcNumberList.add("000" + upcNumber);
             }
-            criteria.and(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(updatedUpcNumberList);
+            criteriaDefinition.and(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(updatedUpcNumberList);
         }
-        log.info("queryForLineResponse :: Query is " + criteria);
-        return criteria;
+
+        Query query = new Query(criteriaDefinition);
+        log.info("query: " + query);
+        lineResponseList = executeQueryInLine(query);
+
+        return lineResponseList;
     }
+
+    private List<ReceiveSummary> getSummaryData(List<String> ids, Set<String> partitionKeys,
+                                                Map<String, String> allRequestParams) {
+        Query query = new Query();
+        CriteriaDefinition criteriaDefinition;
+        if (CollectionUtils.isNotEmpty(ids) && CollectionUtils.isNotEmpty(partitionKeys)) {
+            criteriaDefinition =
+                    Criteria.where(ReceiveSummaryCosmosDBParameters.ID.getParameterName()).in(ids);
+            query.addCriteria(criteriaDefinition);
+            criteriaDefinition =
+                    Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD).in(partitionKeys);
+            query.addCriteria(criteriaDefinition);
+        }
+        if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()))
+                && StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()))) {
+            LocalDateTime startDate = getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()) + " 00:00:00");
+            LocalDateTime endDate = getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()) + " 23:59:59");
+            if (endDate.isAfter(startDate)) {
+                criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.DATERECEIVED.getParameterName()).
+                        gte(startDate).
+                        lte(endDate);
+                query.addCriteria(criteriaDefinition);
+            } else {
+                throw new BadRequestException("Receipt end date should be greater than receipt start date.", "Please enter valid query parameters");
+            }
+        }
+        log.info("queryForSummaryResponse :: Query is " + query);
+        return executeQueryInSummary(query);
+    }
+
 
     private List<FreightResponse> executeQueryInFreight(Query query) {
         List<FreightResponse> receiveFreights = new ArrayList<>();
@@ -582,79 +627,56 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         return receiveFreights;
     }
 
-    private List<ReceivingInfoResponseV1> getDataWoFinancialTxnV1(Map<String, String> allRequestParams) {
-        List<ReceivingInfoResponseV1> receivingInfoResponses = new ArrayList<>();
-        List<Criteria> lineCriteriaList = new ArrayList<>();
-        List<Criteria> freightCriteriaList = new ArrayList<>();
-        List<ReceiveSummary> receiveSummaries = getSummaryData(allRequestParams);
-        for (ReceiveSummary receiveSummary : receiveSummaries) {
-            lineCriteriaList.add(getLineDataCriteria(receiveSummary, allRequestParams));
-            if (receiveSummary.getFreightBillExpandId() != null) {
-                freightCriteriaList.add(Criteria.where("_id").is(receiveSummary.getFreightBillExpandId()));
-            }
-        }
-        List<ReceivingLine> lineResponseList = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(lineCriteriaList)) {
-            Query query = new Query(new Criteria().orOperator(lineCriteriaList.toArray(new Criteria[lineCriteriaList.size()])));
-            log.info("query: " + query);
-            lineResponseList = executeQueryInLine(query);
-        }
-        List<FreightResponse> freightResponseList = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(freightCriteriaList)) {
-            Query query = new Query(new Criteria().orOperator(freightCriteriaList.toArray(new Criteria[freightCriteriaList.size()])));
-            log.info("query: " + query);
-            freightResponseList = executeQueryInFreight(query);
-        }
-        Map<String, List<ReceivingLine>> receivingLineMap = new HashMap<>();
-        Iterator<ReceivingLine> iteratorLine = lineResponseList.iterator();
-        while (iteratorLine.hasNext()) {
-            ReceivingLine receivingLine = iteratorLine.next();
-            if (receivingLineMap.containsKey(receivingLine.getSummaryReference())) {
-                receivingLineMap.get(receivingLine.getSummaryReference()).add(receivingLine);
-            } else {
-                List<ReceivingLine> lineList = new ArrayList<>();
-                lineList.add(receivingLine);
-                receivingLineMap.put(receivingLine.getSummaryReference(), lineList);
-            }
-            iteratorLine.remove();
-        }
-        Map<Long, FreightResponse> freightResponseMap = freightResponseList.stream().collect(Collectors.toMap(FreightResponse::getId, freightResponse -> freightResponse));
-        Iterator<ReceiveSummary> iteratorSummary = receiveSummaries.iterator();
-        while (iteratorSummary.hasNext()) {
-            ReceiveSummary receiveSummary = iteratorSummary.next();
-            ReceivingInfoResponseV1 receivingInfoResponseV1 = conversionToReceivingInfoV1(receiveSummary,
-                    null
-                    , receivingLineMap.containsKey(receiveSummary.get_id()) ? receivingLineMap.get(receiveSummary.get_id()) : new ArrayList<>()
-                    , freightResponseMap.containsKey(receiveSummary.getFreightBillExpandId()) ? freightResponseMap.get(receiveSummary.getFreightBillExpandId()) : new FreightResponse()
-                    , allRequestParams);
-            receivingInfoResponses.add(receivingInfoResponseV1);
-        }
-        return receivingInfoResponses;
-    }
-
-    private Map<String, ReceivingInfoResponseV1> getReceivingInfoMap(List<ReceivingInfoResponseV1> receivingInfoResponseV1List) {
-        Map<String, ReceivingInfoResponseV1> receivingInfoResponseV1Map = new HashMap<>();
-        for (ReceivingInfoResponseV1 receivingInfoResponseV1 : receivingInfoResponseV1List) {
-            String id = (receivingInfoResponseV1.getPurchaseOrderId() == null ? 0 :
-                    receivingInfoResponseV1.getPurchaseOrderId())
-                    + ReceivingConstants.PIPE_SEPARATOR
-                    + (receivingInfoResponseV1.getReceiveId() == null ? "0" : receivingInfoResponseV1.getReceiveId())
-                    + ReceivingConstants.PIPE_SEPARATOR
-                    + (receivingInfoResponseV1.getOrigStoreNbr() == null ? 0 :
-                    receivingInfoResponseV1.getOrigStoreNbr())
-                    + ReceivingConstants.PIPE_SEPARATOR
-                    + (receivingInfoResponseV1.getParentReceivingDate() == null ? "0" :
-                    receivingInfoResponseV1.getParentReceivingDate());
-            receivingInfoResponseV1Map.put(id, receivingInfoResponseV1);
-        }
-        return receivingInfoResponseV1Map;
-    }
-
     private ReceivingInfoResponseV1 conversionToReceivingInfoV1(ReceiveSummary receiveSummary, FinancialTxnResponseData financialTxnResponseData, List<ReceivingLine> lineResponseList, FreightResponse freightResponse, Map<String, String> allRequestParams) {
         ReceivingInfoResponseV1 receivingInfoResponseV1 = new ReceivingInfoResponseV1();
-        if (financialTxnResponseData != null) {
-            updateReceivingInfoResponseV1(financialTxnResponseData, receivingInfoResponseV1);
-        } else {
+
+        receivingInfoResponseV1.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ?
+                new Long(lineResponseList.size()) : defaultValuesConfigProperties.getLineCount());
+        receivingInfoResponseV1.setCarrierCode(freightResponse != null
+                && StringUtils.isNotEmpty(freightResponse.getCarrierCode()) ?
+                freightResponse.getCarrierCode() : defaultValuesConfigProperties.getCarrierCode());
+        receivingInfoResponseV1.setTrailerNumber(freightResponse != null
+                && StringUtils.isNotEmpty(freightResponse.getTrailerNbr()) ?
+                freightResponse.getTrailerNbr() : defaultValuesConfigProperties.getTrailerNbr());
+
+        if (receiveSummary != null) {
+            receivingInfoResponseV1.setControlNumber(StringUtils.isNotEmpty(receiveSummary.getReceivingControlNumber()) ?
+                    receiveSummary.getReceivingControlNumber() : defaultValuesConfigProperties.getReceivingControlNumber());
+            receivingInfoResponseV1.setTransactionType(receiveSummary.getTransactionType());
+            receivingInfoResponseV1.setLocationNumber(receiveSummary.getStoreNumber());
+            receivingInfoResponseV1.setPurchaseOrderId(receiveSummary.getPurchaseOrderId());
+            receivingInfoResponseV1.setReceiptDate(receiveSummary.getDateReceived().atZone(ZoneId.of("GMT")).toLocalDate());
+            receivingInfoResponseV1.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ?
+                    receiveSummary.getReceiveId() : "0");
+            if (receiveSummary.getTypeIndicator().equals('W')) {
+                if (CollectionUtils.isNotEmpty(lineResponseList)) {
+                    receivingInfoResponseV1.setTotalCostAmount(BigDecimal.valueOf(lineResponseList.stream()
+                            .filter(t -> t.getReceivedQuantity() != null && t.getCostAmount() != null)
+                            .mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount())
+                            .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+                    receivingInfoResponseV1.setTotalRetailAmount(BigDecimal.valueOf(
+                            lineResponseList.stream()
+                                    .filter(t -> t.getReceivedQuantity() != null && t.getRetailAmount() != null)
+                                    .mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount())
+                                    .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+                }
+                if (receivingInfoResponseV1.getTotalCostAmount() == null) {
+                    receivingInfoResponseV1.setTotalCostAmount(defaultValuesConfigProperties.getTotalCostAmount());
+                }
+                if (receivingInfoResponseV1.getTotalRetailAmount() == null) {
+                    receivingInfoResponseV1.setTotalRetailAmount(defaultValuesConfigProperties.getTotalRetailAmount());
+                }
+            } else {
+                receivingInfoResponseV1.setTotalCostAmount(receiveSummary.getTotalCostAmount() != null ?
+                        receiveSummary.getTotalCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
+                receivingInfoResponseV1.setTotalRetailAmount(receiveSummary.getTotalRetailAmount() != null ?
+                        receiveSummary.getTotalRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
+            }
+            receivingInfoResponseV1.setBottleDepositAmount(receiveSummary.getBottleDepositAmount() != null ?
+                    receiveSummary.getBottleDepositAmount() : defaultValuesConfigProperties.getBottleDepositAmount());
+            receivingInfoResponseV1.setControlSequenceNumber(receiveSummary.getControlSequenceNumber() != null ?
+                    receiveSummary.getControlSequenceNumber() : defaultValuesConfigProperties.getControlSequenceNumber());
+            receivingInfoResponseV1.setReceiptStatus(receiveSummary.getBusinessStatusCode() != null ? receiveSummary.getBusinessStatusCode().toString() : null);
             receivingInfoResponseV1.setDepartmentNumber(NumberUtils.isDigits(receiveSummary.getDepartmentNumber()) ?
                     Integer.parseInt(receiveSummary.getDepartmentNumber()) :
                     defaultValuesConfigProperties.getDepartmentNumber());
@@ -668,70 +690,24 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 receivingInfoResponseV1.setParentReceivingDate(receiveSummary.getReceivingDate());
             }
         }
-        receivingInfoResponseV1.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ?
-                new Long(lineResponseList.size()) : defaultValuesConfigProperties.getLineCount());
-        receivingInfoResponseV1.setCarrierCode(freightResponse != null
-                && StringUtils.isNotEmpty(freightResponse.getCarrierCode()) ?
-                freightResponse.getCarrierCode() : defaultValuesConfigProperties.getCarrierCode());
-        receivingInfoResponseV1.setTrailerNumber(freightResponse != null
-                && StringUtils.isNotEmpty(freightResponse.getTrailerNbr()) ?
-                freightResponse.getTrailerNbr() : defaultValuesConfigProperties.getTrailerNbr());
-        receivingInfoResponseV1.setControlNumber(StringUtils.isNotEmpty(receiveSummary.getReceivingControlNumber()) ?
-                receiveSummary.getReceivingControlNumber() : defaultValuesConfigProperties.getReceivingControlNumber());
-        receivingInfoResponseV1.setTransactionType(receiveSummary.getTransactionType());
-        receivingInfoResponseV1.setLocationNumber(receiveSummary.getStoreNumber());
-        receivingInfoResponseV1.setPurchaseOrderId(receiveSummary.getPurchaseOrderId());
-        receivingInfoResponseV1.setReceiptDate(receiveSummary.getDateReceived().atZone(ZoneId.of("GMT")).toLocalDate());
-        receivingInfoResponseV1.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ?
-                receiveSummary.getReceiveId() : "0");
-        if (receiveSummary.getTypeIndicator().equals('W')) {
-            if (CollectionUtils.isNotEmpty(lineResponseList)) {
-                receivingInfoResponseV1.setTotalCostAmount(BigDecimal.valueOf(lineResponseList.stream()
-                        .filter(t -> t.getReceivedQuantity() != null && t.getCostAmount() != null)
-                        .mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount())
-                        .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
-                receivingInfoResponseV1.setTotalRetailAmount(BigDecimal.valueOf(
-                        lineResponseList.stream()
-                                .filter(t -> t.getReceivedQuantity() != null && t.getRetailAmount() != null)
-                                .mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount())
-                                .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
-            }
-            if (receivingInfoResponseV1.getTotalCostAmount() == null) {
-                receivingInfoResponseV1.setTotalCostAmount(defaultValuesConfigProperties.getTotalCostAmount());
-            }
-            if (receivingInfoResponseV1.getTotalRetailAmount() == null) {
-                receivingInfoResponseV1.setTotalRetailAmount(defaultValuesConfigProperties.getTotalRetailAmount());
-            }
-        } else {
-            receivingInfoResponseV1.setTotalCostAmount(receiveSummary.getTotalCostAmount() != null ?
-                    receiveSummary.getTotalCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
-            receivingInfoResponseV1.setTotalRetailAmount(receiveSummary.getTotalRetailAmount() != null ?
-                    receiveSummary.getTotalRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
-        }
-        receivingInfoResponseV1.setBottleDepositAmount(receiveSummary.getBottleDepositAmount() != null ?
-                receiveSummary.getBottleDepositAmount() : defaultValuesConfigProperties.getBottleDepositAmount());
-        receivingInfoResponseV1.setControlSequenceNumber(receiveSummary.getControlSequenceNumber() != null ?
-                receiveSummary.getControlSequenceNumber() : defaultValuesConfigProperties.getControlSequenceNumber());
-        receivingInfoResponseV1.setReceiveId(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ?
-                receiveSummary.getReceiveId() : "0");
-        receivingInfoResponseV1.setReceiptStatus(receiveSummary.getBusinessStatusCode() != null ? receiveSummary.getBusinessStatusCode().toString() : null);
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()))
                 && allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()).equalsIgnoreCase("Y")) {
             ReceivingUtils.updateLineResponse(lineResponseList);
             List<ReceivingInfoLineResponse> lineInfoList = lineResponseList.stream().map(t -> convertToLineResponse(t)).collect(Collectors.toList());
             receivingInfoResponseV1.setReceivingInfoLineResponses(lineInfoList);
         }
+        if (financialTxnResponseData != null) {
+            updateReceivingInfoResponseV1(financialTxnResponseData, receivingInfoResponseV1);
+        }
         return receivingInfoResponseV1;
     }
 
     private void updateReceivingInfoResponseV1(FinancialTxnResponseData financialTxnResponseData, ReceivingInfoResponseV1 receivingInfoResponseV1) {
-
         if (ReceivingConstants.PROCESS_STATUS_CODE_FOR_AUTH_FIELDS.contains(financialTxnResponseData.getProcessStatusCode())) {
             receivingInfoResponseV1.setAuthorizedBy(financialTxnResponseData.getAuthorizedBy());
             receivingInfoResponseV1.setAuthorizedDate(financialTxnResponseData.getAuthorizedDate() != null ?
                     financialTxnResponseData.getAuthorizedDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate() : null);
         }
-
         receivingInfoResponseV1.setDepartmentNumber(financialTxnResponseData.getPoDeptNbr());
         receivingInfoResponseV1.setDivisionNumber(financialTxnResponseData.getDivisionNumber());
         receivingInfoResponseV1.setVendorNumber(financialTxnResponseData.getVendorNumber());
@@ -745,6 +721,13 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponseV1.setInvoiceId(financialTxnResponseData.getInvoiceId());
         receivingInfoResponseV1.setInvoiceNumber(financialTxnResponseData.getInvoiceNumber());
         // Version V1 additional fields
+        receivingInfoResponseV1.setReceiptNumber(financialTxnResponseData.getReceiveId());
+        receivingInfoResponseV1.setLocationNumber(financialTxnResponseData.getOrigStoreNbr());
+        receivingInfoResponseV1.setPurchaseOrderId(financialTxnResponseData.getPurchaseOrderId());
+        if (financialTxnResponseData.getReceivingDate() != null) {
+            receivingInfoResponseV1.setReceiptDate(financialTxnResponseData.getReceivingDate()
+                    .toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
+        }
         receivingInfoResponseV1.setTransactionId(financialTxnResponseData.getTransactionId());
         receivingInfoResponseV1.setTxnSeqNbr(financialTxnResponseData.getTxnSeqNbr());
         receivingInfoResponseV1.setF6ASeqNbr(financialTxnResponseData.getF6ASeqNbr());
