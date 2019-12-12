@@ -1,10 +1,7 @@
 package com.walmart.finance.ap.fds.receiving.integrations;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 import java.util.List;
@@ -13,13 +10,15 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode
+@ToString
 public class FinancialTxnResponseData {
 
     @JsonProperty("transactionId")
     private Long transactionId;
 
     @JsonProperty("purchaseOrderId")
-    private Integer purchaseOrderId;
+    private Long purchaseOrderId;
 
     @JsonProperty("receiverNbr")
     private String receiveId;

@@ -1,8 +1,12 @@
 package com.walmart.finance.ap.fds.receiving.common;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
+import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryCosmosDBParameters;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
+import com.walmart.finance.ap.fds.receiving.response.ReceivingInfoResponseV1;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -15,6 +19,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -102,6 +107,37 @@ public class ReceivingUtils {
         return partitionKeyCriteria;
     }
 
+    public static List<String> getPartitionKeyList(LocalDate receiptDate, Map<String, String> allParams,
+                                               Integer storeNumber, Integer monthsPerShard, Integer monthsToDisplay) {
+
+        List<String> partitionKeyList = new ArrayList<>();
+        if (receiptDate != null) {
+            /* This scenario will be applicable in case of 'Stores', where we get 'Receiving Date' as a part of
+            response from FinTrans*/
+            partitionKeyList.add(ReceivingUtils.getPartitionKey(String.valueOf(storeNumber),
+                                    receiptDate, monthsPerShard));
+        } else if (allParams.containsKey(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam())
+                && allParams.containsKey(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam())) {
+            /* This flow will be applicable for requests which has 'receipt start date' and 'receipt end date' as a
+            part of the request */
+            LocalDateTime startDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATESTART) + " 00:00:00");
+            LocalDateTime endDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATEEND) + " 00:00:00");
+            Period diff = Period.between(startDate.toLocalDate(), endDate.toLocalDate());
+            int adjustedMonthsTodDisplay =
+                    new Double(Math.ceil((diff.getMonths() + 2) / monthsPerShard.doubleValue()) * monthsPerShard)
+                            .intValue();
+
+            partitionKeyList = Arrays.asList(ReceivingUtils.getPartitionKeyList(String.valueOf(storeNumber),
+                                    endDate.toLocalDate(), adjustedMonthsTodDisplay, monthsPerShard));
+        } else {
+            /* If non of the above conditions match, we search across all the shards for the configured number of
+            months */
+            partitionKeyList = Arrays.asList(ReceivingUtils.getPartitionKeyList(String.valueOf(storeNumber),
+                                    monthsToDisplay, monthsPerShard));
+        }
+        return partitionKeyList;
+    }
+
     public static void updateLineResponse(List<ReceivingLine> lineResponseList) {
         for (ReceivingLine receivingLine : lineResponseList) {
             if (StringUtils.isNotEmpty(receivingLine.getUpcNumber())) {
@@ -116,6 +152,16 @@ public class ReceivingUtils {
                             receivingLine.getUpcNumber().length() - 1));
                 }
             }
+        }
+    }
+
+    public static ReceivingInfoResponseV1 getRecvInfoRespV1Copy(ReceivingInfoResponseV1 receivingInfoResponseV1) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.readValue(objectMapper.writeValueAsString(receivingInfoResponseV1),
+                    ReceivingInfoResponseV1.class);
+        } catch (java.io.IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

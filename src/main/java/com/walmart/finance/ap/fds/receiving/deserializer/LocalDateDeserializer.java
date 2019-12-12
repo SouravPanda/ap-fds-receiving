@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 
 public class LocalDateDeserializer extends JsonDeserializer<LocalDate> {
 
-	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	@Override
 	public LocalDate deserialize(JsonParser p, DeserializationContext ctxt)
