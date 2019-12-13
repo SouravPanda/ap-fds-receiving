@@ -38,9 +38,9 @@ flows:
   release:
     - shell: echo "Release Flow Called"
     - call: readpom
-    - git config --add remote.origin.fetch +refs/heads/master:refs/remotes/origin/master
+    - git config --add remote.origin.fetch +refs/heads/master:refs/remotes/origin/develop
     - git fetch --all
-    - git checkout master
+    - git checkout develop
     - echo "release flow called with version $version"
     - mvn clean install
     - call: pushImageToReleaseRegistry
