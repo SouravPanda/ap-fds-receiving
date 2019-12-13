@@ -19,6 +19,7 @@
         <jacoco.reportPath>${project.basedir}/target/jacoco.exec</jacoco.reportPath>
         <spring-cloud-stream.version>Fishtown.RELEASE</spring-cloud-stream.version>
     </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
