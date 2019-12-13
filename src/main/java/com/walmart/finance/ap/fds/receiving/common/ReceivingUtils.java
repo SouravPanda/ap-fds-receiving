@@ -28,8 +28,6 @@ import java.util.Map;
 
 public class ReceivingUtils {
 
-    public static final Logger log = LoggerFactory.getLogger(ReceivingUtils.class);
-
     public static String[] getPartitionKeyList(String keyAttributeValue, LocalDate endDate, Integer monthsToDisplay,
                                                Integer monthsPerShard ) {
         //keyAttributeValue is 'Store Number' for now
@@ -145,8 +143,7 @@ public class ReceivingUtils {
 
     public static void updateLineResponse(List<ReceivingLine> lineResponseList) {
         for (ReceivingLine receivingLine : lineResponseList) {
-            if (StringUtils.isNotEmpty(receivingLine.getUpcNumber())) {
-                log.info("Original UPC Number : " + receivingLine.getUpcNumber());
+            if (StringUtils.isNotEmpty(receivingLine.getUpcNumber()) && receivingLine.getUpcNumber().length() > 13) {
                 /* Change 16 Digit GTIN number to 13 Digit UPC number */
                 int lastDigit =
                         Integer.parseInt(
@@ -157,7 +154,6 @@ public class ReceivingUtils {
                     receivingLine.setUpcNumber(receivingLine.getUpcNumber().substring(2,
                             receivingLine.getUpcNumber().length() - 1));
                 }
-                log.info("Altered UPC Number : " + receivingLine.getUpcNumber());
             }
         }
     }
