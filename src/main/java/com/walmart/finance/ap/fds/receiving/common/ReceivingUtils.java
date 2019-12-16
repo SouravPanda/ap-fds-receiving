@@ -4,11 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
+import com.walmart.finance.ap.fds.receiving.integrations.FinancialTxnIntegrationServiceImpl;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryCosmosDBParameters;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingInfoResponseV1;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
@@ -140,7 +143,7 @@ public class ReceivingUtils {
 
     public static void updateLineResponse(List<ReceivingLine> lineResponseList) {
         for (ReceivingLine receivingLine : lineResponseList) {
-            if (StringUtils.isNotEmpty(receivingLine.getUpcNumber())) {
+            if (StringUtils.isNotEmpty(receivingLine.getUpcNumber()) && receivingLine.getUpcNumber().length() > 13) {
                 /* Change 16 Digit GTIN number to 13 Digit UPC number */
                 int lastDigit =
                         Integer.parseInt(
