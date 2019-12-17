@@ -1,4 +1,3 @@
-/*
 package com.walmart.finance.ap.fds.receiving;
 
 import org.junit.AfterClass;
@@ -12,7 +11,7 @@ public class SpringReceiveApplicationTest {
     @BeforeClass
     public static void setSystemProperty() {
         Properties properties = System.getProperties();
-        properties.setProperty("spring.profiles.active", "qa-us");
+        properties.setProperty("spring.profiles.active", "dev-us");
     }
 
     @AfterClass
@@ -24,4 +23,4 @@ public class SpringReceiveApplicationTest {
     public void main() {
         SpringReceiveApplication.main(new String[]{});
     }
-}*/
+}
