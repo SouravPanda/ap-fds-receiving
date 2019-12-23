@@ -1,6 +1,7 @@
 package com.walmart.finance.ap.fds.receiving.model;
 
 import com.walmart.finance.ap.fds.receiving.response.ReceiveMDSResponse;
+import com.walmart.finance.ap.fds.receiving.response.WHLinePOLineValue;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -51,6 +52,7 @@ public class ReceivingLine   {
     private Integer inventoryMatchStatus;
     private String variableWeightIndicator;
     private Map<String, ReceiveMDSResponse> merchandises;
+    private Map<String, WHLinePOLineValue> poLineValue;
     private Integer lineSequenceNumber;
     private String bottleDepositFlag;
     private String itemDescription;

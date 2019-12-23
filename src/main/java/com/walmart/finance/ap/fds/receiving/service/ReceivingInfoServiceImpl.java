@@ -37,6 +37,8 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.UOM_CODE_WH_EXCEPTION_RESOLUTION;
+
 /**
  * Service layer to get the data from financial transaction API and respond with model response.
  */
@@ -364,14 +366,31 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 defaultValuesConfigProperties.getItemNumber());
         response.setQuantity(receivingLine.getReceivedQuantity() != null ?
                 receivingLine.getReceivedQuantity().intValue() : defaultValuesConfigProperties.getReceivedQuantity());
-        response.setEachCostAmount(receivingLine.getCostAmount() != null ?
-                receivingLine.getCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
-        response.setEachRetailAmount(receivingLine.getRetailAmount() != null ?
-                receivingLine.getRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
+
+        if (receivingLine.getPoLineValue() == null) {
+            response.setEachCostAmount(receivingLine.getCostAmount() != null ?
+                    receivingLine.getCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
+            response.setEachRetailAmount(receivingLine.getRetailAmount() != null ?
+                    receivingLine.getRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
+            response.setPackQuantity(receivingLine.getQuantity() != null ?
+                    receivingLine.getQuantity() : defaultValuesConfigProperties.getQuantity());
+        } else {
+            response.setEachCostAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION) != null
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmt() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmt() :
+                    defaultValuesConfigProperties.getTotalCostAmount());
+            response.setEachRetailAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION) != null
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmt() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmt() :
+                    defaultValuesConfigProperties.getTotalRetailAmount());
+            response.setPackQuantity(receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION) != null
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() :
+                    defaultValuesConfigProperties.getQuantity());
+        }
+
         response.setNumberOfCasesReceived(receivingLine.getReceivedQuantity() != null ?
                 receivingLine.getReceivedQuantity() : defaultValuesConfigProperties.getReceivedQuantity());
-        response.setPackQuantity(receivingLine.getQuantity() != null ?
-                receivingLine.getQuantity() : defaultValuesConfigProperties.getQuantity());
         response.setBottleDepositFlag(StringUtils.isNotEmpty(receivingLine.getBottleDepositFlag()) ?
                 receivingLine.getBottleDepositFlag() : defaultValuesConfigProperties.getBottleDepositFlag());
         response.setUpc(StringUtils.isNotEmpty(receivingLine.getUpcNumber()) ? receivingLine.getUpcNumber() :

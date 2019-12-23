@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.UOM_CODE_WH_EXCEPTION_RESOLUTION;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -90,6 +91,11 @@ public class ReceivingInfoServiceImplTest {
                         add(receiveSummary);
                     }
                 });
+
+        Map<String, WHLinePOLineValue> poLineValueMap = new HashMap<>();
+        poLineValueMap.put(UOM_CODE_WH_EXCEPTION_RESOLUTION, new WHLinePOLineValue(UOM_CODE_WH_EXCEPTION_RESOLUTION,
+                6, 30.0, 40.0));
+
         List<ReceivingLine> receivingLines = new ArrayList<ReceivingLine>() {
             {
                 add(new ReceivingLine("999403403|0000030006|3669|2019-06-19|1", "0000030006",
@@ -98,7 +104,8 @@ public class ReceivingInfoServiceImplTest {
                         LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                         LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 6, LocalDate.now(),
                         0, 1.9, "LL", 0, "ww",
-                        null, 1, "N", "NSW CRASH TRNF", 1, new Long(999403403), "999403403|0000030006|3669|0", null, null, null));
+                        null, poLineValueMap, 1, "N", "NSW CRASH TRNF", 1, new Long(999403403), "999403403|0000030006|3669|0",
+                        null, null, null));
             }
         };
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(receivingLines);
@@ -160,6 +167,9 @@ public class ReceivingInfoServiceImplTest {
                 add(receiveSummary);
             }
         });
+        Map<String, WHLinePOLineValue> poLineValueMap = new HashMap<>();
+        poLineValueMap.put(UOM_CODE_WH_EXCEPTION_RESOLUTION, new WHLinePOLineValue(UOM_CODE_WH_EXCEPTION_RESOLUTION,
+                6, 30.0, 40.0));
         List<ReceivingLine> receivingLines = new ArrayList<ReceivingLine>() {
             {
                 add(new ReceivingLine("999403403|0000030006|3669|2019-06-19|1", "0000030006",
@@ -168,7 +178,9 @@ public class ReceivingInfoServiceImplTest {
                         LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                         LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 6, LocalDate.now(),
                         0, 1.9, "LL", 0, "ww",
-                        null, 1, "N", "NSW CRASH TRNF", 1, new Long(999403403), "999403403|0000030006|3669|0", null, null, null));
+                        null, poLineValueMap, 1, "N", "NSW CRASH TRNF", 1, new Long(999403403), "999403403|0000030006" +
+                        "|3669|0", null,
+                        null, null));
             }
         };
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(receivingLines);
@@ -284,6 +296,8 @@ public class ReceivingInfoServiceImplTest {
         ReceiveMDSResponse receiveMDSResponse = new ReceiveMDSResponse(1,1,350L,"01");
         Map<String, ReceiveMDSResponse> receiveMDSResponseMap = new HashMap<>();
         receiveMDSResponseMap.put("1", receiveMDSResponse);
+
+
         List<ReceivingLine> receivingLines = new ArrayList<ReceivingLine>() {
             {
                 add(new ReceivingLine("972515962|110950|6479|2019-06-11|2", "110950",
@@ -292,7 +306,8 @@ public class ReceivingInfoServiceImplTest {
                         LocalDate.of(2019, 06, 20), LocalDateTime.of(2019, 07, 14, 16, 50, 17), null,
                         null, 'W', "DB2", null, 0, LocalDate.of(2019, 06, 11),
                         null, 0.0, null, null, "",
-                        receiveMDSResponseMap, 2, "N", "NSW CRASH TRNF", 1, new Long(972515962), "972515962|110950" +
+                        receiveMDSResponseMap, null, 2, "N", "NSW CRASH TRNF", 1, new Long(972515962), "972515962" +
+                        "|110950" +
                         "|6479|2019-06-11", null, null, null));
             }
         };
