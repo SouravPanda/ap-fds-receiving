@@ -58,5 +58,6 @@ public class ReceivingConstants {
     public static final String LOCATION_TYPE_WAREHOUSE="W";
 
     public static final String UOM_CODE_WH_EXCEPTION_RESOLUTION = "02";
+    public static final String UOM_CODE_WH_MATCHING = "01";
 
 }

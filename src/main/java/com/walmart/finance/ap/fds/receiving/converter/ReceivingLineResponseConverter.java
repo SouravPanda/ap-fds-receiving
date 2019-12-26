@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 
 import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.UOM_CODE_WH_EXCEPTION_RESOLUTION;
+import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.UOM_CODE_WH_MATCHING;
 
 @Component
 public class ReceivingLineResponseConverter implements Converter<ReceivingLine, ReceivingLineResponse> {
@@ -61,6 +62,19 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
             response.setPackQuantity(receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION) != null
                     & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() != null?
                     receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() :
+                    defaultValuesConfigProperties.getQuantity());
+
+            response.setEachVendorCostAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING) != null
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getCostAmt() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getCostAmt() :
+                    defaultValuesConfigProperties.getTotalCostAmount());
+            response.setEachVendorRetailAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING) != null
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getRetailAmt() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getRetailAmt() :
+                    defaultValuesConfigProperties.getTotalRetailAmount());
+            response.setVendorPackQuantity(receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING) != null
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getQuantity() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getQuantity() :
                     defaultValuesConfigProperties.getQuantity());
         }
 
