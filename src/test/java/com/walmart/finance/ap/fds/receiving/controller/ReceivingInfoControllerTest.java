@@ -59,7 +59,7 @@ public class ReceivingInfoControllerTest {
                 2, 33.0,
                 33.84, 2.0, 0,
                 "N", "0000047875883980",
-                "NSW CRASH TRNF", "LL", "ww", 1, "1.9", null);
+                "NSW CRASH TRNF", "LL", "ww", 1, "1.9", null, 33.0, 33.65, 2);
         List<ReceivingInfoLineResponse> lineResponses = new ArrayList<ReceivingInfoLineResponse>() {
             {
                 add(receivingInfoLineResponse);
@@ -137,7 +137,10 @@ public class ReceivingInfoControllerTest {
                                 "\"variableWeightInd\": \"ww\",\n" +
                                 "\"costMultiple\": 1,\n" +
                                 "\"receivedWeightQuantity\": \"1.9\",\n" +
-                                "\"merchandises\": null\n" +
+                                "\"merchandises\": null,\n" +
+                                "\"eachVendorCostAmount\": 33,\n" +
+                                "\"eachVendorRetailAmount\": 33.65,\n" +
+                                "\"vendorPackQuantity\": 2\n" +
                                 "}\n" +
                                 "]" +
                                 "}]}"
@@ -157,7 +160,7 @@ public class ReceivingInfoControllerTest {
                 2, 30.0,
                 30.09, 2.0, 0,
                 "N", "0000047875883989",
-                "NSW CRASH TRNF", null, "ww", 1, "0.0", merchandises);
+                "NSW CRASH TRNF", null, "ww", 1, "0.0", merchandises, null, null, null);
         List<ReceivingInfoLineResponse> lineResponses = new ArrayList<ReceivingInfoLineResponse>() {
             {
                 add(receivingInfoLineResponse);

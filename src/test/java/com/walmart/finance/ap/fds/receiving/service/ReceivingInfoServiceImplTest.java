@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.UOM_CODE_WH_EXCEPTION_RESOLUTION;
+import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.UOM_CODE_WH_MATCHING;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -170,6 +171,8 @@ public class ReceivingInfoServiceImplTest {
         Map<String, WHLinePOLineValue> poLineValueMap = new HashMap<>();
         poLineValueMap.put(UOM_CODE_WH_EXCEPTION_RESOLUTION, new WHLinePOLineValue(UOM_CODE_WH_EXCEPTION_RESOLUTION,
                 6, 30.0, 40.0));
+        poLineValueMap.put(UOM_CODE_WH_MATCHING, new WHLinePOLineValue(UOM_CODE_WH_MATCHING,
+                6, 30.0, 40.0));
         List<ReceivingLine> receivingLines = new ArrayList<ReceivingLine>() {
             {
                 add(new ReceivingLine("999403403|0000030006|3669|2019-06-19|1", "0000030006",
@@ -193,7 +196,7 @@ public class ReceivingInfoServiceImplTest {
                 add(new ReceivingInfoLineResponse("0000030006", 1, 3777L, 7, 30.0,
                         40.0, 7.0, 6,
                         "N", "1122",
-                        "NSW CRASH TRNF", "LL", "ww", 1, "1.9", null
+                        "NSW CRASH TRNF", "LL", "ww", 1, "1.9", null, 30.0, 40.0, 6
                 ));
             }
         };
@@ -330,7 +333,7 @@ public class ReceivingInfoServiceImplTest {
                 2, 30.0,
                 30.09, 2.0, 0,
                 "N", "0000047875883989",
-                "NSW CRASH TRNF", null, "", 1, "0.0", merchandises);
+                "NSW CRASH TRNF", null, "", 1, "0.0", merchandises, null, null, null);
         List<ReceivingInfoLineResponse> lineResponses = new ArrayList<ReceivingInfoLineResponse>() {
             {
                 add(receivingInfoLineResponse);
