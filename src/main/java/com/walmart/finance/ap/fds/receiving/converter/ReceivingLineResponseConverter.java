@@ -50,6 +50,11 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
                     receivingLine.getRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
             response.setPackQuantity(receivingLine.getQuantity() != null ?
                     receivingLine.getQuantity() : defaultValuesConfigProperties.getQuantity());
+
+
+            response.setEachVendorCostAmount(defaultValuesConfigProperties.getTotalCostAmount());
+            response.setEachVendorRetailAmount(defaultValuesConfigProperties.getTotalRetailAmount());
+            response.setVendorPackQuantity(defaultValuesConfigProperties.getQuantity());
         } else {
             response.setEachCostAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION) != null
                     & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmt() != null?
