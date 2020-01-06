@@ -10,6 +10,7 @@ import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.response.*;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestCombinations;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -467,5 +468,31 @@ public class ReceivingInfoServiceImplTest {
         Map<String, String> allRequestParams = new HashMap<>();
         allRequestParams.put("scenario", ReceivingInfoRequestCombinations.INVOICEID.name());
         receivingInfoService.getInfoSeviceDataV1(allRequestParams);
+    }
+
+    @Test
+    public void testMergeDuplicateSummaryRecords() {
+
+
+        ReceiveSummary receiveSummaryB = new ReceiveSummary();
+        receiveSummaryB.setDateReceived(LocalDateTime.now());
+        receiveSummaryB.setReceivingControlNumber("OlderControlNumber");
+        receiveSummaryB.setBaseDivisionNumber(10);
+
+        ReceiveSummary receiveSummaryA = new ReceiveSummary();
+        receiveSummaryA.setDateReceived(LocalDateTime.now().plusDays(1));
+        receiveSummaryA.setReceivingControlNumber("NewControlNumber");
+        //baseDivisionNumber is not set originally in receiveSummaryA
+
+        List<ReceiveSummary> receiveSummaryList = new ArrayList<>();
+        receiveSummaryList.add(receiveSummaryA);
+        receiveSummaryList.add(receiveSummaryB);
+        receiveSummaryList = receivingInfoService.mergeDuplicateSummaryRecords(receiveSummaryList);
+
+        Assert.assertTrue(receiveSummaryList.size() == 1);
+        Assert.assertEquals("NewControlNumber", receiveSummaryList.get(0).getReceivingControlNumber());
+        Assert.assertTrue(receiveSummaryList.get(0).getBaseDivisionNumber() == 10);
+
+
     }
 }

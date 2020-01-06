@@ -621,7 +621,21 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         log.info("query: " + query);
         lineResponseList = executeQueryInLine(query);
 
-        return lineResponseList;
+        return mergeDuplicateLineRecords(lineResponseList);
+    }
+
+    public List<ReceivingLine> mergeDuplicateLineRecords(List<ReceivingLine> receivingLineList) {
+
+        Map<String, ReceivingLine> receivingLineMap = new HashMap<>();
+
+        for (ReceivingLine receivingLine : receivingLineList) {
+            if (receivingLineMap.containsKey(receivingLine.get_id())) {
+                receivingLineMap.get(receivingLine.get_id()).merge(receivingLine);
+            } else {
+                receivingLineMap.put(receivingLine.get_id(), receivingLine);
+            }
+        }
+        return new ArrayList<>(receivingLineMap.values());
     }
 
     private List<ReceiveSummary> getSummaryData(List<String> ids, Set<String> partitionKeys,
@@ -650,7 +664,21 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             }
         }
         log.info("queryForSummaryResponse :: Query is " + query);
-        return executeQueryInSummary(query);
+        return mergeDuplicateSummaryRecords(executeQueryInSummary(query));
+    }
+
+    public List<ReceiveSummary> mergeDuplicateSummaryRecords(List<ReceiveSummary> receiveSummaryList) {
+
+        Map<String, ReceiveSummary> receiveSummaryMap = new HashMap<>();
+
+        for (ReceiveSummary receiveSummary : receiveSummaryList) {
+            if (receiveSummaryMap.containsKey(receiveSummary.get_id())) {
+                receiveSummaryMap.get(receiveSummary.get_id()).merge(receiveSummary);
+            } else {
+                receiveSummaryMap.put(receiveSummary.get_id(), receiveSummary);
+            }
+        }
+        return new ArrayList<>(receiveSummaryMap.values());
     }
 
 
