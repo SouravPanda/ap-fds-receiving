@@ -264,7 +264,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             List<ReceivingLine> lineList = receivingLineMap.get(receiveSummary.get_id());
             if (CollectionUtils.isNotEmpty(lineList)) {
                 if (receiveSummary.getTypeIndicator().equals('W')) {
-                    if (lineList.get(0).getPoLineValue() == null || !lineList.get(0).getPoLineValue().isEmpty()) {
+                    if (lineList.get(0).getPoLineValue() != null || !lineList.get(0).getPoLineValue().isEmpty()) {
                         response.setTotalCostAmount(BigDecimal.valueOf(lineList.stream()
                                 .filter(t -> t.getPoLineValue().containsKey(UOM_CODE_WH_EXCEPTION_RESOLUTION) &&
                                         t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() != null &&
