@@ -690,17 +690,17 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                     if (lineResponseList.get(0).getPoLineValue() != null && !lineResponseList.get(0).getPoLineValue().isEmpty()) {
                         receivingInfoResponseV1.setTotalCostAmount(BigDecimal.valueOf(lineResponseList.stream()
                                 .filter(t -> t.getPoLineValue().containsKey(UOM_CODE_WH_EXCEPTION_RESOLUTION) &&
-                                        t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() != null &&
+                                        t.getReceivedQuantity() != null &&
                                         t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmount() != null)
-                                .mapToDouble(t -> t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() *
+                                .mapToDouble(t -> t.getReceivedQuantity() *
                                         t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmount())
                                 .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
                         receivingInfoResponseV1.setTotalRetailAmount(BigDecimal.valueOf(
                                 lineResponseList.stream()
                                         .filter(t -> t.getPoLineValue().containsKey(UOM_CODE_WH_EXCEPTION_RESOLUTION) &&
-                                                t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() != null &&
+                                                t.getReceivedQuantity() != null &&
                                                 t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmount() != null)
-                                        .mapToDouble(t -> t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() *
+                                        .mapToDouble(t -> t.getReceivedQuantity() *
                                                 t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmount())
                                         .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
                     } else {

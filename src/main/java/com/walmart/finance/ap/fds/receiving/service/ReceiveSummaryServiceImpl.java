@@ -267,17 +267,17 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                     if (lineList.get(0).getPoLineValue() != null && !lineList.get(0).getPoLineValue().isEmpty()) {
                         response.setTotalCostAmount(BigDecimal.valueOf(lineList.stream()
                                 .filter(t -> t.getPoLineValue().containsKey(UOM_CODE_WH_EXCEPTION_RESOLUTION) &&
-                                        t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() != null &&
+                                        t.getReceivedQuantity() != null &&
                                         t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmount() != null)
-                                .mapToDouble(t -> t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() *
+                                .mapToDouble(t -> t.getReceivedQuantity() *
                                         t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmount())
                                 .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
                         response.setTotalRetailAmount(BigDecimal.valueOf(
                                 lineList.stream()
                                         .filter(t -> t.getPoLineValue().containsKey(UOM_CODE_WH_EXCEPTION_RESOLUTION) &&
-                                                t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() != null &&
+                                                t.getReceivedQuantity() != null &&
                                                 t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmount() != null)
-                                        .mapToDouble(t -> t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() *
+                                        .mapToDouble(t -> t.getReceivedQuantity() *
                                                 t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmount())
                                         .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
                     } else {
