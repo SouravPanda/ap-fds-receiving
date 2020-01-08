@@ -381,12 +381,12 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             response.setVendorPackQuantity(defaultValuesConfigProperties.getQuantity());
         } else {
             response.setEachCostAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION) != null
-                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmt() != null?
-                    receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmt() :
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmount() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmount() :
                     defaultValuesConfigProperties.getTotalCostAmount());
             response.setEachRetailAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION) != null
-                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmt() != null?
-                    receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmt() :
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmount() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmount() :
                     defaultValuesConfigProperties.getTotalRetailAmount());
             response.setPackQuantity(receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION) != null
                     & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() != null?
@@ -394,12 +394,12 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                     defaultValuesConfigProperties.getQuantity());
 
             response.setEachVendorCostAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING) != null
-                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getCostAmt() != null?
-                    receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getCostAmt() :
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getCostAmount() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getCostAmount() :
                     defaultValuesConfigProperties.getTotalCostAmount());
             response.setEachVendorRetailAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING) != null
-                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getRetailAmt() != null?
-                    receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getRetailAmt() :
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getRetailAmount() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getRetailAmount() :
                     defaultValuesConfigProperties.getTotalRetailAmount());
             response.setVendorPackQuantity(receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING) != null
                     & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getQuantity() != null?
@@ -687,15 +687,34 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                     receiveSummary.getReceiveId() : "0");
             if (receiveSummary.getTypeIndicator().equals('W')) {
                 if (CollectionUtils.isNotEmpty(lineResponseList)) {
-                    receivingInfoResponseV1.setTotalCostAmount(BigDecimal.valueOf(lineResponseList.stream()
-                            .filter(t -> t.getReceivedQuantity() != null && t.getCostAmount() != null)
-                            .mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount())
-                            .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
-                    receivingInfoResponseV1.setTotalRetailAmount(BigDecimal.valueOf(
-                            lineResponseList.stream()
-                                    .filter(t -> t.getReceivedQuantity() != null && t.getRetailAmount() != null)
-                                    .mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount())
-                                    .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+                    if (lineResponseList.get(0).getPoLineValue() == null || !lineResponseList.get(0).getPoLineValue().isEmpty()) {
+                        receivingInfoResponseV1.setTotalCostAmount(BigDecimal.valueOf(lineResponseList.stream()
+                                .filter(t -> t.getPoLineValue().containsKey(UOM_CODE_WH_EXCEPTION_RESOLUTION) &&
+                                        t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() != null &&
+                                        t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmount() != null)
+                                .mapToDouble(t -> t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() *
+                                        t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmount())
+                                .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+                        receivingInfoResponseV1.setTotalRetailAmount(BigDecimal.valueOf(
+                                lineResponseList.stream()
+                                        .filter(t -> t.getPoLineValue().containsKey(UOM_CODE_WH_EXCEPTION_RESOLUTION) &&
+                                                t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() != null &&
+                                                t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmount() != null)
+                                        .mapToDouble(t -> t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() *
+                                                t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmount())
+                                        .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+                    } else {
+                        receivingInfoResponseV1.setTotalCostAmount(BigDecimal.valueOf(lineResponseList.stream()
+                                .filter(t -> t.getReceivedQuantity() != null && t.getCostAmount() != null)
+                                .mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount())
+                                .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+                        receivingInfoResponseV1.setTotalRetailAmount(BigDecimal.valueOf(
+                                lineResponseList.stream()
+                                        .filter(t -> t.getReceivedQuantity() != null && t.getRetailAmount() != null)
+                                        .mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount())
+                                        .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+                    }
+
                 }
                 if (receivingInfoResponseV1.getTotalCostAmount() == null) {
                     receivingInfoResponseV1.setTotalCostAmount(defaultValuesConfigProperties.getTotalCostAmount());

@@ -33,6 +33,8 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -40,6 +42,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.UOM_CODE_WH_EXCEPTION_RESOLUTION;
 
 @Service
 public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
@@ -260,8 +264,26 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             List<ReceivingLine> lineList = receivingLineMap.get(receiveSummary.get_id());
             if (CollectionUtils.isNotEmpty(lineList)) {
                 if (receiveSummary.getTypeIndicator().equals('W')) {
-                    response.setTotalCostAmount(lineList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount()).sum());
-                    response.setTotalRetailAmount(lineList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
+                    if (lineList.get(0).getPoLineValue() == null || !lineList.get(0).getPoLineValue().isEmpty()) {
+                        response.setTotalCostAmount(BigDecimal.valueOf(lineList.stream()
+                                .filter(t -> t.getPoLineValue().containsKey(UOM_CODE_WH_EXCEPTION_RESOLUTION) &&
+                                        t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() != null &&
+                                        t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmount() != null)
+                                .mapToDouble(t -> t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() *
+                                        t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmount())
+                                .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+                        response.setTotalRetailAmount(BigDecimal.valueOf(
+                                lineList.stream()
+                                        .filter(t -> t.getPoLineValue().containsKey(UOM_CODE_WH_EXCEPTION_RESOLUTION) &&
+                                                t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() != null &&
+                                                t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmount() != null)
+                                        .mapToDouble(t -> t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() *
+                                                t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmount())
+                                        .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+                    } else {
+                        response.setTotalCostAmount(lineList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount()).sum());
+                        response.setTotalRetailAmount(lineList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
+                    }
                 } else {
                     response.setTotalCostAmount(receiveSummary.getTotalCostAmount() != null ?
                             receiveSummary.getTotalCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
