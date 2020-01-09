@@ -62,11 +62,11 @@ public class ReceivingLine   {
     private String summaryReference;
     private String dataSyncStatus;
     private LocalDateTime creationTimestamp;
-    private LocalDateTime lastUpdatedDate;
+    private LocalDateTime lastUpdatedTimestamp;
 
     public void merge(ReceivingLine receivingLine) {
 
-        if(this.lastUpdatedDate.isAfter(receivingLine.lastUpdatedDate)) {
+        if(this.lastUpdatedTimestamp.isAfter(receivingLine.lastUpdatedTimestamp)) {
 
             // This block will only be executed if 'creationTimestamp' for 'this' object is after 'receivingLine'
             // Hence 'this' has the latest changes
@@ -231,7 +231,7 @@ public class ReceivingLine   {
                     receivingLine.purchaseOrderId : this.purchaseOrderId;
             this.dataSyncStatus = StringUtils.isNotEmpty(receivingLine.dataSyncStatus) ?
                     receivingLine.dataSyncStatus : this.dataSyncStatus;
-            this.lastUpdatedDate = receivingLine.lastUpdatedDate;
+            this.lastUpdatedTimestamp = receivingLine.lastUpdatedTimestamp;
 
         }
 
