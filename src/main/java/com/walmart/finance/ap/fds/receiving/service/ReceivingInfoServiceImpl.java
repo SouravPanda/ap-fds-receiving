@@ -37,6 +37,7 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.LOCATION_TYPE_WAREHOUSE;
 import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.UOM_CODE_WH_EXCEPTION_RESOLUTION;
 import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.UOM_CODE_WH_MATCHING;
 
@@ -621,7 +622,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         log.info("query: " + query);
         lineResponseList = executeQueryInLine(query);
 
-        return mergeDuplicateLineRecords(lineResponseList);
+        return allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
+                .equals(LOCATION_TYPE_WAREHOUSE)? mergeDuplicateLineRecords(lineResponseList) : lineResponseList;
     }
 
     public List<ReceivingLine> mergeDuplicateLineRecords(List<ReceivingLine> receivingLineList) {
@@ -664,7 +666,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             }
         }
         log.info("queryForSummaryResponse :: Query is " + query);
-        return mergeDuplicateSummaryRecords(executeQueryInSummary(query));
+        return  allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
+                .equals(LOCATION_TYPE_WAREHOUSE)?
+                mergeDuplicateSummaryRecords(executeQueryInSummary(query)) : executeQueryInSummary(query);
     }
 
     public List<ReceiveSummary> mergeDuplicateSummaryRecords(List<ReceiveSummary> receiveSummaryList) {
