@@ -57,12 +57,12 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
             response.setVendorPackQuantity(defaultValuesConfigProperties.getQuantity());
         } else {
             response.setEachCostAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION) != null
-                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmt() != null?
-                    receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmt() :
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmount() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmount() :
                     defaultValuesConfigProperties.getTotalCostAmount());
             response.setEachRetailAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION) != null
-                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmt() != null?
-                    receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmt() :
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmount() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmount() :
                     defaultValuesConfigProperties.getTotalRetailAmount());
             response.setPackQuantity(receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION) != null
                     & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() != null?
@@ -70,12 +70,12 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
                     defaultValuesConfigProperties.getQuantity());
 
             response.setEachVendorCostAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING) != null
-                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getCostAmt() != null?
-                    receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getCostAmt() :
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getCostAmount() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getCostAmount() :
                     defaultValuesConfigProperties.getTotalCostAmount());
             response.setEachVendorRetailAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING) != null
-                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getRetailAmt() != null?
-                    receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getRetailAmt() :
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getRetailAmount() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getRetailAmount() :
                     defaultValuesConfigProperties.getTotalRetailAmount());
             response.setVendorPackQuantity(receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING) != null
                     & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getQuantity() != null?
