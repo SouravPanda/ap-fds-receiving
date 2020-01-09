@@ -131,10 +131,10 @@ public class ReceivingLine   {
             this.variableWeightIndicator = StringUtils.isEmpty(this.variableWeightIndicator) ?
                     receivingLine.variableWeightIndicator : this.variableWeightIndicator;
             this.merchandises = (this.merchandises == null
-                    || receivingLine.merchandises.isEmpty()) ?
+                    || this.merchandises.isEmpty()) ?
                     receivingLine.merchandises : this.merchandises;
             this.poLineValue = (this.poLineValue == null
-                    || receivingLine.poLineValue.isEmpty()) ?
+                    || this.poLineValue.isEmpty()) ?
                     receivingLine.poLineValue : this.poLineValue;
             this.lineSequenceNumber = (this.lineSequenceNumber == null) ?
                     receivingLine.lineSequenceNumber : this.lineSequenceNumber;
