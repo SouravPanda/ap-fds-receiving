@@ -37,6 +37,9 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.UOM_CODE_WH_EXCEPTION_RESOLUTION;
+import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.UOM_CODE_WH_MATCHING;
+
 /**
  * Service layer to get the data from financial transaction API and respond with model response.
  */
@@ -364,14 +367,48 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 defaultValuesConfigProperties.getItemNumber());
         response.setQuantity(receivingLine.getReceivedQuantity() != null ?
                 receivingLine.getReceivedQuantity().intValue() : defaultValuesConfigProperties.getReceivedQuantity());
-        response.setEachCostAmount(receivingLine.getCostAmount() != null ?
-                receivingLine.getCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
-        response.setEachRetailAmount(receivingLine.getRetailAmount() != null ?
-                receivingLine.getRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
+
+        if (receivingLine.getPoLineValue() == null) {
+            response.setEachCostAmount(receivingLine.getCostAmount() != null ?
+                    receivingLine.getCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
+            response.setEachRetailAmount(receivingLine.getRetailAmount() != null ?
+                    receivingLine.getRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
+            response.setPackQuantity(receivingLine.getQuantity() != null ?
+                    receivingLine.getQuantity() : defaultValuesConfigProperties.getQuantity());
+
+            response.setEachVendorCostAmount(defaultValuesConfigProperties.getTotalCostAmount());
+            response.setEachVendorRetailAmount(defaultValuesConfigProperties.getTotalRetailAmount());
+            response.setVendorPackQuantity(defaultValuesConfigProperties.getQuantity());
+        } else {
+            response.setEachCostAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION) != null
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmt() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmt() :
+                    defaultValuesConfigProperties.getTotalCostAmount());
+            response.setEachRetailAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION) != null
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmt() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmt() :
+                    defaultValuesConfigProperties.getTotalRetailAmount());
+            response.setPackQuantity(receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION) != null
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() :
+                    defaultValuesConfigProperties.getQuantity());
+
+            response.setEachVendorCostAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING) != null
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getCostAmt() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getCostAmt() :
+                    defaultValuesConfigProperties.getTotalCostAmount());
+            response.setEachVendorRetailAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING) != null
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getRetailAmt() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getRetailAmt() :
+                    defaultValuesConfigProperties.getTotalRetailAmount());
+            response.setVendorPackQuantity(receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING) != null
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getQuantity() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getQuantity() :
+                    defaultValuesConfigProperties.getQuantity());
+        }
+
         response.setNumberOfCasesReceived(receivingLine.getReceivedQuantity() != null ?
                 receivingLine.getReceivedQuantity() : defaultValuesConfigProperties.getReceivedQuantity());
-        response.setPackQuantity(receivingLine.getQuantity() != null ?
-                receivingLine.getQuantity() : defaultValuesConfigProperties.getQuantity());
         response.setBottleDepositFlag(StringUtils.isNotEmpty(receivingLine.getBottleDepositFlag()) ?
                 receivingLine.getBottleDepositFlag() : defaultValuesConfigProperties.getBottleDepositFlag());
         response.setUpc(StringUtils.isNotEmpty(receivingLine.getUpcNumber()) ? receivingLine.getUpcNumber() :
@@ -584,7 +621,21 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         log.info("query: " + query);
         lineResponseList = executeQueryInLine(query);
 
-        return lineResponseList;
+        return mergeDuplicateLineRecords(lineResponseList);
+    }
+
+    public List<ReceivingLine> mergeDuplicateLineRecords(List<ReceivingLine> receivingLineList) {
+
+        Map<String, ReceivingLine> receivingLineMap = new HashMap<>();
+
+        for (ReceivingLine receivingLine : receivingLineList) {
+            if (receivingLineMap.containsKey(receivingLine.get_id())) {
+                receivingLineMap.get(receivingLine.get_id()).merge(receivingLine);
+            } else {
+                receivingLineMap.put(receivingLine.get_id(), receivingLine);
+            }
+        }
+        return new ArrayList<>(receivingLineMap.values());
     }
 
     private List<ReceiveSummary> getSummaryData(List<String> ids, Set<String> partitionKeys,
@@ -613,7 +664,21 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             }
         }
         log.info("queryForSummaryResponse :: Query is " + query);
-        return executeQueryInSummary(query);
+        return mergeDuplicateSummaryRecords(executeQueryInSummary(query));
+    }
+
+    public List<ReceiveSummary> mergeDuplicateSummaryRecords(List<ReceiveSummary> receiveSummaryList) {
+
+        Map<String, ReceiveSummary> receiveSummaryMap = new HashMap<>();
+
+        for (ReceiveSummary receiveSummary : receiveSummaryList) {
+            if (receiveSummaryMap.containsKey(receiveSummary.get_id())) {
+                receiveSummaryMap.get(receiveSummary.get_id()).merge(receiveSummary);
+            } else {
+                receiveSummaryMap.put(receiveSummary.get_id(), receiveSummary);
+            }
+        }
+        return new ArrayList<>(receiveSummaryMap.values());
     }
 
 

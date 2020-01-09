@@ -63,7 +63,7 @@ public class ReceivingLineControllerTest {
     public void getReceiveLine() throws Exception {
         ReceivingLineResponse response = new ReceivingLineResponse("999997", 0, null, 366404, 2000, 0.0, 0.0,
                 1, 0.0, null, "553683865", "lbs", " ",
-                0.0, 99, null, 6565, 0, "A", null);
+                0.0, 99, null, 6565, 0, "A", null, 0.0, 0.0, 2);
         List<ReceivingLineResponse> responseList = new ArrayList<ReceivingLineResponse>() {
             {
                 add(response);
@@ -102,7 +102,10 @@ public class ReceivingLineControllerTest {
                                 "\"bottleDepositFlag\":\"A\" \n" +
                                 "                }\n" +
                                 "    ]\n" +
-                                "}"))
+                                "}" +
+                                "\"eachVendorCostAmount\": 0,\n" +
+                                "\"eachVendorRetailAmount\": 0,\n" +
+                                "\"vendorPackQuantity\": 2,\n" ))
                 .andReturn();
     }
 }
