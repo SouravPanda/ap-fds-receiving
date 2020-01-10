@@ -34,7 +34,23 @@ public class ReceivingUtils {
 
         List<String> partitionKeyList = new ArrayList<>();
 
-        for (int i = 0; i < monthsToDisplay/monthsPerShard; i++) {
+
+        //Handling +3 and -3 months
+        int numberOfPartitionKeys = monthsToDisplay/monthsPerShard;
+        if (monthsPerShard == 1) {
+            endDate.plusMonths(3);
+            numberOfPartitionKeys += 3;
+        } else if (monthsPerShard == 2) {
+            endDate.plusMonths(2);
+            numberOfPartitionKeys += 2;
+        } else {
+            endDate.plusMonths(1);
+            numberOfPartitionKeys += 1;
+        }
+
+
+
+        for (int i = 0; i < numberOfPartitionKeys; i++) {
             partitionKeyList.add(getPartitionKey(keyAttributeValue, endDate, monthsPerShard));
             endDate = endDate.minusMonths(monthsPerShard);
         }
