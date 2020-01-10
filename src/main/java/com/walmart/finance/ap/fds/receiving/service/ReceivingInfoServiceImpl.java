@@ -37,9 +37,7 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.LOCATION_TYPE_WAREHOUSE;
-import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.UOM_CODE_WH_EXCEPTION_RESOLUTION;
-import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.UOM_CODE_WH_MATCHING;
+import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.*;
 
 /**
  * Service layer to get the data from financial transaction API and respond with model response.
@@ -653,7 +651,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             query.addCriteria(criteriaDefinition);
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()))
-                && StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()))) {
+                && StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()))
+                && !allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
+                .equals(LOCATION_TYPE_WAREHOUSE)) {
             LocalDateTime startDate = getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()) + " 00:00:00");
             LocalDateTime endDate = getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()) + " 23:59:59");
             if (endDate.isAfter(startDate)) {
