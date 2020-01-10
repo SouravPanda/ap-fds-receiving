@@ -48,7 +48,7 @@ public class ReceivingUtils {
 
 
 
-        for (int i = 0; i < numberOfPartitionKeys - 1; i++) {
+        for (int i = 0; i < numberOfPartitionKeys; i++) {
             partitionKeyList.add(getPartitionKey(keyAttributeValue, endDate, monthsPerShard));
             endDate = endDate.minusMonths(monthsPerShard);
         }
