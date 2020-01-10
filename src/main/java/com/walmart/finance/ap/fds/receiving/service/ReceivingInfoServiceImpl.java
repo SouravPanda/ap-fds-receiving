@@ -509,7 +509,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
                 if (null!=receiveSummary.getStoreNumber()) {
                     partitionNumbers.addAll(ReceivingUtils
-                            .getPartitionKeyList(null, allRequestParams, receiveSummary.getStoreNumber(), monthsPerShard, monthsToDisplay));
+                            .getPartitionKeyList(receiveSummary.getReceivingDate(), allRequestParams, receiveSummary.getStoreNumber(),
+                                    monthsPerShard, monthsToDisplay));
                 }
                 if(null!=receiveSummary.get_id()) {
                     summaryReferences.add(receiveSummary.get_id());
