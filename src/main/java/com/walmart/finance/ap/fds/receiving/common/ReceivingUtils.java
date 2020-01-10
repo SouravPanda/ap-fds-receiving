@@ -107,7 +107,7 @@ public class ReceivingUtils {
             LocalDateTime endDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATEEND) + " 00:00:00");
             Period diff = Period.between(startDate.toLocalDate(), endDate.toLocalDate());
             int adjustedMonthsTodDisplay =
-                    new Double(Math.ceil((diff.getMonths() + 2) / monthsPerShard.doubleValue()) * monthsPerShard)
+                    new Double(Math.ceil((diff.toTotalMonths() + 2) / monthsPerShard.doubleValue()) * monthsPerShard)
                             .intValue();
             partitionKeyCriteria =
                     Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD)
@@ -141,7 +141,7 @@ public class ReceivingUtils {
             LocalDateTime endDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATEEND) + " 00:00:00");
             Period diff = Period.between(startDate.toLocalDate(), endDate.toLocalDate());
             int adjustedMonthsTodDisplay =
-                    new Double(Math.ceil((diff.getMonths() + 2) / monthsPerShard.doubleValue()) * monthsPerShard)
+                    new Double(Math.ceil((diff.toTotalMonths() + 2) / monthsPerShard.doubleValue()) * monthsPerShard)
                             .intValue();
 
             partitionKeyList = Arrays.asList(ReceivingUtils.getPartitionKeyList(String.valueOf(storeNumber),
