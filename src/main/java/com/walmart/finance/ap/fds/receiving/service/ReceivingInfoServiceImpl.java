@@ -3,6 +3,8 @@ package com.walmart.finance.ap.fds.receiving.service;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingUtils;
 import com.walmart.finance.ap.fds.receiving.config.DefaultValuesConfigProperties;
+import com.walmart.finance.ap.fds.receiving.config.ReceivingLineComparator;
+import com.walmart.finance.ap.fds.receiving.config.ReceivingSummaryComparator;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
@@ -627,6 +629,10 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     public List<ReceivingLine> mergeDuplicateLineRecords(List<ReceivingLine> receivingLineList) {
 
+        if (!receivingLineList.isEmpty()) {
+            Collections.sort(receivingLineList, new ReceivingLineComparator());
+        }
+
         Map<String, ReceivingLine> receivingLineMap = new HashMap<>();
 
         for (ReceivingLine receivingLine : receivingLineList) {
@@ -673,6 +679,10 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     }
 
     public List<ReceiveSummary> mergeDuplicateSummaryRecords(List<ReceiveSummary> receiveSummaryList) {
+
+        if (!receiveSummaryList.isEmpty()) {
+            Collections.sort(receiveSummaryList, new ReceivingSummaryComparator());
+        }
 
         Map<String, ReceiveSummary> receiveSummaryMap = new HashMap<>();
 
