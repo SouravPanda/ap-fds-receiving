@@ -10,6 +10,7 @@ import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.response.*;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestCombinations;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.UOM_CODE_WH_EXCEPTION_RESOLUTION;
+import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.UOM_CODE_WH_MATCHING;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -90,6 +93,11 @@ public class ReceivingInfoServiceImplTest {
                         add(receiveSummary);
                     }
                 });
+
+        Map<String, WHLinePOLineValue> poLineValueMap = new HashMap<>();
+        poLineValueMap.put(UOM_CODE_WH_EXCEPTION_RESOLUTION, new WHLinePOLineValue(UOM_CODE_WH_EXCEPTION_RESOLUTION,
+                6, 30.0, 40.0));
+
         List<ReceivingLine> receivingLines = new ArrayList<ReceivingLine>() {
             {
                 add(new ReceivingLine("999403403|0000030006|3669|2019-06-19|1", "0000030006",
@@ -98,7 +106,8 @@ public class ReceivingInfoServiceImplTest {
                         LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                         LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 6, LocalDate.now(),
                         0, 1.9, "LL", 0, "ww",
-                        null, 1, "N", "NSW CRASH TRNF", 1, new Long(999403403), "999403403|0000030006|3669|0", null, null, null));
+                        null, poLineValueMap, 1, "N", "NSW CRASH TRNF", 1, new Long(999403403), "999403403|0000030006|3669|0",
+                        null, null, null));
             }
         };
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(receivingLines);
@@ -160,6 +169,11 @@ public class ReceivingInfoServiceImplTest {
                 add(receiveSummary);
             }
         });
+        Map<String, WHLinePOLineValue> poLineValueMap = new HashMap<>();
+        poLineValueMap.put(UOM_CODE_WH_EXCEPTION_RESOLUTION, new WHLinePOLineValue(UOM_CODE_WH_EXCEPTION_RESOLUTION,
+                6, 30.0, 40.0));
+        poLineValueMap.put(UOM_CODE_WH_MATCHING, new WHLinePOLineValue(UOM_CODE_WH_MATCHING,
+                6, 30.0, 40.0));
         List<ReceivingLine> receivingLines = new ArrayList<ReceivingLine>() {
             {
                 add(new ReceivingLine("999403403|0000030006|3669|2019-06-19|1", "0000030006",
@@ -168,7 +182,9 @@ public class ReceivingInfoServiceImplTest {
                         LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 22,
                         LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 6, LocalDate.now(),
                         0, 1.9, "LL", 0, "ww",
-                        null, 1, "N", "NSW CRASH TRNF", 1, new Long(999403403), "999403403|0000030006|3669|0", null, null, null));
+                        null, poLineValueMap, 1, "N", "NSW CRASH TRNF", 1, new Long(999403403), "999403403|0000030006" +
+                        "|3669|0", null,
+                        null, null));
             }
         };
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(receivingLines);
@@ -181,7 +197,7 @@ public class ReceivingInfoServiceImplTest {
                 add(new ReceivingInfoLineResponse("0000030006", 1, 3777L, 7, 30.0,
                         40.0, 7.0, 6,
                         "N", "1122",
-                        "NSW CRASH TRNF", "LL", "ww", 1, "1.9", null
+                        "NSW CRASH TRNF", "LL", "ww", 1, "1.9", null, 30.0, 40.0, 6
                 ));
             }
         };
@@ -284,6 +300,8 @@ public class ReceivingInfoServiceImplTest {
         ReceiveMDSResponse receiveMDSResponse = new ReceiveMDSResponse(1,1,350L,"01");
         Map<String, ReceiveMDSResponse> receiveMDSResponseMap = new HashMap<>();
         receiveMDSResponseMap.put("1", receiveMDSResponse);
+
+
         List<ReceivingLine> receivingLines = new ArrayList<ReceivingLine>() {
             {
                 add(new ReceivingLine("972515962|110950|6479|2019-06-11|2", "110950",
@@ -292,7 +310,8 @@ public class ReceivingInfoServiceImplTest {
                         LocalDate.of(2019, 06, 20), LocalDateTime.of(2019, 07, 14, 16, 50, 17), null,
                         null, 'W', "DB2", null, 0, LocalDate.of(2019, 06, 11),
                         null, 0.0, null, null, "",
-                        receiveMDSResponseMap, 2, "N", "NSW CRASH TRNF", 1, new Long(972515962), "972515962|110950" +
+                        receiveMDSResponseMap, null, 2, "N", "NSW CRASH TRNF", 1, new Long(972515962), "972515962" +
+                        "|110950" +
                         "|6479|2019-06-11", null, null, null));
             }
         };
@@ -315,7 +334,7 @@ public class ReceivingInfoServiceImplTest {
                 2, 30.0,
                 30.09, 2.0, 0,
                 "N", "0000047875883989",
-                "NSW CRASH TRNF", null, "", 1, "0.0", merchandises);
+                "NSW CRASH TRNF", null, "", 1, "0.0", merchandises, null, null, null);
         List<ReceivingInfoLineResponse> lineResponses = new ArrayList<ReceivingInfoLineResponse>() {
             {
                 add(receivingInfoLineResponse);
@@ -449,5 +468,31 @@ public class ReceivingInfoServiceImplTest {
         Map<String, String> allRequestParams = new HashMap<>();
         allRequestParams.put("scenario", ReceivingInfoRequestCombinations.INVOICEID.name());
         receivingInfoService.getInfoSeviceDataV1(allRequestParams);
+    }
+
+    @Test
+    public void testMergeDuplicateSummaryRecords() {
+
+
+        ReceiveSummary receiveSummaryB = new ReceiveSummary();
+        receiveSummaryB.setDateReceived(LocalDateTime.now());
+        receiveSummaryB.setReceivingControlNumber("OlderControlNumber");
+        receiveSummaryB.setBaseDivisionNumber(10);
+
+        ReceiveSummary receiveSummaryA = new ReceiveSummary();
+        receiveSummaryA.setDateReceived(LocalDateTime.now().plusDays(1));
+        receiveSummaryA.setReceivingControlNumber("NewControlNumber");
+        //baseDivisionNumber is not set originally in receiveSummaryA
+
+        List<ReceiveSummary> receiveSummaryList = new ArrayList<>();
+        receiveSummaryList.add(receiveSummaryA);
+        receiveSummaryList.add(receiveSummaryB);
+        receiveSummaryList = receivingInfoService.mergeDuplicateSummaryRecords(receiveSummaryList);
+
+        Assert.assertTrue(receiveSummaryList.size() == 1);
+        Assert.assertEquals("NewControlNumber", receiveSummaryList.get(0).getReceivingControlNumber());
+        Assert.assertTrue(receiveSummaryList.get(0).getBaseDivisionNumber() == 10);
+
+
     }
 }

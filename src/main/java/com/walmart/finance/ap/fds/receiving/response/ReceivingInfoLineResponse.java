@@ -46,4 +46,10 @@ public class ReceivingInfoLineResponse {
     private String receivedWeightQuantity;
 
     private List<ReceiveMDSResponse> merchandises;
+
+    private Double eachVendorCostAmount;
+
+    private Double eachVendorRetailAmount;
+
+    private Integer vendorPackQuantity;
 }

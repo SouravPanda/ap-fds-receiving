@@ -18,6 +18,7 @@ import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import com.walmart.finance.ap.fds.receiving.request.SorRoutingCtx;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
+import com.walmart.finance.ap.fds.receiving.response.WHLinePOLineValue;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveLineValidator;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryLineValidator;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryValidator;
@@ -46,6 +47,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.UOM_CODE_WH_EXCEPTION_RESOLUTION;
 import static org.mockito.Mockito.*;
 
 @PrepareForTest(ReceiveSummaryServiceImpl.class)
@@ -133,12 +135,15 @@ public class ReceiveSummaryServiceImplTest {
 
         List<ReceivingLine> listOfReceiveLines = new ArrayList<>();
 
+        Map<String, WHLinePOLineValue> poLineValueMap = new HashMap<>();
+        poLineValueMap.put(UOM_CODE_WH_EXCEPTION_RESOLUTION, new WHLinePOLineValue(UOM_CODE_WH_EXCEPTION_RESOLUTION,
+                2, 0.0, 0.0));
         listOfReceiveLines.add(new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0,
                 0L, 0, 0.0, 0.0, 0.0, "776", 0,
                 0, "444", 1, 1, 1, null, null, 2,
                 null, 'W', "DB2", null, 2, null, 1, 0.0,
-                null, null, null, null, null, null,
-                null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21", null, null, null));
+                null, null, null, null, poLineValueMap, null,
+                null, null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21", null, null, null));
         Query dynamicQuery = new Query();
         Criteria criteriaNew = Criteria.where(ReceiveSummaryRequestParams.PURCHASEORDERNUMBER.getParameterName()).is("999").and(ReceiveSummaryRequestParams.CONTROLNUMBER.getParameterName()).is("000").and(ReceiveSummaryRequestParams.LOCATIONNUMBER.getParameterName())
                 .is(998).and(ReceiveSummaryRequestParams.DEPARTMENTNUMBER.getParameterName()).is(98);
@@ -210,12 +215,17 @@ public class ReceiveSummaryServiceImplTest {
         content.add(receivingSummaryResponse);
         content.add(receivingSummaryResponseAt);
 
+        Map<String, WHLinePOLineValue> poLineValueMap = new HashMap<>();
+        poLineValueMap.put(UOM_CODE_WH_EXCEPTION_RESOLUTION, new WHLinePOLineValue(UOM_CODE_WH_EXCEPTION_RESOLUTION,
+                2, 0.0, 0.0));
         ReceivingLine receivingLine = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0,
                 0L, 0, 0.0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null, null, 2, null, 'W', "DB2", null, 2, null, 1,
-                0.0, null, null, null, null, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21", null, null, null);
+                0.0, null, null, null, null, poLineValueMap, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10" +
+                "-17|18:45:21", null, null, null);
         ReceivingLine receivingLineAt = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|1", "JJJ",
                 0, 0L, 0, 0.0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null, null, 2, null, 'W', "DB2", null, 2, null,
-                1, 0.0, null, null, null, null, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21", null, null, null);
+                1, 0.0, null, null, null, null, poLineValueMap, null, null, null, null, null, "4665267|1804823|8264|18|18|1995" +
+                "-10-17|18:45:21", null, null, null);
 
         List<ReceivingLine> listOfReceiveLines = new ArrayList<>();
         listOfReceiveLines.add(receivingLine);
@@ -290,12 +300,17 @@ public class ReceiveSummaryServiceImplTest {
         content.add(receivingSummaryResponse);
         content.add(receivingSummaryResponseAt);
 
+        Map<String, WHLinePOLineValue> poLineValueMap = new HashMap<>();
+        poLineValueMap.put(UOM_CODE_WH_EXCEPTION_RESOLUTION, new WHLinePOLineValue(UOM_CODE_WH_EXCEPTION_RESOLUTION,
+                2, 0.0, 0.0));
         ReceivingLine receivingLine = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0,
                 0L, 0, 0.0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null, null, 2, null, 'W', "DB2", null, 2, null, 1,
-                0.0, null, null, null, null, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21", null, null, null);
+                0.0, null, null, null, null, poLineValueMap, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10" +
+                "-17|18:45:21", null, null, null);
         ReceivingLine receivingLineAt = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|1", "JJJ",
                 0, 0L, 0, 0.0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null, null, 2, null, 'W', "DB2", null, 2, null,
-                1, 0.0, null, null, null, null, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21", null, null, null);
+                1, 0.0, null, null, null, null, poLineValueMap, null, null, null, null, null, "4665267|1804823|8264|18|18|1995" +
+                "-10-17|18:45:21", null, null, null);
 
         List<ReceivingLine> listOfReceiveLines = new ArrayList<>();
         listOfReceiveLines.add(receivingLine);
@@ -367,9 +382,13 @@ public class ReceiveSummaryServiceImplTest {
         List<ReceivingSummaryResponse> content = new ArrayList<>();
         content.add(receivingSummaryResponse);
         content.add(receivingSummaryResponseAt);
+        Map<String, WHLinePOLineValue> poLineValueMap = new HashMap<>();
+        poLineValueMap.put(UOM_CODE_WH_EXCEPTION_RESOLUTION, new WHLinePOLineValue(UOM_CODE_WH_EXCEPTION_RESOLUTION,
+                1, 0.0, 0.0));
         ReceivingLine receivingLine = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0,
                 0L, 0, 0.0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null, null, 2, null, 'W', "DB2", null, 2, null, 1,
-                0.0, null, null, null, null, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10-17|18:45:21", null, null, null);
+                0.0, null, null, null, null, poLineValueMap, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10" +
+                "-17|18:45:21", null, null, null);
         List<ReceivingLine> listOfReceiveLines = new ArrayList<>();
         listOfReceiveLines.add(receivingLine);
         Query dynamicQuery = new Query();
@@ -565,12 +584,15 @@ public class ReceiveSummaryServiceImplTest {
                 "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "9"
                 , 'K', "LLL", null, null, null, null, null, LocalDateTime.now());
 
+        Map<String, WHLinePOLineValue> poLineValueMap = new HashMap<>();
+        poLineValueMap.put(UOM_CODE_WH_EXCEPTION_RESOLUTION, new WHLinePOLineValue(UOM_CODE_WH_EXCEPTION_RESOLUTION,
+                0, 0.0, 0.0));
         ReceivingLine receivingLine = new ReceivingLine("9|8|1|0|1", "8",
                 0, 3777L, 94493, 0.0, 0.0, 0.0, "9",
                 89, 12, "1122", 99, 8264, 18,
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 1,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
-                0, 1.9, "LL", 9, "OO", null, null, null, null, null, null, null, null, null, null);
+                0, 1.9, "LL", 9, "OO", null, poLineValueMap, null, null, null, null, null, null, null, null, null);
 
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
                 "1", "9", meta);
@@ -627,7 +649,7 @@ public class ReceiveSummaryServiceImplTest {
                 89, 12, "1122", 99, 8264, 18,
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 1,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
-                0, 1.9, "LL", 9, "OO", null, null, null, null, null, null, null, null, null, null);
+                0, 1.9, "LL", 9, "OO", null, null, null, null, null, null, null, null, null, null, null);
 
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
                 null, "9", meta);
@@ -664,12 +686,15 @@ public class ReceiveSummaryServiceImplTest {
                 "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "9"
                 , 'K', "LLL", null, null, null, null, null, LocalDateTime.now());
 
+        Map<String, WHLinePOLineValue> poLineValueMap = new HashMap<>();
+        poLineValueMap.put(UOM_CODE_WH_EXCEPTION_RESOLUTION, new WHLinePOLineValue(UOM_CODE_WH_EXCEPTION_RESOLUTION,
+                0, 0.0, 0.0));
         ReceivingLine receivingLine = new ReceivingLine("9|8|1|0|1", "8",
                 0, 3777L, 94493, 0.0, 0.0, 0.0, "9",
                 89, 12, "1122", 99, 8264, 18,
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 1,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
-                0, 1.9, "LL", 10, "OO", null, null, null, null, null, null, null, null, null, null);
+                0, 1.9, "LL", 10, "OO", null, poLineValueMap, null, null, null, null, null, null, null, null, null);
 
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "P",
                 null, "10", meta);
@@ -706,12 +731,15 @@ public class ReceiveSummaryServiceImplTest {
                 "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "9"
                 , 'K', "LLL", null, null, null, null, null, LocalDateTime.now());
 
+        Map<String, WHLinePOLineValue> poLineValueMap = new HashMap<>();
+        poLineValueMap.put(UOM_CODE_WH_EXCEPTION_RESOLUTION, new WHLinePOLineValue(UOM_CODE_WH_EXCEPTION_RESOLUTION,
+                0, 0.0, 0.0));
         ReceivingLine receivingLine = new ReceivingLine("9|8|1|0|1", "8",
                 0, 3777L, 94493, 0.0, 0.0, 0.0, "9",
                 89, 12, "1122", 99, 8264, 18,
                 LocalDate.of(1995, 10, 17), LocalDateTime.of(1995, 10, 17, 18, 45, 21), 1,
                 LocalDateTime.of(1990, 10, 17, 18, 45, 21), 'A', "BKP", "111", 0, LocalDate.now(),
-                0, 1.9, "LL", 10, "OO", null, null, null, null, null, null, null, null, null, null);
+                0, 1.9, "LL", 10, "OO", null, poLineValueMap, null, null, null, null, null, null, null, null, null);
 
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
                 null, "10", meta);

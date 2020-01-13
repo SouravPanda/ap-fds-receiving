@@ -23,7 +23,7 @@ public enum ReceivingLineParameters {
     DATASYNCSTATUS("dataSyncStatus"),
     RECEIPTNUMBER("receiptNumber"),
     PURCHASEORDERNUMBER("purchaseOrderNumber"),
-    LASTUPDATEDDATE("lastUpdatedDate");
+    LASTUPDATEDDATE("lastUpdatedTimestamp");
 
 
     @Getter

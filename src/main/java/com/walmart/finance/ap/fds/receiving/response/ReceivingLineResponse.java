@@ -38,4 +38,7 @@ public class ReceivingLineResponse {
     private Integer divisionNumber;
     private String bottleDepositFlag;
     private List<ReceiveMDSResponse> merchandises;
+    private Double eachVendorCostAmount;
+    private Double eachVendorRetailAmount;
+    private Integer vendorPackQuantity;
 }

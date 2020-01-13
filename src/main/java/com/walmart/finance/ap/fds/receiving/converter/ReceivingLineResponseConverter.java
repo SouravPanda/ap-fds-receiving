@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
+import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.UOM_CODE_WH_EXCEPTION_RESOLUTION;
+import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.UOM_CODE_WH_MATCHING;
+
 @Component
 public class ReceivingLineResponseConverter implements Converter<ReceivingLine, ReceivingLineResponse> {
 
@@ -39,12 +42,46 @@ public class ReceivingLineResponseConverter implements Converter<ReceivingLine, 
         response.setVendorNumber(receivingLine.getVendorNumber());
         response.setQuantity(receivingLine.getReceivedQuantity() != null ?
                 receivingLine.getReceivedQuantity().intValue() : defaultValuesConfigProperties.getReceivedQuantity());
-        response.setEachCostAmount(receivingLine.getCostAmount() != null ?
-                receivingLine.getCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
-        response.setEachRetailAmount(receivingLine.getRetailAmount() != null ?
-                receivingLine.getRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
-        response.setPackQuantity(receivingLine.getQuantity() != null ?
-                receivingLine.getQuantity() : defaultValuesConfigProperties.getQuantity());
+
+        if (receivingLine.getPoLineValue() == null) {
+            response.setEachCostAmount(receivingLine.getCostAmount() != null ?
+                    receivingLine.getCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
+            response.setEachRetailAmount(receivingLine.getRetailAmount() != null ?
+                    receivingLine.getRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
+            response.setPackQuantity(receivingLine.getQuantity() != null ?
+                    receivingLine.getQuantity() : defaultValuesConfigProperties.getQuantity());
+
+
+            response.setEachVendorCostAmount(defaultValuesConfigProperties.getTotalCostAmount());
+            response.setEachVendorRetailAmount(defaultValuesConfigProperties.getTotalRetailAmount());
+            response.setVendorPackQuantity(defaultValuesConfigProperties.getQuantity());
+        } else {
+            response.setEachCostAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION) != null
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmount() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmount() :
+                    defaultValuesConfigProperties.getTotalCostAmount());
+            response.setEachRetailAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION) != null
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmount() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmount() :
+                    defaultValuesConfigProperties.getTotalRetailAmount());
+            response.setPackQuantity(receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION) != null
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() :
+                    defaultValuesConfigProperties.getQuantity());
+
+            response.setEachVendorCostAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING) != null
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getCostAmount() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getCostAmount() :
+                    defaultValuesConfigProperties.getTotalCostAmount());
+            response.setEachVendorRetailAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING) != null
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getRetailAmount() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getRetailAmount() :
+                    defaultValuesConfigProperties.getTotalRetailAmount());
+            response.setVendorPackQuantity(receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING) != null
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getQuantity() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getQuantity() :
+                    defaultValuesConfigProperties.getQuantity());
+        }
 
         response.setNumberOfCasesReceived(receivingLine.getReceivedQuantity() != null ?
                 receivingLine.getReceivedQuantity() : defaultValuesConfigProperties.getReceivedQuantity());
