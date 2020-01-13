@@ -382,9 +382,12 @@ public class ReceiveSummaryServiceImplTest {
         List<ReceivingSummaryResponse> content = new ArrayList<>();
         content.add(receivingSummaryResponse);
         content.add(receivingSummaryResponseAt);
+        Map<String, WHLinePOLineValue> poLineValueMap = new HashMap<>();
+        poLineValueMap.put(UOM_CODE_WH_EXCEPTION_RESOLUTION, new WHLinePOLineValue(UOM_CODE_WH_EXCEPTION_RESOLUTION,
+                1, 0.0, 0.0));
         ReceivingLine receivingLine = new ReceivingLine("4665267|1804823|8264|18|18|1995-10-17|18:45:21|0", "JJJ", 0,
                 0L, 0, 0.0, 0.0, 0.0, "776", 0, 0, "444", 1, 1, 1, null, null, 2, null, 'W', "DB2", null, 2, null, 1,
-                0.0, null, null, null, null, null, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10" +
+                0.0, null, null, null, null, poLineValueMap, null, null, null, null, null, "4665267|1804823|8264|18|18|1995-10" +
                 "-17|18:45:21", null, null, null);
         List<ReceivingLine> listOfReceiveLines = new ArrayList<>();
         listOfReceiveLines.add(receivingLine);

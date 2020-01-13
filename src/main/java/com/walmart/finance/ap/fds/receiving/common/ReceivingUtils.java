@@ -34,7 +34,21 @@ public class ReceivingUtils {
 
         List<String> partitionKeyList = new ArrayList<>();
 
-        for (int i = 0; i < monthsToDisplay/monthsPerShard; i++) {
+
+        //Handling +3 and -3 months
+        endDate = endDate.plusMonths(3);
+        int numberOfPartitionKeys = monthsToDisplay/monthsPerShard;
+        if (monthsPerShard == 1) {
+            numberOfPartitionKeys += 6;
+        } else if (monthsPerShard == 2) {
+            numberOfPartitionKeys += 4;
+        } else {
+            numberOfPartitionKeys += 2;
+        }
+
+
+
+        for (int i = 0; i < numberOfPartitionKeys; i++) {
             partitionKeyList.add(getPartitionKey(keyAttributeValue, endDate, monthsPerShard));
             endDate = endDate.minusMonths(monthsPerShard);
         }
@@ -93,7 +107,7 @@ public class ReceivingUtils {
             LocalDateTime endDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATEEND) + " 00:00:00");
             Period diff = Period.between(startDate.toLocalDate(), endDate.toLocalDate());
             int adjustedMonthsTodDisplay =
-                    new Double(Math.ceil((diff.getMonths() + 2) / monthsPerShard.doubleValue()) * monthsPerShard)
+                    new Double(Math.ceil((diff.toTotalMonths() + 2) / monthsPerShard.doubleValue()) * monthsPerShard)
                             .intValue();
             partitionKeyCriteria =
                     Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD)
@@ -127,7 +141,7 @@ public class ReceivingUtils {
             LocalDateTime endDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATEEND) + " 00:00:00");
             Period diff = Period.between(startDate.toLocalDate(), endDate.toLocalDate());
             int adjustedMonthsTodDisplay =
-                    new Double(Math.ceil((diff.getMonths() + 2) / monthsPerShard.doubleValue()) * monthsPerShard)
+                    new Double(Math.ceil((diff.toTotalMonths() + 2) / monthsPerShard.doubleValue()) * monthsPerShard)
                             .intValue();
 
             partitionKeyList = Arrays.asList(ReceivingUtils.getPartitionKeyList(String.valueOf(storeNumber),

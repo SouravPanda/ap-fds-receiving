@@ -62,11 +62,11 @@ public class ReceivingLine   {
     private String summaryReference;
     private String dataSyncStatus;
     private LocalDateTime creationTimestamp;
-    private LocalDateTime lastUpdatedDate;
+    private LocalDateTime lastUpdatedTimestamp;
 
     public void merge(ReceivingLine receivingLine) {
 
-        if(this.creationTimestamp.isAfter(receivingLine.creationTimestamp)) {
+        if(this.lastUpdatedTimestamp.isAfter(receivingLine.lastUpdatedTimestamp)) {
 
             // This block will only be executed if 'creationTimestamp' for 'this' object is after 'receivingLine'
             // Hence 'this' has the latest changes
@@ -131,10 +131,10 @@ public class ReceivingLine   {
             this.variableWeightIndicator = StringUtils.isEmpty(this.variableWeightIndicator) ?
                     receivingLine.variableWeightIndicator : this.variableWeightIndicator;
             this.merchandises = (this.merchandises == null
-                    || receivingLine.merchandises.isEmpty()) ?
+                    || this.merchandises.isEmpty()) ?
                     receivingLine.merchandises : this.merchandises;
             this.poLineValue = (this.poLineValue == null
-                    || receivingLine.poLineValue.isEmpty()) ?
+                    || this.poLineValue.isEmpty()) ?
                     receivingLine.poLineValue : this.poLineValue;
             this.lineSequenceNumber = (this.lineSequenceNumber == null) ?
                     receivingLine.lineSequenceNumber : this.lineSequenceNumber;
@@ -148,8 +148,6 @@ public class ReceivingLine   {
                     receivingLine.purchaseOrderId : this.purchaseOrderId;
             this.dataSyncStatus = StringUtils.isEmpty(this.dataSyncStatus) ?
                     receivingLine.dataSyncStatus : this.dataSyncStatus;
-            this.lastUpdatedDate = (this.lastUpdatedDate == null) ?
-                    receivingLine.lastUpdatedDate : this.lastUpdatedDate;
 
         } else {
 
@@ -233,9 +231,7 @@ public class ReceivingLine   {
                     receivingLine.purchaseOrderId : this.purchaseOrderId;
             this.dataSyncStatus = StringUtils.isNotEmpty(receivingLine.dataSyncStatus) ?
                     receivingLine.dataSyncStatus : this.dataSyncStatus;
-            this.lastUpdatedDate = (receivingLine.lastUpdatedDate != null) ?
-                    receivingLine.lastUpdatedDate : this.lastUpdatedDate;
-            this.creationTimestamp = receivingLine.creationTimestamp;
+            this.lastUpdatedTimestamp = receivingLine.lastUpdatedTimestamp;
 
         }
 

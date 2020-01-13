@@ -3,6 +3,8 @@ package com.walmart.finance.ap.fds.receiving.service;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingUtils;
 import com.walmart.finance.ap.fds.receiving.config.DefaultValuesConfigProperties;
+import com.walmart.finance.ap.fds.receiving.config.ReceivingLineComparator;
+import com.walmart.finance.ap.fds.receiving.config.ReceivingSummaryComparator;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
@@ -37,8 +39,7 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.UOM_CODE_WH_EXCEPTION_RESOLUTION;
-import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.UOM_CODE_WH_MATCHING;
+import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.*;
 
 /**
  * Service layer to get the data from financial transaction API and respond with model response.
@@ -381,12 +382,12 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             response.setVendorPackQuantity(defaultValuesConfigProperties.getQuantity());
         } else {
             response.setEachCostAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION) != null
-                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmt() != null?
-                    receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmt() :
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmount() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmount() :
                     defaultValuesConfigProperties.getTotalCostAmount());
             response.setEachRetailAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION) != null
-                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmt() != null?
-                    receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmt() :
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmount() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmount() :
                     defaultValuesConfigProperties.getTotalRetailAmount());
             response.setPackQuantity(receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION) != null
                     & receivingLine.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getQuantity() != null?
@@ -394,12 +395,12 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                     defaultValuesConfigProperties.getQuantity());
 
             response.setEachVendorCostAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING) != null
-                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getCostAmt() != null?
-                    receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getCostAmt() :
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getCostAmount() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getCostAmount() :
                     defaultValuesConfigProperties.getTotalCostAmount());
             response.setEachVendorRetailAmount(receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING) != null
-                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getRetailAmt() != null?
-                    receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getRetailAmt() :
+                    & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getRetailAmount() != null?
+                    receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getRetailAmount() :
                     defaultValuesConfigProperties.getTotalRetailAmount());
             response.setVendorPackQuantity(receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING) != null
                     & receivingLine.getPoLineValue().get(UOM_CODE_WH_MATCHING).getQuantity() != null?
@@ -510,7 +511,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
                 if (null!=receiveSummary.getStoreNumber()) {
                     partitionNumbers.addAll(ReceivingUtils
-                            .getPartitionKeyList(null, allRequestParams, receiveSummary.getStoreNumber(), monthsPerShard, monthsToDisplay));
+                            .getPartitionKeyList(receiveSummary.getReceivingDate(), allRequestParams, receiveSummary.getStoreNumber(),
+                                    monthsPerShard, monthsToDisplay));
                 }
                 if(null!=receiveSummary.get_id()) {
                     summaryReferences.add(receiveSummary.get_id());
@@ -621,10 +623,15 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         log.info("query: " + query);
         lineResponseList = executeQueryInLine(query);
 
-        return mergeDuplicateLineRecords(lineResponseList);
+        return allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
+                .equals(LOCATION_TYPE_WAREHOUSE)? mergeDuplicateLineRecords(lineResponseList) : lineResponseList;
     }
 
     public List<ReceivingLine> mergeDuplicateLineRecords(List<ReceivingLine> receivingLineList) {
+
+        if (!receivingLineList.isEmpty()) {
+            Collections.sort(receivingLineList, new ReceivingLineComparator());
+        }
 
         Map<String, ReceivingLine> receivingLineMap = new HashMap<>();
 
@@ -651,7 +658,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             query.addCriteria(criteriaDefinition);
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()))
-                && StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()))) {
+                && StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()))
+                && !allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
+                .equals(LOCATION_TYPE_WAREHOUSE)) {
             LocalDateTime startDate = getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()) + " 00:00:00");
             LocalDateTime endDate = getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()) + " 23:59:59");
             if (endDate.isAfter(startDate)) {
@@ -664,10 +673,16 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             }
         }
         log.info("queryForSummaryResponse :: Query is " + query);
-        return mergeDuplicateSummaryRecords(executeQueryInSummary(query));
+        return  allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
+                .equals(LOCATION_TYPE_WAREHOUSE)?
+                mergeDuplicateSummaryRecords(executeQueryInSummary(query)) : executeQueryInSummary(query);
     }
 
     public List<ReceiveSummary> mergeDuplicateSummaryRecords(List<ReceiveSummary> receiveSummaryList) {
+
+        if (!receiveSummaryList.isEmpty()) {
+            Collections.sort(receiveSummaryList, new ReceivingSummaryComparator());
+        }
 
         Map<String, ReceiveSummary> receiveSummaryMap = new HashMap<>();
 
@@ -715,15 +730,34 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                     receiveSummary.getReceiveId() : "0");
             if (receiveSummary.getTypeIndicator().equals('W')) {
                 if (CollectionUtils.isNotEmpty(lineResponseList)) {
-                    receivingInfoResponseV1.setTotalCostAmount(BigDecimal.valueOf(lineResponseList.stream()
-                            .filter(t -> t.getReceivedQuantity() != null && t.getCostAmount() != null)
-                            .mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount())
-                            .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
-                    receivingInfoResponseV1.setTotalRetailAmount(BigDecimal.valueOf(
-                            lineResponseList.stream()
-                                    .filter(t -> t.getReceivedQuantity() != null && t.getRetailAmount() != null)
-                                    .mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount())
-                                    .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+                    if (lineResponseList.get(0).getPoLineValue() != null && !lineResponseList.get(0).getPoLineValue().isEmpty()) {
+                        receivingInfoResponseV1.setTotalCostAmount(BigDecimal.valueOf(lineResponseList.stream()
+                                .filter(t -> t.getPoLineValue().containsKey(UOM_CODE_WH_EXCEPTION_RESOLUTION) &&
+                                        t.getReceivedQuantity() != null &&
+                                        t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmount() != null)
+                                .mapToDouble(t -> t.getReceivedQuantity() *
+                                        t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmount())
+                                .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+                        receivingInfoResponseV1.setTotalRetailAmount(BigDecimal.valueOf(
+                                lineResponseList.stream()
+                                        .filter(t -> t.getPoLineValue().containsKey(UOM_CODE_WH_EXCEPTION_RESOLUTION) &&
+                                                t.getReceivedQuantity() != null &&
+                                                t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmount() != null)
+                                        .mapToDouble(t -> t.getReceivedQuantity() *
+                                                t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmount())
+                                        .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+                    } else {
+                        receivingInfoResponseV1.setTotalCostAmount(BigDecimal.valueOf(lineResponseList.stream()
+                                .filter(t -> t.getReceivedQuantity() != null && t.getCostAmount() != null)
+                                .mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount())
+                                .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+                        receivingInfoResponseV1.setTotalRetailAmount(BigDecimal.valueOf(
+                                lineResponseList.stream()
+                                        .filter(t -> t.getReceivedQuantity() != null && t.getRetailAmount() != null)
+                                        .mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount())
+                                        .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+                    }
+
                 }
                 if (receivingInfoResponseV1.getTotalCostAmount() == null) {
                     receivingInfoResponseV1.setTotalCostAmount(defaultValuesConfigProperties.getTotalCostAmount());
