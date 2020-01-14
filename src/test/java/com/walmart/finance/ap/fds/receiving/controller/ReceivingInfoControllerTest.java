@@ -194,7 +194,8 @@ public class ReceivingInfoControllerTest {
                 0, 0, "0", "del123", 6479,
                 7, 6479, 20, 64, 640, "N",
                 null, 10,
-                invoiceFinTransProcessLogs, invoiceFinTransAdjustLogs, invoiceFinDelNoteChangeLogs, lineResponses);
+                invoiceFinTransProcessLogs, invoiceFinTransAdjustLogs, invoiceFinDelNoteChangeLogs, lineResponses, 1,
+                "XYZ", "R");
         List<ReceivingInfoResponseV1> list = new ArrayList<ReceivingInfoResponseV1>() {
             {
                 add(response);
@@ -273,6 +274,9 @@ public class ReceivingInfoControllerTest {
                                 "            \"grocinvoiceInd\": \"N\",\n" +
                                 "            \"matchDate\": null,\n" +
                                 "            \"processStatusCode\": 10,\n" +
+                                "            \"txnTypeCode\": 1,\n" +
+                                "            \"txnTypeDesc\": \"XYZ\",\n" +
+                                "            \"receivingType\": \"R\",\n" +
                                 "            \"invoiceFinTransProcessLogs\": [\n" +
                                 "                {\n" +
                                 "                    \"actionIndicator\": null,\n" +
