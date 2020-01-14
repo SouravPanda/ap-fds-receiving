@@ -885,6 +885,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                                 , t.getOrgDelNoteId()
                         ))
                         .collect(Collectors.toList()));
+        receivingInfoResponseV1.setTxnTypeCode(financialTxnResponseData.getTxnTypeCode());
+        receivingInfoResponseV1.setTxnTypeDesc(financialTxnResponseData.getTxnTypeDesc());
+        receivingInfoResponseV1.setReceivingType(financialTxnResponseData.getReceivingType());
     }
     /*************************** Version 1 Methods ***********************************/
 
