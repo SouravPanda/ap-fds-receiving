@@ -158,4 +158,10 @@ public class ReceivingInfoResponseV1 {
 
     @JsonProperty("receivingLine")
     List<ReceivingInfoLineResponse> receivingInfoLineResponses;
+
+    private Integer txnTypeCode;
+
+    private String txnTypeDesc;
+
+    private String receivingType;
 }
