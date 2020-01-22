@@ -1,5 +1,8 @@
 package com.walmart.finance.ap.fds.receiving.listener;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.messageproducer.Producer;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
@@ -22,7 +25,15 @@ public class ReceiveSummaryListener {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onReceiveSummaryCommit(ReceivingSummaryRequest event) {
-        log.info("Inside ReceiveSummary Listener for event " + event);
-        producer.sendSummaryToEventHub(event.toString(), ReceivingConstants.RECEIVESUMMARYWAREHOUSE);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            producer.sendSummaryToEventHub(mapper.writeValueAsString(event), ReceivingConstants.RECEIVESUMMARYWAREHOUSE);
+        }
+        catch (Exception ex)
+        {
+            log.info("Exception while parsing request object to json " + ex);
+        }
     }
 }
