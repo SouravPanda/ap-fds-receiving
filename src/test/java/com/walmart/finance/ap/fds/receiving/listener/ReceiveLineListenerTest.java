@@ -2,6 +2,7 @@ package com.walmart.finance.ap.fds.receiving.listener;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.messageproducer.Producer;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
@@ -59,8 +60,9 @@ public class ReceiveLineListenerTest {
         meta.setSorRoutingCtx(sorRoutingCtx);
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
                 "1", "1", meta);
-        Mockito.doThrow(JsonProcessingException.class).when(producer).sendSummaryLineToEventHub(new ObjectMapper().writeValueAsString(receivingSummaryLineRequest),
-                ReceivingConstants.RECEIVELINEWAREHOUSE);
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode objNode = mapper.createObjectNode();
+        Mockito.doThrow(JsonProcessingException.class).when(producer).sendSummaryLineToEventHub(objNode, ReceivingConstants.RECEIVELINEWAREHOUSE);
         receiveLineListener.onReceiveLineCommit(receivingSummaryLineRequest);
     }
 
