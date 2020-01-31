@@ -16,8 +16,8 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 
 @Component
@@ -44,7 +44,7 @@ public class ReceiveLineListener {
             objNode.set(ReceivingConstants.META, meta);
             objNode.put(ReceivingConstants.SUCCESS, ReceivingConstants.TRUE);
             objNode.put(ReceivingConstants.OBJECT_NAME, ReceivingConstants.APPLICATION_TYPE_LINE_SUMMARY);
-            objNode.put(ReceivingConstants.TIMESTAMP, LocalDateTime.now().atZone(ZoneId.of(ReceivingConstants.ZONE_ID)).toInstant().toEpochMilli());
+            objNode.put(ReceivingConstants.TIMESTAMP, OffsetDateTime.now(ZoneOffset.UTC).toString());
             objNode.put(ReceivingConstants.OPERATION, ReceivingConstants.OPERATION_TYPE);
             objNode.set(ReceivingConstants.PAYLOAD, valueTree);
             producer.sendSummaryLineToEventHub(objNode, ReceivingConstants.RECEIVELINEWAREHOUSE);

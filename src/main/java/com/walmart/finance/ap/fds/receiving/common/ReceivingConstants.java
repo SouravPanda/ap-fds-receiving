@@ -70,6 +70,5 @@ public class ReceivingConstants {
     public final static String TIMESTAMP = "timestamp";
     public final static String OPERATION = "operation";
     public final static String OPERATION_TYPE = "UPDATE";
-    public final static String ZONE_ID = "CST6CDT";
 
 }
