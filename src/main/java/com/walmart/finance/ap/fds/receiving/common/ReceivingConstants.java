@@ -60,4 +60,15 @@ public class ReceivingConstants {
     public static final String UOM_CODE_WH_EXCEPTION_RESOLUTION = "02";
     public static final String UOM_CODE_WH_MATCHING = "01";
 
+    public final static String PAYLOAD = "payload";
+    public final static String META = "meta";
+    public final static Boolean TRUE = true;
+    public final static String SUCCESS = "success";
+    public final static String OBJECT_NAME = "domainObjectName";
+    public final static String APPLICATION_TYPE_SUMMARY = "cosmosWriteSummary";
+    public final static String APPLICATION_TYPE_LINE_SUMMARY = "cosmosWriteLineSummary";
+    public final static String TIMESTAMP = "timestamp";
+    public final static String OPERATION = "operation";
+    public final static String OPERATION_TYPE = "UPDATE";
+
 }

@@ -1,5 +1,6 @@
 package com.walmart.finance.ap.fds.receiving.messageproducer;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class Producer {
     private CustomSource customSource;
 
 
-    public void sendSummaryToEventHub(String writeToTopic, String topic) {
+    public void sendSummaryToEventHub(ObjectNode writeToTopic, String topic) {
         try {
             log.info("Inside Receive Summary producer ");
             customSource.summaryTopic().send(MessageBuilder.withPayload(writeToTopic).build());
@@ -42,7 +43,7 @@ public class Producer {
         }
     }
 
-    public void sendSummaryLineToEventHub(String writeToTopic, String topic) {
+    public void sendSummaryLineToEventHub(ObjectNode writeToTopic, String topic) {
         try {
             log.info("Inside Receive summaryLine producer ");
             customSource.lineSummaryTopic().send(MessageBuilder.withPayload(writeToTopic).build());
