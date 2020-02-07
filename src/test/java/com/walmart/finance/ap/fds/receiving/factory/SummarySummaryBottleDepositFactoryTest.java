@@ -23,6 +23,6 @@ public class SummarySummaryBottleDepositFactoryTest {
     @Test
     public void getBottleDepositFactoryTest() {
         Assert.assertTrue(summaryBottleDepositFactory.getBottleDeposit("S") instanceof SummaryBottleDepositStore);
-        Assert.assertTrue(summaryBottleDepositFactory.getBottleDeposit("S") instanceof SummaryBottleDepositWarehouse);
+        Assert.assertTrue(summaryBottleDepositFactory.getBottleDeposit("W") instanceof SummaryBottleDepositWarehouse);
     }
 }
