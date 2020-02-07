@@ -14,7 +14,7 @@ public class SummaryBottleDepositStore implements SummaryBottleDeposit {
 
         BigDecimal bottleDepositAmount = BigDecimal.valueOf(0.0);
         for (ReceivingLine receivingLine : receivingLines) {
-            if(receivingLine.getBottleDepositFlag().equals("Y") && receivingLine.getCostAmount() != null && receivingLine.getCostMultiple() != null && !receivingLine.getCostMultiple().equals(0)) {
+            if( receivingLine.getBottleDepositFlag() != null && receivingLine.getBottleDepositFlag().equals("Y") && receivingLine.getCostAmount() != null && receivingLine.getCostMultiple() != null && !receivingLine.getCostMultiple().equals(0)) {
                 Double costAmount = receivingLine.getCostAmount();
                 Integer costMultiplier = receivingLine.getCostMultiple();
                 bottleDepositAmount = bottleDepositAmount.add(BigDecimal.valueOf((costAmount / Double.valueOf(costMultiplier))));

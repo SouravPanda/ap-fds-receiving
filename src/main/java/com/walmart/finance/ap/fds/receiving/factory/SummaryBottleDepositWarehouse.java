@@ -15,7 +15,7 @@ public class SummaryBottleDepositWarehouse implements SummaryBottleDeposit {
         BigDecimal bottleDepositAmount = BigDecimal.valueOf(0.0);
         for (ReceivingLine receivingLine : receivingLines) {
             // Flag logic needs to be changed
-            if(receivingLine.getBottleDepositFlag().equals("Y") && receivingLine.getCostAmount() != null && receivingLine.getQuantity() != null && !receivingLine.getQuantity().equals(0)) {
+            if(receivingLine.getBottleDepositFlag() != null && receivingLine.getBottleDepositFlag().equals("Y") && receivingLine.getCostAmount() != null && receivingLine.getQuantity() != null && !receivingLine.getQuantity().equals(0)) {
                 Double costAmount = receivingLine.getCostAmount();
                 Integer vendorPackQuantity = receivingLine.getQuantity();
                 bottleDepositAmount = bottleDepositAmount.add(BigDecimal.valueOf((costAmount / Double.valueOf(vendorPackQuantity))));
