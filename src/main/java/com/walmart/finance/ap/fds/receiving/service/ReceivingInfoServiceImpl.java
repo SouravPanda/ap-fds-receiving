@@ -8,8 +8,7 @@ import com.walmart.finance.ap.fds.receiving.config.ReceivingSummaryComparator;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
-import com.walmart.finance.ap.fds.receiving.factory.BottleDeposit;
-import com.walmart.finance.ap.fds.receiving.factory.BottleDepositFactory;
+import com.walmart.finance.ap.fds.receiving.factory.SummaryBottleDepositFactory;
 import com.walmart.finance.ap.fds.receiving.integrations.FinancialTxnIntegrationService;
 import com.walmart.finance.ap.fds.receiving.integrations.FinancialTxnResponseData;
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
@@ -77,7 +76,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     FinancialTxnIntegrationService financialTxnIntegrationService;
 
     @Autowired
-    BottleDepositFactory bottleDepositFactory;
+    SummaryBottleDepositFactory summaryBottleDepositFactory;
 
     /**
      * @param allRequestParams
@@ -777,7 +776,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                         receiveSummary.getTotalRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
             }
 
-            receivingInfoResponseV1.setBottleDepositAmount(bottleDepositFactory.getBottleDeposit(receiveSummary.getTypeIndicator()).getBottleDepositAmount(lineResponseList));
+
+            receivingInfoResponseV1.setBottleDepositAmount(summaryBottleDepositFactory.getBottleDeposit(allRequestParams.get("locationType")).getBottleDepositAmount(lineResponseList));
 
             receivingInfoResponseV1.setControlSequenceNumber(receiveSummary.getControlSequenceNumber() != null ?
                     receiveSummary.getControlSequenceNumber() : defaultValuesConfigProperties.getControlSequenceNumber());

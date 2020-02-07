@@ -10,16 +10,15 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-public class BottleDepositStoreTest {
+public class SummaryBottleDepositWarehouseTest {
 
     @InjectMocks
-    BottleDepositStore bottleDepositStore;
+    SummaryBottleDepositWarehouse bottleDepositWarehouse;
 
     @Test
-    public void getBottleDepositAmountTestForStore() {
+    public void getBottleDepositAmountForWarehouse() {
 
         ReceivingLine receivingLine1 = new ReceivingLine();
         ReceivingLine receivingLine2 = new ReceivingLine();
@@ -27,21 +26,21 @@ public class BottleDepositStoreTest {
 
         receivingLine1.setBottleDepositFlag("Y");
         receivingLine1.setCostAmount(12.2);
-        receivingLine1.setCostMultiple(1);
+        receivingLine1.setQuantity(1);
 
         receivingLine2.setBottleDepositFlag("N");
         receivingLine2.setCostAmount(15.0);
-        receivingLine2.setCostMultiple(1);
+        receivingLine2.setQuantity(1);
 
         receivingLine3.setBottleDepositFlag("Y");
         receivingLine3.setCostAmount(12.2);
-        receivingLine3.setCostMultiple(0);
+        receivingLine3.setQuantity(0);
 
         List<ReceivingLine> receivingLines = new ArrayList<>();
         receivingLines.add(receivingLine1);
         receivingLines.add(receivingLine2);
         receivingLines.add(receivingLine3);
 
-        Assert.assertEquals(bottleDepositStore.getBottleDepositAmount(receivingLines), java.util.Optional.of(12.2).get());
+        Assert.assertEquals(bottleDepositWarehouse.getBottleDepositAmount(receivingLines), java.util.Optional.of(12.2).get());
     }
 }

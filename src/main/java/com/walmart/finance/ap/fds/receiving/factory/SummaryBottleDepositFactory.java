@@ -4,16 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BottleDepositFactory {
+public class SummaryBottleDepositFactory {
 
     @Autowired
-    BottleDepositStore bottleDepositStore;
+    SummaryBottleDepositStore bottleDepositStore;
 
     @Autowired
-    BottleDepositWarehouse bottleDepositWarehouse;
+    SummaryBottleDepositWarehouse bottleDepositWarehouse;
 
-    public BottleDeposit getBottleDeposit(Character typeIndicator){
-        if(typeIndicator.equals('S')){
+    public SummaryBottleDeposit getBottleDeposit(String typeIndicator){
+        if(typeIndicator.equals("S")){
             return bottleDepositStore;
         }else{
             return bottleDepositWarehouse;

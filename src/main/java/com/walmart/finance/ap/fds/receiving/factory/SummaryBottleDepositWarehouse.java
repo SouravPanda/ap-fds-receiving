@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Component
-public class BottleDepositWarehouse implements BottleDeposit {
+public class SummaryBottleDepositWarehouse implements SummaryBottleDeposit {
 
     @Override
     public Double getBottleDepositAmount(List<ReceivingLine> receivingLines){
