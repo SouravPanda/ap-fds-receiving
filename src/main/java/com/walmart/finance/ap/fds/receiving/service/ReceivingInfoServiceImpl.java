@@ -6,6 +6,7 @@ import com.walmart.finance.ap.fds.receiving.config.DefaultValuesConfigProperties
 import com.walmart.finance.ap.fds.receiving.config.ReceivingLineComparator;
 import com.walmart.finance.ap.fds.receiving.config.ReceivingSummaryComparator;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
+import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
 import com.walmart.finance.ap.fds.receiving.factory.SummaryBottleDepositFactory;
@@ -567,7 +568,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             }
 
 
-
             ReceivingInfoResponseV1 receivingInfoResponseV1;
             if (financialTxnReceivingMap.containsKey(financialTxnResponseData)) {
                 receivingInfoResponseV1 =
@@ -586,9 +586,12 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                                 , new FreightResponse()
                                 , allRequestParams);
             }
-            receivingInfoResponses.add(receivingInfoResponseV1);
+            if( !(receivingInfoResponseV1.getReceivingInfoLineResponses().isEmpty() && (!allRequestParams.get("upcNumbers").isEmpty() || !allRequestParams.get("itemNumbers").isEmpty()) ))
+                receivingInfoResponses.add(receivingInfoResponseV1);
         }
 
+        if(receivingInfoResponses.isEmpty())
+            throw new ContentNotFoundException(ReceivingErrors.RECEIVINGINFO.getParameterName(), ReceivingErrors.VALIDID.getParameterName());
         return receivingInfoResponses;
     }
 
