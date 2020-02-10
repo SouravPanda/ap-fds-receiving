@@ -586,8 +586,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                                 , new FreightResponse()
                                 , allRequestParams);
             }
-            if( !(( allRequestParams.get("lineNumberFlag") != null && allRequestParams.get("lineNumberFlag").equals("Y") )
-                    && ( ( receivingInfoResponseV1.getReceivingInfoLineResponses() == null || receivingInfoResponseV1.getReceivingInfoLineResponses().isEmpty() )
+            if( !(
+                    ( ( receivingInfoResponseV1.getReceivingInfoLineResponses() == null || receivingInfoResponseV1.getReceivingInfoLineResponses().isEmpty() )
                     && ( !( allRequestParams.get("upcNumbers") == null  || allRequestParams.get("upcNumbers").isEmpty() ) ||
                     ! ( allRequestParams.get("itemNumbers") == null || allRequestParams.get("itemNumbers").isEmpty())) )))
                 receivingInfoResponses.add(receivingInfoResponseV1);
