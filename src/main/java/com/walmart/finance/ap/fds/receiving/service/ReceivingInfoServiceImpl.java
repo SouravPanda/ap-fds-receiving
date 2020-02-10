@@ -8,6 +8,7 @@ import com.walmart.finance.ap.fds.receiving.config.ReceivingSummaryComparator;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
+import com.walmart.finance.ap.fds.receiving.factory.SummaryBottleDepositFactory;
 import com.walmart.finance.ap.fds.receiving.integrations.FinancialTxnIntegrationService;
 import com.walmart.finance.ap.fds.receiving.integrations.FinancialTxnResponseData;
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
@@ -73,6 +74,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     @Autowired
     FinancialTxnIntegrationService financialTxnIntegrationService;
+
+    @Autowired
+    SummaryBottleDepositFactory summaryBottleDepositFactory;
 
     /**
      * @param allRequestParams
@@ -771,8 +775,10 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 receivingInfoResponseV1.setTotalRetailAmount(receiveSummary.getTotalRetailAmount() != null ?
                         receiveSummary.getTotalRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
             }
-            receivingInfoResponseV1.setBottleDepositAmount(receiveSummary.getBottleDepositAmount() != null ?
-                    receiveSummary.getBottleDepositAmount() : defaultValuesConfigProperties.getBottleDepositAmount());
+
+
+            receivingInfoResponseV1.setBottleDepositAmount(summaryBottleDepositFactory.getBottleDeposit(allRequestParams.get("locationType")).getBottleDepositAmount(lineResponseList));
+
             receivingInfoResponseV1.setControlSequenceNumber(receiveSummary.getControlSequenceNumber() != null ?
                     receiveSummary.getControlSequenceNumber() : defaultValuesConfigProperties.getControlSequenceNumber());
             receivingInfoResponseV1.setReceiptStatus(receiveSummary.getBusinessStatusCode() != null ? receiveSummary.getBusinessStatusCode().toString() : null);
