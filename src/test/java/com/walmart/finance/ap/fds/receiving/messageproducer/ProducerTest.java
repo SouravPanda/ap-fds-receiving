@@ -1,5 +1,7 @@
 package com.walmart.finance.ap.fds.receiving.messageproducer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +37,8 @@ public class ProducerTest {
     public void sendSummaryToEventHub()  {
         when(customSource.summaryTopic()).thenReturn(messageChannel);
         when(messageChannel.send(MessageBuilder.withPayload("test").build())).thenReturn(Boolean.TRUE);
-        producer.sendSummaryToEventHub("test", "test");
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode objNode = mapper.createObjectNode();
+        producer.sendSummaryToEventHub(objNode, "test");
     }
 }
