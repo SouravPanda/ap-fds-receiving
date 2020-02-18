@@ -53,7 +53,7 @@ public class ReceiveLineListener {
         } catch (NetworkException exception) {
             log.error("Exception while writing message to event hub topic " + exception.toString());
         } catch(Exception exception){
-            log.error("Unknown exception has occured");
+            log.error("Unknown exception has occured" + exception);
         }
     }
 }
