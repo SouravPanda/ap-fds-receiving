@@ -53,6 +53,8 @@ public class ReceiveSummaryListener {
                 log.error("Exception while converting the consumer record to JsonNode in Receive Summary Listener " + exception);
             } catch (NetworkException exception) {
             log.error("Exception while writing message to event hub topic " + exception);
-            }
+            } catch(Exception exception){
+            log.error("Unknown exception has occured");
+        }
         }
     }

@@ -52,6 +52,8 @@ public class ReceiveLineListener {
             log.error("Exception while converting the consumer record to JsonNode in DBSyncErrorHandling " + exception.toString());
         } catch (NetworkException exception) {
             log.error("Exception while writing message to event hub topic " + exception.toString());
+        } catch(Exception exception){
+            log.error("Unknown exception has occured");
         }
     }
 }
