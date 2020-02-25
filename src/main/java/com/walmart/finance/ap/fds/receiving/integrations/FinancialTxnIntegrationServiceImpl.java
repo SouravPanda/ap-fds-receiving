@@ -96,16 +96,16 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
             case VENDORNUMBER_LOCATIONNUMBER_INVOICENUMBER:
                 url += ReceivingConstants.VENDOR_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())
                         + "/" + ReceivingConstants.INVOICE_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam())
-                        + "/" + ReceivingConstants.ORIG_STORE_NUMBER_URL_PARAM + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam());
+                        + "/" + ReceivingConstants.ORIG_STORE_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam());
                 break;
             case VENDORNUMBER_LOCATIONNUMBER_RECEIPTNUMBERS:
                 url += ReceivingConstants.VENDOR_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())
-                        + "/" + ReceivingConstants.ORIG_STORE_NUMBER_URL_PARAM + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
-                        + "/" + ReceivingConstants.RECEIPT_NUMBER_URL_PARAM + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.RECEIPTNUMBERS.getQueryParam());
+                        + "/" + ReceivingConstants.ORIG_STORE_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
+                        + "/" + ReceivingConstants.RECEIPT_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.RECEIPTNUMBERS.getQueryParam());
                 break;
             case VENDORNUMBER_PURCHASEORDERID:
                 url += ReceivingConstants.VENDOR_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())
-                        + "/" + ReceivingConstants.PURCHASE_ORDER_ID_URL_PARAM + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.PURCHASEORDERID.getQueryParam());
+                        + "/" + ReceivingConstants.PURCHASE_ORDER_ID_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.PURCHASEORDERID.getQueryParam());
                 break;
             case LOCATIONNUMBER_PURCHASEORDERNUMBER_RECEIPTDATESTART_RECEIPTDATEEND:
                 url += ReceivingConstants.ORIG_STORE_NUMBER_URL_PARAM+ "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
@@ -113,7 +113,7 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
                 break;
             case LOCATIONNUMBER_INVOICENUMBER_RECEIPTDATESTART_RECEIPTDATEEND:
                 url += ReceivingConstants.ORIG_STORE_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
-                        + "/" + ReceivingConstants.INVOICE_NUMBER_URL_PARAM +"/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam());
+                        + "/" + ReceivingConstants.INVOICE_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam());
                 break;
             case LOCATIONNUMBER_VENDORNUMBER_RECEIPTDATESTART_RECEIPTDATEEND:
                 url += ReceivingConstants.ORIG_STORE_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
