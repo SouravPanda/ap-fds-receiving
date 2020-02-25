@@ -1,5 +1,6 @@
 package com.walmart.finance.ap.fds.receiving.validator;
 
+import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.exception.MandatoryPatameterMissingException;
 import org.apache.commons.lang.StringUtils;
 
@@ -39,41 +40,41 @@ public class ReceivingInfoRequestValidator {
          3) value should be list or string : Convert from string to list when needed.
          */
             if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.INVOICEID.getQueryParam())) {
-                allRequestParams.put("scenario", ReceivingInfoRequestCombinations.INVOICEID.name());
+                allRequestParams.put(ReceivingConstants.SCENARIO, ReceivingInfoRequestCombinations.INVOICEID.name());
             }
-            if (!allRequestParams.containsKey("scenario") && allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam()) &&
+            if (!allRequestParams.containsKey(ReceivingConstants.SCENARIO) && allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam()) &&
                     allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam())) {
                 if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam())) {
-                    allRequestParams.put("scenario", ReceivingInfoRequestCombinations.VENDORNUMBER_PURCHASEORDERNUMBER_INVOICENUMBER.name());
+                    allRequestParams.put(ReceivingConstants.SCENARIO, ReceivingInfoRequestCombinations.VENDORNUMBER_PURCHASEORDERNUMBER_INVOICENUMBER.name());
                 } else if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.RECEIPTNUMBERS.getQueryParam())) {
-                    allRequestParams.put("scenario", ReceivingInfoRequestCombinations.VENDORNUMBER_PURCHASEORDERNUMBER_RECEIPTNUMBERS.name());
+                    allRequestParams.put(ReceivingConstants.SCENARIO, ReceivingInfoRequestCombinations.VENDORNUMBER_PURCHASEORDERNUMBER_RECEIPTNUMBERS.name());
                 } else if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())) {
-                    allRequestParams.put("scenario", ReceivingInfoRequestCombinations.VENDORNUMBER_PURCHASEORDERNUMBER_LOCATIONNUMBER.name());
+                    allRequestParams.put(ReceivingConstants.SCENARIO, ReceivingInfoRequestCombinations.VENDORNUMBER_PURCHASEORDERNUMBER_LOCATIONNUMBER.name());
                 }
             }
-            if (!allRequestParams.containsKey("scenario") && allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam()) &&
+            if (!allRequestParams.containsKey(ReceivingConstants.SCENARIO) && allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam()) &&
                     allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())) {
                 if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam())) {
-                    allRequestParams.put("scenario", ReceivingInfoRequestCombinations.VENDORNUMBER_LOCATIONNUMBER_INVOICENUMBER.name());
+                    allRequestParams.put(ReceivingConstants.SCENARIO, ReceivingInfoRequestCombinations.VENDORNUMBER_LOCATIONNUMBER_INVOICENUMBER.name());
                 } else if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.RECEIPTNUMBERS.getQueryParam())) {
-                    allRequestParams.put("scenario", ReceivingInfoRequestCombinations.VENDORNUMBER_LOCATIONNUMBER_RECEIPTNUMBERS.name());
+                    allRequestParams.put(ReceivingConstants.SCENARIO, ReceivingInfoRequestCombinations.VENDORNUMBER_LOCATIONNUMBER_RECEIPTNUMBERS.name());
                 }
             }
-            if (!allRequestParams.containsKey("scenario") && allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam()) &&
+            if (!allRequestParams.containsKey(ReceivingConstants.SCENARIO) && allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam()) &&
                     allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.PURCHASEORDERID.getQueryParam())) {
-                allRequestParams.put("scenario", ReceivingInfoRequestCombinations.VENDORNUMBER_PURCHASEORDERID.name());
+                allRequestParams.put(ReceivingConstants.SCENARIO, ReceivingInfoRequestCombinations.VENDORNUMBER_PURCHASEORDERID.name());
             }
-            if (!allRequestParams.containsKey("scenario") && allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
+            if (!allRequestParams.containsKey(ReceivingConstants.SCENARIO) && allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
                     && allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam())
                     && allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam())) {
                 if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam())) {
-                    allRequestParams.put("scenario", ReceivingInfoRequestCombinations.LOCATIONNUMBER_PURCHASEORDERNUMBER_RECEIPTDATESTART_RECEIPTDATEEND.name());
+                    allRequestParams.put(ReceivingConstants.SCENARIO, ReceivingInfoRequestCombinations.LOCATIONNUMBER_PURCHASEORDERNUMBER_RECEIPTDATESTART_RECEIPTDATEEND.name());
                 } else if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam())) {
-                    allRequestParams.put("scenario", ReceivingInfoRequestCombinations.LOCATIONNUMBER_INVOICENUMBER_RECEIPTDATESTART_RECEIPTDATEEND.name());
+                    allRequestParams.put(ReceivingConstants.SCENARIO, ReceivingInfoRequestCombinations.LOCATIONNUMBER_INVOICENUMBER_RECEIPTDATESTART_RECEIPTDATEEND.name());
                 } else if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())) {
-                    allRequestParams.put("scenario", ReceivingInfoRequestCombinations.LOCATIONNUMBER_VENDORNUMBER_RECEIPTDATESTART_RECEIPTDATEEND.name());
+                    allRequestParams.put(ReceivingConstants.SCENARIO, ReceivingInfoRequestCombinations.LOCATIONNUMBER_VENDORNUMBER_RECEIPTDATESTART_RECEIPTDATEEND.name());
                 } else if ( allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam()).equals(LOCATION_TYPE_STORE)) {
-                    allRequestParams.put("scenario", ReceivingInfoRequestCombinations.LOCATIONNUMBER_RECEIPTDATESTART_RECEIPTDATEEND.name());
+                    allRequestParams.put(ReceivingConstants.SCENARIO, ReceivingInfoRequestCombinations.LOCATIONNUMBER_RECEIPTDATESTART_RECEIPTDATEEND.name());
                 }
             }
 //        if (!allRequestParams.containsKey("scenario") && allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())) {
@@ -92,7 +93,7 @@ public class ReceivingInfoRequestValidator {
 //            }
 //        }
             // Valid combination does not exist.
-            if (!allRequestParams.containsKey("scenario")) {
+            if (!allRequestParams.containsKey(ReceivingConstants.SCENARIO)) {
                 throw new MandatoryPatameterMissingException("Please refine request criteria.", "Add or remove few more parameters.");
             } else {
                 allRequestParams.put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), countryCode);

@@ -71,4 +71,14 @@ public class ReceivingConstants {
     public final static String OPERATION = "operation";
     public final static String OPERATION_TYPE = "UPDATE";
 
+    public final static String TIMESTAMP_TIME_ZERO = " 00:00:00";
+    public final static String TIMESTAMP_23_59_59 = " 23:59:59";
+    public final static String VENDOR_NUMBER_URL_PARAM = "vendorNumber";
+    public final static String PO_NUMBER_URL_PARAM = "poNumber";
+    public final static String RECEIPT_NUMBER_URL_PARAM = "receiptNumber";
+    public final static String INVOICE_NUMBER_URL_PARAM = "invoiceNumber";
+    public final static String ORIG_STORE_NUMBER_URL_PARAM = "origStoreNbr";
+    public final static String PURCHASE_ORDER_ID_URL_PARAM = "purchaseOrderId";
+    public final static String SCENARIO = "scenario";
+
 }

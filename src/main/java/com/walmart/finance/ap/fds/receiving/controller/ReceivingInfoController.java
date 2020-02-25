@@ -35,7 +35,7 @@ public class ReceivingInfoController {
     @GetMapping
     @ApiOperation(value = "API to receive information based on various parameters.")
     @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Error"), @ApiResponse(code = 400, message = "Bad request"), @ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 204, message = "No content")})
-    @RequestMapping(value = "/v1")
+    @RequestMapping(value = "/v1", method = RequestMethod.GET)
     public ReceivingResponse getReceivingInfoV1(@PathVariable(value = "countryCode") String countryCode
             , @RequestParam Map<String, String> allRequestParams) {
         ReceivingInfoRequestValidator.validate(countryCode, allRequestParams);

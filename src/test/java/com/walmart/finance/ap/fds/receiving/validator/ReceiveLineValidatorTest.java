@@ -3,7 +3,6 @@ package com.walmart.finance.ap.fds.receiving.validator;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveLineRequestParams;
-import com.walmart.finance.ap.fds.receiving.model.ReceivingLineParameters;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
