@@ -242,6 +242,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         return receiveLines;
     }
 
+
+    // TO DO
     private FreightResponse executeQueryInFreight(Long id) {
         FreightResponse receiveFreight = null;
         if (id != null) {
@@ -545,7 +547,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             }
             iteratorLine.remove();
         }
-        Map<Long, FreightResponse> freightResponseMap = freightResponseList.stream().collect(Collectors.toMap(FreightResponse::getId, freightResponse -> freightResponse));
+        Map<Long, FreightResponse> freightResponseMap = freightResponseList.stream().collect(Collectors.toMap(FreightResponse::getFreightId, freightResponse -> freightResponse));
 
         //Map<FinancialTxnResponseData, ReceiveSummary> finTransRecvSummaryMap = new HashMap<>();
         for (FinancialTxnResponseData financialTxnResponseData : financialTxnResponseDataList) {

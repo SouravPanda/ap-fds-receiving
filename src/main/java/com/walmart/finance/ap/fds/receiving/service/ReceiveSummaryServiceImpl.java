@@ -113,8 +113,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                         t -> {
                             ReceivingSummaryResponse response = receivingSummaryResponseConverter.convert(t);
                             if (responseMap.get(t.get_id()) != null) {
-                                response.setCarrierCode(responseMap.get(t.get_id()).getCarrierCode());
-                                response.setTrailerNumber(responseMap.get(t.get_id()).getTrailerNumber());
+                                //response.setCarrierCode(responseMap.get(t.get_id()).getCarrierCode());
+                                //response.setTrailerNumber(responseMap.get(t.get_id()).getTrailerNumber());
+                               // response.setFreightId(responseMap.get(t.get_id()).getFreightId());
                                 response.setLineCount(responseMap.get(t.get_id()).getLineCount() == null ?
                                         defaultValuesConfigProperties.getLineCount() :
                                         responseMap.get(t.get_id()).getLineCount() );
@@ -291,12 +292,12 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                             receiveSummary.getTotalRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
                 }
                 response.setLineCount((long) lineList.size());
-                getFreightResponse(receiveSummary, response);
+               //getFreightResponse(receiveSummary, response);
                 lineResponseMap.put(receiveSummary.get_id(), response);
             } else if (CollectionUtils.isNotEmpty(itemNumbers) || CollectionUtils.isNotEmpty(upcNumbers)) {
                 iterator.remove();
             } else {
-                getFreightResponse(receiveSummary, response);
+               // getFreightResponse(receiveSummary, response);
                 response.setTotalCostAmount(receiveSummary.getTotalCostAmount()!= null ?
                         receiveSummary.getTotalCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
                 response.setTotalRetailAmount(receiveSummary.getTotalRetailAmount() != null ?
@@ -328,27 +329,20 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     /******* receive -freight data fetching   *********/
 
-    private void getFreightResponse(ReceiveSummary receiveSummary, AdditionalResponse additionalResponse) {
-        List<FreightResponse> receiveFreights = makeQueryForFreight(receiveSummary);
-        if (CollectionUtils.isNotEmpty(receiveFreights)) {
-            additionalResponse.setCarrierCode(receiveFreights.get(0).getCarrierCode() == null ?
-                    defaultValuesConfigProperties.getCarrierCode() : receiveFreights.get(0).getCarrierCode().trim());
-            additionalResponse.setTrailerNumber(receiveFreights.get(0).getTrailerNbr() == null ?
-                    defaultValuesConfigProperties.getTrailerNbr() : receiveFreights.get(0).getTrailerNbr().trim());
-        } else {
-            additionalResponse.setCarrierCode(defaultValuesConfigProperties.getCarrierCode());
-            additionalResponse.setTrailerNumber(defaultValuesConfigProperties.getTrailerNbr());
+    /*private void getFreightResponse(ReceiveSummary receiveSummary, AdditionalResponse additionalResponse) {
+        FreightResponse freightResponse = makeQueryForFreight(receiveSummary);
+        if (freightResponse!=null) {
+            additionalResponse.setFreightId(freightResponse.getFreightId());
         }
-    }
+    }*/
 
-    private List<FreightResponse> makeQueryForFreight(ReceiveSummary receiveSummary) {
+    /*private FreightResponse makeQueryForFreight(ReceiveSummary receiveSummary) {
         if (receiveSummary.getFreightBillExpandId() != null) {
-            Query query = new Query();
-            query.addCriteria(Criteria.where("_id").is(receiveSummary.getFreightBillExpandId()));
-            return executeQueryReceiveFreight(query);
+            return executeQueryReceiveFreight(receiveSummary.getFreightBillExpandId());
         }
+
         return null;
-    }
+    }*/
     /******* receive -freight data fetching   *********/
 
     /******* Common Methods  *********/
@@ -373,10 +367,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         return receiveLines;
     }
 
-    private List<FreightResponse> executeQueryReceiveFreight(Query query) {
-        List<FreightResponse> freightResponses = new LinkedList<>();
-        long startTime = System.currentTimeMillis();
-        freightResponses = mongoTemplate.find(query, FreightResponse.class, freightCollection);
+    private FreightResponse executeQueryReceiveFreight(Long id) {
+         Long startTime = System.currentTimeMillis();
+        FreightResponse freightResponses = mongoTemplate.findById(id, FreightResponse.class, freightCollection);
         log.info("executeQueryReceiveFreight :: queryTime :: " + (System.currentTimeMillis() - startTime));
         return freightResponses;
     }
