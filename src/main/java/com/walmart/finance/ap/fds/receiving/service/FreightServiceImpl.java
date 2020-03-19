@@ -1,5 +1,6 @@
 package com.walmart.finance.ap.fds.receiving.service;
 
+import com.walmart.finance.ap.fds.receiving.common.ReceivingUtils;
 import com.walmart.finance.ap.fds.receiving.converter.FreightResponseConverter;
 import com.walmart.finance.ap.fds.receiving.dao.FreightDao;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
@@ -8,7 +9,6 @@ import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
 import com.walmart.finance.ap.fds.receiving.model.Freight;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -27,7 +27,7 @@ public class FreightServiceImpl implements FreightService {
 
     @Override
     public ReceivingResponse getFreightById(String id) {
-        if (!NumberUtils.isNumber(id)){
+        if (!ReceivingUtils.isNumeric(id)){
            throw new BadRequestException(ReceivingErrors.VALIDID.getParameterName() ,ReceivingErrors.FREIGHTIDDETAILS.getParameterName());
         }
         Freight freight = freightDao.getFrightById(Long.valueOf(id));
