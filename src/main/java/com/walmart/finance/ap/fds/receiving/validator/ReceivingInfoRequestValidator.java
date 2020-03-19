@@ -28,7 +28,12 @@ public class ReceivingInfoRequestValidator {
             }
         }
 
-        if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam()) &&
+        if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.TRANSACTIONID.getQueryParam()) &&
+                allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.TRANSACTIONSEQNBR.getQueryParam())) {
+
+            allRequestParams.put("scenario", ReceivingInfoRequestCombinations.TRANSACTIONID_TRANSACTIONSEQNBR.name());
+
+        } else if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam()) &&
                 ( allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam()).equals(LOCATION_TYPE_STORE) ||
                         allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam()).equals(LOCATION_TYPE_WAREHOUSE))) {
 
@@ -76,21 +81,7 @@ public class ReceivingInfoRequestValidator {
                     allRequestParams.put("scenario", ReceivingInfoRequestCombinations.LOCATIONNUMBER_RECEIPTDATESTART_RECEIPTDATEEND.name());
                 }
             }
-//        if (!allRequestParams.containsKey("scenario") && allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())) {
-//            if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.CONTROLNUMBER.getQueryParam())) {
-//                if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()) ||
-//                        allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam())) {
-//                    allRequestParams.put("scenario", "-1");
-//                }
-//            } else if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam())
-//                    || allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam())
-//                    || allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())) {
-//                if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam())
-//                        || allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam())) {
-//                    allRequestParams.put("scenario", "-2");
-//                }
-//            }
-//        }
+
             // Valid combination does not exist.
             if (!allRequestParams.containsKey("scenario")) {
                 throw new MandatoryPatameterMissingException("Please refine request criteria.", "Add or remove few more parameters.");

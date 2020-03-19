@@ -124,6 +124,10 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
             case LOCATIONNUMBER_RECEIPTDATESTART_RECEIPTDATEEND:
                 url += "/locationType/S/origStoreNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam());
                 break;
+            case TRANSACTIONID_TRANSACTIONSEQNBR:
+                url += "transactionId/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.TRANSACTIONID.getQueryParam())
+                        + "/txnSeqNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.TRANSACTIONSEQNBR.getQueryParam());
+                break;
 
         }
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
