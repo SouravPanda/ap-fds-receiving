@@ -25,7 +25,7 @@ public enum ReceivingInfoRequestQueryParameters {
     COUNTRYCODE("countryCode"),
     LOCATIONTYPE("locationType"),
     TRANSACTIONID("transactionId"),
-    TRANSACTIONSEQNBR("txnSeqNbr");
+    TXNSEQNBR("txnSeqNbr");
 
 
     @Getter

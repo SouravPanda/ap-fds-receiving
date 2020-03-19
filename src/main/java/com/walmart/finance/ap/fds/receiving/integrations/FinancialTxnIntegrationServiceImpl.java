@@ -6,7 +6,6 @@ import com.walmart.finance.ap.fds.receiving.mesh.FinancialTxnMeshHeadersGenerato
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestCombinations;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import lombok.Data;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,12 +16,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -126,7 +123,7 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
                 break;
             case TRANSACTIONID_TRANSACTIONSEQNBR:
                 url += "transactionId/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.TRANSACTIONID.getQueryParam())
-                        + "/txnSeqNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.TRANSACTIONSEQNBR.getQueryParam());
+                        + "/txnSeqNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.TXNSEQNBR.getQueryParam());
                 break;
 
         }

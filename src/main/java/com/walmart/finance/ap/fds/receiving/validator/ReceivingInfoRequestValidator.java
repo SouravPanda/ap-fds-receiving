@@ -29,7 +29,7 @@ public class ReceivingInfoRequestValidator {
         }
 
         if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.TRANSACTIONID.getQueryParam()) &&
-                allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.TRANSACTIONSEQNBR.getQueryParam())) {
+                allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.TXNSEQNBR.getQueryParam())) {
 
             allRequestParams.put("scenario", ReceivingInfoRequestCombinations.TRANSACTIONID_TRANSACTIONSEQNBR.name());
 
