@@ -60,6 +60,10 @@ public class DefaultValuesConfigProperties {
 
     private String billNbr;
 
+    private Integer pymtStatCode;
+
+    private Long freightId;
+
 
 
 

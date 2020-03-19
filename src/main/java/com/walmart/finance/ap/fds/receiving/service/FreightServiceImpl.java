@@ -27,8 +27,8 @@ public class FreightServiceImpl implements FreightService {
 
     @Override
     public ReceivingResponse getFreightById(String id) {
-        if (!NumberUtils.isDigits(id)){
-            throw new BadRequestException(ReceivingErrors.VALIDID.getParameterName() ,id);
+        if (!NumberUtils.isNumber(id)){
+           throw new BadRequestException(ReceivingErrors.VALIDID.getParameterName() ,ReceivingErrors.FREIGHTIDDETAILS.getParameterName());
         }
         Freight freight = freightDao.getFrightById(Long.valueOf(id));
         if (freight==null){

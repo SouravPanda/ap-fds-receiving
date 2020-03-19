@@ -201,7 +201,7 @@ public class ReceivingSummaryControllerTest {
         }
     }
 
-    @Test
+    /*@Test
     public void getReceiveSummary() throws Exception {
         ReceivingSummaryResponse response = new ReceivingSummaryResponse("7778", "1122", 99, "776",
                 3680, 0,
@@ -248,7 +248,7 @@ public class ReceivingSummaryControllerTest {
                                 "}"
                 ))
                 .andReturn();
-    }
+    }*/
 }
 
 

@@ -24,7 +24,7 @@ public class FreightResponseConverter implements Converter<Freight, FreightRespo
         freightResponse.setBillQty(freight.getBillQty());
         freightResponse.setBillWght(freight.getBillWght());
         freightResponse.setCostUomCode(freight.getCostUomCode());
-        freightResponse.setPymtStatCode(freight.getPymtStatCode());
+        freightResponse.setPymtStatCode(freight.getPymtStatCode() !=null ? freight.getPymtStatCode(): defaultValuesConfigProperties.getPymtStatCode());
         freightResponse.setQtyUomCode(freight.getQtyUomCode());
         freightResponse.setWghtUomCode(freight.getWghtUomCode());
         return freightResponse;
