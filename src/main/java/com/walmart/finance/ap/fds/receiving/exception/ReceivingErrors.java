@@ -19,7 +19,8 @@ public enum ReceivingErrors {
     INVALIDDATATYPE("Data Type is invalid for input values"),
     INVALIDLINESEQUENCE("Invalid value, lineSequenceNumber"),
     INVALIDLINESEQUENCEDETAILS("it should be in an integer"),
-    RECEIVINGINFO("Receipt Line is not matching for the upc numbers or item numbers");
+    RECEIVINGINFO("Receipt Line is not matching for the upc numbers or item numbers"),
+    CONTENTNOTFOUNDFREIGHT("Freight details not found for the given id: ");
 
     @Getter
     private String parameterName;

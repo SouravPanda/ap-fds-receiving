@@ -58,6 +58,10 @@ public class DefaultValuesConfigProperties {
 
     private String trailerNbr;
 
+    private String billNbr;
+
+
+
 
 
 }
