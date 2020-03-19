@@ -85,12 +85,12 @@ public class ReceivingInfoRequestValidator {
             // Valid combination does not exist.
             if (!allRequestParams.containsKey("scenario")) {
                 throw new MandatoryPatameterMissingException("Please refine request criteria.", "Add or remove few more parameters.");
-            } else {
-                allRequestParams.put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), countryCode);
             }
         } else {
             throw new MandatoryPatameterMissingException("Please refine request criteria.", "Please provide " +
                     "'locationType' as 'S' or 'W'");
         }
+
+        allRequestParams.put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), countryCode);
     }
 }
