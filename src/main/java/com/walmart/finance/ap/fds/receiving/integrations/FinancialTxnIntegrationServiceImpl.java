@@ -59,8 +59,16 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
             log.error("Failed to get response from Financial Transaction.", e);
             throw new FinancialTransException("Failed to get response from Financial Transaction.");
         }
-        if (response != null && response.getBody() != null && CollectionUtils.isNotEmpty(response.getBody().getFinancialTxnResponseDataList())) {
-            financialTxnResponseDataList = response.getBody().getFinancialTxnResponseDataList();
+        if (response != null && response.getBody() != null && response.getBody().getFinancialTxnResponseData() != null) {
+            Object responseData = response.getBody().getFinancialTxnResponseData();
+            if (responseData instanceof List) {
+                financialTxnResponseDataList = (List) responseData;
+                if (CollectionUtils.isEmpty(financialTxnResponseDataList)) {
+                    log.error("Financial Transaction data not found for url " + url);
+                }
+            } else {
+                financialTxnResponseDataList.add((FinancialTxnResponseData) responseData);
+            }
         } else {
             log.error("Financial Transaction data not found for url " + url);
         }
