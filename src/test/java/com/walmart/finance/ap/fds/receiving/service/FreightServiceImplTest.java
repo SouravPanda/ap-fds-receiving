@@ -1,6 +1,8 @@
 package com.walmart.finance.ap.fds.receiving.service;
 import com.walmart.finance.ap.fds.receiving.converter.FreightResponseConverter;
 import com.walmart.finance.ap.fds.receiving.dao.FreightDaoImpl;
+import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -11,8 +13,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 @RunWith(PowerMockRunner.class)
 public class FreightServiceImplTest {
 
-
-   /* @Mock
+    @Mock
     MongoTemplate mongoTemplate;
 
 
@@ -23,21 +24,14 @@ public class FreightServiceImplTest {
     FreightResponseConverter freightResponseConverter;
 
     @Mock
-    FreightServiceImpl freightServiceI;
+    FreightService freightService;
 
 
-
-
-
+    @Test
     public void testGetFrightbyId(){
-
         String id ="1234";
-
-
-
-
-    }*/
-
+        ReceivingResponse receivingResponse =freightService.getFreightById(id);
+    }
 
 
 }
