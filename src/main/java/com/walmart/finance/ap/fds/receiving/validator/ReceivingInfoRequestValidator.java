@@ -28,12 +28,7 @@ public class ReceivingInfoRequestValidator {
             }
         }
 
-        if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.TRANSACTIONID.getQueryParam()) &&
-                allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.TXNSEQNBR.getQueryParam())) {
-
-            allRequestParams.put("scenario", ReceivingInfoRequestCombinations.TRANSACTIONID_TRANSACTIONSEQNBR.name());
-
-        } else if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam()) &&
+        if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam()) &&
                 ( allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam()).equals(LOCATION_TYPE_STORE) ||
                         allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam()).equals(LOCATION_TYPE_WAREHOUSE))) {
 
@@ -82,15 +77,20 @@ public class ReceivingInfoRequestValidator {
                 }
             }
 
+            if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.TRANSACTIONID.getQueryParam()) &&
+                    allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.TXNSEQNBR.getQueryParam())) {
+                allRequestParams.put("scenario", ReceivingInfoRequestCombinations.TRANSACTIONID_TRANSACTIONSEQNBR.name());
+            }
+
             // Valid combination does not exist.
             if (!allRequestParams.containsKey("scenario")) {
                 throw new MandatoryPatameterMissingException("Please refine request criteria.", "Add or remove few more parameters.");
+            } else {
+                allRequestParams.put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), countryCode);
             }
         } else {
             throw new MandatoryPatameterMissingException("Please refine request criteria.", "Please provide " +
                     "'locationType' as 'S' or 'W'");
         }
-
-        allRequestParams.put(ReceivingInfoRequestQueryParameters.COUNTRYCODE.getQueryParam(), countryCode);
     }
 }

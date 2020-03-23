@@ -1,6 +1,7 @@
 package com.walmart.finance.ap.fds.receiving.integrations;
 
 import com.google.common.base.Enums;
+import com.walmart.finance.ap.fds.receiving.common.ReceivingUtils;
 import com.walmart.finance.ap.fds.receiving.exception.FinancialTransException;
 import com.walmart.finance.ap.fds.receiving.mesh.FinancialTxnMeshHeadersGenerator;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestCombinations;
@@ -20,6 +21,7 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,12 +64,21 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
         if (response != null && response.getBody() != null && response.getBody().getFinancialTxnResponseData() != null) {
             Object responseData = response.getBody().getFinancialTxnResponseData();
             if (responseData instanceof List) {
-                financialTxnResponseDataList = (List) responseData;
+                try {
+                    financialTxnResponseDataList = ReceivingUtils.castList(FinancialTxnResponseData.class, (List) responseData);
+                } catch (IOException e) {
+                    throw new FinancialTransException("Failed to parse response from Financial Transaction.");
+                }
                 if (CollectionUtils.isEmpty(financialTxnResponseDataList)) {
                     log.error("Financial Transaction data not found for url " + url);
                 }
             } else {
-                financialTxnResponseDataList.add((FinancialTxnResponseData) responseData);
+                try {
+                    financialTxnResponseDataList.add(ReceivingUtils.castObject(FinancialTxnResponseData.class,
+                            responseData));
+                } catch (IOException e) {
+                    throw new FinancialTransException("Failed to parse response from Financial Transaction.");
+                }
             }
         } else {
             log.error("Financial Transaction data not found for url " + url);
