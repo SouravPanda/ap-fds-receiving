@@ -10,9 +10,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AdditionalResponse {
-
-    private String trailerNumber;
-    private String carrierCode;
     private Long lineCount;
     private Double totalCostAmount;
     private Double totalRetailAmount;
