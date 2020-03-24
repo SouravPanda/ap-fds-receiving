@@ -113,9 +113,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                         t -> {
                             ReceivingSummaryResponse response = receivingSummaryResponseConverter.convert(t);
                             if (responseMap.get(t.get_id()) != null) {
-                                //response.setCarrierCode(responseMap.get(t.get_id()).getCarrierCode());
-                                //response.setTrailerNumber(responseMap.get(t.get_id()).getTrailerNumber());
-                               // response.setFreightId(responseMap.get(t.get_id()).getFreightId());
                                 response.setLineCount(responseMap.get(t.get_id()).getLineCount() == null ?
                                         defaultValuesConfigProperties.getLineCount() :
                                         responseMap.get(t.get_id()).getLineCount() );
@@ -292,12 +289,10 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                             receiveSummary.getTotalRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
                 }
                 response.setLineCount((long) lineList.size());
-               //getFreightResponse(receiveSummary, response);
                 lineResponseMap.put(receiveSummary.get_id(), response);
             } else if (CollectionUtils.isNotEmpty(itemNumbers) || CollectionUtils.isNotEmpty(upcNumbers)) {
                 iterator.remove();
             } else {
-               // getFreightResponse(receiveSummary, response);
                 response.setTotalCostAmount(receiveSummary.getTotalCostAmount()!= null ?
                         receiveSummary.getTotalCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
                 response.setTotalRetailAmount(receiveSummary.getTotalRetailAmount() != null ?
@@ -324,26 +319,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         }
         return criteriaDefinition;
     }
-
-    /******* receive -line data fetching   *********/
-
-    /******* receive -freight data fetching   *********/
-
-    /*private void getFreightResponse(ReceiveSummary receiveSummary, AdditionalResponse additionalResponse) {
-        FreightResponse freightResponse = makeQueryForFreight(receiveSummary);
-        if (freightResponse!=null) {
-            additionalResponse.setFreightId(freightResponse.getFreightId());
-        }
-    }*/
-
-    /*private FreightResponse makeQueryForFreight(ReceiveSummary receiveSummary) {
-        if (receiveSummary.getFreightBillExpandId() != null) {
-            return executeQueryReceiveFreight(receiveSummary.getFreightBillExpandId());
-        }
-
-        return null;
-    }*/
-    /******* receive -freight data fetching   *********/
 
     /******* Common Methods  *********/
 

@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection="receive-freight")
 public class FreightResponse {
 
     private Long freightId;
