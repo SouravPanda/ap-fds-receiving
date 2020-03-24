@@ -193,4 +193,13 @@ public class ReceivingUtils {
         ObjectMapper objMapper = new ObjectMapper();
         return objMapper.readValue(objMapper.writeValueAsString(c), clazz);
     }
+
+    public static boolean isNumeric(String str) {
+        try {
+            Long.parseLong(str);
+            return true;
+        } catch(NumberFormatException e){
+            return false;
+        }
+    }
 }

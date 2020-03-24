@@ -23,7 +23,9 @@ public enum FinancialTxnRequestQueryParameters {
     RECEIPTDATESTART("startDate"),
     RECEIPTDATEEND("endDate"),
     PURCHASEORDERNUMBER("poNbr"),
-    LOCATIONTYPE("locationType");
+    LOCATIONTYPE("locationType"),
+    TRANSACTIONID("transactionId"),
+    TXNSEQNBR("txnSeqNbr");
 
     @Getter
     private String finTxnRequestQueryParam;
