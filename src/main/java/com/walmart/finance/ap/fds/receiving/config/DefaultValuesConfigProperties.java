@@ -58,6 +58,14 @@ public class DefaultValuesConfigProperties {
 
     private String trailerNbr;
 
+    private String billNbr;
+
+    private Integer pymtStatCode;
+
+    private Long freightId;
+
+
+
 
 
 }

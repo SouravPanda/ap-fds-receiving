@@ -71,4 +71,7 @@ public class ReceivingConstants {
     public final static String OPERATION = "operation";
     public final static String OPERATION_TYPE = "UPDATE";
 
+    public static final int RETRY_BACKOFF = 2000;
+    public static final int RETRY_ATTEMPTS = 5;
+
 }

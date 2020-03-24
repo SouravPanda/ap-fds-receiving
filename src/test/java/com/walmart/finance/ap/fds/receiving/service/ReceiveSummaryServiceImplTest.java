@@ -114,18 +114,20 @@ public class ReceiveSummaryServiceImplTest {
         Query query = new Query();
         ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", "1122", 99, "776",
                 3680, 0,
-                LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",
+                LocalDate.of(1986, 12, 12), 'L', 78, 1L,
                 9.0, 7.0,
                 1L, 0, 0, 10.0);
 
-        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", "1122", 99,
-                "776", 3680, 0,
-                LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77",
+        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", "1122", 99, "776",
+                3680, 0,
+                LocalDate.of(1986, 12, 12), 'L', 78, 1L,
                 9.0, 7.0,
-                0L, 0, 0, 10.0);
+                1L, 0, 0, 10.0);
 
-        FreightResponse freightResponse = new FreightResponse(new Long(4665267), "0", "0");
-        FreightResponse freightResponseAt = new FreightResponse(new Long(4665267), "0", "0");
+        FreightResponse freightResponse = new FreightResponse(new Long(4665267), "0", "0",123,"34567",20.00, LocalDate.now(),new Long(12),new Long(45),"4",0,"02","EA");
+        FreightResponse freightResponseAt = new FreightResponse(new Long(4665267), "0", "0",123,"34567",20.00, LocalDate.now(),new Long(12),new Long(45),"4",0,"02","EA");
+
+
         List<FreightResponse> listOfFreight = new ArrayList<>();
         listOfFreight.add(freightResponse);
         listOfFreight.add(freightResponseAt);
@@ -196,18 +198,18 @@ public class ReceiveSummaryServiceImplTest {
         listOfItemNumbers.add("89");
         ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", "1122", 99, "776",
                 3680, 0,
-                LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",
+                LocalDate.of(1986, 12, 12), 'L', 78, 1L,
                 9.0, 7.0,
-                0L, 0, 0, 10.0);
+                1L, 0, 0, 10.0);
 
-        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", "1122", 99,
-                "776", 3680, 0,
-                LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77",
+        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", "1122", 99, "776",
+                3680, 0,
+                LocalDate.of(1986, 12, 12), 'L', 78, 1L,
                 9.0, 7.0,
-                0L, 0, 0, 10.0);
+                1L, 0, 0, 10.0);
 
-        FreightResponse freightResponse = new FreightResponse(new Long(4665267), "0", "0");
-        FreightResponse freightResponseAt = new FreightResponse(new Long(4665267), "0", "0");
+        FreightResponse freightResponse = new FreightResponse(new Long(4665267), "0", "0",123,"34567",20.00, LocalDate.now(),new Long(12),new Long(45),"4",0,"02","EA");
+        FreightResponse freightResponseAt = new FreightResponse(new Long(4665267), "0", "0",123,"34567",20.00, LocalDate.now(),new Long(12),new Long(45),"4",0,"02","EA");
         List<FreightResponse> listOfFreight = new ArrayList<>();
         listOfFreight.add(freightResponse);
         listOfFreight.add(freightResponseAt);
@@ -281,18 +283,18 @@ public class ReceiveSummaryServiceImplTest {
         listOfItemNumbers.add("89");
         ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", "1122", 99, "776",
                 3680, 0,
-                LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",
+                LocalDate.of(1986, 12, 12), 'L', 78, 1L,
                 9.0, 7.0,
-                0L, 0, 0, 10.0);
+                1L, 0, 0, 10.0);
 
-        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", "1122", 99,
-                "776", 3680, 0,
-                LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77",
+        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", "1122", 99, "776",
+                3680, 0,
+                LocalDate.of(1986, 12, 12), 'L', 78, 1L,
                 9.0, 7.0,
-                0L, 0, 0, 10.0);
+                1L, 0, 0, 10.0);
 
-        FreightResponse freightResponse = new FreightResponse(new Long(4665267), "0", "0");
-        FreightResponse freightResponseAt = new FreightResponse(new Long(4665267), "0", "0");
+        FreightResponse freightResponse = new FreightResponse(new Long(4665267), "0", "0",123,"34567",20.00, LocalDate.now(),new Long(12),new Long(45),"4",0,"02","EA");
+        FreightResponse freightResponseAt = new FreightResponse(new Long(4665267), "0", "0",123,"34567",20.00, LocalDate.now(),new Long(12),new Long(45),"4",0,"02","EA");
         List<FreightResponse> listOfFreight = new ArrayList<>();
         listOfFreight.add(freightResponse);
         listOfFreight.add(freightResponseAt);
@@ -364,18 +366,18 @@ public class ReceiveSummaryServiceImplTest {
         List<String> listOfUpcNumbers = new ArrayList<>();
         listOfItemNumbers.add("9");
         listOfItemNumbers.add("89");
-        ReceivingSummaryResponse receivingSummaryResponse = new ReceivingSummaryResponse("7778", "1122", 99, "776",
+        ReceivingSummaryResponse receivingSummaryResponse =new ReceivingSummaryResponse("7778", "1122", 99, "776",
                 3680, 0,
-                LocalDate.of(1986, 12, 12), 'L', 78, "HH89", "77",
+                LocalDate.of(1986, 12, 12), 'L', 78, 1L,
                 9.0, 7.0,
-                0L, 0, 0, 10.0);
-        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", "1122", 99,
-                "776", 3680, 0,
-                LocalDate.of(1986, 12, 12), 'L', 78, "998H", "77",
+                1L, 0, 0, 10.0);
+        ReceivingSummaryResponse receivingSummaryResponseAt = new ReceivingSummaryResponse("7778", "1122", 99, "776",
+                3680, 0,
+                LocalDate.of(1986, 12, 12), 'L', 78, 1L,
                 9.0, 7.0,
-                0L, 0, 0, 10.0);
-        FreightResponse freightResponse = new FreightResponse(new Long(4665267), "0", "0");
-        FreightResponse freightResponseAt = new FreightResponse(new Long(4665267), "0", "0");
+                1L, 0, 0, 10.0);
+        FreightResponse freightResponse =  new FreightResponse(new Long(4665267), "0", "0",123,"34567",20.00, LocalDate.now(),new Long(12),new Long(45),"4",0,"02","EA");
+        FreightResponse freightResponseAt = new FreightResponse(new Long(4665267), "0", "0",123,"34567",20.00, LocalDate.now(),new Long(12),new Long(45),"4",0,"02","EA");
         List<FreightResponse> listOfFreight = new ArrayList<>();
         listOfFreight.add(freightResponse);
         listOfFreight.add(freightResponseAt);
