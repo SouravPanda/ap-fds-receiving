@@ -1,12 +1,12 @@
 package com.walmart.finance.ap.fds.receiving.integrations;
 
 import com.google.common.base.Enums;
+import com.walmart.finance.ap.fds.receiving.common.ReceivingUtils;
 import com.walmart.finance.ap.fds.receiving.exception.FinancialTransException;
 import com.walmart.finance.ap.fds.receiving.mesh.FinancialTxnMeshHeadersGenerator;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestCombinations;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import lombok.Data;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,12 +17,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.nio.charset.Charset;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,8 +61,25 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
             log.error("Failed to get response from Financial Transaction.", e);
             throw new FinancialTransException("Failed to get response from Financial Transaction.");
         }
-        if (response != null && response.getBody() != null && CollectionUtils.isNotEmpty(response.getBody().getFinancialTxnResponseDataList())) {
-            financialTxnResponseDataList = response.getBody().getFinancialTxnResponseDataList();
+        if (response != null && response.getBody() != null && response.getBody().getFinancialTxnResponseData() != null) {
+            Object responseData = response.getBody().getFinancialTxnResponseData();
+            if (responseData instanceof List) {
+                try {
+                    financialTxnResponseDataList = ReceivingUtils.castList(FinancialTxnResponseData.class, (List) responseData);
+                } catch (IOException e) {
+                    throw new FinancialTransException("Failed to parse response from Financial Transaction.");
+                }
+                if (CollectionUtils.isEmpty(financialTxnResponseDataList)) {
+                    log.error("Financial Transaction data not found for url " + url);
+                }
+            } else {
+                try {
+                    financialTxnResponseDataList.add(ReceivingUtils.castObject(FinancialTxnResponseData.class,
+                            responseData));
+                } catch (IOException e) {
+                    throw new FinancialTransException("Failed to parse response from Financial Transaction.");
+                }
+            }
         } else {
             log.error("Financial Transaction data not found for url " + url);
         }
@@ -123,6 +139,10 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
                 break;
             case LOCATIONNUMBER_RECEIPTDATESTART_RECEIPTDATEEND:
                 url += "/locationType/S/origStoreNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam());
+                break;
+            case TRANSACTIONID_TRANSACTIONSEQNBR:
+                url += "transactionId/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.TRANSACTIONID.getQueryParam())
+                        + "/txnSeqNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.TXNSEQNBR.getQueryParam());
                 break;
 
         }
