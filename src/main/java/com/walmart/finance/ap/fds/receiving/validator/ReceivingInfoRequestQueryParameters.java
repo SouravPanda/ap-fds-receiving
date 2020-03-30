@@ -23,7 +23,10 @@ public enum ReceivingInfoRequestQueryParameters {
     RECEIPTDATEEND("receiptDateEnd"),
     LINENUMBERFLAG("lineNumberFlag"),
     COUNTRYCODE("countryCode"),
-    LOCATIONTYPE("locationType");
+    LOCATIONTYPE("locationType"),
+    TRANSACTIONID("transactionId"),
+    TXNSEQNBR("txnSeqNbr");
+
 
     @Getter
     private String queryParam;
