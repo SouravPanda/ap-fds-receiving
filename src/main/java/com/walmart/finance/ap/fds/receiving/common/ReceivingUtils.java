@@ -10,16 +10,14 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ReceivingUtils {
 
@@ -174,6 +172,29 @@ public class ReceivingUtils {
                     ReceivingInfoResponseV1.class);
         } catch (java.io.IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static <T> List<T> castList(Class<? extends T> clazz, Collection<?> c) throws IOException {
+        List<T> r = new ArrayList<>(c.size());
+        ObjectMapper objMapper = new ObjectMapper();
+        for (Object o : c) {
+            r.add(objMapper.readValue(objMapper.writeValueAsString(o), clazz));
+        }
+        return r;
+    }
+
+    public static <T> T castObject(Class<? extends T> clazz, Object c) throws IOException {
+        ObjectMapper objMapper = new ObjectMapper();
+        return objMapper.readValue(objMapper.writeValueAsString(c), clazz);
+    }
+
+    public static boolean isNumeric(String str) {
+        try {
+            Long.parseLong(str);
+            return true;
+        } catch(NumberFormatException e){
+            return false;
         }
     }
 }

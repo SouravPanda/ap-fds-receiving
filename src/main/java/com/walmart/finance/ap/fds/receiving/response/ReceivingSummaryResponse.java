@@ -42,19 +42,7 @@ public class ReceivingSummaryResponse {
     private Integer vendorNumber;
 
     @NotEmpty
-    private String carrierCode;
-
-    @NotEmpty
-    private String trailerNumber;
-
-//    @NotEmpty
-//    private String associateName;
-
-//    @NotEmpty
-//    private String authorizedBy;
-
-//    @NotEmpty
-//    private LocalDateTime authorizedDate;
+    private Long freightId;
 
     @NotEmpty
     private Double totalCostAmount;

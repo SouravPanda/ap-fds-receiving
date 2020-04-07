@@ -18,7 +18,10 @@ public enum ReceivingErrors {
     INVALIDQUERYPARAMS("please enter valid query parameters"),
     INVALIDDATATYPE("Data Type is invalid for input values"),
     INVALIDLINESEQUENCE("Invalid value, lineSequenceNumber"),
-    INVALIDLINESEQUENCEDETAILS("it should be in an integer");
+    INVALIDLINESEQUENCEDETAILS("it should be in an integer"),
+    RECEIVINGINFO("Receipt Line is not matching for the upc numbers or item numbers"),
+    FREIGHTIDDETAILS(", it should be a number"),
+    CONTENTNOTFOUNDFREIGHT("Freight details not found for the given id: ");
 
     @Getter
     private String parameterName;

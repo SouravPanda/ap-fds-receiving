@@ -6,9 +6,9 @@ import com.walmart.finance.ap.fds.receiving.config.DefaultValuesConfigProperties
 import com.walmart.finance.ap.fds.receiving.config.ReceivingLineComparator;
 import com.walmart.finance.ap.fds.receiving.config.ReceivingSummaryComparator;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
+import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
-import com.walmart.finance.ap.fds.receiving.factory.SummaryBottleDepositFactory;
 import com.walmart.finance.ap.fds.receiving.integrations.FinancialTxnIntegrationService;
 import com.walmart.finance.ap.fds.receiving.integrations.FinancialTxnResponseData;
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
@@ -75,8 +75,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     @Autowired
     FinancialTxnIntegrationService financialTxnIntegrationService;
 
-    @Autowired
-    SummaryBottleDepositFactory summaryBottleDepositFactory;
 
     /**
      * @param allRequestParams
@@ -244,6 +242,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         return receiveLines;
     }
 
+
+    // TO DO
     private FreightResponse executeQueryInFreight(Long id) {
         FreightResponse receiveFreight = null;
         if (id != null) {
@@ -547,7 +547,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             }
             iteratorLine.remove();
         }
-        Map<Long, FreightResponse> freightResponseMap = freightResponseList.stream().collect(Collectors.toMap(FreightResponse::getId, freightResponse -> freightResponse));
+        Map<Long, FreightResponse> freightResponseMap = freightResponseList.stream().collect(Collectors.toMap(FreightResponse::getFreightId, freightResponse -> freightResponse));
 
         //Map<FinancialTxnResponseData, ReceiveSummary> finTransRecvSummaryMap = new HashMap<>();
         for (FinancialTxnResponseData financialTxnResponseData : financialTxnResponseDataList) {
@@ -565,7 +565,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             if (receiveSummaryMap.containsKey(id)) {
                 financialTxnReceivingMap.put(financialTxnResponseData, receiveSummaryMap.getOrDefault(id, new ReceiveSummary()));
             }
-
 
 
             ReceivingInfoResponseV1 receivingInfoResponseV1;
@@ -586,9 +585,21 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                                 , new FreightResponse()
                                 , allRequestParams);
             }
+            if( ! ( allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()) == null  || allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()).isEmpty() ) ||
+                    ! ( allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()) == null || allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()).isEmpty())){
+                if (!(StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()))
+                        && allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()).equalsIgnoreCase("Y")) && !receivingInfoResponseV1.getReceivingInfoLineResponses().isEmpty()){
+                    receivingInfoResponseV1.setReceivingInfoLineResponses(null);
+                }else if(receivingInfoResponseV1.getReceivingInfoLineResponses().isEmpty()){
+                    continue;
+                }
+            }
+
             receivingInfoResponses.add(receivingInfoResponseV1);
         }
 
+        if(receivingInfoResponses.isEmpty())
+            throw new ContentNotFoundException(ReceivingErrors.RECEIVINGINFO.getParameterName(), ReceivingErrors.VALIDID.getParameterName());
         return receivingInfoResponses;
     }
 
@@ -777,7 +788,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             }
 
 
-            receivingInfoResponseV1.setBottleDepositAmount(summaryBottleDepositFactory.getBottleDeposit(allRequestParams.get("locationType")).getBottleDepositAmount(lineResponseList));
+            receivingInfoResponseV1.setBottleDepositAmount(receiveSummary.getBottleDepositAmount() != null ?
+                    receiveSummary.getBottleDepositAmount() : defaultValuesConfigProperties.getBottleDepositAmount());
 
             receivingInfoResponseV1.setControlSequenceNumber(receiveSummary.getControlSequenceNumber() != null ?
                     receiveSummary.getControlSequenceNumber() : defaultValuesConfigProperties.getControlSequenceNumber());
@@ -795,8 +807,10 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 receivingInfoResponseV1.setParentReceivingDate(receiveSummary.getReceivingDate());
             }
         }
-        if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()))
-                && allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()).equalsIgnoreCase("Y")) {
+        if ( ! ( allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()) == null  || allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()).isEmpty() ) ||
+                ! ( allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()) == null || allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()).isEmpty())
+                || ( StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()))
+                && allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()).equalsIgnoreCase("Y"))) {
             ReceivingUtils.updateLineResponse(lineResponseList);
             List<ReceivingInfoLineResponse> lineInfoList = lineResponseList.stream().map(t -> convertToLineResponse(t)).collect(Collectors.toList());
             receivingInfoResponseV1.setReceivingInfoLineResponses(lineInfoList);

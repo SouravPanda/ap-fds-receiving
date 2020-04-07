@@ -71,6 +71,9 @@ public class ReceivingConstants {
     public final static String OPERATION = "operation";
     public final static String OPERATION_TYPE = "UPDATE";
 
+    public static final int RETRY_BACKOFF = 2000;
+    public static final int RETRY_ATTEMPTS = 5;
+
     public final static String TIMESTAMP_TIME_ZERO = " 00:00:00";
     public final static String TIMESTAMP_23_59_59 = " 23:59:59";
     public final static String VENDOR_NUMBER_URL_PARAM = "vendorNumber";

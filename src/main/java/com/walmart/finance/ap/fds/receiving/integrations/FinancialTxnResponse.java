@@ -15,5 +15,5 @@ import java.util.List;
 public class FinancialTxnResponse {
 
     @JsonProperty("data")
-    private List<FinancialTxnResponseData> financialTxnResponseDataList;
+    private Object financialTxnResponseData;
 }

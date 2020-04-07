@@ -111,7 +111,9 @@ public class ReceivingInfoServiceImplTest {
             }
         };
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(receivingLines);
-        FreightResponse freightResponse = new FreightResponse(new Long(31721227), "ARFW", "972035");
+        FreightResponse freightResponse =
+        new FreightResponse(new Long(31721227), "ARFW", "972035",123,"34567",20.00, LocalDate.now(),new Long(12),new Long(45),"4",0,"02","EA");
+
         when(mongoTemplate.findById(Mockito.any(Long.class), eq(FreightResponse.class), Mockito.any())).thenReturn(freightResponse);
 
 // Receiving Info Response Creation
@@ -189,7 +191,7 @@ public class ReceivingInfoServiceImplTest {
         };
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(receivingLines);
 
-        FreightResponse freightResponse = new FreightResponse(new Long(31721227), "ARFW", "972035");
+        FreightResponse freightResponse = new FreightResponse(new Long(31721227), "ARFW", "972035",123,"34567",20.00, LocalDate.now(),new Long(12),new Long(45),"4",0,"02","EA");
         when(mongoTemplate.findById(Mockito.any(Long.class), eq(FreightResponse.class), Mockito.any())).thenReturn(freightResponse);
         // Receiving Info Response Creation
         List<ReceivingInfoLineResponse> receivingInfoLineResponses = new ArrayList<ReceivingInfoLineResponse>() {
@@ -319,7 +321,7 @@ public class ReceivingInfoServiceImplTest {
 
         List<FreightResponse> freightResponses = new ArrayList<FreightResponse>() {
             {
-                add(new FreightResponse(null, null, null));
+                add( new FreightResponse(new Long(31721227), "ARFW", "972035",123,"34567",20.00, LocalDate.now(),new Long(12),new Long(45),"4",0,"02","EA"));
             }
         };
         when(mongoTemplate.find(Mockito.any(Query.class), eq(FreightResponse.class), Mockito.any())).thenReturn(freightResponses);
