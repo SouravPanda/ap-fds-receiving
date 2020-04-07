@@ -46,4 +46,14 @@ public class ProducerTest {
         Assert.assertNotNull(objNode);
         producer.sendSummaryToEventHub(objNode, "test");
     }
+
+    @Test
+    public void sendSummaryLineToEventHub()  {
+        when(customSource.summaryTopic()).thenReturn(messageChannel);
+        when(messageChannel.send(MessageBuilder.withPayload("test").build())).thenReturn(Boolean.TRUE);
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode objNode = mapper.createObjectNode();
+        Assert.assertNotNull(objNode);
+        producer.sendSummaryLineToEventHub(objNode, "test");
+    }
 }
