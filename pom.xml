@@ -306,7 +306,16 @@
                         </goals>
                         <configuration>
                             <excludes>
+                                <exclude>**/common/**/*</exclude>
+                                <exclude>**/config/**/*</exclude>
+                                <exclude>**/daodb2/**/*</exclude>
+                                <exclude>**/exception/**/*</exclude>
+                                <exclude>**/factory/**/*</exclude>
                                 <exclude>**/model/**/*</exclude>
+                                <exclude>**/mongo/**/*</exclude>
+                                <exclude>**/mysql/config/**/*</exclude>
+                                <exclude>**/mysql/data/**/*</exclude>
+                                <exclude>**/mysql/repo/**/*</exclude>
                             </excludes>
                         </configuration>
                     </execution>
