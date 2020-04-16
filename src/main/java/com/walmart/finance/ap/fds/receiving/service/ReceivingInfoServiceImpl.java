@@ -478,6 +478,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         Set<String> partitionNumbers = new HashSet<>();
         List<String> summaryReferences = new ArrayList<>();
         Map<String, ReceiveSummary> receiveSummaryMap = new HashMap<>();
+        List<String> receivingControlNumberList = new ArrayList<>();
 
         for (FinancialTxnResponseData financialTxnResponseData : financialTxnResponseDataList) {
 
@@ -521,11 +522,14 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 if(null!=receiveSummary.get_id()) {
                     summaryReferences.add(receiveSummary.get_id());
                 }
+                if (receiveSummary.getReceivingControlNumber() != null) {
+                    receivingControlNumberList.add(receiveSummary.getReceivingControlNumber());
+                }
             }
 
         }
 
-        List<ReceivingLine> lineResponseList = getLineResponseList(allRequestParams,partitionNumbers,summaryReferences);
+        List<ReceivingLine> lineResponseList = getLineResponseList(allRequestParams,partitionNumbers,summaryReferences,receivingControlNumberList);
 
         List<FreightResponse> freightResponseList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(freightCriteriaList)) {
@@ -605,7 +609,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
 
     private List<ReceivingLine> getLineResponseList(Map<String,
-            String> allRequestParams, Set<String> partitionNumbers,List<String> summaryReferences) {
+            String> allRequestParams, Set<String> partitionNumbers,List<String> summaryReferences,List<String> receivingControlNumbers) {
         List<ReceivingLine> lineResponseList;
         Criteria criteriaDefinition = new Criteria();
         if (CollectionUtils.isNotEmpty(partitionNumbers)) {
@@ -617,6 +621,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()))) {
             List<String> itemNumbers = Arrays.asList(allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()).split(","));
             criteriaDefinition.and(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Long::parseLong).collect(Collectors.toList()));
+        }
+        if (allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam()).equals(LOCATION_TYPE_STORE) && CollectionUtils.isNotEmpty(receivingControlNumbers)) {
+            criteriaDefinition.and(ReceivingLineParameters.RECEIVINGCONTROLNUMBER.getParameterName()).in(receivingControlNumbers);
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()))) {
             List<String> upcNumberList =
