@@ -108,18 +108,10 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             if (CollectionUtils.isEmpty(receiveSummaries)) {
                 throw new NotFoundException(ReceivingErrors.CONTENTNOTFOUNDSUMMARY.getParameterName(), ReceivingErrors.INVALIDQUERYPARAMS.getParameterName());
             } else {
-                Map<String, AdditionalResponse> responseMap = getLineResponseMap(receiveSummaries, allRequestParams);
-                responseList = receiveSummaries.stream().map(
+               responseList = receiveSummaries.stream().map(
                         t -> {
                             ReceivingSummaryResponse response = receivingSummaryResponseConverter.convert(t);
-                            if (responseMap.get(t.get_id()) != null) {
-                                response.setLineCount(responseMap.get(t.get_id()).getLineCount() == null ?
-                                        defaultValuesConfigProperties.getLineCount() :
-                                        responseMap.get(t.get_id()).getLineCount() );
-                                response.setTotalCostAmount(responseMap.get(t.get_id()).getTotalCostAmount());
-                                response.setTotalRetailAmount(responseMap.get(t.get_id()).getTotalRetailAmount());
-                            }
-                            return response;
+                           return response;
                         }
                 ).collect(Collectors.toList());
                 if (CollectionUtils.isEmpty(responseList)) {
