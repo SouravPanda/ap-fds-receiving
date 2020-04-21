@@ -1,17 +1,12 @@
 package com.walmart.finance.ap.fds.receiving.common;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
-import com.walmart.finance.ap.fds.receiving.integrations.FinancialTxnIntegrationServiceImpl;
-import com.walmart.finance.ap.fds.receiving.model.ReceiveSummaryCosmosDBParameters;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingInfoResponseV1;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
@@ -101,8 +96,8 @@ public class ReceivingUtils {
                 && allParams.containsKey(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam())) {
             /* This flow will be applicable for requests which has 'receipt start date' and 'receipt end date' as a
             part of the request */
-            LocalDateTime startDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATESTART) + " 00:00:00");
-            LocalDateTime endDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATEEND) + " 00:00:00");
+            LocalDateTime startDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATESTART) + ReceivingConstants.TIMESTAMP_TIME_ZERO);
+            LocalDateTime endDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATEEND) + ReceivingConstants.TIMESTAMP_TIME_ZERO);
             Period diff = Period.between(startDate.toLocalDate(), endDate.toLocalDate());
             int adjustedMonthsTodDisplay =
                     new Double(Math.ceil((diff.toTotalMonths() + 2) / monthsPerShard.doubleValue()) * monthsPerShard)
@@ -135,8 +130,8 @@ public class ReceivingUtils {
                 && allParams.containsKey(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam())) {
             /* This flow will be applicable for requests which has 'receipt start date' and 'receipt end date' as a
             part of the request */
-            LocalDateTime startDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATESTART) + " 00:00:00");
-            LocalDateTime endDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATEEND) + " 00:00:00");
+            LocalDateTime startDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATESTART) + ReceivingConstants.TIMESTAMP_TIME_ZERO);
+            LocalDateTime endDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATEEND) + ReceivingConstants.TIMESTAMP_TIME_ZERO);
             Period diff = Period.between(startDate.toLocalDate(), endDate.toLocalDate());
             int adjustedMonthsTodDisplay =
                     new Double(Math.ceil((diff.toTotalMonths() + 2) / monthsPerShard.doubleValue()) * monthsPerShard)

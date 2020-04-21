@@ -377,6 +377,7 @@ public class ReceivingInfoServiceImplTest {
                 add(response);
             }
         };
+        Assert.assertNotNull(response);
         // Testing method
         Map<String, String> allRequestParams = new HashMap<>();
         allRequestParams.put("scenario", ReceivingInfoRequestCombinations.INVOICEID.name());

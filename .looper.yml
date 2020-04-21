@@ -29,6 +29,7 @@ flows:
     - shell: echo "pushImageToDevRegistry"
     - call: readpom
     - mvn clean install
+    - call: runsonar
     - call: pushImageToDevRegistry
 
   pr:
@@ -42,6 +43,8 @@ flows:
     - git fetch --all
     - git checkout master
     - echo "release flow called with version $version"
+    - mvn clean install
+    - call: runsonar
     - mvn clean install
     - call: pushImageToReleaseRegistry
 

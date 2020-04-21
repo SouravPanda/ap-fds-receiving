@@ -1,13 +1,13 @@
 package com.walmart.finance.ap.fds.receiving.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -57,6 +57,7 @@ public class ReceivingSummaryResponse {
 //    @NotEmpty
 //    private String parentReceiptNumber;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @NotEmpty
     private Long lineCount;
 

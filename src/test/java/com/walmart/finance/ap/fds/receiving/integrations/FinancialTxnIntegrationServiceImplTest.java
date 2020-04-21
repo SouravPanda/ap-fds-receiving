@@ -1,10 +1,9 @@
 package com.walmart.finance.ap.fds.receiving.integrations;
 
-import com.walmart.finance.ap.fds.receiving.exception.FinancialTransException;
 import com.walmart.finance.ap.fds.receiving.mesh.FinancialTxnMeshHeadersGenerator;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestCombinations;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
-import org.apache.commons.codec.binary.Base64;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +16,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -108,7 +106,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         HttpStatusCodeException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND);
         when(headersGenerator.getRequestHeaders()).thenReturn(this.requestHeaders);
-        org.assertj.core.api.Assertions.assertThat(financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap).isEmpty());
+        Assert.assertTrue(financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap).isEmpty());
     }
 
     @Test
@@ -134,7 +132,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         List<FinancialTxnResponseData> financialTxnResponseDataList = new ArrayList<>();
         financialTxnResponseDataList.add(financialTxnResponseData);
         when(headersGenerator.getRequestHeaders()).thenReturn(this.requestHeaders);
-        org.assertj.core.api.Assertions.assertThat(financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap).isEmpty());
+        Assert.assertTrue(financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap).isEmpty());
     }
 
     private void compareResults(List<FinancialTxnResponseData> receivingInfoResponses, List<FinancialTxnResponseData> result) {
@@ -168,7 +166,7 @@ public class FinancialTxnIntegrationServiceImplTest {
         HttpStatusCodeException exception = new HttpClientErrorException(HttpStatus.BAD_REQUEST);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenThrow(exception);
         when(headersGenerator.getRequestHeaders()).thenReturn(this.requestHeaders);
-        financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap);
+        Assert.assertTrue(financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap).isEmpty());
     }
 
     @Test
@@ -410,6 +408,6 @@ public class FinancialTxnIntegrationServiceImplTest {
         HttpEntity<String> entity = new HttpEntity<>(this.requestHeaders);
         when(restTemplate.exchange(url, HttpMethod.GET, entity, FinancialTxnResponse.class)).thenReturn(null);
         when(headersGenerator.getRequestHeaders()).thenReturn(this.requestHeaders);
-        financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap);
+        Assert.assertTrue(financialTxnIntegrationService.getFinancialTxnDetails(queryParamMap).isEmpty());
     }
 }

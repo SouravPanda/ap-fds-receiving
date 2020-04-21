@@ -833,6 +833,7 @@ public class ReceiveSummaryServiceImplTest {
             mockMap.put(ReceiveSummaryRequestParams.TRANSACTIONTYPE.getParameterName(), "99");
             mockMap.put(ReceiveSummaryRequestParams.UPCNUMBERS.getParameterName(), "888,999");
             receiveSummaryServiceImpl.getReceiveSummary(mockMap);
+            Assert.assertNotNull(receiveSummaryServiceImpl.getReceiveSummary(mockMap));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -860,6 +861,7 @@ public class ReceiveSummaryServiceImplTest {
         when(receivingSummaryResponseConverter.convert(Mockito.any(ReceiveSummary.class))).thenReturn(mock(ReceivingSummaryResponse.class));
         Map mockMap = Mockito.mock(Map.class);
         receiveSummaryServiceImpl.getReceiveSummary(mockMap);
+        Assert.assertNotNull(receiveSummaryServiceImpl.getReceiveSummary(mockMap));
     }
 
 

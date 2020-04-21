@@ -2,6 +2,7 @@ package com.walmart.finance.ap.fds.receiving.integrations;
 
 import com.google.common.base.Enums;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingUtils;
+import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.exception.FinancialTransException;
 import com.walmart.finance.ap.fds.receiving.mesh.FinancialTxnMeshHeadersGenerator;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestCombinations;
@@ -97,45 +98,45 @@ public class FinancialTxnIntegrationServiceImpl implements FinancialTxnIntegrati
                 url += "invoiceId/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.INVOICEID.getQueryParam());
                 break;
             case VENDORNUMBER_PURCHASEORDERNUMBER_INVOICENUMBER:
-                url += "vendorNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())
-                        + "/poNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam())
-                        + "/invoiceNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam());
+                url += ReceivingConstants.VENDOR_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())
+                        + "/" + ReceivingConstants.PO_NUMBER_URL_PARAM+"/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam())
+                        + "/" + ReceivingConstants.INVOICE_NUMBER_URL_PARAM+"/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam());
                 break;
             case VENDORNUMBER_PURCHASEORDERNUMBER_RECEIPTNUMBERS:
-                url += "vendorNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())
-                        + "/poNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam())
-                        + "/receiptNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.RECEIPTNUMBERS.getQueryParam());
+                url += ReceivingConstants.VENDOR_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())
+                        + "/" + ReceivingConstants.PO_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam())
+                        + "/" + ReceivingConstants.RECEIPT_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.RECEIPTNUMBERS.getQueryParam());
                 break;
             case VENDORNUMBER_PURCHASEORDERNUMBER_LOCATIONNUMBER:
-                url += "vendorNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())
-                        + "/poNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam())
-                        + "/origStoreNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam());
+                url += ReceivingConstants.VENDOR_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())
+                        + "/" + ReceivingConstants.PO_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam())
+                        + "/" + ReceivingConstants.ORIG_STORE_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam());
                 break;
             case VENDORNUMBER_LOCATIONNUMBER_INVOICENUMBER:
-                url += "vendorNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())
-                        + "/invoiceNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam())
-                        + "/origStoreNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam());
+                url += ReceivingConstants.VENDOR_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())
+                        + "/" + ReceivingConstants.INVOICE_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam())
+                        + "/" + ReceivingConstants.ORIG_STORE_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam());
                 break;
             case VENDORNUMBER_LOCATIONNUMBER_RECEIPTNUMBERS:
-                url += "vendorNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())
-                        + "/origStoreNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
-                        + "/receiptNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.RECEIPTNUMBERS.getQueryParam());
+                url += ReceivingConstants.VENDOR_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())
+                        + "/" + ReceivingConstants.ORIG_STORE_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
+                        + "/" + ReceivingConstants.RECEIPT_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.RECEIPTNUMBERS.getQueryParam());
                 break;
             case VENDORNUMBER_PURCHASEORDERID:
-                url += "vendorNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())
-                        + "/purchaseOrderId/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.PURCHASEORDERID.getQueryParam());
+                url += ReceivingConstants.VENDOR_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam())
+                        + "/" + ReceivingConstants.PURCHASE_ORDER_ID_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.PURCHASEORDERID.getQueryParam());
                 break;
             case LOCATIONNUMBER_PURCHASEORDERNUMBER_RECEIPTDATESTART_RECEIPTDATEEND:
-                url += "origStoreNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
-                        + "/poNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam());
+                url += ReceivingConstants.ORIG_STORE_NUMBER_URL_PARAM+ "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
+                        + "/" + ReceivingConstants.PO_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.PURCHASEORDERNUMBER.getQueryParam());
                 break;
             case LOCATIONNUMBER_INVOICENUMBER_RECEIPTDATESTART_RECEIPTDATEEND:
-                url += "origStoreNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
-                        + "/invoiceNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam());
+                url += ReceivingConstants.ORIG_STORE_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
+                        + "/" + ReceivingConstants.INVOICE_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam());
                 break;
             case LOCATIONNUMBER_VENDORNUMBER_RECEIPTDATESTART_RECEIPTDATEEND:
-                url += "origStoreNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
-                        + "/vendorNumber/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam());
+                url += ReceivingConstants.ORIG_STORE_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())
+                        + "/"+ReceivingConstants.VENDOR_NUMBER_URL_PARAM + "/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.VENDORNUMBER.getQueryParam());
                 break;
             case LOCATIONNUMBER_RECEIPTDATESTART_RECEIPTDATEEND:
                 url += "/locationType/S/origStoreNbr/" + allRequestParamsClone.remove(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam());

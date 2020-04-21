@@ -1,6 +1,5 @@
 package com.walmart.finance.ap.fds.receiving.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.walmart.finance.ap.fds.receiving.deserializer.LocalDateDeserializer;
