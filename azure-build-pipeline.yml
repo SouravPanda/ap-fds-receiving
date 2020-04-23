@@ -1,0 +1,169 @@
+# Starter pipeline1
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+variables:
+  jdkVersionOption: 1.8
+  jdkArchitectureOption: x64
+  mavenOptions: -Xmx128m
+trigger:
+  - develop
+  - master
+
+schedules:
+  - cron: "0 0 * * *"
+    displayName: Daily midnight build
+    branches:
+      include:
+        - develop
+    always: true
+
+jobs:
+  - job: CI_Job_PullRequest
+    condition: and(ne(variables['System.PullRequest.PullRequestId'],'Null'),eq(variables['Build.SourceBranchName'], 'merge'))
+    pool:
+      name: GBS Linux Build Agent Pool
+    variables:
+      imageversion: $version
+    steps:
+      - script: |
+          echo PR flow triggered
+          mvn -v
+          java -version
+        displayName: PR Flow Triggered
+      - script: echo Build triggered on $(System.PullRequest.SourceBranch) branch
+      - task: PowerShell@2
+        displayName: Read POM.xml
+        inputs:
+          targetType: 'inline'
+          script: |
+            [xml]$pomXml = Get-Content .\pom.xml
+            Write-Host $pomXml.project.version
+            #version
+            $y='$(System.PullRequest.SourceBranch)'
+            $x=$y.split('/')
+            $version=$pomXml.project.version + "-" +$x[3]
+            if ( $version.endswith('-')) { $version=$pomXml.project.version }
+            echo $version
+            Write-Host "##vso[task.setvariable variable=version]$version"
+      - task: SonarQubePrepare@4
+        displayName: Prepare for SonarQube
+        inputs:
+          SonarQube: 'ap-fds-receiving-sqube'
+          scannerMode: 'Other'
+          projectKey: 'ap-fds-receive'
+          extraProperties: |
+            sonar.coverage.exclusions = **/service/ReceivingInfoServiceImpl.java,**/repository/*,**/request/*,**/response/*,**/validator/*,**/messageproducer/*,**/serializer/*,**/mesh/*,**/integrations/*,**/filter/*,**/common/*,**/config/*,**/daodb2/*,**/exception/*,**/factory/*,**/model/*,**/mongo/*,**/mysql/*,**/converter/*,**/dao/*,**/deserializer/*
+      - task: Maven@3
+        displayName: Maven Build
+        inputs:
+          mavenPomFile: 'pom.xml'
+          goals: 'clean install'
+          publishJUnitResults: true
+          testResultsFiles: '**/surefire-reports/TEST-*.xml'
+          javaHomeOption: 'JDKVersion'
+          mavenVersionOption: 'Default'
+          mavenAuthenticateFeed: false
+          effectivePomSkip: false
+          sonarQubeRunAnalysis: true
+          sqMavenPluginVersionChoice: 'latest'
+          checkStyleRunAnalysis: true
+          findBugsRunAnalysis: true
+          pmdRunAnalysis: true
+      - task: SonarQubePublish@4
+        displayName: Publish SonarQube
+        inputs:
+          pollingTimeoutSec: '300'
+      - task: Docker@2
+        displayName: Build and Push To Dev Registry
+        inputs:
+          containerRegistry: 'apfsregistrydev'
+          command: 'buildAndPush'
+          Dockerfile: '**/Dockerfile'
+          repository: ap-fds-receive
+          tags: $(version)
+      - script: echo Tagged image with $(version)
+        displayName: Image version
+  - job: CI_Job_Master_Build
+    condition: eq(variables['Build.SourceBranchName'], 'master')
+    pool:
+      name: GBS Linux Build Agent Pool
+    variables:
+      imageversion: $(version)
+    steps:
+      - script: echo Build triggered on $(Build.SourceBranchName) branch
+      - task: PowerShell@2
+        displayName: Read POM.xml
+        inputs:
+          targetType: 'inline'
+          script: |
+            [xml]$pomXml = Get-Content .\pom.xml
+            Write-Host $pomXml.project.version
+            #version
+            $version=$pomXml.project.version
+            $version=$version -replace "-SNAPSHOT",""
+            Write-Host "##vso[task.setvariable variable=version]$version"
+      - task: Maven@3
+        displayName: Maven Build
+        inputs:
+          mavenPomFile: 'pom.xml'
+          goals: 'clean install'
+          publishJUnitResults: true
+          testResultsFiles: '**/surefire-reports/TEST-*.xml'
+          codeCoverageToolOption: 'JaCoCo'
+          sqMavenPluginVersionChoice: 'pom'
+          javaHomeOption: 'JDKVersion'
+          mavenVersionOption: 'Default'
+          mavenAuthenticateFeed: false
+          effectivePomSkip: false
+      - task: Docker@2
+        displayName: Build and Push To Release registry
+        inputs:
+          containerRegistry: 'apfsregistryrelease'
+          command: 'buildAndPush'
+          Dockerfile: '**/Dockerfile'
+          repository: ap-fds-receive
+          tags: $(version)
+      - script: echo Tagged image with $(version)
+        displayName: Image version
+  - job: CI_Job_Dev_Build
+    condition: eq(variables['Build.SourceBranchName'], 'develop')
+    pool:
+      name: GBS Linux Build Agent Pool
+    variables:
+      imageversion: $(version)
+    steps:
+      - script: echo Build triggered on $(Build.SourceBranchName) branch
+      - task: PowerShell@2
+        displayName: Read POM.xml
+        inputs:
+          targetType: 'inline'
+          script: |
+            [xml]$pomXml = Get-Content .\pom.xml
+            Write-Host $pomXml.project.version
+            #version
+            $version=$pomXml.project.version
+            Write-Host "##vso[task.setvariable variable=version]$version"
+      - task: Maven@3
+        displayName: Maven Build
+        inputs:
+          mavenPomFile: 'pom.xml'
+          goals: 'clean install'
+          publishJUnitResults: true
+          testResultsFiles: 'target/surefire-reports/TEST-*.xml'
+          codeCoverageToolOption: 'JaCoCo'
+          sqMavenPluginVersionChoice: 'pom'
+          javaHomeOption: 'JDKVersion'
+          mavenVersionOption: 'Default'
+          mavenAuthenticateFeed: false
+          effectivePomSkip: false
+      - task: Docker@2
+        displayName: Build and Push To Dev Registry
+        inputs:
+          containerRegistry: 'apfsregistrydev'
+          command: 'buildAndPush'
+          Dockerfile: '**/Dockerfile'
+          repository: ap-fds-receive
+          tags: $(version)
+      - script: echo Tagged image with $(version)
+        displayName: Image version
