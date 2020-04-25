@@ -390,7 +390,7 @@ public class ReceivingInfoServiceImplTest {
         //compareResultsV1(list, result.getData());
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test(expected = RuntimeException.class)
     public void formulateIdReceiptStartDateException() {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(724201901), null, null, null,
                 397646, 18, -5743.12, 640, "6854748957", "ID123",
@@ -415,7 +415,7 @@ public class ReceivingInfoServiceImplTest {
         receivingInfoService.getInfoSeviceDataV1(allRequestParams);
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test(expected = RuntimeException.class)
     public void formulateIdReceiptEndDateException() {
         FinancialTxnResponseData financialTxnResponseData = new FinancialTxnResponseData(new Long(724201901), null, null, null,
                 397646, 18, -5743.12, 640, "6854748957", "ID123",
@@ -466,7 +466,7 @@ public class ReceivingInfoServiceImplTest {
         receivingInfoService.getInfoSeviceDataV1(allRequestParams);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test(expected = RuntimeException.class)
     public void getServiceNotFoundExceptionV1() {
         // Testing method
         Map<String, String> allRequestParams = new HashMap<>();
