@@ -493,52 +493,65 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 //Waiting
             }
 
+
+            List<ReceivingInfoResponseV1> receivingInfoResponseV1List = null;
+
+            List<FinancialTxnResponseData> financialTxnResponseDataList = null;
+
             try {
-                List<ReceivingInfoResponseV1> receivingInfoResponseV1List = receivingFuture.get();
+                receivingInfoResponseV1List = receivingFuture.get();
+                log.info("No. of Records from Receiving - " + receivingInfoResponseV1List.size());
+            } catch (InterruptedException | ExecutionException e) {
+                log.error("Failed to fetch Receiving Data - ", e);
+                throw new RuntimeException("Failed to fetch Financial Info Data.");
+            }
 
-                List<FinancialTxnResponseData> financialTxnResponseDataList = finTxnFuture.get();
-
-                if (CollectionUtils.isEmpty(receivingInfoResponseV1List) && CollectionUtils.isEmpty(financialTxnResponseDataList)) {
-                    throw new NotFoundException("Receiving and Fin Txn data not found for given search criteria.");
-                }
-
-
-                Map<String, ReceivingInfoResponseV1> receivingInfoResponseV1Map =
-                        getReceivingInfoMap(receivingInfoResponseV1List);
-
-                List<ReceivingInfoResponseV1> receivingInfoResponsesList = new ArrayList<>();
-                List<String> receivingInfoResponsesKeyList = new ArrayList<>();
-
-                for (FinancialTxnResponseData financialTxnResponseData : financialTxnResponseDataList) {
-                    Integer storeNumber = (financialTxnResponseData.getOrigStoreNbr() == null || financialTxnResponseData.getOrigStoreNbr() == 0)
-                            ? financialTxnResponseData.getStoreNumber() : financialTxnResponseData.getOrigStoreNbr();
-                    String id = (financialTxnResponseData.getPurchaseOrderId() == null ? 0 :
-                            financialTxnResponseData.getPurchaseOrderId())
-                            + ReceivingConstants.PIPE_SEPARATOR
-                            + (StringUtils.isEmpty(financialTxnResponseData.getReceiveId()) ? "0" :
-                            financialTxnResponseData.getReceiveId()) + ReceivingConstants.PIPE_SEPARATOR
-                            + (storeNumber == null ? 0 : storeNumber) + ReceivingConstants.PIPE_SEPARATOR
-                            + (financialTxnResponseData.getReceivingDate() == null ? "0" :
-                            financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
-                    ReceivingInfoResponseV1 receivingInfoResponseV1 =
-                            receivingInfoResponseV1Map.containsKey(id) ?
-                                    ReceivingUtils.getRecvInfoRespV1Copy(receivingInfoResponseV1Map.get(id)) :
-                                    new ReceivingInfoResponseV1();
-                    if (receivingInfoResponseV1 != null) {
-                        updateReceivingInfoResponseV1(financialTxnResponseData, receivingInfoResponseV1);
-                        receivingInfoResponsesList.add(receivingInfoResponseV1);
-                        receivingInfoResponsesKeyList.add(id);
-                    }
-                }
-                receivingInfoResponsesKeyList.forEach(key -> receivingInfoResponseV1Map.remove(key));
-                receivingInfoResponsesList.addAll(new ArrayList<>(receivingInfoResponseV1Map.values()));
-
-                successMessage.setData(receivingInfoResponsesList);
+            try {
+                financialTxnResponseDataList = finTxnFuture.get();
+                log.info("No. of Records from Fin Txn - " + financialTxnResponseDataList.size());
 
             } catch (InterruptedException | ExecutionException e) {
-
-                e.printStackTrace();
+                log.error("Failed to fetch Financial Info Data - ", e);
+                throw new RuntimeException("Failed to fetch Financial Info Data.");
             }
+
+
+            if (CollectionUtils.isEmpty(receivingInfoResponseV1List) && CollectionUtils.isEmpty(financialTxnResponseDataList)) {
+                throw new NotFoundException("Receiving and Fin Txn data not found for given search criteria.");
+            }
+
+
+            Map<String, ReceivingInfoResponseV1> receivingInfoResponseV1Map =
+                    getReceivingInfoMap(receivingInfoResponseV1List);
+
+            List<ReceivingInfoResponseV1> receivingInfoResponsesList = new ArrayList<>();
+            List<String> receivingInfoResponsesKeyList = new ArrayList<>();
+
+            for (FinancialTxnResponseData financialTxnResponseData : financialTxnResponseDataList) {
+                Integer storeNumber = (financialTxnResponseData.getOrigStoreNbr() == null)
+                        ? financialTxnResponseData.getStoreNumber() : financialTxnResponseData.getOrigStoreNbr();
+                String id = (financialTxnResponseData.getPurchaseOrderId() == null ? 0 :
+                        financialTxnResponseData.getPurchaseOrderId())
+                        + ReceivingConstants.PIPE_SEPARATOR
+                        + (StringUtils.isEmpty(financialTxnResponseData.getReceiveId()) ? "0" :
+                        financialTxnResponseData.getReceiveId()) + ReceivingConstants.PIPE_SEPARATOR
+                        + (storeNumber == null ? 0 : storeNumber) + ReceivingConstants.PIPE_SEPARATOR
+                        + (financialTxnResponseData.getReceivingDate() == null ? "0" :
+                        financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
+                ReceivingInfoResponseV1 receivingInfoResponseV1 =
+                        receivingInfoResponseV1Map.containsKey(id) ?
+                                ReceivingUtils.getRecvInfoRespV1Copy(receivingInfoResponseV1Map.get(id)) :
+                                new ReceivingInfoResponseV1();
+                if (receivingInfoResponseV1 != null) {
+                    updateReceivingInfoResponseV1(financialTxnResponseData, receivingInfoResponseV1);
+                    receivingInfoResponsesList.add(receivingInfoResponseV1);
+                    receivingInfoResponsesKeyList.add(id);
+                }
+            }
+            receivingInfoResponsesKeyList.forEach(key -> receivingInfoResponseV1Map.remove(key));
+            receivingInfoResponsesList.addAll(new ArrayList<>(receivingInfoResponseV1Map.values()));
+
+            successMessage.setData(receivingInfoResponsesList);
 
         }
 
@@ -561,18 +574,14 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     @Override
     public List<ReceivingInfoResponseV1> getReceivingInfoWoFinTxn(Map<String, String> allRequestParams) {
         List<ReceivingInfoResponseV1> receivingInfoResponses = new ArrayList<>();
-        List<Criteria> lineCriteriaList = new ArrayList<>();
         List<Criteria> freightCriteriaList = new ArrayList<>();
         Set<String> partitionKeys = new HashSet<>();
-
 
         if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())) {
             partitionKeys.addAll(ReceivingUtils.getPartitionKeyList(null, allRequestParams,
                     Integer.parseInt(allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())),
                     monthsPerShard,  monthsToDisplay));
         }
-
-
 
         List<ReceiveSummary> receiveSummaries = getSummaryData(allRequestParams);
 

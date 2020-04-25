@@ -358,7 +358,7 @@ public class ReceivingInfoServiceImplTest {
                 add(new com.walmart.finance.ap.fds.receiving.response.InvoiceFinDelNoteChangeLogs(null, "User1234", "Del1234", "OrgDel123"));
             }
         };
-        ReceivingInfoResponseV1 response = new ReceivingInfoResponseV1("ID123", null, null,
+        ReceivingInfoResponseV1 response = new ReceivingInfoResponseV1("1111|22222","ID123", null, null,
                 "0", 640, 99, 18, new Long(1), 6479,
                 new Long(972515962), LocalDate.of(2019, 01, 01), "666666",
                 "A", 0.0, 0.0, null, 397646, null,
