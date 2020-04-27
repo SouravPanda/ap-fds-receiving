@@ -168,4 +168,6 @@ public class ReceivingInfoResponseV1 {
     private String txnTypeDesc;
 
     private String receivingType;
+
+    private List<ReceiveMDSResponse> merchandises;
 }

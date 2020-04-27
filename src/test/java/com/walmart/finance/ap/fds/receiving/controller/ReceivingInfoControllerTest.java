@@ -196,7 +196,7 @@ public class ReceivingInfoControllerTest {
                 7, 6479, 20, 64, 640, "N",
                 null, 10,
                 invoiceFinTransProcessLogs, invoiceFinTransAdjustLogs, invoiceFinDelNoteChangeLogs, lineResponses, 1,
-                "XYZ", "R");
+                "XYZ", "R", null);
         List<ReceivingInfoResponseV1> list = new ArrayList<ReceivingInfoResponseV1>() {
             {
                 add(response);

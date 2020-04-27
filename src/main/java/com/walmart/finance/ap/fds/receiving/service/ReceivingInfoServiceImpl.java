@@ -1006,6 +1006,10 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             if (receivingInfoResponseV1.getParentReceivingDate() == null) {
                 receivingInfoResponseV1.setParentReceivingDate(receiveSummary.getReceivingDate());
             }
+            if (receiveSummary.getMerchandises() != null) {
+                receivingInfoResponseV1.setMerchandises(new ArrayList<>(receiveSummary.getMerchandises().values()));
+            }
+
         }
         if ( ! ( allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()) == null  || allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()).isEmpty() ) ||
                 ! ( allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()) == null || allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()).isEmpty())
