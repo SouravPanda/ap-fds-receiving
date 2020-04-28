@@ -470,7 +470,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
         ReceivingResponse successMessage = new ReceivingResponse();
 
-        if (String.valueOf(allRequestParams.get(ReceivingConstants.SCENARIO)).equals(ReceivingInfoRequestCombinations.TRANSACTIONID_TRANSACTIONSEQNBR.name())) {
+        if (String.valueOf(allRequestParams.get(ReceivingConstants.SCENARIO)).equals(ReceivingInfoRequestCombinations.TRANSACTIONID_TRANSACTIONSEQNBR.name()) ||
+            allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.INVOICEID.getQueryParam()) ||
+                allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.INVOICENUMBER.getQueryParam()) ) {
             List<ReceivingInfoResponseV1> receivingInfoResponses;
             List<FinancialTxnResponseData> financialTxnResponseDataList = financialTxnIntegrationService.getFinancialTxnDetails(allRequestParams);
             if (CollectionUtils.isNotEmpty(financialTxnResponseDataList)) {
