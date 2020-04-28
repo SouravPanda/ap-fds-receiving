@@ -19,7 +19,7 @@ envs:
       MAVEN_ARTIFACT_ID: ''
       GIT_REVISION: ''
       devAcrName: 'apfsregistrydev.azurecr.io' #here goes your container registry name
-      devAcrCred: 'c1f34f31-f988-49d1-b32a-a20de27cd559'
+      devAcrCred: '94794fdf-af70-4ef2-b1e6-f86a18800749'
       releaseAcrName: 'apfsregistryrelease.azurecr.io' #here goes your container registry name
       releaseAcrCred: 'da462fd4-c11d-476b-9255-cd085d4de03e' #here goes your looper credential for the container registry
 

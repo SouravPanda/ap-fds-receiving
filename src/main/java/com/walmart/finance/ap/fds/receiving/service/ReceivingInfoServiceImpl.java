@@ -503,7 +503,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 log.info("No. of Records from Receiving - " + receivingInfoResponseV1List.size());
             } catch (InterruptedException | ExecutionException e) {
                 log.error("Failed to fetch Receiving Data - ", e);
-                throw new RuntimeException("Failed to fetch Financial Info Data.");
+                throw new RuntimeException("Failed to fetch Receiving Data.");
             }
 
             try {
@@ -511,8 +511,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 log.info("No. of Records from Fin Txn - " + financialTxnResponseDataList.size());
 
             } catch (InterruptedException | ExecutionException e) {
-                log.error("Failed to fetch Financial Info Data - ", e);
-                throw new RuntimeException("Failed to fetch Financial Info Data.");
+                log.error("Failed to fetch Financial Txn Data - ", e);
+                throw new RuntimeException("Failed to fetch Financial Txn Data.");
             }
 
 
