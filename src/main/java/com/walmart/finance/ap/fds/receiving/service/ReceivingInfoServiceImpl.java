@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.data.mongodb.core.query.Query;
@@ -159,21 +160,80 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     }
 
     private List<ReceiveSummary> getSummaryData(Map<String, String> allRequestParams) {
-        Query query = searchCriteriaForGet(allRequestParams);
-        log.info("queryForSummaryResponse:getSummaryData :: Query is " + query);
+        List<Criteria> criteria = searchCriteriaForGet(allRequestParams);
+        Aggregation aggregation = ReceivingUtils.aggregateBuilder(criteria);
+        log.info("Aggregation query :getSummaryData :: Query is " + aggregation);
+        List<ReceiveSummary>  receiveSummaryList = mongoTemplate
+                .aggregate(aggregation, mongoTemplate.getCollectionName(ReceiveSummary.class), ReceiveSummary.class)
+                .getMappedResults();
 
         return allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
                 .equals(LOCATION_TYPE_WAREHOUSE)?
-                mergeDuplicateSummaryRecords(executeQueryInSummary(query)) : executeQueryInSummary(query);
+                mergeDuplicateSummaryRecords(receiveSummaryList) : receiveSummaryList;
     }
 
-    private Query searchCriteriaForGet(Map<String, String> paramMap) {
+    private List<Criteria> searchCriteriaForGet(Map<String, String> paramMap) {
         return searchCriteriaForGet(paramMap, null);
     }
 
 
 
-    private Query searchCriteriaForGet(Map<String, String> paramMap, Set<String> partitionKeys) {
+    private List<Criteria> searchCriteriaForGet(Map<String, String> paramMap, Set<String> partitionKeys) {
+
+
+        List<Criteria> criteria = new ArrayList<>();
+
+        if (partitionKeys != null && CollectionUtils.isNotEmpty(partitionKeys)) {
+            Criteria criteriaDefinition =
+                    Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD).in(partitionKeys);
+            criteria.add(criteriaDefinition);
+        }
+        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.CONTROLNUMBER))) {
+            Criteria controlNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.CONTROLNUMBER));
+            criteria.add(controlNumberCriteria);
+        }
+        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.PURCHASEORDERID))) {
+            Criteria purchaseOrderIdCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.PURCHASEORDERID.getParameterName()).is(Long.valueOf(paramMap.get(ReceivingConstants.PURCHASEORDERID)));
+            criteria.add(purchaseOrderIdCriteria);
+        }
+        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.DIVISIONNUMBER))) {
+            Criteria baseDivisionNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.BASEDIVISIONNUMBER.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.DIVISIONNUMBER)));
+            criteria.add(baseDivisionNumberCriteria);
+        }
+        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTDATESTART)) && StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTDATEEND))) {
+            LocalDateTime startDate = getDate(paramMap.get(ReceivingConstants.RECEIPTDATESTART) + ReceivingConstants.TIMESTAMP_TIME_ZERO);
+            LocalDateTime endDate = getDate(paramMap.get(ReceivingConstants.RECEIPTDATEEND) + ReceivingConstants.TIMESTAMP_23_59_59);
+            Criteria mdsReceiveDateCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.DATERECEIVED.getParameterName()).gte(startDate).lte(endDate);
+            criteria.add(mdsReceiveDateCriteria);
+        }
+        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.TRANSACTIONTYPE))) {
+            Criteria transactionTypeCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.TRANSACTIONTYPE.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.TRANSACTIONTYPE)));
+            criteria.add(transactionTypeCriteria);
+        }
+        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.LOCATIONNUMBER))) {
+            criteria.add(ReceivingUtils.getCriteriaForPartitionKey(null, paramMap,
+                    Integer.valueOf(paramMap.get(ReceivingConstants.LOCATIONNUMBER)), monthsPerShard, monthsToDisplay));
+        }
+        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.PURCHASEORDERNUMBER))) {
+            Criteria purchaseOrderNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.PURCHASEORDERNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.PURCHASEORDERNUMBER));
+            criteria.add(purchaseOrderNumberCriteria);
+        }
+        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTNUMBERS))) {
+            Criteria poReceiveIdCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVEID.getParameterName()).in(paramMap.get(ReceivingConstants.RECEIPTNUMBERS).split(","));
+            criteria.add(poReceiveIdCriteria);
+        }
+        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.DEPARTMENTNUMBER))) {
+            Criteria departmentNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.DEPARTMENTNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.DEPARTMENTNUMBER));
+            criteria.add(departmentNumberCriteria);
+        }
+        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.VENDORNUMBER))) {
+            Criteria vendorNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.VENDORNUMBER.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.VENDORNUMBER)));
+            criteria.add(vendorNumberCriteria);
+        }
+
+        return criteria;
+
+        /*
         Query dynamicQuery = new Query();
 
         if (partitionKeys != null && CollectionUtils.isNotEmpty(partitionKeys)) {
@@ -225,6 +285,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         }
         // log.info("query: " + dynamicQuery);
         return dynamicQuery;
+
+        */
     }
 
     /**
