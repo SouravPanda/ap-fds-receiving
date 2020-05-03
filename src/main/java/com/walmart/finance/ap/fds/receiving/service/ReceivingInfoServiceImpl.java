@@ -162,10 +162,13 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     private List<ReceiveSummary> getSummaryData(Map<String, String> allRequestParams) {
         List<Criteria> criteria = searchCriteriaForGet(allRequestParams);
         Aggregation aggregation = ReceivingUtils.aggregateBuilder(criteria);
+
+        long startTime = System.currentTimeMillis();
         log.info("Aggregation query :getSummaryData :: Query is " + aggregation);
-        List<ReceiveSummary>  receiveSummaryList = mongoTemplate
-                .aggregate(aggregation, mongoTemplate.getCollectionName(ReceiveSummary.class), ReceiveSummary.class)
-                .getMappedResults();
+        List<ReceiveSummary>  receiveSummaryList = new ArrayList<>(mongoTemplate
+                .aggregate(aggregation, "receivingSummary", ReceiveSummary.class)
+                .getMappedResults());
+        log.info("Receiving Summary DB Response Time :: "+(System.currentTimeMillis()-startTime));
 
         return allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
                 .equals(LOCATION_TYPE_WAREHOUSE)?
