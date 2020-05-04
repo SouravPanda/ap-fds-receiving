@@ -160,30 +160,39 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     }
 
     private List<ReceiveSummary> getSummaryData(Map<String, String> allRequestParams) {
+        /*
         List<Criteria> criteria = searchCriteriaForGet(allRequestParams);
         Aggregation aggregation = ReceivingUtils.aggregateBuilder(criteria);
 
         long startTime = System.currentTimeMillis();
         log.info("Aggregation query :getSummaryData :: Query is " + aggregation);
         List<ReceiveSummary>  receiveSummaryList = new ArrayList<>(mongoTemplate
-                .aggregate(aggregation, "receivingSummary", ReceiveSummary.class)
+                .aggregate(aggregation, summaryCollection, ReceiveSummary.class)
                 .getMappedResults());
         log.info("Receiving Summary DB Response Time :: "+(System.currentTimeMillis()-startTime));
 
         return allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
                 .equals(LOCATION_TYPE_WAREHOUSE)?
                 mergeDuplicateSummaryRecords(receiveSummaryList) : receiveSummaryList;
+                */
+
+        Query query = searchCriteriaForGet(allRequestParams);
+        log.info("queryForSummaryResponse:getSummaryData :: Query is " + query);
+
+        return allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
+                .equals(LOCATION_TYPE_WAREHOUSE)?
+                mergeDuplicateSummaryRecords(executeQueryInSummary(query)) : executeQueryInSummary(query);
     }
 
-    private List<Criteria> searchCriteriaForGet(Map<String, String> paramMap) {
+    private Query searchCriteriaForGet(Map<String, String> paramMap) {
         return searchCriteriaForGet(paramMap, null);
     }
 
 
 
-    private List<Criteria> searchCriteriaForGet(Map<String, String> paramMap, Set<String> partitionKeys) {
+    private Query searchCriteriaForGet(Map<String, String> paramMap, Set<String> partitionKeys) {
 
-
+        /*
         List<Criteria> criteria = new ArrayList<>();
 
         if (partitionKeys != null && CollectionUtils.isNotEmpty(partitionKeys)) {
@@ -236,7 +245,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
         return criteria;
 
-        /*
+        */
+
         Query dynamicQuery = new Query();
 
         if (partitionKeys != null && CollectionUtils.isNotEmpty(partitionKeys)) {
@@ -289,7 +299,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         // log.info("query: " + dynamicQuery);
         return dynamicQuery;
 
-        */
     }
 
     /**
