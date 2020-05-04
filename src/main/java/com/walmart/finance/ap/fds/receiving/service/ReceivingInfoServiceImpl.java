@@ -160,7 +160,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     }
 
     private List<ReceiveSummary> getSummaryData(Map<String, String> allRequestParams) {
-        /*
+
         List<Criteria> criteria = searchCriteriaForGet(allRequestParams);
         Aggregation aggregation = ReceivingUtils.aggregateBuilder(criteria);
 
@@ -169,30 +169,31 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         List<ReceiveSummary>  receiveSummaryList = new ArrayList<>(mongoTemplate
                 .aggregate(aggregation, summaryCollection, ReceiveSummary.class)
                 .getMappedResults());
-        log.info("Receiving Summary DB Response Time :: "+(System.currentTimeMillis()-startTime));
+        log.info("Response Time : getSummaryData :: "+(System.currentTimeMillis()-startTime));
 
         return allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
                 .equals(LOCATION_TYPE_WAREHOUSE)?
                 mergeDuplicateSummaryRecords(receiveSummaryList) : receiveSummaryList;
-                */
 
+        /*
         Query query = searchCriteriaForGet(allRequestParams);
         log.info("queryForSummaryResponse:getSummaryData :: Query is " + query);
 
         return allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
                 .equals(LOCATION_TYPE_WAREHOUSE)?
                 mergeDuplicateSummaryRecords(executeQueryInSummary(query)) : executeQueryInSummary(query);
+                */
     }
 
-    private Query searchCriteriaForGet(Map<String, String> paramMap) {
+    private List<Criteria> searchCriteriaForGet(Map<String, String> paramMap) {
         return searchCriteriaForGet(paramMap, null);
     }
 
 
 
-    private Query searchCriteriaForGet(Map<String, String> paramMap, Set<String> partitionKeys) {
+    private List<Criteria> searchCriteriaForGet(Map<String, String> paramMap, Set<String> partitionKeys) {
 
-        /*
+
         List<Criteria> criteria = new ArrayList<>();
 
         if (partitionKeys != null && CollectionUtils.isNotEmpty(partitionKeys)) {
@@ -245,8 +246,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
         return criteria;
 
-        */
 
+        /*
         Query dynamicQuery = new Query();
 
         if (partitionKeys != null && CollectionUtils.isNotEmpty(partitionKeys)) {
@@ -298,6 +299,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         }
         // log.info("query: " + dynamicQuery);
         return dynamicQuery;
+        */
 
     }
 
@@ -619,9 +621,21 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                                 ReceivingUtils.getRecvInfoRespV1Copy(receivingInfoResponseV1Map.get(id)) :
                                 new ReceivingInfoResponseV1();
                 if (receivingInfoResponseV1 != null) {
+
+                    receivingInfoResponsesKeyList.add(id);
+
+                    if( ! ( allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()) == null  || allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()).isEmpty() ) ||
+                            ! ( allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()) == null || allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()).isEmpty())){
+                        if (!(StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()))
+                                && allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()).equalsIgnoreCase("Y")) && !receivingInfoResponseV1.getReceivingInfoLineResponses().isEmpty()){
+                            receivingInfoResponseV1.setReceivingInfoLineResponses(null);
+                        }else if(receivingInfoResponseV1.getReceivingInfoLineResponses().isEmpty()){
+                            continue;
+                        }
+                    }
+
                     updateReceivingInfoResponseV1(financialTxnResponseData, receivingInfoResponseV1);
                     receivingInfoResponsesList.add(receivingInfoResponseV1);
-                    receivingInfoResponsesKeyList.add(id);
                 }
             }
             receivingInfoResponsesKeyList.forEach(key -> receivingInfoResponseV1Map.remove(key));
@@ -878,6 +892,53 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     private List<ReceivingLine> getLineResponseList(Map<String,
             String> allRequestParams, Set<String> partitionNumbers,List<String> summaryReferences,List<String> receivingControlNumbers) {
+
+        List<Criteria> criteriaList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(partitionNumbers)) {
+            criteriaList.add(Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD).in(partitionNumbers));
+        }
+        if (CollectionUtils.isNotEmpty(summaryReferences)) {
+            criteriaList.add(Criteria.where(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).in(summaryReferences));
+        }
+        if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()))) {
+            List<String> itemNumbers = Arrays.asList(allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()).split(","));
+            criteriaList.add(Criteria.where(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Long::parseLong).collect(Collectors.toList())));
+        }
+        if (allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam()).equals(LOCATION_TYPE_STORE) && CollectionUtils.isNotEmpty(receivingControlNumbers)) {
+            criteriaList.add(Criteria.where(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(receivingControlNumbers));
+        }
+        if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()))) {
+            List<String> upcNumberList =
+                    Arrays.asList(allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()).split(","));
+            List<String> updatedUpcNumberList = new ArrayList<>();
+            /*
+             * Change 13 Digit UPC Number to 16 Digit GTIN Number while hitting line
+             * Combination 1 : Add "00" to beginning and "0" to the end
+             * Combination 2 : Add "000" to the beginning
+             */
+            for (String upcNumber : upcNumberList) {
+                updatedUpcNumberList.add("00" + upcNumber + "0");
+                updatedUpcNumberList.add("000" + upcNumber);
+            }
+            criteriaList.add(Criteria.where(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(updatedUpcNumberList));
+        }
+
+        Aggregation aggregation = ReceivingUtils.aggregateBuilder(criteriaList);
+
+        long startTime = System.currentTimeMillis();
+        log.info("Aggregation query :getLineData :: Query is " + aggregation);
+        List<ReceivingLine>  receivingLineList = new ArrayList<>(mongoTemplate
+                .aggregate(aggregation, lineCollection, ReceivingLine.class)
+                .getMappedResults());
+        log.info("Response Time : getLineData :: "+(System.currentTimeMillis()-startTime));
+
+        return allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
+                .equals(LOCATION_TYPE_WAREHOUSE)?
+                mergeDuplicateLineRecords(receivingLineList) : receivingLineList;
+
+
+
+        /*
         List<ReceivingLine> lineResponseList;
         Criteria criteriaDefinition = new Criteria();
         if (CollectionUtils.isNotEmpty(partitionNumbers)) {
@@ -897,11 +958,11 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             List<String> upcNumberList =
                     Arrays.asList(allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()).split(","));
             List<String> updatedUpcNumberList = new ArrayList<>();
-            /*
+            *//*
              * Change 13 Digit UPC Number to 16 Digit GTIN Number while hitting line
              * Combination 1 : Add "00" to beginning and "0" to the end
              * Combination 2 : Add "000" to the beginning
-             */
+             *//*
             for (String upcNumber : upcNumberList) {
                 updatedUpcNumberList.add("00" + upcNumber + "0");
                 updatedUpcNumberList.add("000" + upcNumber);
@@ -915,6 +976,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
         return allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
                 .equals(LOCATION_TYPE_WAREHOUSE)? mergeDuplicateLineRecords(lineResponseList) : lineResponseList;
+
+        */
     }
 
     public List<ReceivingLine> mergeDuplicateLineRecords(List<ReceivingLine> receivingLineList) {
