@@ -11,6 +11,10 @@ triggers:
       name: Release Image
       call: release
 
+  - manual:
+      name: Dev Image
+      call: default
+
 envs:
   global:
     variables:
