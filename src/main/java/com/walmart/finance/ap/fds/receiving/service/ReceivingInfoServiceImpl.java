@@ -677,6 +677,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         }
 
         List<ReceiveSummary> receiveSummaries = getSummaryData(allRequestParams);
+        Map<String, List<ReceivingLine>> receivingLineMap = new HashMap<>();
+        Map<Long, FreightResponse> freightResponseMap = new HashMap<>();
 
         Set<String> partitionNumbers = new HashSet<>();
         List<String> summaryReferences = new ArrayList<>();
@@ -686,18 +688,17 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         if (CollectionUtils.isNotEmpty(receiveSummaries)) {
 
             for (ReceiveSummary receiveSummary : receiveSummaries) {
-                //receiveSummaryMap.put(receiveSummary.get_id(), receiveSummary);
 
                 if (receiveSummary.getFreightBillExpandId() != null) {
                     freightCriteriaList.add(Criteria.where("_id").is(receiveSummary.getFreightBillExpandId()));
                 }
 
-                if (null!=receiveSummary.getStoreNumber()) {
+                if (null != receiveSummary.getStoreNumber()) {
                     partitionNumbers.addAll(ReceivingUtils
                             .getPartitionKeyList(receiveSummary.getReceivingDate(), allRequestParams, receiveSummary.getStoreNumber(),
                                     monthsPerShard, monthsToDisplay));
                 }
-                if(null!=receiveSummary.get_id()) {
+                if (null != receiveSummary.get_id()) {
                     summaryReferences.add(receiveSummary.get_id());
                 }
                 if (receiveSummary.getReceivingControlNumber() != null) {
@@ -705,31 +706,32 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 }
             }
 
-        }
 
-        List<ReceivingLine> lineResponseList = getLineResponseList(allRequestParams,partitionNumbers,summaryReferences,receivingControlNumberList);
+            List<ReceivingLine> lineResponseList = getLineResponseList(allRequestParams, partitionNumbers, summaryReferences, receivingControlNumberList);
 
-        List<FreightResponse> freightResponseList = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(freightCriteriaList)) {
-            Query query = new Query(new Criteria().orOperator(freightCriteriaList.toArray(new Criteria[freightCriteriaList.size()])));
-            log.info("query: " + query);
-            freightResponseList = executeQueryInFreight(query);
-        }
-        Map<String, List<ReceivingLine>> receivingLineMap = new HashMap<>();
-        Iterator<ReceivingLine> iteratorLine = lineResponseList.iterator();
-        //Grouping lines according to SummaryReference
-        while (iteratorLine.hasNext()) {
-            ReceivingLine receivingLine = iteratorLine.next();
-            if (receivingLineMap.containsKey(receivingLine.getSummaryReference())) {
-                receivingLineMap.get(receivingLine.getSummaryReference()).add(receivingLine);
-            } else {
-                List<ReceivingLine> lineList = new ArrayList<>();
-                lineList.add(receivingLine);
-                receivingLineMap.put(receivingLine.getSummaryReference(), lineList);
+            List<FreightResponse> freightResponseList = new ArrayList<>();
+            if (CollectionUtils.isNotEmpty(freightCriteriaList)) {
+                Query query = new Query(new Criteria().orOperator(freightCriteriaList.toArray(new Criteria[freightCriteriaList.size()])));
+                log.info("query: " + query);
+                freightResponseList = executeQueryInFreight(query);
             }
-            iteratorLine.remove();
+
+            Iterator<ReceivingLine> iteratorLine = lineResponseList.iterator();
+            //Grouping lines according to SummaryReference
+            while (iteratorLine.hasNext()) {
+                ReceivingLine receivingLine = iteratorLine.next();
+                if (receivingLineMap.containsKey(receivingLine.getSummaryReference())) {
+                    receivingLineMap.get(receivingLine.getSummaryReference()).add(receivingLine);
+                } else {
+                    List<ReceivingLine> lineList = new ArrayList<>();
+                    lineList.add(receivingLine);
+                    receivingLineMap.put(receivingLine.getSummaryReference(), lineList);
+                }
+                iteratorLine.remove();
+            }
+            freightResponseMap = freightResponseList.stream().collect(Collectors.toMap(FreightResponse::getFreightId, freightResponse -> freightResponse));
+
         }
-        Map<Long, FreightResponse> freightResponseMap = freightResponseList.stream().collect(Collectors.toMap(FreightResponse::getFreightId, freightResponse -> freightResponse));
 
         Iterator<ReceiveSummary> iteratorSummary = receiveSummaries.iterator();
         while (iteratorSummary.hasNext()) {
@@ -763,6 +765,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         Set<String> partitionNumbers = new HashSet<>();
         List<String> summaryReferences = new ArrayList<>();
         Map<String, ReceiveSummary> receiveSummaryMap = new HashMap<>();
+        Map<String, List<ReceivingLine>> receivingLineMap = new HashMap<>();
+        Map<Long, FreightResponse> freightResponseMap = new HashMap<>();
         List<String> receivingControlNumberList = new ArrayList<>();
 
         for (FinancialTxnResponseData financialTxnResponseData : financialTxnResponseDataList) {
@@ -799,12 +803,12 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                     freightCriteriaList.add(Criteria.where("_id").is(receiveSummary.getFreightBillExpandId()));
                 }
 
-                if (null!=receiveSummary.getStoreNumber()) {
+                if (null != receiveSummary.getStoreNumber()) {
                     partitionNumbers.addAll(ReceivingUtils
                             .getPartitionKeyList(receiveSummary.getReceivingDate(), allRequestParams, receiveSummary.getStoreNumber(),
                                     monthsPerShard, monthsToDisplay));
                 }
-                if(null!=receiveSummary.get_id()) {
+                if (null != receiveSummary.get_id()) {
                     summaryReferences.add(receiveSummary.get_id());
                 }
                 if (receiveSummary.getReceivingControlNumber() != null) {
@@ -812,31 +816,33 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 }
             }
 
-        }
 
-        List<ReceivingLine> lineResponseList = getLineResponseList(allRequestParams,partitionNumbers,summaryReferences,receivingControlNumberList);
+            List<ReceivingLine> lineResponseList = getLineResponseList(allRequestParams, partitionNumbers, summaryReferences, receivingControlNumberList);
 
-        List<FreightResponse> freightResponseList = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(freightCriteriaList)) {
-            Query query = new Query(new Criteria().orOperator(freightCriteriaList.toArray(new Criteria[freightCriteriaList.size()])));
-            log.info("query: " + query);
-            freightResponseList = executeQueryInFreight(query);
-        }
-        Map<String, List<ReceivingLine>> receivingLineMap = new HashMap<>();
-        Iterator<ReceivingLine> iteratorLine = lineResponseList.iterator();
-        //Grouping lines according to SummaryReference
-        while (iteratorLine.hasNext()) {
-            ReceivingLine receivingLine = iteratorLine.next();
-            if (receivingLineMap.containsKey(receivingLine.getSummaryReference())) {
-                receivingLineMap.get(receivingLine.getSummaryReference()).add(receivingLine);
-            } else {
-                List<ReceivingLine> lineList = new ArrayList<>();
-                lineList.add(receivingLine);
-                receivingLineMap.put(receivingLine.getSummaryReference(), lineList);
+            List<FreightResponse> freightResponseList = new ArrayList<>();
+            if (CollectionUtils.isNotEmpty(freightCriteriaList)) {
+                Query query = new Query(new Criteria().orOperator(freightCriteriaList.toArray(new Criteria[freightCriteriaList.size()])));
+                log.info("query: " + query);
+                freightResponseList = executeQueryInFreight(query);
             }
-            iteratorLine.remove();
+
+            Iterator<ReceivingLine> iteratorLine = lineResponseList.iterator();
+            //Grouping lines according to SummaryReference
+            while (iteratorLine.hasNext()) {
+                ReceivingLine receivingLine = iteratorLine.next();
+                if (receivingLineMap.containsKey(receivingLine.getSummaryReference())) {
+                    receivingLineMap.get(receivingLine.getSummaryReference()).add(receivingLine);
+                } else {
+                    List<ReceivingLine> lineList = new ArrayList<>();
+                    lineList.add(receivingLine);
+                    receivingLineMap.put(receivingLine.getSummaryReference(), lineList);
+                }
+                iteratorLine.remove();
+            }
+            freightResponseMap = freightResponseList.stream().collect(Collectors.toMap(FreightResponse::getFreightId, freightResponse -> freightResponse));
+
         }
-        Map<Long, FreightResponse> freightResponseMap = freightResponseList.stream().collect(Collectors.toMap(FreightResponse::getFreightId, freightResponse -> freightResponse));
+
 
         //Map<FinancialTxnResponseData, ReceiveSummary> finTransRecvSummaryMap = new HashMap<>();
         for (FinancialTxnResponseData financialTxnResponseData : financialTxnResponseDataList) {
