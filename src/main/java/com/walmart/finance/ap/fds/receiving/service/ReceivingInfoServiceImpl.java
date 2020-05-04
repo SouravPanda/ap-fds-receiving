@@ -908,7 +908,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             criteriaList.add(Criteria.where(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Long::parseLong).collect(Collectors.toList())));
         }
         if (allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam()).equals(LOCATION_TYPE_STORE) && CollectionUtils.isNotEmpty(receivingControlNumbers)) {
-            criteriaList.add(Criteria.where(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(receivingControlNumbers));
+            criteriaList.add(Criteria.where(ReceivingLineParameters.RECEIVINGCONTROLNUMBER.getParameterName()).in(receivingControlNumbers));
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()))) {
             List<String> upcNumberList =
