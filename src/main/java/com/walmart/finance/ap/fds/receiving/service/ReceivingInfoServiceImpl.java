@@ -202,7 +202,10 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             criteria.add(criteriaDefinition);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.CONTROLNUMBER))) {
-            Criteria controlNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.CONTROLNUMBER));
+            List<String> controlNumList =
+                    Arrays.asList(paramMap.get(ReceivingConstants.CONTROLNUMBER).split(","));
+            Criteria controlNumberCriteria =
+                    Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGCONTROLNUMBER.getParameterName()).in(controlNumList);
             criteria.add(controlNumberCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.PURCHASEORDERID))) {
