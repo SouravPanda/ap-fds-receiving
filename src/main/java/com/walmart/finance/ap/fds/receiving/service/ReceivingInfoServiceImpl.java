@@ -352,7 +352,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             receivingInfoResponse.setInvoiceNumber(financialTxnResponseData.getInvoiceNumber());
         }
         receivingInfoResponse.setLineCount(CollectionUtils.isNotEmpty(lineResponseList) ?
-                new Long(lineResponseList.size()) : defaultValuesConfigProperties.getLineCount());
+                Long.valueOf(lineResponseList.size()) : defaultValuesConfigProperties.getLineCount());
         receivingInfoResponse.setCarrierCode(freightResponse != null
                 && StringUtils.isNotEmpty(freightResponse.getCarrierCode()) ? freightResponse.getCarrierCode() :
                 defaultValuesConfigProperties.getCarrierCode());
@@ -388,7 +388,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponse.setReceiptStatus(receiveSummary.getBusinessStatusCode() != null ? receiveSummary.getBusinessStatusCode().toString() : null);
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()))
                 && allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()).equalsIgnoreCase("Y")) {
-            List<ReceivingInfoLineResponse> lineInfoList = lineResponseList.stream().map(t -> convertToLineResponse(t)).collect(Collectors.toList());
+            List<ReceivingInfoLineResponse> lineInfoList =
+                    lineResponseList.stream().map(this::convertToLineResponse).collect(Collectors.toList());
             receivingInfoResponse.setReceivingInfoLineResponses(lineInfoList);
         }
         return receivingInfoResponse;
@@ -558,7 +559,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                     receivingInfoResponsesList.add(receivingInfoResponseV1);
                 }
             }
-            receivingInfoResponsesKeyList.forEach(key -> receivingInfoResponseV1Map.remove(key));
+            receivingInfoResponsesKeyList.forEach(receivingInfoResponseV1Map::remove);
             receivingInfoResponsesList.addAll(new ArrayList<>(receivingInfoResponseV1Map.values()));
 
             List<ReceivingInfoResponseV1> updateReceivingInfoResponsesList = new ArrayList<>();
@@ -686,7 +687,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
      */
     private List<ReceivingInfoResponseV1> getDataForFinancialTxnV1(List<FinancialTxnResponseData> financialTxnResponseDataList, Map<String, String> allRequestParams) {
         List<ReceivingInfoResponseV1> receivingInfoResponses = new ArrayList<>();
-        List<ReceiveSummary> allReceiveSummaries = new ArrayList<>();
+        List<ReceiveSummary> allReceiveSummaries;
         List<Criteria> freightCriteriaList = new ArrayList<>();
         Map<FinancialTxnResponseData, ReceiveSummary> financialTxnReceivingMap = new HashMap<>();
         List<String> ids = new ArrayList<>();
@@ -773,7 +774,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         }
 
 
-        //Map<FinancialTxnResponseData, ReceiveSummary> finTransRecvSummaryMap = new HashMap<>();
         for (FinancialTxnResponseData financialTxnResponseData : financialTxnResponseDataList) {
             Integer storeNumber = (financialTxnResponseData.getOrigStoreNbr() == null)
                     ? financialTxnResponseData.getStoreNumber() : financialTxnResponseData.getOrigStoreNbr();
