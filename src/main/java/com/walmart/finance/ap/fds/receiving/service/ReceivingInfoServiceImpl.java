@@ -5,10 +5,7 @@ import com.walmart.finance.ap.fds.receiving.common.ReceivingUtils;
 import com.walmart.finance.ap.fds.receiving.config.DefaultValuesConfigProperties;
 import com.walmart.finance.ap.fds.receiving.config.ReceivingLineComparator;
 import com.walmart.finance.ap.fds.receiving.config.ReceivingSummaryComparator;
-import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
-import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
-import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
-import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
+import com.walmart.finance.ap.fds.receiving.exception.*;
 import com.walmart.finance.ap.fds.receiving.integrations.FinancialTxnIntegrationService;
 import com.walmart.finance.ap.fds.receiving.integrations.FinancialTxnResponseData;
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
@@ -513,7 +510,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 log.info("No. of Records from Receiving - " + receivingInfoResponseV1List.size());
             } catch (InterruptedException | ExecutionException e) {
                 log.error("Failed to fetch Receiving Data - ", e);
-                throw new RuntimeException("Failed to fetch Receiving Data.", e);
+                throw new ReceivingException("Failed to fetch Receiving Data.");
             }
 
             try {
@@ -522,7 +519,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
             } catch (InterruptedException | ExecutionException e) {
                 log.error("Failed to fetch Financial Txn Data - ", e);
-                throw new RuntimeException("Failed to fetch Financial Txn Data.", e);
+                throw new ReceivingException("Failed to fetch Financial Txn Data.");
             }
 
 
