@@ -874,7 +874,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     }
 
-
     public List<ReceivingLine> mergeDuplicateLineRecords(List<ReceivingLine> receivingLineList) {
 
         if (!receivingLineList.isEmpty()) {
