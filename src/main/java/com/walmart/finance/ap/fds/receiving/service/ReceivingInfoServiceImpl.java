@@ -178,23 +178,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     }
 
     private List<Criteria> searchCriteriaForGet(Map<String, String> paramMap) {
-        return searchCriteriaForGet(paramMap, null);
-    }
-
-
-
-    private List<Criteria> searchCriteriaForGet(Map<String, String> paramMap, Set<String> partitionKeys) {
 
 
         List<Criteria> criteria = new ArrayList<>();
-
-        /*
-        if (partitionKeys != null && CollectionUtils.isNotEmpty(partitionKeys)) {
-            Criteria criteriaDefinition =
-                    Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD).in(partitionKeys);
-            criteria.add(criteriaDefinition);
-        }
-        */
 
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.CONTROLNUMBER))) {
             List<String> controlNumList =
@@ -222,9 +208,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             criteria.add(transactionTypeCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.LOCATIONNUMBER))) {
-            /*criteria.add(ReceivingUtils.getCriteriaForPartitionKey(null, paramMap,
-                    Integer.valueOf(paramMap.get(ReceivingConstants.LOCATIONNUMBER)), monthsPerShard, monthsToDisplay));*/
-
             Criteria locationCriteria =
                     Criteria.where(ReceiveSummaryCosmosDBParameters.STORENUMBER.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.LOCATIONNUMBER)));
             criteria.add(locationCriteria);
@@ -621,13 +604,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     public List<ReceivingInfoResponseV1> getReceivingInfoWoFinTxn(Map<String, String> allRequestParams) {
         List<ReceivingInfoResponseV1> receivingInfoResponses = new ArrayList<>();
         List<Criteria> freightCriteriaList = new ArrayList<>();
-        Set<String> partitionKeys = new HashSet<>();
-
-        if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())) {
-            partitionKeys.addAll(ReceivingUtils.getPartitionKeyList(null, allRequestParams,
-                    Integer.parseInt(allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONNUMBER.getQueryParam())),
-                    monthsPerShard,  monthsToDisplay));
-        }
 
         List<ReceiveSummary> receiveSummaries = getSummaryData(allRequestParams);
         Map<String, List<ReceivingLine>> receivingLineMap = new HashMap<>();
