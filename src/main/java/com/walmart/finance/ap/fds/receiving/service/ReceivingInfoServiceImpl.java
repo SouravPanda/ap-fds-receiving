@@ -633,17 +633,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 if (receivingInfoResponseV1 != null) {
 
                     receivingInfoResponsesKeyList.add(id);
-
-                    if( ! ( allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()) == null  || allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()).isEmpty() ) ||
-                            ! ( allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()) == null || allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()).isEmpty())){
-                        if (!(StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()))
-                                && allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()).equalsIgnoreCase("Y")) && !receivingInfoResponseV1.getReceivingInfoLineResponses().isEmpty()){
-                            receivingInfoResponseV1.setReceivingInfoLineResponses(null);
-                        }else if(receivingInfoResponseV1.getReceivingInfoLineResponses().isEmpty()){
-                            continue;
-                        }
-                    }
-
                     updateReceivingInfoResponseV1(financialTxnResponseData, receivingInfoResponseV1);
                     receivingInfoResponsesList.add(receivingInfoResponseV1);
                 }
@@ -651,7 +640,27 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             receivingInfoResponsesKeyList.forEach(key -> receivingInfoResponseV1Map.remove(key));
             receivingInfoResponsesList.addAll(new ArrayList<>(receivingInfoResponseV1Map.values()));
 
-            successMessage.setData(receivingInfoResponsesList);
+            List<ReceivingInfoResponseV1> updateReceivingInfoResponsesList = new ArrayList<>();
+
+            for (ReceivingInfoResponseV1 receivingInfoResponseV1 : receivingInfoResponsesList) {
+
+                if (!(allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()) == null || allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()).isEmpty()) ||
+                        !(allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()) == null || allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()).isEmpty())) {
+                    if (!(StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()))
+                            && allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()).equalsIgnoreCase("Y")) && !receivingInfoResponseV1.getReceivingInfoLineResponses().isEmpty()) {
+                        receivingInfoResponseV1.setReceivingInfoLineResponses(null);
+                        updateReceivingInfoResponsesList.add(receivingInfoResponseV1);
+                    } else if (receivingInfoResponseV1.getReceivingInfoLineResponses().isEmpty()) {
+                        continue;
+                    }
+                }
+            }
+
+            if (CollectionUtils.isEmpty(updateReceivingInfoResponsesList)) {
+                throw new NotFoundException("Receiving and Fin Txn data not found for given search criteria.");
+            }
+
+            successMessage.setData(updateReceivingInfoResponsesList);
 
         }
 
