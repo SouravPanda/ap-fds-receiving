@@ -643,17 +643,16 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             List<ReceivingInfoResponseV1> updateReceivingInfoResponsesList = new ArrayList<>();
 
             for (ReceivingInfoResponseV1 receivingInfoResponseV1 : receivingInfoResponsesList) {
-
                 if (!(allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()) == null || allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()).isEmpty()) ||
                         !(allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()) == null || allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()).isEmpty())) {
                     if (!(StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()))
                             && allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()).equalsIgnoreCase("Y")) && !receivingInfoResponseV1.getReceivingInfoLineResponses().isEmpty()) {
                         receivingInfoResponseV1.setReceivingInfoLineResponses(null);
-                        updateReceivingInfoResponsesList.add(receivingInfoResponseV1);
                     } else if (receivingInfoResponseV1.getReceivingInfoLineResponses().isEmpty()) {
                         continue;
                     }
                 }
+                updateReceivingInfoResponsesList.add(receivingInfoResponseV1);
             }
 
             if (CollectionUtils.isEmpty(updateReceivingInfoResponsesList)) {
