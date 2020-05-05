@@ -175,14 +175,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 .equals(LOCATION_TYPE_WAREHOUSE)?
                 mergeDuplicateSummaryRecords(receiveSummaryList) : receiveSummaryList;
 
-        /*
-        Query query = searchCriteriaForGet(allRequestParams);
-        log.info("queryForSummaryResponse:getSummaryData :: Query is " + query);
-
-        return allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
-                .equals(LOCATION_TYPE_WAREHOUSE)?
-                mergeDuplicateSummaryRecords(executeQueryInSummary(query)) : executeQueryInSummary(query);
-                */
     }
 
     private List<Criteria> searchCriteriaForGet(Map<String, String> paramMap) {
@@ -256,60 +248,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
         return criteria;
 
-
-        /*
-        Query dynamicQuery = new Query();
-
-        if (partitionKeys != null && CollectionUtils.isNotEmpty(partitionKeys)) {
-            Criteria criteriaDefinition =
-                    Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD).in(partitionKeys);
-            dynamicQuery.addCriteria(criteriaDefinition);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.CONTROLNUMBER))) {
-            Criteria controlNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.CONTROLNUMBER));
-            dynamicQuery.addCriteria(controlNumberCriteria);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.PURCHASEORDERID))) {
-            Criteria purchaseOrderIdCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.PURCHASEORDERID.getParameterName()).is(Long.valueOf(paramMap.get(ReceivingConstants.PURCHASEORDERID)));
-            dynamicQuery.addCriteria(purchaseOrderIdCriteria);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.DIVISIONNUMBER))) {
-            Criteria baseDivisionNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.BASEDIVISIONNUMBER.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.DIVISIONNUMBER)));
-            dynamicQuery.addCriteria(baseDivisionNumberCriteria);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTDATESTART)) && StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTDATEEND))) {
-            LocalDateTime startDate = getDate(paramMap.get(ReceivingConstants.RECEIPTDATESTART) + ReceivingConstants.TIMESTAMP_TIME_ZERO);
-            LocalDateTime endDate = getDate(paramMap.get(ReceivingConstants.RECEIPTDATEEND) + ReceivingConstants.TIMESTAMP_23_59_59);
-            Criteria mdsReceiveDateCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.DATERECEIVED.getParameterName()).gte(startDate).lte(endDate);
-            dynamicQuery.addCriteria(mdsReceiveDateCriteria);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.TRANSACTIONTYPE))) {
-            Criteria transactionTypeCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.TRANSACTIONTYPE.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.TRANSACTIONTYPE)));
-            dynamicQuery.addCriteria(transactionTypeCriteria);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.LOCATIONNUMBER))) {
-            ReceivingUtils.updateQueryForPartitionKey(null, paramMap,
-                    Integer.valueOf(paramMap.get(ReceivingConstants.LOCATIONNUMBER)), dynamicQuery, monthsPerShard, monthsToDisplay);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.PURCHASEORDERNUMBER))) {
-            Criteria purchaseOrderNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.PURCHASEORDERNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.PURCHASEORDERNUMBER));
-            dynamicQuery.addCriteria(purchaseOrderNumberCriteria);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTNUMBERS))) {
-            Criteria poReceiveIdCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVEID.getParameterName()).in(paramMap.get(ReceivingConstants.RECEIPTNUMBERS).split(","));
-            dynamicQuery.addCriteria(poReceiveIdCriteria);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.DEPARTMENTNUMBER))) {
-            Criteria departmentNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.DEPARTMENTNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.DEPARTMENTNUMBER));
-            dynamicQuery.addCriteria(departmentNumberCriteria);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.VENDORNUMBER))) {
-            Criteria vendorNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.VENDORNUMBER.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.VENDORNUMBER)));
-            dynamicQuery.addCriteria(vendorNumberCriteria);
-        }
-        // log.info("query: " + dynamicQuery);
-        return dynamicQuery;
-        */
 
     }
 
@@ -962,48 +900,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 .equals(LOCATION_TYPE_WAREHOUSE)?
                 mergeDuplicateLineRecords(receivingLineList) : receivingLineList;
 
-
-
-        /*
-        List<ReceivingLine> lineResponseList;
-        Criteria criteriaDefinition = new Criteria();
-        if (CollectionUtils.isNotEmpty(partitionNumbers)) {
-            criteriaDefinition.and(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD).in(partitionNumbers);
-        }
-        if (CollectionUtils.isNotEmpty(summaryReferences)) {
-            criteriaDefinition.and(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).in(summaryReferences);
-        }
-        if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()))) {
-            List<String> itemNumbers = Arrays.asList(allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()).split(","));
-            criteriaDefinition.and(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Long::parseLong).collect(Collectors.toList()));
-        }
-        if (allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam()).equals(LOCATION_TYPE_STORE) && CollectionUtils.isNotEmpty(receivingControlNumbers)) {
-            criteriaDefinition.and(ReceivingLineParameters.RECEIVINGCONTROLNUMBER.getParameterName()).in(receivingControlNumbers);
-        }
-        if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()))) {
-            List<String> upcNumberList =
-                    Arrays.asList(allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()).split(","));
-            List<String> updatedUpcNumberList = new ArrayList<>();
-            *//*
-             * Change 13 Digit UPC Number to 16 Digit GTIN Number while hitting line
-             * Combination 1 : Add "00" to beginning and "0" to the end
-             * Combination 2 : Add "000" to the beginning
-             *//*
-            for (String upcNumber : upcNumberList) {
-                updatedUpcNumberList.add("00" + upcNumber + "0");
-                updatedUpcNumberList.add("000" + upcNumber);
-            }
-            criteriaDefinition.and(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(updatedUpcNumberList);
-        }
-
-        Query query = new Query(criteriaDefinition);
-        log.info("query: " + query);
-        lineResponseList = executeQueryInLine(query);
-
-        return allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
-                .equals(LOCATION_TYPE_WAREHOUSE)? mergeDuplicateLineRecords(lineResponseList) : lineResponseList;
-
-        */
     }
 
     public List<ReceivingLine> mergeDuplicateLineRecords(List<ReceivingLine> receivingLineList) {
