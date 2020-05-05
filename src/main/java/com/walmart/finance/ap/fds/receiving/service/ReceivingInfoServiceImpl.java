@@ -229,12 +229,14 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             Criteria transactionTypeCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.TRANSACTIONTYPE.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.TRANSACTIONTYPE)));
             criteria.add(transactionTypeCriteria);
         }
-        /*
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.LOCATIONNUMBER))) {
-            criteria.add(ReceivingUtils.getCriteriaForPartitionKey(null, paramMap,
-                    Integer.valueOf(paramMap.get(ReceivingConstants.LOCATIONNUMBER)), monthsPerShard, monthsToDisplay));
+            /*criteria.add(ReceivingUtils.getCriteriaForPartitionKey(null, paramMap,
+                    Integer.valueOf(paramMap.get(ReceivingConstants.LOCATIONNUMBER)), monthsPerShard, monthsToDisplay));*/
+
+            Criteria locationCriteria =
+                    Criteria.where(ReceiveSummaryCosmosDBParameters.STORENUMBER.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.LOCATIONNUMBER)));
+            criteria.add(locationCriteria);
         }
-        */
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.PURCHASEORDERNUMBER))) {
             Criteria purchaseOrderNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.PURCHASEORDERNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.PURCHASEORDERNUMBER));
             criteria.add(purchaseOrderNumberCriteria);
