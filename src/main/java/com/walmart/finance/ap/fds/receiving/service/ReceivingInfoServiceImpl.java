@@ -646,9 +646,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 if (!(allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()) == null || allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()).isEmpty()) ||
                         !(allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()) == null || allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()).isEmpty())) {
                     if (!(StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()))
-                            && allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()).equalsIgnoreCase("Y")) && !receivingInfoResponseV1.getReceivingInfoLineResponses().isEmpty()) {
+                            && allRequestParams.get(ReceivingInfoRequestQueryParameters.LINENUMBERFLAG.getQueryParam()).equalsIgnoreCase("Y")) && CollectionUtils.isNotEmpty(receivingInfoResponseV1.getReceivingInfoLineResponses())) {
                         receivingInfoResponseV1.setReceivingInfoLineResponses(null);
-                    } else if (receivingInfoResponseV1.getReceivingInfoLineResponses().isEmpty()) {
+                    } else if (CollectionUtils.isEmpty(receivingInfoResponseV1.getReceivingInfoLineResponses())) {
                         continue;
                     }
                 }
