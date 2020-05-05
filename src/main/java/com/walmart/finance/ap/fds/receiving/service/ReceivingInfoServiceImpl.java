@@ -196,11 +196,14 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
         List<Criteria> criteria = new ArrayList<>();
 
+        /*
         if (partitionKeys != null && CollectionUtils.isNotEmpty(partitionKeys)) {
             Criteria criteriaDefinition =
                     Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD).in(partitionKeys);
             criteria.add(criteriaDefinition);
         }
+        */
+
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.CONTROLNUMBER))) {
             List<String> controlNumList =
                     Arrays.asList(paramMap.get(ReceivingConstants.CONTROLNUMBER).split(","));
@@ -903,9 +906,11 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             String> allRequestParams, Set<String> partitionNumbers,List<String> summaryReferences,List<String> receivingControlNumbers) {
 
         List<Criteria> criteriaList = new ArrayList<>();
+        /*
         if (CollectionUtils.isNotEmpty(partitionNumbers)) {
             criteriaList.add(Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD).in(partitionNumbers));
         }
+        */
         if (CollectionUtils.isNotEmpty(summaryReferences)) {
             criteriaList.add(Criteria.where(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).in(summaryReferences));
         }
