@@ -16,6 +16,7 @@ import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryLineValidator;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryValidator;
+import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import lombok.Setter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -43,6 +44,7 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.LOCATION_TYPE_WAREHOUSE;
 import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.UOM_CODE_WH_EXCEPTION_RESOLUTION;
 
 @Service
@@ -164,7 +166,12 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTDATESTART)) && StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTDATEEND))) {
             LocalDateTime startDate = getDate(paramMap.get(ReceivingConstants.RECEIPTDATESTART) + " 00:00:00");
             LocalDateTime endDate = getDate(paramMap.get(ReceivingConstants.RECEIPTDATEEND) + " 23:59:59");
-            Criteria mdsReceiveDateCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.DATERECEIVED.getParameterName()).gte(startDate).lte(endDate);
+            String applicableDateField = ReceiveSummaryCosmosDBParameters.DATERECEIVED.getParameterName();
+            if (paramMap.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
+                    .equals(LOCATION_TYPE_WAREHOUSE)) {
+                applicableDateField = ReceiveSummaryCosmosDBParameters.RECEIVEPROCESSDATE.getParameterName();
+            }
+            Criteria mdsReceiveDateCriteria = Criteria.where(applicableDateField).gte(startDate).lte(endDate);
             dynamicQuery.addCriteria(mdsReceiveDateCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.TRANSACTIONTYPE))) {

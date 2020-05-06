@@ -124,36 +124,42 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 + (StringUtils.isEmpty(financialTxnResponseData.getReceiveId()) ? "0" : financialTxnResponseData.getReceiveId()) + ReceivingConstants.PIPE_SEPARATOR
                 + (storeNumber == null ? 0 : storeNumber) + ReceivingConstants.PIPE_SEPARATOR
                 + (financialTxnResponseData.getReceivingDate() == null ? "0" : financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
-        Query query = new Query();
-        CriteriaDefinition criteriaDefinition = null;
+        //Query query = new Query();
+        List<Criteria> criteriaList = new ArrayList<>();
+        //CriteriaDefinition criteriaDefinition = null;
         if (StringUtils.isNotEmpty(id) && !id.equalsIgnoreCase("0|0|0|0")) {
-            criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.ID.getParameterName()).is(id);
-            query.addCriteria(criteriaDefinition);
-        }
-        if (storeNumber != null) {
-            LocalDate receivingDate = null;
-            if (financialTxnResponseData.getReceivingDate() != null) {
-                receivingDate =
-                        financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate();
-            }
-            ReceivingUtils.updateQueryForPartitionKey(receivingDate, allRequestParams, storeNumber, query,
-                    monthsPerShard, monthsToDisplay);
+            criteriaList.add(Criteria.where(ReceiveSummaryCosmosDBParameters.ID.getParameterName()).is(id));
+            //query.addCriteria(criteriaDefinition);
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()))
                 && StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()))) {
             LocalDateTime startDate = getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()) + ReceivingConstants.TIMESTAMP_TIME_ZERO);
             LocalDateTime endDate = getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()) + ReceivingConstants.TIMESTAMP_23_59_59);
             if (endDate.isAfter(startDate)) {
-                criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.DATERECEIVED.getParameterName()).
+                String applicableDateField = ReceiveSummaryCosmosDBParameters.DATERECEIVED.getParameterName();
+                if (allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
+                        .equals(LOCATION_TYPE_WAREHOUSE)) {
+                    applicableDateField = ReceiveSummaryCosmosDBParameters.RECEIVEPROCESSDATE.getParameterName();
+                }
+                criteriaList.add(Criteria.where(applicableDateField).
                         gte(startDate).
-                        lte(endDate);
-                query.addCriteria(criteriaDefinition);
+                        lte(endDate));
             } else {
                 throw new BadRequestException("Receipt end date should be greater than receipt start date.", "Please enter valid query parameters");
             }
         }
-        log.info("queryForSummaryResponse:getSummaryData :: Query is " + query);
-        return executeQueryInSummary(query);
+        Aggregation aggregation = ReceivingUtils.aggregateBuilder(criteriaList);
+
+        long startTime = System.currentTimeMillis();
+        log.info("Aggregation query :getSummaryData :: Query is " + aggregation);
+        List<ReceiveSummary>  receiveSummaryList = new ArrayList<>(mongoTemplate
+                .aggregate(aggregation, summaryCollection, ReceiveSummary.class)
+                .getMappedResults());
+        log.info("Response Time : getSummaryData :: "+(System.currentTimeMillis()-startTime));
+
+        return allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
+                .equals(LOCATION_TYPE_WAREHOUSE)?
+                mergeDuplicateSummaryRecords(receiveSummaryList) : receiveSummaryList;
     }
 
     private List<ReceiveSummary> getSummaryData(Map<String, String> allRequestParams) {
@@ -197,7 +203,12 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTDATESTART)) && StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTDATEEND))) {
             LocalDateTime startDate = getDate(paramMap.get(ReceivingConstants.RECEIPTDATESTART) + ReceivingConstants.TIMESTAMP_TIME_ZERO);
             LocalDateTime endDate = getDate(paramMap.get(ReceivingConstants.RECEIPTDATEEND) + ReceivingConstants.TIMESTAMP_23_59_59);
-            Criteria mdsReceiveDateCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.DATERECEIVED.getParameterName()).gte(startDate).lte(endDate);
+            String applicableDateField = ReceiveSummaryCosmosDBParameters.DATERECEIVED.getParameterName();
+            if (paramMap.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
+                    .equals(LOCATION_TYPE_WAREHOUSE)) {
+                applicableDateField = ReceiveSummaryCosmosDBParameters.RECEIVEPROCESSDATE.getParameterName();
+            }
+            Criteria mdsReceiveDateCriteria = Criteria.where(applicableDateField).gte(startDate).lte(endDate);
             criteria.add(mdsReceiveDateCriteria);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.TRANSACTIONTYPE))) {
@@ -250,27 +261,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     /*************************** General Methods ***********************************/
 
-    private List<ReceiveSummary> executeQueryInSummary(Query query) {
-        List<ReceiveSummary> receiveSummaries = new ArrayList<>();
-        if (query != null) {
-            long startTime = System.currentTimeMillis();
-            receiveSummaries = mongoTemplate.find(query.limit(1000), ReceiveSummary.class, summaryCollection);
-            log.info(" executeQueryInSummary :: queryTime :: " + (System.currentTimeMillis() - startTime));
-        }
-        return receiveSummaries;
-    }
-
-    private List<ReceivingLine> executeQueryInLine(Query query) {
-        List<ReceivingLine> receiveLines = new ArrayList<>();
-        if (query != null) {
-            long startTime = System.currentTimeMillis();
-            receiveLines = mongoTemplate.find(query.limit(1000), ReceivingLine.class, lineCollection);
-            log.info(" executeQueryInLine :: queryTime :: " + (System.currentTimeMillis() - startTime));
-        }
-        return receiveLines;
-    }
-
-
     // TO DO
     private FreightResponse executeQueryInFreight(Long id) {
         FreightResponse receiveFreight = null;
@@ -285,21 +275,19 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     /*************************** receive-line data ***************************/
     private List<ReceivingLine> getLineData(ReceiveSummary receiveSummary, Map<String, String> allRequestParams) {
-        Query query = new Query();
-        CriteriaDefinition criteriaDefinition = null;
+
+        List<Criteria> criteriaList = new ArrayList<>();
         if (StringUtils.isNotEmpty(receiveSummary.get_id())) {
-            criteriaDefinition = Criteria.where(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).is(receiveSummary.get_id());
-            query.addCriteria(criteriaDefinition);
+            criteriaList.add(Criteria.where(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).is(receiveSummary.get_id()));
         }
         if (receiveSummary.getStoreNumber() != null) {
-            ReceivingUtils.updateQueryForPartitionKey(null, allRequestParams, receiveSummary.getStoreNumber(), query,
-                    monthsPerShard, monthsToDisplay);
+            criteriaList.add(Criteria.where(ReceivingLineParameters.STORENUMBER.getParameterName())
+                    .is(receiveSummary.getStoreNumber()));
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()))) {
             List<String> itemNumbers = Arrays.asList(allRequestParams.get(ReceivingInfoRequestQueryParameters.ITEMNUMBERS.getQueryParam()).split(","));
-            criteriaDefinition =
-                    Criteria.where(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Long::parseLong).collect(Collectors.toList()));
-            query.addCriteria(criteriaDefinition);
+            criteriaList.add(Criteria.where(ReceivingLineParameters.ITEMNUMBER.getParameterName())
+                    .in(itemNumbers.stream().map(Long::parseLong).collect(Collectors.toList())));
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.UPCNUMBERS.getQueryParam()))) {
             List<String> upcNumberList =
@@ -314,11 +302,22 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 updatedUpcNumberList.add("00" + upcNumber + "0");
                 updatedUpcNumberList.add("000" + upcNumber);
             }
-            criteriaDefinition = Criteria.where(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(updatedUpcNumberList);
-            query.addCriteria(criteriaDefinition);
+            criteriaList.add(Criteria.where(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(updatedUpcNumberList));
         }
-        log.info("queryForLineResponse:getLineData :: Query is " + query);
-        return executeQueryInLine(criteriaDefinition == null ? null : query);
+
+        Aggregation aggregation = ReceivingUtils.aggregateBuilder(criteriaList);
+
+        long startTime = System.currentTimeMillis();
+        log.info("Aggregation query :getLineData :: Query is " + aggregation);
+        List<ReceivingLine>  receivingLineList = new ArrayList<>(mongoTemplate
+                .aggregate(aggregation, lineCollection, ReceivingLine.class)
+                .getMappedResults());
+        log.info("Response Time : getLineData :: "+(System.currentTimeMillis()-startTime));
+
+        return allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
+                .equals(LOCATION_TYPE_WAREHOUSE)?
+                mergeDuplicateLineRecords(receivingLineList) : receivingLineList;
+
     }
     /******* receive-line data   *********/
 
@@ -891,15 +890,11 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
 
     private List<ReceiveSummary> getSummaryData(List<String> ids, Set<String> partitionKeys,
                                                 Map<String, String> allRequestParams) {
-        Query query = new Query();
-        CriteriaDefinition criteriaDefinition;
+
+        List<Criteria> criteriaList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(ids) && CollectionUtils.isNotEmpty(partitionKeys)) {
-            criteriaDefinition =
-                    Criteria.where(ReceiveSummaryCosmosDBParameters.ID.getParameterName()).in(ids);
-            query.addCriteria(criteriaDefinition);
-            criteriaDefinition =
-                    Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD).in(partitionKeys);
-            query.addCriteria(criteriaDefinition);
+            criteriaList.add(Criteria.where(ReceiveSummaryCosmosDBParameters.ID.getParameterName()).in(ids));
+            criteriaList.add(Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD).in(partitionKeys));
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()))
                 && StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()))
@@ -908,18 +903,31 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             LocalDateTime startDate = getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()) + ReceivingConstants.TIMESTAMP_TIME_ZERO);
             LocalDateTime endDate = getDate(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()) + ReceivingConstants.TIMESTAMP_23_59_59);
             if (endDate.isAfter(startDate)) {
-                criteriaDefinition = Criteria.where(ReceiveSummaryCosmosDBParameters.DATERECEIVED.getParameterName()).
+                String applicableDateField = ReceiveSummaryCosmosDBParameters.DATERECEIVED.getParameterName();
+                if (allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
+                        .equals(LOCATION_TYPE_WAREHOUSE)) {
+                    applicableDateField = ReceiveSummaryCosmosDBParameters.RECEIVEPROCESSDATE.getParameterName();
+                }
+                criteriaList.add(Criteria.where(applicableDateField).
                         gte(startDate).
-                        lte(endDate);
-                query.addCriteria(criteriaDefinition);
+                        lte(endDate));
             } else {
                 throw new BadRequestException("Receipt end date should be greater than receipt start date.", "Please enter valid query parameters");
             }
         }
-        log.info("queryForSummaryResponse :: Query is " + query);
-        return  allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
+
+        Aggregation aggregation = ReceivingUtils.aggregateBuilder(criteriaList);
+
+        long startTime = System.currentTimeMillis();
+        log.info("Aggregation query :getSummaryData :: Query is " + aggregation);
+        List<ReceiveSummary>  receiveSummaryList = new ArrayList<>(mongoTemplate
+                .aggregate(aggregation, summaryCollection, ReceiveSummary.class)
+                .getMappedResults());
+        log.info("Response Time : getSummaryData :: "+(System.currentTimeMillis()-startTime));
+
+        return allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
                 .equals(LOCATION_TYPE_WAREHOUSE)?
-                mergeDuplicateSummaryRecords(executeQueryInSummary(query)) : executeQueryInSummary(query);
+                mergeDuplicateSummaryRecords(receiveSummaryList) : receiveSummaryList;
     }
 
     public List<ReceiveSummary> mergeDuplicateSummaryRecords(List<ReceiveSummary> receiveSummaryList) {
