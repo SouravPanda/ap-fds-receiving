@@ -167,8 +167,8 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             LocalDateTime startDate = getDate(paramMap.get(ReceivingConstants.RECEIPTDATESTART) + " 00:00:00");
             LocalDateTime endDate = getDate(paramMap.get(ReceivingConstants.RECEIPTDATEEND) + " 23:59:59");
             String applicableDateField = ReceiveSummaryCosmosDBParameters.DATERECEIVED.getParameterName();
-            if (paramMap.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
-                    .equals(LOCATION_TYPE_WAREHOUSE)) {
+            if (paramMap.containsKey(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam()) &&
+                    paramMap.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam()).equals(LOCATION_TYPE_WAREHOUSE)) {
                 applicableDateField = ReceiveSummaryCosmosDBParameters.RECEIVEPROCESSDATE.getParameterName();
             }
             Criteria mdsReceiveDateCriteria = Criteria.where(applicableDateField).gte(startDate).lte(endDate);
