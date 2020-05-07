@@ -360,7 +360,10 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         receivingInfoResponse.setTransactionType(receiveSummary.getTransactionType());
         receivingInfoResponse.setLocationNumber(receiveSummary.getStoreNumber());
         receivingInfoResponse.setPurchaseOrderId(receiveSummary.getPurchaseOrderId());
-        receivingInfoResponse.setReceiptDate(receiveSummary.getDateReceived().atZone(ZoneId.of("GMT")).toLocalDate());
+        receivingInfoResponse.setReceiptDate(
+                allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
+                        .equals(LOCATION_TYPE_WAREHOUSE)? receiveSummary.getReceiveProcessDate() :
+                        receiveSummary.getDateReceived().atZone(ZoneId.of("GMT")).toLocalDate());
         receivingInfoResponse.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ?
                 receiveSummary.getReceiveId() : "0");
         if (receiveSummary.getTypeIndicator().equals('W') && CollectionUtils.isNotEmpty(lineResponseList)) {
@@ -978,7 +981,10 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             receivingInfoResponseV1.setTransactionType(receiveSummary.getTransactionType());
             receivingInfoResponseV1.setLocationNumber(receiveSummary.getStoreNumber());
             receivingInfoResponseV1.setPurchaseOrderId(receiveSummary.getPurchaseOrderId());
-            receivingInfoResponseV1.setReceiptDate(receiveSummary.getDateReceived().atZone(ZoneId.of("GMT")).toLocalDate());
+            receivingInfoResponseV1.setReceiptDate(
+                    allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
+                            .equals(LOCATION_TYPE_WAREHOUSE)? receiveSummary.getReceiveProcessDate() :
+                    receiveSummary.getDateReceived().atZone(ZoneId.of("GMT")).toLocalDate());
             receivingInfoResponseV1.setReceiptNumber(StringUtils.isNotEmpty(receiveSummary.getReceiveId()) ?
                     receiveSummary.getReceiveId() : "0");
             if (receiveSummary.getTypeIndicator().equals('W')) {

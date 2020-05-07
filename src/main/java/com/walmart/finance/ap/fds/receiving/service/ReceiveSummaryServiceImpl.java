@@ -453,7 +453,8 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     private void addShardKeyQuery(Query query, String keyAttributeValue, LocalDate dateForPartitionKey) {
         Criteria partitionKeyCriteria =
                 Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD)
-                    .is(ReceivingUtils.getPartitionKey(keyAttributeValue, dateForPartitionKey, monthsPerShard));
+                    .in(ReceivingUtils.getPartitionKeyList(keyAttributeValue, dateForPartitionKey, monthsToDisplay,
+                            monthsPerShard));
         query.addCriteria(partitionKeyCriteria);
     }
 
