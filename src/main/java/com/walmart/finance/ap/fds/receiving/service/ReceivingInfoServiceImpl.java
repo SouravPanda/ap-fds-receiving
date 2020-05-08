@@ -22,6 +22,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -508,9 +509,13 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     }
 
     public void recvAndFinTxnParallelRequestV1(Map<String, String> allRequestParams, ReceivingResponse successMessage) {
-        Future<List<ReceivingInfoResponseV1>> receivingFuture = executorService.submit(new ReceivingDetailsTask(allRequestParams, this));
+        Future<List<ReceivingInfoResponseV1>> receivingFuture =
+                executorService.submit(new ReceivingDetailsTask(allRequestParams, this,
+                        MDC.getCopyOfContextMap()));
 
-        Future<List<FinancialTxnResponseData>> finTxnFuture = executorService.submit(new FinancialTransactionTask(allRequestParams, financialTxnIntegrationService));
+        Future<List<FinancialTxnResponseData>> finTxnFuture =
+                executorService.submit(new FinancialTransactionTask(allRequestParams, financialTxnIntegrationService,
+                        MDC.getCopyOfContextMap()));
 
         while (!receivingFuture.isDone() || !finTxnFuture.isDone()) {
             //Waiting

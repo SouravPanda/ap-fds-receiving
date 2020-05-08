@@ -2,6 +2,7 @@ package com.walmart.finance.ap.fds.receiving.runnableTask;
 
 import com.walmart.finance.ap.fds.receiving.integrations.FinancialTxnIntegrationService;
 import com.walmart.finance.ap.fds.receiving.integrations.FinancialTxnResponseData;
+import org.slf4j.MDC;
 
 import java.util.List;
 import java.util.Map;
@@ -13,9 +14,10 @@ public class FinancialTransactionTask implements Callable<List<FinancialTxnRespo
 
     private FinancialTxnIntegrationService financialTxnIntegrationService;
 
-    public FinancialTransactionTask(Map<String, String> allRequestParams, FinancialTxnIntegrationService financialTxnIntegrationService) {
+    public FinancialTransactionTask(Map<String, String> allRequestParams, FinancialTxnIntegrationService financialTxnIntegrationService, Map<String, String> copyOfContextMap) {
         this.allRequestParams = allRequestParams;
         this.financialTxnIntegrationService = financialTxnIntegrationService;
+        MDC.setContextMap(copyOfContextMap);
     }
 
 
