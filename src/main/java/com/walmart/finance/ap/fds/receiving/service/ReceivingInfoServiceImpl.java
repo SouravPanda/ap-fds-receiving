@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
@@ -124,12 +123,9 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 + (StringUtils.isEmpty(financialTxnResponseData.getReceiveId()) ? "0" : financialTxnResponseData.getReceiveId()) + ReceivingConstants.PIPE_SEPARATOR
                 + (storeNumber == null ? 0 : storeNumber) + ReceivingConstants.PIPE_SEPARATOR
                 + (financialTxnResponseData.getReceivingDate() == null ? "0" : financialTxnResponseData.getReceivingDate().toInstant().atZone(ZoneId.of("GMT")).toLocalDate());
-        //Query query = new Query();
         List<Criteria> criteriaList = new ArrayList<>();
-        //CriteriaDefinition criteriaDefinition = null;
         if (StringUtils.isNotEmpty(id) && !id.equalsIgnoreCase("0|0|0|0")) {
             criteriaList.add(Criteria.where(ReceiveSummaryCosmosDBParameters.ID.getParameterName()).is(id));
-            //query.addCriteria(criteriaDefinition);
         }
         if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATESTART.getQueryParam()))
                 && StringUtils.isNotEmpty(allRequestParams.get(ReceivingInfoRequestQueryParameters.RECEIPTDATEEND.getQueryParam()))) {
@@ -148,27 +144,23 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 throw new BadRequestException("Receipt end date should be greater than receipt start date.", "Please enter valid query parameters");
             }
         }
-        Aggregation aggregation = ReceivingUtils.aggregateBuilder(criteriaList);
 
-        long startTime = System.currentTimeMillis();
-        log.info("Aggregation query :getSummaryData :: Query is " + aggregation);
-        List<ReceiveSummary>  receiveSummaryList = new ArrayList<>(mongoTemplate
-                .aggregate(aggregation, summaryCollection, ReceiveSummary.class)
-                .getMappedResults());
-        log.info("Response Time : getSummaryData :: "+(System.currentTimeMillis()-startTime));
+        return executeSummaryAggregation(allRequestParams, criteriaList);
 
-        return allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
-                .equals(LOCATION_TYPE_WAREHOUSE)?
-                mergeDuplicateSummaryRecords(receiveSummaryList) : receiveSummaryList;
     }
 
     private List<ReceiveSummary> getSummaryData(Map<String, String> allRequestParams) {
 
         List<Criteria> criteria = searchCriteriaForGet(allRequestParams);
+        return executeSummaryAggregation(allRequestParams, criteria);
+
+    }
+
+    private List<ReceiveSummary> executeSummaryAggregation(Map<String, String> allRequestParams, List<Criteria> criteria) {
         Aggregation aggregation = ReceivingUtils.aggregateBuilder(criteria);
 
         long startTime = System.currentTimeMillis();
-        log.info("Aggregation query :getSummaryData :: Query is " + aggregation);
+        log.info("Aggregation query : getSummaryData :: Query is " + aggregation);
         List<ReceiveSummary>  receiveSummaryList = new ArrayList<>(mongoTemplate
                 .aggregate(aggregation, summaryCollection, ReceiveSummary.class)
                 .getMappedResults());
@@ -177,7 +169,6 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         return allRequestParams.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam())
                 .equals(LOCATION_TYPE_WAREHOUSE)?
                 mergeDuplicateSummaryRecords(receiveSummaryList) : receiveSummaryList;
-
     }
 
     private List<Criteria> searchCriteriaForGet(Map<String, String> paramMap) {
