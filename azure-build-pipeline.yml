@@ -6,13 +6,15 @@ variables:
   jdkVersionOption: 1.8
   jdkArchitectureOption: x64
   mavenOptions: -Xmx128m
+
 trigger:
   - develop
   - master
 
 schedules:
-  - cron: "0 0 * * *"
-    displayName: Daily midnight build
+# Scheduled build at 7.00 AM IST daily
+  - cron: "30 1 * * *"
+    displayName: Daily build
     branches:
       include:
         - develop
@@ -74,6 +76,12 @@ jobs:
         displayName: Publish SonarQube
         inputs:
           pollingTimeoutSec: '300'
+
+      - task: SimondeLang.sonar-buildbreaker.sonar-buildbreaker.sonar-buildbreaker@8
+        displayName: 'Break build on quality gate failure'
+        inputs:
+          SonarQube: 'ap-fds-receiving-sqube'
+
       - task: Docker@2
         displayName: Build and Push To Dev Registry
         inputs:
@@ -84,6 +92,7 @@ jobs:
           tags: $(version)
       - script: echo Tagged image with $(version)
         displayName: Image version
+
   - job: CI_Job_Master_Build
     condition: eq(variables['Build.SourceBranchName'], 'master')
     pool:
@@ -132,6 +141,11 @@ jobs:
         inputs:
           pollingTimeoutSec: '300'
 
+      - task: SimondeLang.sonar-buildbreaker.sonar-buildbreaker.sonar-buildbreaker@8
+        displayName: 'Break build on quality gate failure'
+        inputs:
+          SonarQube: 'ap-fds-receiving-sqube'
+
       - task: Docker@2
         displayName: Build and Push To Release registry
         inputs:
@@ -142,8 +156,9 @@ jobs:
           tags: $(version)
       - script: echo Tagged image with $(version)
         displayName: Image version
+
   - job: CI_Job_Dev_Build
-    condition: eq(variables['Build.SourceBranchName'], 'develop')
+    condition: and(ne(variables['Build.Reason'], 'Schedule'),eq(variables['Build.SourceBranchName'], 'develop'))
     pool:
       name: GBS Linux Build Agent Pool
     variables:
@@ -188,6 +203,89 @@ jobs:
         displayName: Publish SonarQube
         inputs:
           pollingTimeoutSec: '300'
+
+      - task: SimondeLang.sonar-buildbreaker.sonar-buildbreaker.sonar-buildbreaker@8
+        displayName: 'Break build on quality gate failure'
+        inputs:
+          SonarQube: 'ap-fds-receiving-sqube'
+
+      - task: Docker@2
+        displayName: Build and Push To Dev Registry
+        inputs:
+          containerRegistry: 'apfsregistrydev'
+          command: 'buildAndPush'
+          Dockerfile: '**/Dockerfile'
+          repository: ap-fds-receive
+          tags: $(version)
+      - script: echo Tagged image with $(version)
+        displayName: Image version
+      - checkout: self
+        persistCredentials: true
+      - task: PowerShell@2
+        displayName: Update POM version
+        inputs:
+          targetType: 'inline'
+          script: |
+            git checkout $(Build.SourceBranchName)
+            git pull origin $(Build.SourceBranchName)
+
+            mvn -B release:update-versions
+            git ls-files --modified | grep pom.xml | xargs git add
+            git commit -m 'Automated Version Update By Azure DevOps Build pipeline [skip ci]'
+
+            git push origin $(Build.SourceBranchName)
+
+  - job: CI_Job_Scheduled_Build
+    condition: eq(variables['Build.Reason'], 'Schedule')
+    pool:
+      name: GBS Linux Build Agent Pool
+    variables:
+      imageversion: $(version)
+    steps:
+      - script: echo Build triggered on $(Build.SourceBranchName) branch
+      - task: PowerShell@2
+        displayName: Read POM.xml
+        inputs:
+          targetType: 'inline'
+          script: |
+            [xml]$pomXml = Get-Content .\pom.xml
+            Write-Host $pomXml.project.version
+            #version
+            $version=$pomXml.project.version
+            Write-Host "##vso[task.setvariable variable=version]$version"
+      - task: SonarQubePrepare@4
+        displayName: Prepare for SonarQube
+        inputs:
+          SonarQube: 'ap-fds-receiving-sqube'
+          scannerMode: 'Other'
+          projectKey: 'ap-fds-receive'
+          extraProperties: |
+            sonar.coverage.exclusions = **/service/ReceivingInfoServiceImpl.java,**/repository/*,**/request/*,**/response/*,**/validator/*,**/messageproducer/*,**/serializer/*,**/mesh/*,**/integrations/*,**/filter/*,**/common/*,**/config/*,**/daodb2/*,**/exception/*,**/factory/*,**/model/*,**/mongo/*,**/mysql/*,**/converter/*,**/dao/*,**/deserializer/*
+      - task: Maven@3
+        displayName: Maven Build
+        inputs:
+          mavenPomFile: 'pom.xml'
+          goals: 'clean install'
+          publishJUnitResults: true
+          testResultsFiles: '**/surefire-reports/TEST-*.xml'
+          javaHomeOption: 'JDKVersion'
+          mavenVersionOption: 'Default'
+          mavenAuthenticateFeed: false
+          effectivePomSkip: false
+          sonarQubeRunAnalysis: true
+          sqMavenPluginVersionChoice: 'latest'
+          checkStyleRunAnalysis: true
+          findBugsRunAnalysis: true
+          pmdRunAnalysis: true
+      - task: SonarQubePublish@4
+        displayName: Publish SonarQube
+        inputs:
+          pollingTimeoutSec: '300'
+
+      - task: SimondeLang.sonar-buildbreaker.sonar-buildbreaker.sonar-buildbreaker@8
+        displayName: 'Break build on quality gate failure'
+        inputs:
+          SonarQube: 'ap-fds-receiving-sqube'
 
       - task: Docker@2
         displayName: Build and Push To Dev Registry
