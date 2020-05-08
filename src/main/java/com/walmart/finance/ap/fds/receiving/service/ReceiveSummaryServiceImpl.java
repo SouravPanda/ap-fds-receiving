@@ -131,10 +131,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         }
     }
 
-    /*    private String formulateId(String controlNumber, String receiptNumber, String locationNumber, String receiptDate) {
-            return controlNumber + ReceivingConstants.PIPE_SEPARATOR + receiptNumber + ReceivingConstants.PIPE_SEPARATOR + locationNumber + ReceivingConstants.PIPE_SEPARATOR + receiptDate;
-
-        }*/
     private String formulateId(String receivingControlNumber, String poReceiveId, String locationNumber, String MDSReceiveDate) {
         return receivingControlNumber + ReceivingConstants.PIPE_SEPARATOR + poReceiveId + ReceivingConstants.PIPE_SEPARATOR + locationNumber + ReceivingConstants.PIPE_SEPARATOR + MDSReceiveDate;
     }
@@ -215,110 +211,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     /******* receive -line data fetching   *********/
 
-    private Map<String, AdditionalResponse> getLineResponseMap(List<ReceiveSummary> receiveSummaries, Map<String, String> allRequestParams) {
-        Map<String, AdditionalResponse> lineResponseMap = new HashMap<>();
-        List<ReceivingLine> lineResponseList = new LinkedList<>();
-        List<Criteria> criteriaList = new ArrayList<>();
-        List<String> itemNumbers = allRequestParams.containsKey(ReceiveSummaryRequestParams.ITEMNUMBERS.getParameterName()) ? Arrays.asList(allRequestParams.get(ReceiveSummaryRequestParams.ITEMNUMBERS.getParameterName()).split(",")) : null;
-        List<String> upcNumbers = allRequestParams.containsKey(ReceiveSummaryRequestParams.UPCNUMBERS.getParameterName()) ? Arrays.asList(allRequestParams.get(ReceiveSummaryRequestParams.UPCNUMBERS.getParameterName()).split(",")) : null;
-        Set<String> partitionNumbers = new HashSet<>();
-        List<String> summaryReferences = new ArrayList<>();
-        for (ReceiveSummary receiveSummary : receiveSummaries) {
-            partitionNumbers.addAll(ReceivingUtils
-                    .getPartitionKeyList(null, allRequestParams, receiveSummary.getStoreNumber(), monthsPerShard, monthsToDisplay));
-            summaryReferences.add(receiveSummary.get_id());
-        }
-
-
-
-        Criteria criteriaDefinition = queryForLineResponse(partitionNumbers, itemNumbers, upcNumbers,
-                summaryReferences);
-
-        if (criteriaDefinition != null) {
-            Query query = new Query(criteriaDefinition);
-            log.info("query: " + query);
-            lineResponseList = executeQueryReceiveline(query);
-        }
-        Map<String, List<ReceivingLine>> receivingLineMap = new HashMap<>();
-        Iterator<ReceivingLine> iteratorLine = lineResponseList.iterator();
-        //Grouping lines according to SummaryReference
-        while (iteratorLine.hasNext()) {
-            ReceivingLine receivingLine = iteratorLine.next();
-            if (receivingLineMap.containsKey(receivingLine.getSummaryReference())) {
-                receivingLineMap.get(receivingLine.getSummaryReference()).add(receivingLine);
-            } else {
-                List<ReceivingLine> lineList = new ArrayList<>();
-                lineList.add(receivingLine);
-                receivingLineMap.put(receivingLine.getSummaryReference(), lineList);
-            }
-            iteratorLine.remove();
-        }
-
-        Iterator<ReceiveSummary> iterator = receiveSummaries.iterator();
-        while (iterator.hasNext()) {
-            ReceiveSummary receiveSummary = iterator.next();
-            AdditionalResponse response = new AdditionalResponse();
-            List<ReceivingLine> lineList = receivingLineMap.get(receiveSummary.get_id());
-            if (CollectionUtils.isNotEmpty(lineList)) {
-                if (receiveSummary.getTypeIndicator().equals('W')) {
-                    if (lineList.get(0).getPoLineValue() != null && !lineList.get(0).getPoLineValue().isEmpty()) {
-                        response.setTotalCostAmount(BigDecimal.valueOf(lineList.stream()
-                                .filter(t -> t.getPoLineValue().containsKey(UOM_CODE_WH_EXCEPTION_RESOLUTION) &&
-                                        t.getReceivedQuantity() != null &&
-                                        t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmount() != null)
-                                .mapToDouble(t -> t.getReceivedQuantity() *
-                                        t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getCostAmount())
-                                .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
-                        response.setTotalRetailAmount(BigDecimal.valueOf(
-                                lineList.stream()
-                                        .filter(t -> t.getPoLineValue().containsKey(UOM_CODE_WH_EXCEPTION_RESOLUTION) &&
-                                                t.getReceivedQuantity() != null &&
-                                                t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmount() != null)
-                                        .mapToDouble(t -> t.getReceivedQuantity() *
-                                                t.getPoLineValue().get(UOM_CODE_WH_EXCEPTION_RESOLUTION).getRetailAmount())
-                                        .sum()).setScale(2, RoundingMode.HALF_UP).doubleValue());
-                    } else {
-                        response.setTotalCostAmount(lineList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getCostAmount()).sum());
-                        response.setTotalRetailAmount(lineList.stream().mapToDouble(t -> t.getReceivedQuantity() * t.getRetailAmount()).sum());
-                    }
-                } else {
-                    response.setTotalCostAmount(receiveSummary.getTotalCostAmount() != null ?
-                            receiveSummary.getTotalCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
-                    response.setTotalRetailAmount(receiveSummary.getTotalRetailAmount() != null ?
-                            receiveSummary.getTotalRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
-                }
-                response.setLineCount((long) lineList.size());
-                lineResponseMap.put(receiveSummary.get_id(), response);
-            } else if (CollectionUtils.isNotEmpty(itemNumbers) || CollectionUtils.isNotEmpty(upcNumbers)) {
-                iterator.remove();
-            } else {
-                response.setTotalCostAmount(receiveSummary.getTotalCostAmount()!= null ?
-                        receiveSummary.getTotalCostAmount() : defaultValuesConfigProperties.getTotalCostAmount());
-                response.setTotalRetailAmount(receiveSummary.getTotalRetailAmount() != null ?
-                        receiveSummary.getTotalRetailAmount() : defaultValuesConfigProperties.getTotalRetailAmount());
-                lineResponseMap.put(receiveSummary.get_id(), response);
-            }
-        }
-        return lineResponseMap;
-    }
-
-    private Criteria queryForLineResponse(Set<String> partitionNumbers, List<String> itemNumbers, List<String> upcNumbers, List<String> summaryReferences) {
-        Criteria criteriaDefinition = new Criteria();
-        if (CollectionUtils.isNotEmpty(partitionNumbers)) {
-            criteriaDefinition.and(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD).in(partitionNumbers);
-        }
-        if (CollectionUtils.isNotEmpty(summaryReferences)) {
-            criteriaDefinition.and(ReceivingLineParameters.SUMMARYREFERENCE.getParameterName()).in(summaryReferences);
-        }
-        if (CollectionUtils.isNotEmpty(itemNumbers)) {
-            criteriaDefinition.and(ReceivingLineParameters.ITEMNUMBER.getParameterName()).in(itemNumbers.stream().map(Long::parseLong).collect(Collectors.toList()));
-        }
-        if (CollectionUtils.isNotEmpty(upcNumbers)) {
-            criteriaDefinition.and(ReceivingLineParameters.UPCNUMBER.getParameterName()).in(upcNumbers);
-        }
-        return criteriaDefinition;
-    }
-
     /******* Common Methods  *********/
 
     private List<ReceiveSummary> executeQueryForReceiveSummary(Query query) {
@@ -329,27 +221,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             log.info("executeQueryForReceiveSummary :: queryTime :: " + (System.currentTimeMillis() - startTime));
         }
         return receiveSummaries;
-    }
-
-    private List<ReceivingLine> executeQueryReceiveline(Query query) {
-        List<ReceivingLine> receiveLines = new LinkedList<>();
-        if (query != null) {
-            long startTime = System.currentTimeMillis();
-            receiveLines = mongoTemplate.find(query, ReceivingLine.class, lineCollection);
-            log.info("executeQueryReceiveline :: queryTime :: " + (System.currentTimeMillis() - startTime));
-        }
-        return receiveLines;
-    }
-
-    private FreightResponse executeQueryReceiveFreight(Long id) {
-         Long startTime = System.currentTimeMillis();
-        FreightResponse freightResponses = mongoTemplate.findById(id, FreightResponse.class, freightCollection);
-        log.info("executeQueryReceiveFreight :: queryTime :: " + (System.currentTimeMillis() - startTime));
-        return freightResponses;
-    }
-
-    private void listToMapConversion(List<ReceiveSummary> receiveSummaries, HashMap<String, ReceiveSummary> receiveSummaryHashMap) {
-        receiveSummaries.stream().forEach(t -> receiveSummaryHashMap.put(t.get_id(), t));
     }
 
     /******* Common Methods  *********/
