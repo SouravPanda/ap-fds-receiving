@@ -544,7 +544,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
         }
 
 
-        List<ReceivingInfoResponseV1> updateReceivingInfoResponsesList = 55amalgamateReceivingInfoResponseV1(allRequestParams, receivingInfoResponseV1List, financialTxnResponseDataList);
+        List<ReceivingInfoResponseV1> updateReceivingInfoResponsesList = amalgamateReceivingInfoResponseV1(allRequestParams, receivingInfoResponseV1List, financialTxnResponseDataList);
 
         successMessage.setData(updateReceivingInfoResponsesList);
     }
