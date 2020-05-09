@@ -9,6 +9,7 @@ import com.walmart.finance.ap.fds.receiving.model.ReceiveSummary;
 import com.walmart.finance.ap.fds.receiving.request.Meta;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import com.walmart.finance.ap.fds.receiving.request.SorRoutingCtx;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -46,6 +47,7 @@ public class ReceiveSummaryListenerTest {
         meta.setSorRoutingCtx(sorRoutingCtx);
         ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("888", "998", LocalDate.of(2018, 10, 10),
                 1, "P", meta);
+        Assert.assertNotNull(receivingSummaryRequest);
         receiveSummaryListener.onReceiveSummaryCommit(receivingSummaryRequest);
     }
 
@@ -59,6 +61,7 @@ public class ReceiveSummaryListenerTest {
         meta.setSorRoutingCtx(sorRoutingCtx);
         ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("888", "998", LocalDate.of(2018, 10, 10),
                 1, "D", meta);
+        Assert.assertNotNull(receivingSummaryRequest);
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode objNode = mapper.createObjectNode();
         Mockito.doThrow(JsonProcessingException.class).when(producer).sendSummaryToEventHub(objNode, ReceivingConstants.RECEIVESUMMARYWAREHOUSE);

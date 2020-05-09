@@ -5,7 +5,6 @@ import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
 
 @Service

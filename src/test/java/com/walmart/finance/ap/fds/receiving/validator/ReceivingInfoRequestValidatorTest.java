@@ -1,6 +1,5 @@
 package com.walmart.finance.ap.fds.receiving.validator;
 
-import com.walmart.finance.ap.fds.receiving.exception.MandatoryPatameterMissingException;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 

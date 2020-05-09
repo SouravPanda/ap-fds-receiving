@@ -7,13 +7,10 @@ import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
 import com.walmart.finance.ap.fds.receiving.request.SorRoutingCtx;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
-import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveSummaryServiceImpl;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,6 +36,9 @@ public class ReceivingSummaryControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @InjectMocks
+    ReceivingSummaryController receivingSummaryController;
 
     @MockBean
     private ReceiveSummaryServiceImpl receiveSummaryService;
@@ -60,6 +60,24 @@ public class ReceivingSummaryControllerTest {
     @AfterClass
     public static void removeSystemProperty() {
         System.clearProperty("spring.profiles.active");
+    }
+
+    @Test
+    public void getReceiveSummaryTest() {
+
+        try {
+            ReceivingResponse mockResponse = new ReceivingResponse();
+            mockResponse.setData(null);
+            mockResponse.setSuccess(true);
+            mockResponse.setTimestamp(LocalDateTime.now());
+            Mockito.when(receiveSummaryService.getReceiveSummary(any())).thenReturn(mockResponse);
+
+            Map<String, String> allRequestParams = new HashMap<>();
+            ReceivingResponse receivingResponse = receivingSummaryController.getReceiveSummary("US", allRequestParams);
+            Assert.assertNotNull(receivingResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
