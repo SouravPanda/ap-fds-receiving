@@ -182,7 +182,8 @@ public class ReceivingInfoControllerTest {
                 add(new InvoiceFinDelNoteChangeLogs(LocalDate.of(2019, 05, 27), "User1234", "Del1234", "OrgDel123"));
             }
         };
-        ReceivingInfoResponseV1 response = new ReceivingInfoResponseV1("ID123", LocalDate.of(2019, 05, 27), null,
+        ReceivingInfoResponseV1 response = new ReceivingInfoResponseV1("1111|2222","ID123", LocalDate.of(2019, 05, 27),
+                null,
                 "0.0", 640, 99, 18, new Long(1), 6479,
                 new Long(972515962), LocalDate.of(2019, 01, 01), "110950",
                 "A", 0.0, 0.0, null, 397646, null,
@@ -195,7 +196,7 @@ public class ReceivingInfoControllerTest {
                 7, 6479, 20, 64, 640, "N",
                 null, 10,
                 invoiceFinTransProcessLogs, invoiceFinTransAdjustLogs, invoiceFinDelNoteChangeLogs, lineResponses, 1,
-                "XYZ", "R");
+                "XYZ", "R", null);
         List<ReceivingInfoResponseV1> list = new ArrayList<ReceivingInfoResponseV1>() {
             {
                 add(response);

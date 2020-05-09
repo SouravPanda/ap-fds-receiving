@@ -80,7 +80,7 @@ public class ReceivingInfoRequestValidator {
 
             if (allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.TRANSACTIONID.getQueryParam()) &&
                     allRequestParams.containsKey(ReceivingInfoRequestQueryParameters.TXNSEQNBR.getQueryParam())) {
-                allRequestParams.put("scenario", ReceivingInfoRequestCombinations.TRANSACTIONID_TRANSACTIONSEQNBR.name());
+                allRequestParams.put(ReceivingConstants.SCENARIO, ReceivingInfoRequestCombinations.TRANSACTIONID_TRANSACTIONSEQNBR.name());
             }
 
             // Valid combination does not exist.

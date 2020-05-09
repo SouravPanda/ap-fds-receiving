@@ -6,7 +6,11 @@ import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingInfoResponseV1;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.aggregation.LimitOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
@@ -99,9 +103,8 @@ public class ReceivingUtils {
             LocalDateTime startDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATESTART) + ReceivingConstants.TIMESTAMP_TIME_ZERO);
             LocalDateTime endDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATEEND) + ReceivingConstants.TIMESTAMP_TIME_ZERO);
             Period diff = Period.between(startDate.toLocalDate(), endDate.toLocalDate());
-            int adjustedMonthsTodDisplay =
-                    new Double(Math.ceil((diff.toTotalMonths() + 2) / monthsPerShard.doubleValue()) * monthsPerShard)
-                            .intValue();
+            int adjustedMonthsTodDisplay = (int)
+                    (Math.ceil((diff.toTotalMonths() + 2) / monthsPerShard.doubleValue()) * monthsPerShard);
             partitionKeyCriteria =
                     Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD)
                             .in(ReceivingUtils.getPartitionKeyList(String.valueOf(storeNumber),
@@ -133,9 +136,8 @@ public class ReceivingUtils {
             LocalDateTime startDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATESTART) + ReceivingConstants.TIMESTAMP_TIME_ZERO);
             LocalDateTime endDate = getDate(allParams.get(ReceivingConstants.RECEIPTDATEEND) + ReceivingConstants.TIMESTAMP_TIME_ZERO);
             Period diff = Period.between(startDate.toLocalDate(), endDate.toLocalDate());
-            int adjustedMonthsTodDisplay =
-                    new Double(Math.ceil((diff.toTotalMonths() + 2) / monthsPerShard.doubleValue()) * monthsPerShard)
-                            .intValue();
+            int adjustedMonthsTodDisplay = (int)
+                    (Math.ceil((diff.toTotalMonths() + 2) / monthsPerShard.doubleValue()) * monthsPerShard);
 
             partitionKeyList = Arrays.asList(ReceivingUtils.getPartitionKeyList(String.valueOf(storeNumber),
                                     endDate.toLocalDate(), adjustedMonthsTodDisplay, monthsPerShard));
@@ -196,5 +198,25 @@ public class ReceivingUtils {
         } catch(NumberFormatException e){
             return false;
         }
+    }
+
+    public static Aggregation aggregateBuilder(List<Criteria> criteria) {
+        List<AggregationOperation> operations = new ArrayList<>();
+
+        if (CollectionUtils.isEmpty(criteria)) {
+            throw new RuntimeException("No criteria was sent.");
+        }
+
+        operations.addAll(Arrays.asList(
+                Aggregation.match(new Criteria().andOperator(criteria.toArray(new Criteria[0]))),
+                Aggregation.replaceRoot("$$ROOT"),
+                Aggregation.group("$$ROOT"),
+                Aggregation.replaceRoot("$_id")
+        ));
+
+        LimitOperation limit = Aggregation.limit(1000);
+        operations.add(limit);
+
+        return Aggregation.newAggregation(operations);
     }
 }

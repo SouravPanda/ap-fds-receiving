@@ -1,6 +1,6 @@
 package com.walmart.finance.ap.fds.receiving.exception;
 
-public class ReceivingException extends Exception {
+public class ReceivingException extends RuntimeException {
 
 	private static final long serialVersionUID = -841157203957108129L;
 	

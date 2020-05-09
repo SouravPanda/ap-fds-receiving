@@ -94,7 +94,7 @@ public class ReceiveSummaryServiceImplTest {
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
                 LocalDate.now(), 9.0, 7, "0", 0, LocalDateTime.now(), 0,
                 "JJJ", "yyyy", LocalDateTime.now(), "99"
-                , 'K', "LLL", null, null, null, null, null, LocalDateTime.now() ));
+                , 'K', "LLL", null, null, null, null, null, LocalDateTime.now(), null ));
         listOfContent.add(new ReceiveSummary("4665267|1804823|824|18|18|1995-10-17|18:45:21", "4665207",
                 8064, 18, 0, LocalDate.of(1986, 12, 12), LocalTime.of(18, 45, 21),
                 0, 9788, 1111,
@@ -103,7 +103,7 @@ public class ReceiveSummaryServiceImplTest {
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
                 LocalDate.now(), 9.0, 7, "0", 0, LocalDateTime.now(), 0,
                 "JJJ", "UU", LocalDateTime.now(), "99"
-                , 'K', "IIL", null, null, null, null, null, LocalDateTime.now()));
+                , 'K', "IIL", null, null, null, null, null, LocalDateTime.now(), null));
 
         List<String> listOfItemNumbers = new ArrayList<>();
         listOfItemNumbers.add("99");
@@ -189,7 +189,7 @@ public class ReceiveSummaryServiceImplTest {
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
                 LocalDate.now(), 9.0, 7, "0", 0, LocalDateTime.now(), 0,
                 "JJJ", "UU", LocalDateTime.now(), "99"
-                , 'K', "IIL", null, null, null, null, null, LocalDateTime.now()));
+                , 'K', "IIL", null, null, null, null, null, LocalDateTime.now(), null));
         List<String> listOfItemNumbers = new ArrayList<>();
         listOfItemNumbers.add("99");
         listOfItemNumbers.add("89");
@@ -274,7 +274,7 @@ public class ReceiveSummaryServiceImplTest {
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
                 LocalDate.now(), 9.0, 7, "0", 0, LocalDateTime.now(), 0,
                 "JJJ", "UU", LocalDateTime.now(), "99"
-                , 'K', "IIL", null, null, null, null, null, LocalDateTime.now()));
+                , 'K', "IIL", null, null, null, null, null, LocalDateTime.now(), null));
         List<String> listOfItemNumbers = new ArrayList<>();
         listOfItemNumbers.add("99");
         listOfItemNumbers.add("89");
@@ -357,7 +357,7 @@ public class ReceiveSummaryServiceImplTest {
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
                 LocalDate.now(), 9.0, 7, "0", 0, LocalDateTime.now(), 0,
                 "JJJ", "UU", LocalDateTime.now(), "99"
-                , 'W', "IIL", null, null, null, null, null, LocalDateTime.now());
+                , 'W', "IIL", null, null, null, null, null, LocalDateTime.now(), null);
         List listOfContent = new ArrayList<ReceiveSummary>();
         listOfContent.add(receiveSummary);
         List<String> listOfItemNumbers = new ArrayList<>();
@@ -473,7 +473,7 @@ public class ReceiveSummaryServiceImplTest {
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.of(1995, 10, 16),
                 LocalDate.of(1995, 10, 16), 9.0, 7, "0", 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
                 "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "99"
-                , 'K', "LLL", null, null, null, null, null, LocalDateTime.now());
+                , 'K', "LLL", null, null, null, null, null, LocalDateTime.now(), null);
         ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("888", "998", LocalDate.of(2018, 10, 10),
                 1, "A", meta);
         String countryCode = "US";
@@ -499,7 +499,7 @@ public class ReceiveSummaryServiceImplTest {
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.of(1995, 10, 16),
                 LocalDate.of(1995, 10, 16), 9.0, 7, "0", 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
                 "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "99"
-                , 'K', "LLL", null, null, null, null, null, LocalDateTime.now());
+                , 'K', "LLL", null, null, null, null, null, LocalDateTime.now(), null);
 
         Meta meta = new Meta();
         SorRoutingCtx sorRoutingCtx = new SorRoutingCtx();
@@ -533,7 +533,7 @@ public class ReceiveSummaryServiceImplTest {
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.of(1995, 10, 16),
                 LocalDate.of(1995, 10, 16), 9.0, 7, "0", 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
                 "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "99"
-                , 'K', "LLL", null, null, null, null, null, LocalDateTime.now());
+                , 'K', "LLL", null, null, null, null, null, LocalDateTime.now(), null);
 
         Meta meta = new Meta();
         SorRoutingCtx sorRoutingCtx = new SorRoutingCtx();
@@ -584,7 +584,7 @@ public class ReceiveSummaryServiceImplTest {
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.of(1995, 10, 16),
                 LocalDate.of(1995, 10, 16), 9.0, 7, "0", 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
                 "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "9"
-                , 'K', "LLL", null, null, null, null, null, LocalDateTime.now());
+                , 'K', "LLL", null, null, null, null, null, LocalDateTime.now(), null);
 
         Map<String, WHLinePOLineValue> poLineValueMap = new HashMap<>();
         poLineValueMap.put(UOM_CODE_WH_EXCEPTION_RESOLUTION, new WHLinePOLineValue(UOM_CODE_WH_EXCEPTION_RESOLUTION,
@@ -644,7 +644,7 @@ public class ReceiveSummaryServiceImplTest {
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.of(1995, 10, 16),
                 LocalDate.of(1995, 10, 16), 9.0, 7, "0", 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
                 "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "9"
-                , 'K', "LLL", null, null, null, null, null, LocalDateTime.now());
+                , 'K', "LLL", null, null, null, null, null, LocalDateTime.now(), null);
 
         ReceivingLine receivingLine = new ReceivingLine("9|8|1|0|1", "8",
                 0, 3777L, 94493, 0.0, 0.0, 0.0, "9",
@@ -686,7 +686,7 @@ public class ReceiveSummaryServiceImplTest {
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.of(1995, 10, 16),
                 LocalDate.of(1995, 10, 16), 9.0, 7, "0", 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
                 "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "9"
-                , 'K', "LLL", null, null, null, null, null, LocalDateTime.now());
+                , 'K', "LLL", null, null, null, null, null, LocalDateTime.now(), null);
 
         Map<String, WHLinePOLineValue> poLineValueMap = new HashMap<>();
         poLineValueMap.put(UOM_CODE_WH_EXCEPTION_RESOLUTION, new WHLinePOLineValue(UOM_CODE_WH_EXCEPTION_RESOLUTION,
@@ -731,7 +731,7 @@ public class ReceiveSummaryServiceImplTest {
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.of(1995, 10, 16),
                 LocalDate.of(1995, 10, 16), 9.0, 7, "0", 0, (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), 0,
                 "999997", "yyyy", (LocalDateTime.of(2018, 10, 10, 0, 40, 0)), "9"
-                , 'K', "LLL", null, null, null, null, null, LocalDateTime.now());
+                , 'K', "LLL", null, null, null, null, null, LocalDateTime.now(), null);
 
         Map<String, WHLinePOLineValue> poLineValueMap = new HashMap<>();
         poLineValueMap.put(UOM_CODE_WH_EXCEPTION_RESOLUTION, new WHLinePOLineValue(UOM_CODE_WH_EXCEPTION_RESOLUTION,
@@ -822,7 +822,7 @@ public class ReceiveSummaryServiceImplTest {
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
                 LocalDate.now(), 9.0, 7, "0", 0, LocalDateTime.now(), 0,
                 "JJJ", "UU", LocalDateTime.now(), "99"
-                , 'K', "IIL", null, null, null, null, null, LocalDateTime.now());
+                , 'K', "IIL", null, null, null, null, null, LocalDateTime.now(), null);
         try {
             ArrayList<ReceiveSummary> receiveSummaries = new ArrayList<>();
             receiveSummaries.add(receiveSummary);
@@ -853,7 +853,7 @@ public class ReceiveSummaryServiceImplTest {
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
                 LocalDate.now(), 9.0, 7, "0", 0, LocalDateTime.now(), 0,
                 "JJJ", "UU", LocalDateTime.now(), "99"
-                , 'K', "IIL", null, null, null, null, null, LocalDateTime.now());
+                , 'K', "IIL", null, null, null, null, null, LocalDateTime.now(), null);
         ArrayList<ReceiveSummary> receiveSummaries = new ArrayList<>();
         receiveSummaries.add(receiveSummary);
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(receiveSummaries);
@@ -878,7 +878,7 @@ public class ReceiveSummaryServiceImplTest {
                 'M', LocalDateTime.of(1990, 12, 12, 18, 56, 22), LocalDate.now(),
                 LocalDate.now(), 9.0, 7, "0", 0, LocalDateTime.now(), 0,
                 "JJJ", "UU", LocalDateTime.now(), "99"
-                , 'K', "IIL", null, null, null, null, null, LocalDateTime.now());
+                , 'K', "IIL", null, null, null, null, null, LocalDateTime.now(), null);
         ArrayList<ReceiveSummary> receiveSummaries = mock(ArrayList.class);
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(receiveSummaries);
         when(receiveSummaries.size()).thenReturn(1234);
