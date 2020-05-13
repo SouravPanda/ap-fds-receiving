@@ -63,13 +63,22 @@ public class ReceivingConstants {
     public final static String PAYLOAD = "payload";
     public final static String META = "meta";
     public final static Boolean TRUE = true;
+    public final static Boolean FALSE = false;
     public final static String SUCCESS = "success";
-    public final static String OBJECT_NAME = "domainObjectName";
-    public final static String APPLICATION_TYPE_SUMMARY = "cosmosWriteSummary";
-    public final static String APPLICATION_TYPE_LINE_SUMMARY = "cosmosWriteLineSummary";
-    public final static String TIMESTAMP = "timestamp";
+    public final static String OBJECT_NAME = "objectName";
+    public final static String APPLICATION_TYPE_SUMMARY = "receivingWriteSummary";
+    public final static String APPLICATION_TYPE_LINE_SUMMARY = "receivingWriteLineSummary";
+    public final static String TIMESTAMP = "messageTimeStamp";
     public final static String OPERATION = "operation";
     public final static String OPERATION_TYPE = "UPDATE";
+    public final static String DOMAIN = "domain";
+    public final static String SERVICE = "serviceFailed";
+    public final static String ZONE_ID = "CST6CDT";
+    public final static String ID = "_id";
+    public final static String PARTITIONKEY = "partitionKey";
+    public final static String ERROR = "error";
+    public final static String DOMAIN_NAME = "Receiving";
+    public final static String SERVICE_NAME = "receiving-write-cosmosWrite";
 
     public static final int RETRY_BACKOFF = 2000;
     public static final int RETRY_ATTEMPTS = 5;
@@ -84,4 +93,6 @@ public class ReceivingConstants {
     public final static String PURCHASE_ORDER_ID_URL_PARAM = "purchaseOrderId";
     public final static String SCENARIO = "scenario";
 
+    public final static String EVENT_HUB_NETWORK_ERROR= "The operation failed due to an event hub connection error";
+    public final static String ERROR_CODE="501";
 }

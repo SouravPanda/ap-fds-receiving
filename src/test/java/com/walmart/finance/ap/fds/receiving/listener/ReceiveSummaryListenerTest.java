@@ -46,7 +46,7 @@ public class ReceiveSummaryListenerTest {
         sorRoutingCtx.setReplnTypCd("R");
         meta.setSorRoutingCtx(sorRoutingCtx);
         ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("888", "998", LocalDate.of(2018, 10, 10),
-                1, "P", meta);
+                1, "P", meta,null,null);
         Assert.assertNotNull(receivingSummaryRequest);
         receiveSummaryListener.onReceiveSummaryCommit(receivingSummaryRequest);
     }
@@ -60,7 +60,7 @@ public class ReceiveSummaryListenerTest {
         sorRoutingCtx.setReplnTypCd("R");
         meta.setSorRoutingCtx(sorRoutingCtx);
         ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("888", "998", LocalDate.of(2018, 10, 10),
-                1, "D", meta);
+                1, "D", meta,null,null);
         Assert.assertNotNull(receivingSummaryRequest);
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode objNode = mapper.createObjectNode();

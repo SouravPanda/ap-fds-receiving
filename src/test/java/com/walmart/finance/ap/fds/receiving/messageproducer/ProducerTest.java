@@ -44,7 +44,7 @@ public class ProducerTest {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode objNode = mapper.createObjectNode();
         Assert.assertNotNull(objNode);
-        producer.sendSummaryToEventHub(objNode, "test");
+        producer.sendSummaryToEventHub(objNode, "");
     }
 
     @Test
@@ -54,6 +54,6 @@ public class ProducerTest {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode objNode = mapper.createObjectNode();
         Assert.assertNotNull(objNode);
-        producer.sendSummaryLineToEventHub(objNode, "test");
+        producer.sendSummaryLineToEventHub(objNode, "");
     }
 }

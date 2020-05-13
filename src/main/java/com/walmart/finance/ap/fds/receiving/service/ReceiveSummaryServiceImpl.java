@@ -229,6 +229,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     @Transactional
     public ReceivingResponse updateReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest, String countryCode) {
         log.info("unitOfWorkId:" + receivingSummaryRequest.getMeta().getUnitOfWorkId());
+        receiveSummaryValidator.validateCountryCode(receivingSummaryRequest.getMeta().getSorRoutingCtx().getLocationCountryCd());
         Boolean isWareHouseData = receiveSummaryValidator.isWareHouseData(receivingSummaryRequest.getMeta().getSorRoutingCtx());
         receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryRequest.getBusinessStatusCode());
         String id = formulateId(receivingSummaryRequest.getPurchaseOrderId(), receivingSummaryRequest.getReceiptNumber(), receivingSummaryRequest.getLocationNumber().toString(), isWareHouseData ? "0" : receivingSummaryRequest.getReceiptDate().toString());
@@ -248,6 +249,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             throw new ContentNotFoundException(ReceivingErrors.CONTENTNOTFOUNDSUMMARY.getParameterName(), ReceivingErrors.VALIDID.getParameterName());
         }
         if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
+            receivingSummaryRequest.set_id(id);
+            receivingSummaryRequest.setPartitionKey(ReceivingUtils.getPartitionKey(String.valueOf(receivingSummaryRequest.getLocationNumber()),
+                    receivingSummaryRequest.getReceiptDate(),monthsPerShard));
             publisher.publishEvent(receivingSummaryRequest);
         }
         List<ReceivingSummaryRequest> responseList = new ArrayList<>();
@@ -263,8 +267,8 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     @Transactional
     public ReceivingResponse updateReceiveSummaryAndLine(ReceivingSummaryLineRequest receivingSummaryLineRequest, String countryCode) {
         log.info("unitOfWorkId:" + receivingSummaryLineRequest.getMeta().getUnitOfWorkId());
+        receiveSummaryValidator.validateCountryCode(receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getLocationCountryCd());
         Boolean isWareHouseData = receiveSummaryValidator.isWareHouseData(receivingSummaryLineRequest.getMeta().getSorRoutingCtx());
-
         receiveSummaryValidator.validateBusinessStatUpdateSummary(receivingSummaryLineRequest.getBusinessStatusCode());
         receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest);
         receiveSummaryLineValidator.validateReceiptLineNumber(receivingSummaryLineRequest.getReceiptLineNumber());
@@ -317,8 +321,13 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         successMessage.setSuccess(true);
         successMessage.setData(responseList);
         successMessage.setTimestamp(LocalDateTime.now());
-        if(isWareHouseData)
+        if(isWareHouseData) {
+            receivingSummaryLineRequest.set_id(id);
+            receivingSummaryLineRequest.setPartitionKey(ReceivingUtils.getPartitionKey(String.valueOf(receivingSummaryLineRequest.getLocationNumber()),
+                    receivingSummaryLineRequest.getReceiptDate(), monthsPerShard));
+
             publisher.publishEvent(receivingSummaryLineRequest);
+        }
         return successMessage;
     }
 
