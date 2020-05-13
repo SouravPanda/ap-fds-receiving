@@ -31,6 +31,8 @@ public class ProducerTest {
     @Mock
     private MessageChannel messageChannel;
 
+    @Mock
+    private MySQLApi mySQLApi;
 
     @Before
     public void setUp() {
@@ -40,20 +42,20 @@ public class ProducerTest {
     @Test
     public void sendSummaryToEventHub()  {
         when(customSource.summaryTopic()).thenReturn(messageChannel);
-        when(messageChannel.send(MessageBuilder.withPayload("test").build())).thenReturn(Boolean.TRUE);
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode objNode = mapper.createObjectNode();
         Assert.assertNotNull(objNode);
+        when(messageChannel.send(MessageBuilder.withPayload(objNode).build())).thenReturn(Boolean.TRUE);
         producer.sendSummaryToEventHub(objNode, "");
     }
 
     @Test
     public void sendSummaryLineToEventHub()  {
-        when(customSource.summaryTopic()).thenReturn(messageChannel);
-        when(messageChannel.send(MessageBuilder.withPayload("test").build())).thenReturn(Boolean.TRUE);
+        when(customSource.lineSummaryTopic()).thenReturn(messageChannel);
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode objNode = mapper.createObjectNode();
         Assert.assertNotNull(objNode);
+        when(messageChannel.send(MessageBuilder.withPayload(objNode).build())).thenReturn(Boolean.TRUE);
         producer.sendSummaryLineToEventHub(objNode, "");
     }
 }
