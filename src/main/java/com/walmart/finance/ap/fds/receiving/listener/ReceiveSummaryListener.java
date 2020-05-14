@@ -15,7 +15,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 
 @Component
@@ -43,8 +44,9 @@ public class ReceiveSummaryListener {
             objNode.set(ReceivingConstants.META, meta);
             objNode.put(ReceivingConstants.SUCCESS, ReceivingConstants.TRUE);
             objNode.put(ReceivingConstants.OBJECT_NAME, ReceivingConstants.APPLICATION_TYPE_SUMMARY);
-            objNode.put(ReceivingConstants.TIMESTAMP, OffsetDateTime.now(ZoneOffset.UTC).toString());
+            objNode.put(ReceivingConstants.TIMESTAMP, LocalDateTime.now().atZone(ZoneId.of(ReceivingConstants.ZONE_ID)).toInstant().toEpochMilli());
             objNode.put(ReceivingConstants.OPERATION, ReceivingConstants.OPERATION_TYPE);
+            objNode.put(ReceivingConstants.DOMAIN,ReceivingConstants.DOMAIN_NAME);
             objNode.set(ReceivingConstants.ID, valueTree.get(ReceivingConstants.ID));
             objNode.set(ReceivingConstants.PARTITIONKEY, valueTree.get(ReceivingConstants.PARTITIONKEY));
             valueTree.remove(ReceivingConstants.PARTITIONKEY);

@@ -1,5 +1,6 @@
 package com.walmart.finance.ap.fds.receiving.messageproducer;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.walmart.finance.ap.fds.receiving.common.Details;
@@ -30,14 +31,14 @@ public class MySQLApi {
     @Autowired
     RestTemplate restTemplate;
 
-    @Value("${mesh.consumerId}")
+    @Value("${mysql.consumerId}")
     private String consumerId;
 
     @Value("${mysql.service.name}")
     private String serviceName;
 
-    @Value("${spring.profiles.active}")
-    private String profile;
+    @Value("${financialTxn.appEnv}")
+    private String appEnv;
 
     @Value("${mysql.url}")
     private String mysqlUrl;
@@ -46,11 +47,10 @@ public class MySQLApi {
 
     public void saveFailureRecordTOMysql(ObjectNode message) {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
-        //headers.add("Content-Type", "application/json");
         headers.add(ReceivingConstants.SM_WM_APP_NAME, serviceName);
-        headers.add(ReceivingConstants.SM_WM_ENV, profile);
+        headers.add(ReceivingConstants.SM_WM_ENV, appEnv);
         headers.add(ReceivingConstants.SM_WM_CONSUMER, consumerId);
-        ObjectNode valueTree=builfailureMessage(message);
+        ObjectNode valueTree = builfailureMessage(message);
         try {
             URI uri = new URI(mysqlUrl);
             HttpEntity<ObjectNode> request = new HttpEntity<>(valueTree, headers);
@@ -59,7 +59,7 @@ public class MySQLApi {
         } catch (RestClientException exe) {
             log.error("exception while calling Audit API to save the failure record to MySQL failure table  " + exe);
         } catch (URISyntaxException exe) {
-            log.error("exception while forming URI to make the rest call to MySQL Audit API " + exe);
+            log.error("exception while forming URI to make the rest call to MySQL Audit API " + valueTree + " " + exe);
         }
     }
 
@@ -74,10 +74,10 @@ public class MySQLApi {
         error.setDetails(detailList);
         ObjectMapper mapper = new ObjectMapper();
         try {
-            String value = mapper.writeValueAsString(error);
-            ObjectNode valueTree = (ObjectNode) mapper.readTree(value);
+            String json = mapper.writeValueAsString(error);
+            JsonNode jsonNode = mapper.readTree(json);
             failureMessage.put(ReceivingConstants.SERVICE, ReceivingConstants.SERVICE_NAME);
-            failureMessage.set(ReceivingConstants.ERROR, valueTree);
+            failureMessage.set(ReceivingConstants.ERROR, jsonNode);
         } catch (IOException exe) {
             log.error("exception while forming error JSON structure for the failure message " + exe);
         }
