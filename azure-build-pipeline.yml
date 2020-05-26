@@ -12,7 +12,7 @@ trigger:
   - master
 
 schedules:
-# Scheduled build at 7.00 AM IST daily
+  # Scheduled build at 7.00 AM IST daily
   - cron: "30 1 * * *"
     displayName: Daily build
     branches:
@@ -25,15 +25,20 @@ jobs:
     condition: and(ne(variables['System.PullRequest.PullRequestId'],'Null'),eq(variables['Build.SourceBranchName'], 'merge'))
     pool:
       name: GBS Linux Build Agent Pool
-    variables:
-      imageversion: $version
     steps:
-      - script: |
-          echo PR flow triggered
-          mvn -v
-          java -version
-        displayName: PR Flow Triggered
-      - script: echo Build triggered on $(System.PullRequest.SourceBranch) branch
+      - bash: |
+          dir=$(Build.SourcesDirectory)
+          dir=${dir##*/}
+          echo "##vso[task.setvariable variable=checkoutDir]$dir"
+
+      - bash: |
+          echo "checkout dir = $(checkoutDir)"
+          echo Build triggered on $(System.PullRequest.SourceBranch) branch
+
+      - checkout: self
+        persistCredentials: true
+        path: $(checkoutDir)
+
       - task: PowerShell@2
         displayName: Read POM.xml
         inputs:
@@ -48,6 +53,7 @@ jobs:
             if ( $version.endswith('-')) { $version=$pomXml.project.version }
             echo $version
             Write-Host "##vso[task.setvariable variable=version]$version"
+
       - task: SonarQubePrepare@4
         displayName: Prepare for SonarQube
         inputs:
@@ -56,6 +62,7 @@ jobs:
           projectKey: 'ap-fds-receive'
           extraProperties: |
             sonar.coverage.exclusions = **/service/ReceivingInfoServiceImpl.java,**/repository/*,**/request/*,**/response/*,**/validator/*,**/messageproducer/*,**/serializer/*,**/mesh/*,**/integrations/*,**/filter/*,**/common/*,**/config/*,**/daodb2/*,**/exception/*,**/factory/*,**/model/*,**/mongo/*,**/mysql/*,**/converter/*,**/dao/*,**/deserializer/*
+
       - task: Maven@3
         displayName: Maven Build
         inputs:
@@ -72,6 +79,7 @@ jobs:
           checkStyleRunAnalysis: true
           findBugsRunAnalysis: true
           pmdRunAnalysis: true
+
       - task: SonarQubePublish@4
         displayName: Publish SonarQube
         inputs:
@@ -90,6 +98,7 @@ jobs:
           Dockerfile: '**/Dockerfile'
           repository: ap-fds-receive
           tags: $(version)
+
       - script: echo Tagged image with $(version)
         displayName: Image version
 
@@ -97,10 +106,20 @@ jobs:
     condition: eq(variables['Build.SourceBranchName'], 'master')
     pool:
       name: GBS Linux Build Agent Pool
-    variables:
-      imageversion: $(version)
     steps:
-      - script: echo Build triggered on $(Build.SourceBranchName) branch
+      - bash: |
+          dir=$(Build.SourcesDirectory)
+          dir=${dir##*/}
+          echo "##vso[task.setvariable variable=checkoutDir]$dir"
+
+      - bash: |
+          echo "checkout dir = $(checkoutDir)"
+          echo Build triggered on $(Build.SourceBranchName) branch
+
+      - checkout: self
+        persistCredentials: true
+        path: $(checkoutDir)
+
       - task: PowerShell@2
         displayName: Read POM.xml
         inputs:
@@ -112,6 +131,7 @@ jobs:
             $version=$pomXml.project.version
             $version=$version -replace "-SNAPSHOT",""
             Write-Host "##vso[task.setvariable variable=version]$version"
+
       - task: SonarQubePrepare@4
         displayName: Prepare for SonarQube
         inputs:
@@ -120,6 +140,7 @@ jobs:
           projectKey: 'ap-fds-receive'
           extraProperties: |
             sonar.coverage.exclusions = **/service/ReceivingInfoServiceImpl.java,**/repository/*,**/request/*,**/response/*,**/validator/*,**/messageproducer/*,**/serializer/*,**/mesh/*,**/integrations/*,**/filter/*,**/common/*,**/config/*,**/daodb2/*,**/exception/*,**/factory/*,**/model/*,**/mongo/*,**/mysql/*,**/converter/*,**/dao/*,**/deserializer/*
+
       - task: Maven@3
         displayName: Maven Build
         inputs:
@@ -136,6 +157,7 @@ jobs:
           checkStyleRunAnalysis: true
           findBugsRunAnalysis: true
           pmdRunAnalysis: true
+
       - task: SonarQubePublish@4
         displayName: Publish SonarQube
         inputs:
@@ -161,10 +183,20 @@ jobs:
     condition: and(ne(variables['Build.Reason'], 'Schedule'),eq(variables['Build.SourceBranchName'], 'develop'))
     pool:
       name: GBS Linux Build Agent Pool
-    variables:
-      imageversion: $(version)
     steps:
-      - script: echo Build triggered on $(Build.SourceBranchName) branch
+      - bash: |
+          dir=$(Build.SourcesDirectory)
+          dir=${dir##*/}
+          echo "##vso[task.setvariable variable=checkoutDir]$dir"
+
+      - bash: |
+          echo "checkout dir = $(checkoutDir)"
+          echo Build triggered on $(Build.SourceBranchName) branch
+
+      - checkout: self
+        persistCredentials: true
+        path: $(checkoutDir)
+
       - task: PowerShell@2
         displayName: Read POM.xml
         inputs:
@@ -175,6 +207,7 @@ jobs:
             #version
             $version=$pomXml.project.version
             Write-Host "##vso[task.setvariable variable=version]$version"
+
       - task: SonarQubePrepare@4
         displayName: Prepare for SonarQube
         inputs:
@@ -183,6 +216,7 @@ jobs:
           projectKey: 'ap-fds-receive'
           extraProperties: |
             sonar.coverage.exclusions = **/service/ReceivingInfoServiceImpl.java,**/repository/*,**/request/*,**/response/*,**/validator/*,**/messageproducer/*,**/serializer/*,**/mesh/*,**/integrations/*,**/filter/*,**/common/*,**/config/*,**/daodb2/*,**/exception/*,**/factory/*,**/model/*,**/mongo/*,**/mysql/*,**/converter/*,**/dao/*,**/deserializer/*
+
       - task: Maven@3
         displayName: Maven Build
         inputs:
@@ -199,6 +233,7 @@ jobs:
           checkStyleRunAnalysis: true
           findBugsRunAnalysis: true
           pmdRunAnalysis: true
+
       - task: SonarQubePublish@4
         displayName: Publish SonarQube
         inputs:
@@ -217,10 +252,10 @@ jobs:
           Dockerfile: '**/Dockerfile'
           repository: ap-fds-receive
           tags: $(version)
+
       - script: echo Tagged image with $(version)
         displayName: Image version
-      - checkout: self
-        persistCredentials: true
+
       - task: PowerShell@2
         displayName: Update POM version
         inputs:
@@ -228,21 +263,31 @@ jobs:
           script: |
             git checkout $(Build.SourceBranchName)
             git pull origin $(Build.SourceBranchName)
-
+            git config user.email "build.user@walmart.com"
+            git config user.name "Azure Devops Build User"
             mvn -B release:update-versions
             git ls-files --modified | grep pom.xml | xargs git add
             git commit -m 'Automated Version Update By Azure DevOps Build pipeline [skip ci]'
-
             git push origin $(Build.SourceBranchName)
 
   - job: CI_Job_Scheduled_Build
     condition: eq(variables['Build.Reason'], 'Schedule')
     pool:
       name: GBS Linux Build Agent Pool
-    variables:
-      imageversion: $(version)
+
     steps:
-      - script: echo Build triggered on $(Build.SourceBranchName) branch
+      - bash: |
+          dir=$(Build.SourcesDirectory)
+          dir=${dir##*/}
+          echo "##vso[task.setvariable variable=checkoutDir]$dir"
+
+      - bash: |
+          echo "checkout dir = $(checkoutDir)"
+          echo Build triggered on $(Build.SourceBranchName) branch
+
+      - checkout: self
+        persistCredentials: true
+        path: $(checkoutDir)
       - task: PowerShell@2
         displayName: Read POM.xml
         inputs:
@@ -253,6 +298,7 @@ jobs:
             #version
             $version=$pomXml.project.version
             Write-Host "##vso[task.setvariable variable=version]$version"
+
       - task: SonarQubePrepare@4
         displayName: Prepare for SonarQube
         inputs:
@@ -261,6 +307,7 @@ jobs:
           projectKey: 'ap-fds-receive'
           extraProperties: |
             sonar.coverage.exclusions = **/service/ReceivingInfoServiceImpl.java,**/repository/*,**/request/*,**/response/*,**/validator/*,**/messageproducer/*,**/serializer/*,**/mesh/*,**/integrations/*,**/filter/*,**/common/*,**/config/*,**/daodb2/*,**/exception/*,**/factory/*,**/model/*,**/mongo/*,**/mysql/*,**/converter/*,**/dao/*,**/deserializer/*
+
       - task: Maven@3
         displayName: Maven Build
         inputs:
@@ -277,6 +324,7 @@ jobs:
           checkStyleRunAnalysis: true
           findBugsRunAnalysis: true
           pmdRunAnalysis: true
+
       - task: SonarQubePublish@4
         displayName: Publish SonarQube
         inputs:
@@ -295,5 +343,6 @@ jobs:
           Dockerfile: '**/Dockerfile'
           repository: ap-fds-receive
           tags: $(version)
+
       - script: echo Tagged image with $(version)
         displayName: Image version
