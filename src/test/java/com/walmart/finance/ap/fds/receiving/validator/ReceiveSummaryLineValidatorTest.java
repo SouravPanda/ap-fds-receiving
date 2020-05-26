@@ -28,7 +28,7 @@ public class ReceiveSummaryLineValidatorTest {
         sorRoutingCtx.setReplnTypCd("R");
         meta.setSorRoutingCtx(sorRoutingCtx);
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
-                "1", "9", meta,null,null);
+                "1", "9", meta);
         receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest);
     }
 
@@ -41,7 +41,7 @@ public class ReceiveSummaryLineValidatorTest {
         sorRoutingCtx.setReplnTypCd("R");
         meta.setSorRoutingCtx(sorRoutingCtx);
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
-                "1", "90", meta,null,null);
+                "1", "90", meta);
         receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest);
     }
 
@@ -54,7 +54,7 @@ public class ReceiveSummaryLineValidatorTest {
         sorRoutingCtx.setReplnTypCd("R");
         meta.setSorRoutingCtx(sorRoutingCtx);
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
-                "1", "9a", meta,null,null);
+                "1", "9a", meta);
         receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest);
     }
 
@@ -73,7 +73,7 @@ public class ReceiveSummaryLineValidatorTest {
     @Test
     public void validateInventoryMatchStatus() {
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("8", "9", LocalDate.now(), 1, "A",
-                "1", "2", null,null,null);
+                "1", "2", null);
         receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest);
     }
 

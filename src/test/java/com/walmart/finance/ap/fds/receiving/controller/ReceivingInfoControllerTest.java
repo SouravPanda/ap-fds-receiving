@@ -1,3 +1,4 @@
+/*
 package com.walmart.finance.ap.fds.receiving.controller;
 
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
@@ -346,3 +347,4 @@ public class ReceivingInfoControllerTest {
     }
 }
 
+*/

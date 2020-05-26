@@ -22,7 +22,8 @@ public enum ReceivingErrors {
     RECEIVINGINFO("Receipt Line is not matching for the upc numbers or item numbers"),
     FREIGHTIDDETAILS(", it should be a number"),
     CONTENTNOTFOUNDFREIGHT("Freight details not found for the given id: "),
-    INVALIDCOUNTRYCODE("country code should be either US or CA");
+    INVALIDCOUNTRYCODE("country code should be either US or CA"),
+    UPDATESUMMARYLINEFAILED("Update failed for receive summary and line ");
     @Getter
     private String parameterName;
 }

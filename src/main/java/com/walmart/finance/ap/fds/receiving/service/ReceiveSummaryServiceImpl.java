@@ -1,5 +1,6 @@
 package com.walmart.finance.ap.fds.receiving.service;
 
+import com.mongodb.MongoException;
 import com.mongodb.client.result.UpdateResult;
 import com.walmart.finance.ap.fds.receiving.common.DB2SyncStatus;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
@@ -7,8 +8,6 @@ import com.walmart.finance.ap.fds.receiving.common.ReceivingUtils;
 import com.walmart.finance.ap.fds.receiving.config.DefaultValuesConfigProperties;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
 import com.walmart.finance.ap.fds.receiving.exception.*;
-import com.walmart.finance.ap.fds.receiving.integrations.AdditionalResponse;
-import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
 import com.walmart.finance.ap.fds.receiving.model.*;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryRequest;
@@ -32,20 +31,19 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.LOCATION_TYPE_WAREHOUSE;
-import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.UOM_CODE_WH_EXCEPTION_RESOLUTION;
 
 @Service
 public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
@@ -110,10 +108,10 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             if (CollectionUtils.isEmpty(receiveSummaries)) {
                 throw new NotFoundException(ReceivingErrors.CONTENTNOTFOUNDSUMMARY.getParameterName(), ReceivingErrors.INVALIDQUERYPARAMS.getParameterName());
             } else {
-               responseList = receiveSummaries.stream().map(
+                responseList = receiveSummaries.stream().map(
                         t -> {
                             ReceivingSummaryResponse response = receivingSummaryResponseConverter.convert(t);
-                           return response;
+                            return response;
                         }
                 ).collect(Collectors.toList());
                 if (CollectionUtils.isEmpty(responseList)) {
@@ -131,7 +129,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         }
     }
 
-    private String formulateId(String receivingControlNumber, String poReceiveId, String locationNumber, String MDSReceiveDate) {
+    public String formulateId(String receivingControlNumber, String poReceiveId, String locationNumber, String MDSReceiveDate) {
         return receivingControlNumber + ReceivingConstants.PIPE_SEPARATOR + poReceiveId + ReceivingConstants.PIPE_SEPARATOR + locationNumber + ReceivingConstants.PIPE_SEPARATOR + MDSReceiveDate;
     }
 
@@ -176,7 +174,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.LOCATIONNUMBER))) {
             ReceivingUtils.updateQueryForPartitionKey(null, paramMap,
-                    Integer.valueOf(paramMap.get(ReceivingConstants.LOCATIONNUMBER)), dynamicQuery, monthsPerShard,monthsToDisplay);
+                    Integer.valueOf(paramMap.get(ReceivingConstants.LOCATIONNUMBER)), dynamicQuery, monthsPerShard, monthsToDisplay);
         }
         if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.PURCHASEORDERNUMBER))) {
             Criteria purchaseOrderNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.PURCHASEORDERNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.PURCHASEORDERNUMBER));
@@ -226,7 +224,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     /******* Common Methods  *********/
 
     @Override
-    @Transactional
     public ReceivingResponse updateReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest, String countryCode) {
         log.info("unitOfWorkId:" + receivingSummaryRequest.getMeta().getUnitOfWorkId());
         receiveSummaryValidator.validateCountryCode(receivingSummaryRequest.getMeta().getSorRoutingCtx().getLocationCountryCd());
@@ -248,12 +245,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         if (commitedRcvSummary == null) {
             throw new ContentNotFoundException(ReceivingErrors.CONTENTNOTFOUNDSUMMARY.getParameterName(), ReceivingErrors.VALIDID.getParameterName());
         }
-        if (Objects.nonNull(commitedRcvSummary) && isWareHouseData) {
-            receivingSummaryRequest.set_id(id);
-            receivingSummaryRequest.setPartitionKey(ReceivingUtils.getPartitionKey(String.valueOf(receivingSummaryRequest.getLocationNumber()),
-                    receivingSummaryRequest.getReceiptDate(),monthsPerShard));
+        if (Objects.nonNull(commitedRcvSummary) && isWareHouseData)
             publisher.publishEvent(receivingSummaryRequest);
-        }
+
         List<ReceivingSummaryRequest> responseList = new ArrayList<>();
         responseList.add(receivingSummaryRequest);
         ReceivingResponse successMessage = new ReceivingResponse();
@@ -264,7 +258,6 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     }
 
     @Override
-    @Transactional
     public ReceivingResponse updateReceiveSummaryAndLine(ReceivingSummaryLineRequest receivingSummaryLineRequest, String countryCode) {
         log.info("unitOfWorkId:" + receivingSummaryLineRequest.getMeta().getUnitOfWorkId());
         receiveSummaryValidator.validateCountryCode(receivingSummaryLineRequest.getMeta().getSorRoutingCtx().getLocationCountryCd());
@@ -273,6 +266,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         receiveSummaryLineValidator.validateInventoryMatchStatus(receivingSummaryLineRequest);
         receiveSummaryLineValidator.validateReceiptLineNumber(receivingSummaryLineRequest.getReceiptLineNumber());
         String id = formulateId(receivingSummaryLineRequest.getPurchaseOrderId(), receivingSummaryLineRequest.getReceiptNumber(), receivingSummaryLineRequest.getLocationNumber().toString(), isWareHouseData ? "0" : receivingSummaryLineRequest.getReceiptDate().toString());
+
         Query query = new Query();
         query.addCriteria(Criteria.where(ReceiveSummaryParameters.ID.getParameterName()).is(id));
         addShardKeyQuery(query, String.valueOf(receivingSummaryLineRequest.getLocationNumber()),
@@ -283,7 +277,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         update.set(ReceiveSummaryParameters.BUSINESSSTATUSCODE.getParameterName(), receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
         log.info("Query :: updateReceiveSummaryAndLine :: " + query + " | UpdateDoc :: " + update);
         long startTime = System.currentTimeMillis();
-        ReceiveSummary commitedRcvSummary = mongoTemplate.findAndModify(query, update, FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
+        ReceiveSummary commitedRcvSummary = mongoTemplate.findAndModify(query, update, FindAndModifyOptions.options().returnNew(false), ReceiveSummary.class, summaryCollection);
         log.info("updateReceiveSummaryAndLine :: updateSummaryQueryTime :: " + (System.currentTimeMillis() - startTime));
         if (commitedRcvSummary == null) {
             throw new ContentNotFoundException(ReceivingErrors.CONTENTNOTFOUNDSUMMARY.getParameterName(), ReceivingErrors.VALIDID.getParameterName());
@@ -299,8 +293,16 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             addShardKeyQuery(queryForLine, String.valueOf(receivingSummaryLineRequest.getLocationNumber()),
                     receivingSummaryLineRequest.getReceiptDate());
             startTime = System.currentTimeMillis();
-            ReceivingLine commitedRcvLine = mongoTemplate.findAndModify(queryForLine, updateLine, FindAndModifyOptions.options().returnNew(true), ReceivingLine.class, lineCollection);
-            log.info("updateReceiveSummaryAndLine :: updateLineQueryTime :: findAndModify " + (System.currentTimeMillis() - startTime));
+            try {
+                ReceivingLine commitedRcvLine = mongoTemplate.findAndModify(queryForLine, updateLine, FindAndModifyOptions.options().returnNew(true), ReceivingLine.class, lineCollection);
+                log.info("updateReceiveSummaryAndLine :: updateLineQueryTime :: findAndModify " + (System.currentTimeMillis() - startTime));
+            } catch (Exception ex) {
+                log.info("Update for line failed with exception " + ex);
+                update.set(ReceiveSummaryParameters.BUSINESSSTATUSCODE.getParameterName(), commitedRcvSummary.getBusinessStatusCode());
+                mongoTemplate.findAndModify(query, update, FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
+                log.info("rolled back summary update as Line update failed");
+                throw new UpdateFailedException(ReceivingErrors.UPDATESUMMARYLINEFAILED.getParameterName());
+            }
 
         } else {
             Query queryForLine = new Query();
@@ -308,11 +310,18 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             addShardKeyQuery(queryForLine, String.valueOf(receivingSummaryLineRequest.getLocationNumber()),
                     receivingSummaryLineRequest.getReceiptDate());
             startTime = System.currentTimeMillis();
-            UpdateResult updateResult = mongoTemplate.updateMulti(queryForLine, updateLine, ReceivingLine.class, lineCollection);
-            long endTime = System.currentTimeMillis();
-            List<ReceivingLine> receivingLines = mongoTemplate.find(queryForLine, ReceivingLine.class, lineCollection);
-            log.info("updateReceiveSummaryAndLine :: updateLineQueryTime :: multipleUpdate " + (endTime - startTime));
-            log.info("updateReceiveSummaryAndLine :: updateLineQueryTime :: find " + (System.currentTimeMillis() - endTime));
+            try {
+                UpdateResult updateResult = mongoTemplate.updateMulti(queryForLine, updateLine, ReceivingLine.class, lineCollection);
+                long endTime = System.currentTimeMillis();
+                log.info("updateReceiveSummaryAndLine :: updateLineQueryTime :: multipleUpdate " + (endTime - startTime));
+            } catch (MongoException ex) {
+                log.info("Update for line failed with exception " + ex);
+                update.set(ReceiveSummaryParameters.BUSINESSSTATUSCODE.getParameterName(), commitedRcvSummary.getBusinessStatusCode());
+                mongoTemplate.findAndModify(query, update, FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
+                log.info("rolled back summary update as Line update failed");
+                throw new UpdateFailedException(ReceivingErrors.UPDATESUMMARYLINEFAILED.getParameterName());
+            }
+
         }
 
         List<ReceivingSummaryLineRequest> responseList = new ArrayList<>();
@@ -321,13 +330,8 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         successMessage.setSuccess(true);
         successMessage.setData(responseList);
         successMessage.setTimestamp(LocalDateTime.now());
-        if(isWareHouseData) {
-            receivingSummaryLineRequest.set_id(id);
-            receivingSummaryLineRequest.setPartitionKey(ReceivingUtils.getPartitionKey(String.valueOf(receivingSummaryLineRequest.getLocationNumber()),
-                    receivingSummaryLineRequest.getReceiptDate(), monthsPerShard));
-
+        if (isWareHouseData)
             publisher.publishEvent(receivingSummaryLineRequest);
-        }
         return successMessage;
     }
 
@@ -335,13 +339,13 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
     private void addShardKeyQuery(Query query, String keyAttributeValue, LocalDate dateForPartitionKey) {
         Criteria partitionKeyCriteria =
                 Criteria.where(ReceivingConstants.RECEIVING_SHARD_KEY_FIELD)
-                    .in(getPartitionKeyList(keyAttributeValue, dateForPartitionKey, 13,
-                            monthsPerShard));
+                        .in(getPartitionKeyList(keyAttributeValue, dateForPartitionKey, 13,
+                                monthsPerShard));
         query.addCriteria(partitionKeyCriteria);
     }
 
     private String[] getPartitionKeyList(String keyAttributeValue, LocalDate endDate, Integer monthsToDisplay,
-                                               Integer monthsPerShard ) {
+                                         Integer monthsPerShard) {
         //keyAttributeValue is 'Store Number' for now
 
         List<String> partitionKeyList = new ArrayList<>();
@@ -349,7 +353,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
         //Handling +6 and -6 months
         endDate = endDate.plusMonths(6);
-        int numberOfPartitionKeys = monthsToDisplay/monthsPerShard;
+        int numberOfPartitionKeys = monthsToDisplay / monthsPerShard;
 
         for (int i = 0; i < numberOfPartitionKeys; i++) {
             partitionKeyList.add(ReceivingUtils.getPartitionKey(keyAttributeValue, endDate, monthsPerShard));

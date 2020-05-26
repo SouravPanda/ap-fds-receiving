@@ -50,6 +50,17 @@ public class ReceivingExceptionHandler extends ResponseEntityExceptionHandler {
                 new ReceivingError(false, LocalDateTime.now(), detailsOfErr), new HttpHeaders(), HttpStatus.NO_CONTENT);
     }
 
+
+    @ExceptionHandler({UpdateFailedException.class})
+    public ResponseEntity<Object> updateFailedExceptionHandler(
+            Exception ex, UpdateFailedException e, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getMessage() + " " + e.getMessage());
+        ErrorDetails detailsOfErr = new ErrorDetails(0, ex.getMessage(), details);
+        return new ResponseEntity<>(
+                new ReceivingError(false, LocalDateTime.now(), detailsOfErr), new HttpHeaders(), HttpStatus.NOT_MODIFIED);
+    }
+
     @ExceptionHandler({NotFoundException.class})
     public ResponseEntity<Object> notFoundExceptionHandler(
             Exception ex, NotFoundException e, WebRequest request) {

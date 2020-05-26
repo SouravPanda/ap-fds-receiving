@@ -38,8 +38,4 @@ public class ReceivingSummaryRequest {
     @Valid
     @NotNull(message = "Missing mandatory parameter,please enter a valid meta")
     private Meta meta;
-
-    private String _id;
-
-    private String partitionKey;
 }

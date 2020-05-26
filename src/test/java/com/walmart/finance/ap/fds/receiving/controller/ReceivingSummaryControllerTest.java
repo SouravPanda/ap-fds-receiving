@@ -88,7 +88,7 @@ public class ReceivingSummaryControllerTest {
         sorRoutingCtx.setLocationCountryCd("US");
         sorRoutingCtx.setReplnTypCd("R");
         meta.setSorRoutingCtx(sorRoutingCtx);
-        ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("2", "2", LocalDate.now(), 2, "A", meta,null,null);
+        ReceivingSummaryRequest receivingSummaryRequest = new ReceivingSummaryRequest("2", "2", LocalDate.now(), 2, "A", meta);
         List<ReceivingSummaryRequest> responseList = new ArrayList<>();
         ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setSuccess(true);
@@ -156,7 +156,7 @@ public class ReceivingSummaryControllerTest {
         sorRoutingCtx.setReplnTypCd("R");
         meta.setSorRoutingCtx(sorRoutingCtx);
         ReceivingSummaryLineRequest receivingSummaryLineRequest = new ReceivingSummaryLineRequest("2", "2", LocalDate.now(), 2,
-                "A", "1", "9", meta,null,null);
+                "A", "1", "9", meta);
         ReceivingResponse successMessage = new ReceivingResponse();
         List<ReceivingSummaryLineRequest> responseList = new ArrayList<>();
         successMessage.setSuccess(true);
