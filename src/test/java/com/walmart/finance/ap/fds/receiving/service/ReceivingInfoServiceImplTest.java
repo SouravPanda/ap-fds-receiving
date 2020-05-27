@@ -91,7 +91,7 @@ public class ReceivingInfoServiceImplTest {
                 0, LocalDateTime.now(), 0, "0000030006", "yyyy",
                 LocalDateTime.now(), "4665267"
                 , 'K', "LLL", 0.0, new Long(999403403), null, null, null, LocalDateTime.of(2019, 03, 14, 8, 45, 21),
-                null,null);
+                null);
         AggregationResults<ReceiveSummary> receiveSummaryAggregationResults = new AggregationResults<>(new ArrayList<ReceiveSummary>() {
             {
                 add(receiveSummary);
@@ -182,7 +182,7 @@ public class ReceivingInfoServiceImplTest {
                 0, LocalDateTime.now(), 0, "0000030006", "yyyy",
                 LocalDateTime.now(), "4665267"
                 , 'K', "LLL", 0.0, new Long(999403403), null, null, null, LocalDateTime.of(2019, 03, 14, 8, 45, 21),
-                null,null);
+                null);
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(new ArrayList<ReceiveSummary>() {
             {
                 add(receiveSummary);
@@ -312,7 +312,7 @@ public class ReceivingInfoServiceImplTest {
                 LocalDate.of(2019, 06, 02), 0.0, null, null,
                 0, null, null, "110950", null,
                 null, null
-                , 'S', null, 0.0, new Long(972515962), null, null, null, LocalDateTime.now(), null,null);
+                , 'S', null, 0.0, new Long(972515962), null, null, null, LocalDateTime.now(),null);
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(new ArrayList<ReceiveSummary>() {
             {
                 add(receiveSummary);

@@ -44,9 +44,8 @@ public class Producer {
         try {
             String value = mapper.writeValueAsString(writeToTopic);
             ObjectNode valueTree = (ObjectNode) mapper.readTree(value);
-            /*customSource.summaryTopic().send(MessageBuilder.withPayload(valueTree).build());
-            log.info("Successfully produced Summary record " + valueTree + " to event " + topic);*/
-            throw new NetworkException();
+            customSource.summaryTopic().send(MessageBuilder.withPayload(valueTree).build());
+            log.info("Successfully produced Summary record " + valueTree + " to event " + topic);
         } catch (NetworkException | TimeoutException ex) {
             log.error("Error Producing summary record " + writeToTopic + " to event :" + ex);
             log.info("calling Audit API to save the summary record to MySQL failure table");

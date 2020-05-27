@@ -45,8 +45,6 @@ public class ProducerTest {
     @Mock
     private MessageChannel messageChannel;
 
-    @Mock
-    private MySQLApi mySQLApi;
 
     @Before
     public void setUp() {

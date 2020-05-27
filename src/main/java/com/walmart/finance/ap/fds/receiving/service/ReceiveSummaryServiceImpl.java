@@ -238,7 +238,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         update.set(ReceiveSummaryParameters.BUSINESSSTATUSCODE.getParameterName(), receivingSummaryRequest.getBusinessStatusCode().charAt(0));
         update.set(ReceiveSummaryParameters.DATASYNCSTATUS.getParameterName(), DB2SyncStatus.UPDATE_SYNC_INITIATED);
         update.set(ReceiveSummaryParameters.LASTUPDATEDDATE.getParameterName(), LocalDateTime.now());
-        update.set(ReceiveSummaryParameters.UPDATEDSOURCE.getParameterName(), ReceivingConstants.UPDATED_SOURCE);
+        update.set(ReceiveSummaryParameters.WRITEINDICATOR.getParameterName(), ReceivingConstants.UPDATED_SOURCE);
         log.info("Query :: updateSummaryQueryTime :: " + dynamicQuery + " | UpdateDoc :: " + update);
         long startTime = System.currentTimeMillis();
         ReceiveSummary commitedRcvSummary = mongoTemplate.findAndModify(dynamicQuery, update, FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
@@ -276,7 +276,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         update.set(ReceiveSummaryParameters.DATASYNCSTATUS.getParameterName(), DB2SyncStatus.UPDATE_SYNC_INITIATED);
         update.set(ReceiveSummaryParameters.LASTUPDATEDDATE.getParameterName(), LocalDateTime.now(ZoneId.of("UTC")));
         update.set(ReceiveSummaryParameters.BUSINESSSTATUSCODE.getParameterName(), receivingSummaryLineRequest.getBusinessStatusCode().charAt(0));
-        update.set(ReceiveSummaryParameters.UPDATEDSOURCE.getParameterName(), ReceivingConstants.UPDATED_SOURCE);
+        update.set(ReceiveSummaryParameters.WRITEINDICATOR.getParameterName(), ReceivingConstants.UPDATED_SOURCE);
         log.info("Query :: updateReceiveSummaryAndLine :: " + query + " | UpdateDoc :: " + update);
         long startTime = System.currentTimeMillis();
         ReceiveSummary commitedRcvSummary = mongoTemplate.findAndModify(query, update, FindAndModifyOptions.options().returnNew(false), ReceiveSummary.class, summaryCollection);
@@ -303,7 +303,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 update.set(ReceiveSummaryParameters.BUSINESSSTATUSCODE.getParameterName(), commitedRcvSummary.getBusinessStatusCode());
                 update.set(ReceiveSummaryParameters.DATASYNCSTATUS.getParameterName(), commitedRcvSummary.getDataSyncStatus());
                 update.set(ReceiveSummaryParameters.LASTUPDATEDDATE.getParameterName(), commitedRcvSummary.getLastUpdatedDate());
-                update.set(ReceiveSummaryParameters.UPDATEDSOURCE.getParameterName(), commitedRcvSummary.getUpdatedSource());
+                update.set(ReceiveSummaryParameters.WRITEINDICATOR.getParameterName(), commitedRcvSummary.getWriteIndicator());
                 mongoTemplate.findAndModify(query, update, FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
                 log.info("rolled back summary update as Line update failed");
                 throw new UpdateFailedException(ReceivingErrors.UPDATESUMMARYLINEFAILED.getParameterName());
@@ -324,7 +324,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 update.set(ReceiveSummaryParameters.BUSINESSSTATUSCODE.getParameterName(), commitedRcvSummary.getBusinessStatusCode());
                 update.set(ReceiveSummaryParameters.DATASYNCSTATUS.getParameterName(), commitedRcvSummary.getDataSyncStatus());
                 update.set(ReceiveSummaryParameters.LASTUPDATEDDATE.getParameterName(), commitedRcvSummary.getLastUpdatedDate());
-                update.set(ReceiveSummaryParameters.UPDATEDSOURCE.getParameterName(), commitedRcvSummary.getUpdatedSource());
+                update.set(ReceiveSummaryParameters.WRITEINDICATOR.getParameterName(), commitedRcvSummary.getWriteIndicator());
                 mongoTemplate.findAndModify(query, update, FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
                 log.info("rolled back summary update as Line update failed");
                 throw new UpdateFailedException(ReceivingErrors.UPDATESUMMARYLINEFAILED.getParameterName());
