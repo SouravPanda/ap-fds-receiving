@@ -43,7 +43,8 @@ public enum ReceiveSummaryParameters {
     WRITEINDICATOR("writeIndicator"),
     PURCHASEORDERID("purchaseOrderId"),
     DATASYNCSTATUS("dataSyncStatus"),
-    LASTUPDATEDDATE("lastUpdatedTimestamp");
+    LASTUPDATEDDATE("lastUpdatedTimestamp"),
+    UPDATEDSOURCE("updatedSource");
 
     @Getter
     private String parameterName;

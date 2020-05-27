@@ -203,7 +203,7 @@
         <dependency>
             <groupId>com.walmart.finance.audit.rest</groupId>
             <artifactId>ap-fds-audit-service</artifactId>
-            <version>0.0.10-SNAPSHOT</version>
+            <version>0.0.18-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <profiles>
