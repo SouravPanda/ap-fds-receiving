@@ -3,6 +3,7 @@ FROM docker.prod.walmart.com/ap-fds-mesh/servicemesh:1.18
 
 #Adding certificates
 COPY certs certs
+COPY config.yaml /config.yaml
 
 RUN keytool -noprompt -import -v -trustcacerts -alias receiving -keypass changeit -file certs/api.qa.wal-mart.com.crt -keystore /opt/java/openjdk/jre/lib/security/cacerts -storepass changeit
 RUN keytool -noprompt -import -v -trustcacerts -alias receivingQa -keypass changeit -file certs/api.wal-mart.com.crt -keystore /opt/java/openjdk/jre/lib/security/cacerts -storepass changeit

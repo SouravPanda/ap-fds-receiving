@@ -1,0 +1,88 @@
+admin:
+  port: 9990
+  ip: 0.0.0.0
+
+namers:
+  - kind: com.w5t.sr
+    tenants:
+      - appKey: SR_APP_KEY
+        envName: SR_APP_ENV
+        ingressAddr: http://0.0.0.0:8080
+        passthroughUris:
+          - "^/swagger-ui.html$"
+          - "^/webjars/.*"
+          - "^/swagger-resources$"
+          - "^/swagger-resources/.*"
+          - "^/v2/api.docs$"
+          - "^/actuator/health.*"
+
+routers:
+  - protocol: http
+    client:
+      kind: io.l5d.static
+      configs:
+        - prefix: /#/*/out/*/AP-FDS-INVOICE-FINANCIAL-TRANSACTION
+          tls:
+            commonName: api.fds.stg.wal-mart.com
+            trustCertsBundle: /certs/cert-nonprod.pem
+          failureAccrual:
+            kind: none
+          clientSession:
+            lifeTimeMs: 600000
+            idleTimeMs: 600000
+    identifier:
+      - kind: com.w5t.stratiHeaders
+    dtab: |
+      /svc => /#/com.w5t.sr/out;
+    httpAccessLog: /log/mesh/access-out.log
+    httpAccessLogRollPolicy: 50.megabytes
+    httpAccessLogAppend: true
+    httpAccessLogRotateCount: 3
+    label: out
+    requestAuthorizers:
+      - kind: com.w5t.egress.setHostHeader
+      - kind: com.w5t.policy
+        policyEnd: Consumer
+        signature:
+          secrets: /secrets
+          signatureTTL: 240000
+        alerting: spotlight
+      - kind: com.w5t.soa10.rewriter
+    servers:
+      - port: 4140
+        ip: 0.0.0.0
+
+  - protocol: http
+    client:
+      failureAccrual:
+        kind: none
+    identifier:
+      - kind: com.w5t.soa10stratiHeaders
+      - kind: com.w5t.stratiHeaders
+      - kind: com.w5t.stratiPassthrough
+    dtab: |
+      /svc => /#/com.w5t.sr/in;
+    httpAccessLog: /log/mesh/access-in.log
+    httpAccessLogRollPolicy: 50.megabytes
+    httpAccessLogAppend: true
+    httpAccessLogRotateCount: 3
+    label: in
+    requestAuthorizers:
+      - kind: com.w5t.policy
+        policyEnd: Producer
+        signature:
+          secrets: /secrets
+          signatureTTL: 300000
+        alerting: spotlight
+    servers:
+      - port: 4141
+        ip: 0.0.0.0
+        serverSession:
+          lifeTimeMs: 600000
+          idleTimeMs: 600000
+
+telemetry:
+  - kind: com.w5t.telemetry
+
+usage:
+  enabled: false
