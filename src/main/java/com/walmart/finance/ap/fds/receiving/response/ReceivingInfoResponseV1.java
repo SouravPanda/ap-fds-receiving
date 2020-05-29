@@ -1,6 +1,7 @@
 package com.walmart.finance.ap.fds.receiving.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -19,6 +20,9 @@ import java.util.List;
 @Getter
 @Setter
 public class ReceivingInfoResponseV1 {
+
+    @JsonIgnore
+    private String _id;
 
     private String authorizedBy;
 
@@ -164,4 +168,6 @@ public class ReceivingInfoResponseV1 {
     private String txnTypeDesc;
 
     private String receivingType;
+
+    private List<ReceiveMDSResponse> merchandises;
 }

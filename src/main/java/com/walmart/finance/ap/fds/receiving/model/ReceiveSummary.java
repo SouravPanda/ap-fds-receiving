@@ -1,5 +1,6 @@
 package com.walmart.finance.ap.fds.receiving.model;
 
+import com.walmart.finance.ap.fds.receiving.response.ReceiveMDSResponse;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.annotation.Id;
@@ -9,6 +10,7 @@ import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Map;
 
 @AllArgsConstructor
 @Getter
@@ -176,6 +178,8 @@ public class ReceiveSummary {
     private LocalDateTime lastUpdatedDate;
     private LocalDateTime dateReceived;
 
+    private Map<String, ReceiveMDSResponse> merchandises;
+
 
     public void merge(ReceiveSummary receiveSummary) {
 
@@ -266,6 +270,8 @@ public class ReceiveSummary {
                     receiveSummary.creationTimestamp : this.creationTimestamp;
             this.lastUpdatedDate = (this.lastUpdatedDate == null)  ?
                     receiveSummary.lastUpdatedDate : this.lastUpdatedDate;
+            this.merchandises = (this.merchandises == null) ?
+                    receiveSummary.merchandises : this.merchandises;
 
         } else {
 
@@ -354,6 +360,8 @@ public class ReceiveSummary {
                     receiveSummary.creationTimestamp : this.creationTimestamp;
             this.lastUpdatedDate = (receiveSummary.lastUpdatedDate != null)  ?
                     receiveSummary.lastUpdatedDate : this.lastUpdatedDate;
+            this.merchandises = ( receiveSummary.merchandises != null ) ?
+                    receiveSummary.merchandises : this.merchandises;
             this.dateReceived = receiveSummary.dateReceived;
         }
     }
