@@ -100,6 +100,13 @@ public class ReceiveSummaryValidator {
                 && (sorRoutingCtx.getReplnTypCd().equals("R") || sorRoutingCtx.getReplnTypCd().equals("U") || sorRoutingCtx.getReplnTypCd().equals("F"))
                 && (sorRoutingCtx.getInvProcAreaCode() == 36 || sorRoutingCtx.getInvProcAreaCode() == 30);
     }
+
+    public void validateCountryCode(String countryCode) {
+        if (!(countryCode.equals("US") || countryCode.equals("CA"))) {
+            log.info("country code in the request passed is invalid");
+            throw new InvalidValueException(ReceivingErrors.INVALIDCOUNTRYCODE.getParameterName(),"");
+        }
+    }
 }
 
 
