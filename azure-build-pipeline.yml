@@ -273,7 +273,7 @@ jobs:
 
 
   - job: CI_Job_Feature_Build
-    condition: and(ne(variables['Build.Reason'], 'Schedule'),eq(variables['Build.SourceBranchName'], 'payload_api_changes'))
+    condition: and(ne(variables['Build.Reason'], 'Schedule'),eq(variables['Build.SourceBranchName'], 'mysql_api_uptake'))
     pool:
       name: GBS Linux Build Agent Pool
     steps:
