@@ -10,7 +10,7 @@ variables:
 trigger:
   - develop
   - master
-  - feature/payload_api_changes
+  - feature/mysql_api_uptake
 
 schedules:
   # Scheduled build at 7.00 AM IST daily
