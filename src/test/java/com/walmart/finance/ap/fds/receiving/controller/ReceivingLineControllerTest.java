@@ -6,6 +6,7 @@ import com.walmart.finance.ap.fds.receiving.config.DefaultValuesConfigProperties
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import com.walmart.finance.ap.fds.receiving.service.ReceiveLineServiceImpl;
+import com.walmart.finance.ap.fds.receiving.service.ReceiveSummaryServiceImpl;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -40,6 +41,9 @@ public class ReceivingLineControllerTest {
 
     @MockBean
     private ReceiveLineServiceImpl receiveLineService;
+
+    @MockBean
+    private ReceiveSummaryServiceImpl receiveSummaryServiceImpl;
 
     @MockBean
     DefaultValuesConfigProperties defaultValuesConfigProperties;

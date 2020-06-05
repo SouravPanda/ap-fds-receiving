@@ -176,6 +176,7 @@ public class ReceiveSummary {
     private String dataSyncStatus;
     private LocalDateTime creationTimestamp;
     private LocalDateTime lastUpdatedDate;
+    private LocalDateTime lastUpdatedTimestamp;
     private LocalDateTime dateReceived;
 
     private Map<String, ReceiveMDSResponse> merchandises;
@@ -270,6 +271,8 @@ public class ReceiveSummary {
                     receiveSummary.creationTimestamp : this.creationTimestamp;
             this.lastUpdatedDate = (this.lastUpdatedDate == null)  ?
                     receiveSummary.lastUpdatedDate : this.lastUpdatedDate;
+            this.lastUpdatedTimestamp = (this.lastUpdatedTimestamp == null)  ?
+                    receiveSummary.lastUpdatedTimestamp : this.lastUpdatedTimestamp;
             this.merchandises = (this.merchandises == null) ?
                     receiveSummary.merchandises : this.merchandises;
 
@@ -358,8 +361,10 @@ public class ReceiveSummary {
                     receiveSummary.dataSyncStatus : this.dataSyncStatus;
             this.creationTimestamp = (receiveSummary.creationTimestamp != null)  ?
                     receiveSummary.creationTimestamp : this.creationTimestamp;
-            this.lastUpdatedDate = (receiveSummary.lastUpdatedDate != null)  ?
+            this.lastUpdatedDate = (this.lastUpdatedDate == null)  ?
                     receiveSummary.lastUpdatedDate : this.lastUpdatedDate;
+            this.lastUpdatedTimestamp = (receiveSummary.lastUpdatedTimestamp != null)  ?
+                    receiveSummary.lastUpdatedTimestamp : this.lastUpdatedTimestamp;
             this.merchandises = ( receiveSummary.merchandises != null ) ?
                     receiveSummary.merchandises : this.merchandises;
             this.dateReceived = receiveSummary.dateReceived;

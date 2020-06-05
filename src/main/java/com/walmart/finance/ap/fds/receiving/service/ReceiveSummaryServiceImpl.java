@@ -1,6 +1,5 @@
 package com.walmart.finance.ap.fds.receiving.service;
 
-import com.mongodb.MongoException;
 import com.mongodb.client.result.UpdateResult;
 import com.walmart.finance.ap.fds.receiving.common.DB2SyncStatus;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
@@ -302,7 +301,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 log.info("Update for line failed with exception " + ex);
                 update.set(ReceiveSummaryParameters.BUSINESSSTATUSCODE.getParameterName(), commitedRcvSummary.getBusinessStatusCode());
                 update.set(ReceiveSummaryParameters.DATASYNCSTATUS.getParameterName(), commitedRcvSummary.getDataSyncStatus());
-                update.set(ReceiveSummaryParameters.LASTUPDATEDDATE.getParameterName(), commitedRcvSummary.getLastUpdatedDate());
+                update.set(ReceiveSummaryParameters.LASTUPDATEDDATE.getParameterName(), commitedRcvSummary.getLastUpdatedTimestamp());
                 update.set(ReceiveSummaryParameters.WRITEINDICATOR.getParameterName(), commitedRcvSummary.getWriteIndicator());
                 mongoTemplate.findAndModify(query, update, FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
                 log.info("rolled back summary update as Line update failed");
@@ -323,7 +322,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 log.info("Update for line failed with exception " + ex);
                 update.set(ReceiveSummaryParameters.BUSINESSSTATUSCODE.getParameterName(), commitedRcvSummary.getBusinessStatusCode());
                 update.set(ReceiveSummaryParameters.DATASYNCSTATUS.getParameterName(), commitedRcvSummary.getDataSyncStatus());
-                update.set(ReceiveSummaryParameters.LASTUPDATEDDATE.getParameterName(), commitedRcvSummary.getLastUpdatedDate());
+                update.set(ReceiveSummaryParameters.LASTUPDATEDDATE.getParameterName(), commitedRcvSummary.getLastUpdatedTimestamp());
                 update.set(ReceiveSummaryParameters.WRITEINDICATOR.getParameterName(), commitedRcvSummary.getWriteIndicator());
                 mongoTemplate.findAndModify(query, update, FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
                 log.info("rolled back summary update as Line update failed");
