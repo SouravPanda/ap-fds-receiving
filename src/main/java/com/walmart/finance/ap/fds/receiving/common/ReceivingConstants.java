@@ -93,8 +93,8 @@ public class ReceivingConstants {
     public final static String PURCHASE_ORDER_ID_URL_PARAM = "purchaseOrderId";
     public final static String SCENARIO = "scenario";
 
-    public final static String EVENT_HUB_NETWORK_ERROR= "The operation failed due to an event hub connection error";
-    public final static String ERROR_CODE="501";
+    public final static String EVENT_HUB_NETWORK_ERROR= "The operation failed due to an event hub connection/timeout error";
+    public final static String ERROR_CODE="4000";
 
     public final static String UPDATED_SOURCE="SOE";
 }

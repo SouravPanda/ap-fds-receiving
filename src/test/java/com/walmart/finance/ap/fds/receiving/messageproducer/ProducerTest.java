@@ -68,7 +68,7 @@ public class ProducerTest {
         String value = mapper.writeValueAsString(summaryMessage);
         ObjectNode valueTree = (ObjectNode) mapper.readTree(value);
         when(messageChannel.send(MessageBuilder.withPayload(valueTree).build())).thenReturn(Boolean.TRUE);
-//       producer.sendSummaryToEventHub(summaryMessage, "test");
+        producer.sendSummaryToEventHub(summaryMessage, "test");
     }
 
     @Test
@@ -87,7 +87,7 @@ public class ProducerTest {
         String value = mapper.writeValueAsString(summaryLineMessage);
         ObjectNode valueTree = (ObjectNode) mapper.readTree(value);
         when(messageChannel.send(MessageBuilder.withPayload(valueTree).build())).thenReturn(Boolean.TRUE);
-     //   producer.sendSummaryLineToEventHub(summaryLineMessage, "");
+        producer.sendSummaryLineToEventHub(summaryLineMessage, "");
     }
 
     @Test
