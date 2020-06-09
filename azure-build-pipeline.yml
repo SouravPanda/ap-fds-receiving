@@ -10,7 +10,6 @@ variables:
 trigger:
   - develop
   - master
-  - feature/mysql_api_uptake
 
 schedules:
   # Scheduled build at 7.00 AM IST daily
@@ -270,80 +269,6 @@ jobs:
             git ls-files --modified | grep pom.xml | xargs git add
             git commit -m 'Automated Version Update By Azure DevOps Build pipeline [skip ci]'
             git push origin $(Build.SourceBranchName)
-
-
-  - job: CI_Job_Feature_Build
-    condition: and(ne(variables['Build.Reason'], 'Schedule'),eq(variables['Build.SourceBranchName'], 'mysql_api_uptake'))
-    pool:
-      name: GBS Linux Build Agent Pool
-    steps:
-      - bash: |
-          dir=$(Build.SourcesDirectory)
-          dir=${dir##*/}
-          echo "##vso[task.setvariable variable=checkoutDir]$dir"
-
-      - bash: |
-          echo "checkout dir = $(checkoutDir)"
-          echo Build triggered on $(Build.SourceBranchName) branch
-
-      - checkout: self
-        persistCredentials: true
-        path: $(checkoutDir)
-
-      - task: PowerShell@2
-        displayName: Read POM.xml
-        inputs:
-          targetType: 'inline'
-          script: |
-            [xml]$pomXml = Get-Content .\pom.xml
-            Write-Host $pomXml.project.version
-            #version
-            $version=$pomXml.project.version
-            Write-Host "##vso[task.setvariable variable=version]$version"
-
-      - task: SonarQubePrepare@4
-        displayName: Prepare for SonarQube
-        inputs:
-          SonarQube: 'ap-fds-receiving-sqube'
-          scannerMode: 'Other'
-          projectKey: 'ap-fds-receive'
-          extraProperties: |
-            sonar.coverage.exclusions = **/service/ReceivingInfoServiceImpl.java,**/repository/*,**/request/*,**/response/*,**/validator/*,**/messageproducer/*,**/serializer/*,**/mesh/*,**/integrations/*,**/filter/*,**/common/*,**/config/*,**/daodb2/*,**/exception/*,**/factory/*,**/model/*,**/mongo/*,**/mysql/*,**/converter/*,**/dao/*,**/deserializer/*
-
-      - task: Maven@3
-        displayName: Maven Build
-        inputs:
-          mavenPomFile: 'pom.xml'
-          goals: 'clean install'
-          publishJUnitResults: true
-          testResultsFiles: '**/surefire-reports/TEST-*.xml'
-          javaHomeOption: 'JDKVersion'
-          mavenVersionOption: 'Default'
-          mavenAuthenticateFeed: false
-          effectivePomSkip: false
-          sonarQubeRunAnalysis: true
-          sqMavenPluginVersionChoice: 'latest'
-          checkStyleRunAnalysis: true
-          findBugsRunAnalysis: true
-          pmdRunAnalysis: true
-
-      - task: SonarQubePublish@4
-        displayName: Publish SonarQube
-        inputs:
-          pollingTimeoutSec: '300'
-
-      - task: Docker@2
-        displayName: Build and Push To Dev Registry
-        inputs:
-          containerRegistry: 'apfsregistrydev'
-          command: 'buildAndPush'
-          Dockerfile: '**/Dockerfile'
-          repository: ap-fds-receive
-          tags: $(version)
-
-      - script: echo Tagged image with $(version)
-        displayName: Image version
-
 
   - job: CI_Job_Scheduled_Build
     condition: eq(variables['Build.Reason'], 'Schedule')
