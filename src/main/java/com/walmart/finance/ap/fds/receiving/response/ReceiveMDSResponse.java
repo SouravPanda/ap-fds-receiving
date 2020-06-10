@@ -1,6 +1,6 @@
 package com.walmart.finance.ap.fds.receiving.response;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 public class ReceiveMDSResponse {
 
-    @JsonIgnore
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer mdseDisplayCode;
 
     private Integer mdseConditionCode;
