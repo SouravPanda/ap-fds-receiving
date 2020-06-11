@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
+import com.walmart.finance.ap.fds.receiving.response.ReceiveMDSResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingInfoResponseV1;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import org.apache.commons.collections.CollectionUtils;
@@ -218,5 +219,28 @@ public class ReceivingUtils {
         operations.add(limit);
 
         return Aggregation.newAggregation(operations);
+    }
+
+    public static List<ReceiveMDSResponse> ensureMechandisesUniqueness(Map<String, ReceiveMDSResponse> mdsResponseMap) {
+
+        Map<String, ReceiveMDSResponse> modifiedMap = new HashMap<>();
+
+        for(String key : mdsResponseMap.keySet()) {
+
+            ReceiveMDSResponse receiveMDSResponse = mdsResponseMap.get(key);
+            boolean isKeyDerived = false;
+            String newKey = key;
+            if (!newKey.contains("|")) {
+                newKey = receiveMDSResponse.getMdseConditionCode() + "|" + receiveMDSResponse.getMdseDisplayCode();
+                isKeyDerived = true;
+            }
+
+            if (!modifiedMap.containsKey(newKey) || (modifiedMap.containsKey(newKey) && !isKeyDerived)) {
+                modifiedMap.put(newKey, receiveMDSResponse);
+            }
+        }
+
+        return new ArrayList<>(modifiedMap.values());
+
     }
 }

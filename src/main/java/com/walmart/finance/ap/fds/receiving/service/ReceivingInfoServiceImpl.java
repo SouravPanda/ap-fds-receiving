@@ -422,7 +422,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 defaultValuesConfigProperties.getReceivedWeightQuantity().toString() :
                 receivingLine.getReceivedWeightQuantity().toString());
         if (receivingLine.getMerchandises() != null) {
-            response.setMerchandises(new ArrayList<>(receivingLine.getMerchandises().values()));
+            response.setMerchandises(
+                    ReceivingUtils.ensureMechandisesUniqueness(receivingLine.getMerchandises()));
         }
         return response;
     }
