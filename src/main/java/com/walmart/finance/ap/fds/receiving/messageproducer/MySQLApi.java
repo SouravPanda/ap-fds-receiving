@@ -20,7 +20,7 @@ public class MySQLApi {
     @Autowired
     private AuditAPIService auditAPIService;
 
-    public static final Logger log = LoggerFactory.getLogger(Producer.class);
+    public static final Logger log = LoggerFactory.getLogger(MySQLApi.class);
 
     public void saveFailureRecordTOMysql(SuccessMessage message) {
 
@@ -43,8 +43,8 @@ public class MySQLApi {
         auditFailureRequest.setMeta(meta);
         auditFailureRequest.setOperation(message.getOperation());
         try {
-            ResponseEntity<AuditFailureResponse> AuditRFailureesponse = auditAPIService.saveRecordsForAudit(auditFailureRequest);
-            log.info("Successfully updated the MySQL failure table with the failure record " + auditFailureRequest + AuditRFailureesponse);
+            ResponseEntity<AuditFailureResponse> AuditFailureResponse = auditAPIService.saveRecordsForAudit(auditFailureRequest);
+            log.info("Successfully updated the MySQL failure table with the failure record " + auditFailureRequest + AuditFailureResponse);
 
         } catch (Exception exe) {
             log.error("exception while calling Audit API to save the failure record to MySQL failure table  " + exe);
