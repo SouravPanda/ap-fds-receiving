@@ -44,10 +44,10 @@ public class MySQLApi {
         auditFailureRequest.setOperation(message.getOperation());
         try {
             ResponseEntity<AuditFailureResponse> auditFailureResponse = auditAPIService.saveRecordsForAudit(auditFailureRequest);
-            log.info("Successfully updated the MySQL failure table with the failure record  %s and the response is %s",auditFailureRequest,auditFailureResponse);
+            log.info("Successfully updated the MySQL failure table with the failure record "+auditFailureRequest+" "+auditFailureResponse);
 
         } catch (Exception exe) {
-            log.error("exception while calling Audit API to save the failure record to MySQL failure table %s ",exe );
+            log.error("exception while calling Audit API to save the failure record to MySQL failure table " + exe );
         }
     }
 }
