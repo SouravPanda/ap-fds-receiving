@@ -621,7 +621,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     @Override
     public List<ReceivingInfoResponseV1> getReceivingInfoWoFinTxn(Map<String, String> allRequestParams) {
         List<ReceivingInfoResponseV1> receivingInfoResponses = new ArrayList<>();
-        List<Criteria> freightCriteriaList = new ArrayList<>();
+        List<Long> freightIds = new ArrayList<>();
 
         List<ReceiveSummary> receiveSummaries = getSummaryData(allRequestParams);
         Map<String, List<ReceivingLine>> receivingLineMap = new HashMap<>();
@@ -637,7 +637,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             for (ReceiveSummary receiveSummary : receiveSummaries) {
 
                 if (receiveSummary.getFreightBillExpandId() != null) {
-                    freightCriteriaList.add(Criteria.where("_id").is(receiveSummary.getFreightBillExpandId()));
+                    freightIds.add(receiveSummary.getFreightBillExpandId());
                 }
 
                 if (null != receiveSummary.getStoreNumber()) {
@@ -657,8 +657,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             List<ReceivingLine> lineResponseList = getLineResponseList(allRequestParams, partitionNumbers, summaryReferences, receivingControlNumberList);
 
             List<FreightResponse> freightResponseList = new ArrayList<>();
-            if (CollectionUtils.isNotEmpty(freightCriteriaList)) {
-                Query query = new Query(new Criteria().orOperator(freightCriteriaList.toArray(new Criteria[freightCriteriaList.size()])));
+            if (CollectionUtils.isNotEmpty(freightIds)) {
+                Query query = new Query(Criteria.where("_id").in(freightIds));
                 log.info("query: " + query);
                 freightResponseList = executeQueryInFreight(query);
             }
@@ -705,7 +705,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
     private List<ReceivingInfoResponseV1> getDataForFinancialTxnV1(List<FinancialTxnResponseData> financialTxnResponseDataList, Map<String, String> allRequestParams) {
         List<ReceivingInfoResponseV1> receivingInfoResponses = new ArrayList<>();
         List<ReceiveSummary> allReceiveSummaries;
-        List<Criteria> freightCriteriaList = new ArrayList<>();
+        List<Long> freightIds = new ArrayList<>();
         Map<FinancialTxnResponseData, ReceiveSummary> financialTxnReceivingMap = new HashMap<>();
         List<String> ids = new ArrayList<>();
         Set<String> partitionKeys = new HashSet<>();
@@ -747,7 +747,7 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
                 receiveSummaryMap.put(receiveSummary.get_id(), receiveSummary);
 
                 if (receiveSummary.getFreightBillExpandId() != null) {
-                    freightCriteriaList.add(Criteria.where("_id").is(receiveSummary.getFreightBillExpandId()));
+                    freightIds.add(receiveSummary.getFreightBillExpandId());
                 }
 
                 if (null != receiveSummary.getStoreNumber()) {
@@ -767,8 +767,8 @@ public class ReceivingInfoServiceImpl implements ReceivingInfoService {
             List<ReceivingLine> lineResponseList = getLineResponseList(allRequestParams, partitionNumbers, summaryReferences, receivingControlNumberList);
 
             List<FreightResponse> freightResponseList = new ArrayList<>();
-            if (CollectionUtils.isNotEmpty(freightCriteriaList)) {
-                Query query = new Query(new Criteria().orOperator(freightCriteriaList.toArray(new Criteria[freightCriteriaList.size()])));
+            if (CollectionUtils.isNotEmpty(freightIds)) {
+                Query query = new Query(Criteria.where("_id").in(freightIds));
                 log.info("query: " + query);
                 freightResponseList = executeQueryInFreight(query);
             }
