@@ -47,7 +47,7 @@ public class MySQLApi {
             log.info("Successfully updated the MySQL failure table with the failure record "+auditFailureRequest+" "+auditFailureResponse);
 
         } catch (Exception exe) {
-            log.error("exception while calling Audit API to save the failure record to MySQL failure table " + exe );
+            log.error("exception while calling Audit API to save the failure record to MySQL failure table " +auditFailureRequest+ " " +exe );
         }
     }
 }

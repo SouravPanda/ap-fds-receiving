@@ -6,6 +6,7 @@ import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingUtils;
 import com.walmart.finance.ap.fds.receiving.config.DefaultValuesConfigProperties;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
+import com.walmart.finance.ap.fds.receiving.dao.ReceivingSummaryDao;
 import com.walmart.finance.ap.fds.receiving.exception.*;
 import com.walmart.finance.ap.fds.receiving.model.*;
 import com.walmart.finance.ap.fds.receiving.request.ReceivingSummaryLineRequest;
@@ -66,6 +67,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     @Autowired
     private ApplicationEventPublisher publisher;
+
+    @Autowired
+    private ReceivingSummaryDao receivingSummaryDao;
 
     @Value("${azure.cosmosdb.collection.summary}")
     private String summaryCollection;
@@ -240,7 +244,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         update.set(ReceiveSummaryParameters.WRITEINDICATOR.getParameterName(), ReceivingConstants.UPDATED_SOURCE);
         log.info("Query :: updateSummaryQueryTime :: " + dynamicQuery + " | UpdateDoc :: " + update);
         long startTime = System.currentTimeMillis();
-        ReceiveSummary commitedRcvSummary = mongoTemplate.findAndModify(dynamicQuery, update, FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
+        ReceiveSummary commitedRcvSummary = receivingSummaryDao.updateReceiveSummary(dynamicQuery, update, FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
         log.info("updateReceiveSummary :: updateSummaryQueryTime :: " + (System.currentTimeMillis() - startTime));
         if (commitedRcvSummary == null) {
             throw new ContentNotFoundException(ReceivingErrors.CONTENTNOTFOUNDSUMMARY.getParameterName(), ReceivingErrors.VALIDID.getParameterName());
@@ -278,7 +282,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         update.set(ReceiveSummaryParameters.WRITEINDICATOR.getParameterName(), ReceivingConstants.UPDATED_SOURCE);
         log.info("Query :: updateReceiveSummaryAndLine :: " + query + " | UpdateDoc :: " + update);
         long startTime = System.currentTimeMillis();
-        ReceiveSummary commitedRcvSummary = mongoTemplate.findAndModify(query, update, FindAndModifyOptions.options().returnNew(false), ReceiveSummary.class, summaryCollection);
+        ReceiveSummary commitedRcvSummary = receivingSummaryDao.updateReceiveSummary(query, update, FindAndModifyOptions.options().returnNew(false), ReceiveSummary.class, summaryCollection);
         log.info("updateReceiveSummaryAndLine :: updateSummaryQueryTime :: " + (System.currentTimeMillis() - startTime));
         if (commitedRcvSummary == null) {
             throw new ContentNotFoundException(ReceivingErrors.CONTENTNOTFOUNDSUMMARY.getParameterName(), ReceivingErrors.VALIDID.getParameterName());
@@ -303,7 +307,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 update.set(ReceiveSummaryParameters.DATASYNCSTATUS.getParameterName(), commitedRcvSummary.getDataSyncStatus());
                 update.set(ReceiveSummaryParameters.LASTUPDATEDDATE.getParameterName(), commitedRcvSummary.getLastUpdatedTimestamp());
                 update.set(ReceiveSummaryParameters.WRITEINDICATOR.getParameterName(), commitedRcvSummary.getWriteIndicator());
-                mongoTemplate.findAndModify(query, update, FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
+                receivingSummaryDao.updateReceiveSummary(query, update, FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
                 log.info("rolled back summary update as Line update failed");
                 throw new UpdateFailedException(ReceivingErrors.UPDATESUMMARYLINEFAILED.getParameterName());
             }
@@ -324,7 +328,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                 update.set(ReceiveSummaryParameters.DATASYNCSTATUS.getParameterName(), commitedRcvSummary.getDataSyncStatus());
                 update.set(ReceiveSummaryParameters.LASTUPDATEDDATE.getParameterName(), commitedRcvSummary.getLastUpdatedTimestamp());
                 update.set(ReceiveSummaryParameters.WRITEINDICATOR.getParameterName(), commitedRcvSummary.getWriteIndicator());
-                mongoTemplate.findAndModify(query, update, FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
+                receivingSummaryDao.updateReceiveSummary(query, update, FindAndModifyOptions.options().returnNew(true), ReceiveSummary.class, summaryCollection);
                 log.info("rolled back summary update as Line update failed");
                 throw new UpdateFailedException(ReceivingErrors.UPDATESUMMARYLINEFAILED.getParameterName());
             }

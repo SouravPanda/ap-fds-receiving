@@ -34,7 +34,7 @@ public class Producer {
     private MySQLApi mySQLApi;
 
 
-    public void sendSummaryToEventHub(SuccessMessage writeToTopic, String topic) {
+    public void sendSummaryToEventHub(SuccessMessage summaryMessage, String topic) {
 
         log.info("Inside Receive Summary producer ");
         boolean sent = false;
@@ -42,48 +42,48 @@ public class Producer {
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         try {
-            String value = mapper.writeValueAsString(writeToTopic);
+            String value = mapper.writeValueAsString(summaryMessage);
             ObjectNode valueTree = (ObjectNode) mapper.readTree(value);
-            sent = customSource.summaryTopic().send(MessageBuilder.withPayload(valueTree).setHeader(KafkaHeaders.MESSAGE_KEY, writeToTopic.get_id().getBytes()).build());
+            sent = customSource.summaryTopic().send(MessageBuilder.withPayload(valueTree).setHeader(KafkaHeaders.MESSAGE_KEY, summaryMessage.get_id().getBytes()).build());
             log.info("Successfully produced Summary record " + valueTree + " to event " + topic);
         } catch (IOException ex) {
-            log.error("Error mapping the summary record to objectnode " + writeToTopic + "  " + ex);
+            log.error("Error mapping the summary record to objectnode " + summaryMessage + "  " + ex);
         } catch (Exception ex) {
-            log.error("Error Producing summary record " + writeToTopic + " to event :" + ex);
+            log.error("Error Producing summary record " + summaryMessage + " to event :" + ex);
             log.info("calling Audit API to save the summary record to MySQL failure table");
             sent=true;
-            mySQLApi.saveFailureRecordTOMysql(writeToTopic);
+            mySQLApi.saveFailureRecordTOMysql(summaryMessage);
         }
         if (!sent) {
-            log.error("Error Producing summary record " + writeToTopic);
+            log.error("Error Producing summary record " + summaryMessage);
             log.info("calling Audit API to save the summary record to MySQL failure table");
-            mySQLApi.saveFailureRecordTOMysql(writeToTopic);
+            mySQLApi.saveFailureRecordTOMysql(summaryMessage);
         }
     }
 
-    public void sendSummaryLineToEventHub(SuccessMessage writeToTopic, String topic) {
+    public void sendSummaryLineToEventHub(SuccessMessage summaryLineMessage, String topic) {
         log.info("Inside Receive summaryLine producer ");
         boolean sent = false;
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         try {
-            String value = mapper.writeValueAsString(writeToTopic);
+            String value = mapper.writeValueAsString(summaryLineMessage);
             ObjectNode valueTree = (ObjectNode) mapper.readTree(value);
-            sent = customSource.lineSummaryTopic().send(MessageBuilder.withPayload(writeToTopic).setHeader(KafkaHeaders.MESSAGE_KEY, writeToTopic.get_id().getBytes()).build());
+            sent = customSource.lineSummaryTopic().send(MessageBuilder.withPayload(summaryLineMessage).setHeader(KafkaHeaders.MESSAGE_KEY, summaryLineMessage.get_id().getBytes()).build());
             log.info("Successfully produced summaryLine record " + valueTree + " to event " + topic);
         } catch (IOException ex) {
-            log.error("Error mapping the summaryLine record to objectnode " + writeToTopic + "  " + ex);
+            log.error("Error mapping the summaryLine record to objectnode " + summaryLineMessage + "  " + ex);
         } catch (Exception ex) {
-            log.error("Error Producing summaryLine record " + writeToTopic + " to event :" + ex);
+            log.error("Error Producing summaryLine record " + summaryLineMessage + " to event :" + ex);
             log.info("calling Audit API to save the summaryLine record to MySQL failure table");
             sent=true;
-            mySQLApi.saveFailureRecordTOMysql(writeToTopic);
+            mySQLApi.saveFailureRecordTOMysql(summaryLineMessage);
         }
         if (!sent) {
-            log.error("Error Producing summaryLine record " + writeToTopic);
+            log.error("Error Producing summaryLine record " + summaryLineMessage);
             log.info("calling Audit API to save the summaryLine record to MySQL failure table");
-            mySQLApi.saveFailureRecordTOMysql(writeToTopic);
+            mySQLApi.saveFailureRecordTOMysql(summaryLineMessage);
         }
 
     }
