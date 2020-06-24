@@ -299,7 +299,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                     receivingSummaryLineRequest.getReceiptDate());
             startTime = System.currentTimeMillis();
             try {
-                ReceivingLine commitedRcvLine = mongoTemplate.findAndModify(queryForLine, updateLine, FindAndModifyOptions.options().returnNew(true), ReceivingLine.class, lineCollection);
+                ReceivingLine commitedRcvLine = receivingSummaryDao.updateReceiveSummaryAndLine(queryForLine, updateLine, FindAndModifyOptions.options().returnNew(true), ReceivingLine.class, lineCollection);
                 log.info("updateReceiveSummaryAndLine :: updateLineQueryTime :: findAndModify " + (System.currentTimeMillis() - startTime));
             } catch (Exception ex) {
                 log.info("Update for line failed with exception " + ex);
@@ -319,7 +319,7 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
                     receivingSummaryLineRequest.getReceiptDate());
             startTime = System.currentTimeMillis();
             try {
-                UpdateResult updateResult = mongoTemplate.updateMulti(queryForLine, updateLine, ReceivingLine.class, lineCollection);
+                UpdateResult updateResult = receivingSummaryDao.updateReceiveSummaryAndLines(queryForLine, updateLine, ReceivingLine.class, lineCollection);
                 long endTime = System.currentTimeMillis();
                 log.info("updateReceiveSummaryAndLine :: updateLineQueryTime :: multipleUpdate " + (endTime - startTime));
             } catch (Exception ex) {
