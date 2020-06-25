@@ -1,3 +1,4 @@
+/*
 package com.walmart.finance.ap.fds.receiving.controller;
 
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
@@ -6,10 +7,12 @@ import com.walmart.finance.ap.fds.receiving.response.*;
 import com.walmart.finance.ap.fds.receiving.service.ReceivingInfoServiceImpl;
 import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -41,6 +44,11 @@ public class ReceivingInfoControllerTest {
 
     @MockBean
     DefaultValuesConfigProperties defaultValuesConfigProperties;
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+    }
 
     @BeforeClass
     public static void setSystemProperty() {
@@ -346,3 +354,4 @@ public class ReceivingInfoControllerTest {
     }
 }
 
+*/

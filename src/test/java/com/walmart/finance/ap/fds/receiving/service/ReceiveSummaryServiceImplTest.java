@@ -3,6 +3,7 @@ package com.walmart.finance.ap.fds.receiving.service;
 import com.mongodb.client.result.UpdateResult;
 import com.walmart.finance.ap.fds.receiving.config.DefaultValuesConfigProperties;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
+import com.walmart.finance.ap.fds.receiving.dao.ReceivingSummaryDao;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
 import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
@@ -71,6 +72,9 @@ public class ReceiveSummaryServiceImplTest {
 
     @Mock
     ReceiveSummaryLineValidator receiveSummaryLineValidator;
+
+    @Mock
+    ReceivingSummaryDao receivingSummaryDao;
 
     @Mock
     DefaultValuesConfigProperties defaultValuesConfigProperties;
@@ -766,7 +770,7 @@ public class ReceiveSummaryServiceImplTest {
                 1, "A", new Meta("101", sorRoutingCtx));
         when(receiveSummaryValidator.isWareHouseData(sorRoutingCtx)).thenReturn(true);
         doNothing().when(receiveSummaryValidator).validateBusinessStatUpdateSummary(Mockito.anyString());
-        when(mongoTemplate.findAndModify(Mockito.any(Query.class), Mockito.any(Update.class), refEq(FindAndModifyOptions.options().returnNew(true)),
+        when(receivingSummaryDao.updateReceiveSummary(Mockito.any(Query.class), Mockito.any(Update.class), refEq(FindAndModifyOptions.options().returnNew(true)),
                 eq(ReceiveSummary.class), Mockito.any())).thenReturn(mock(ReceiveSummary.class));
         doNothing().when(publisher).publishEvent(mock(ReceiveSummary.class));
         receiveSummaryServiceImpl.updateReceiveSummary(receivingSummaryRequest, "US");
@@ -781,7 +785,7 @@ public class ReceiveSummaryServiceImplTest {
         doNothing().when(receiveSummaryValidator).validateBusinessStatUpdateSummary(Mockito.anyString());
         doNothing().when(receiveSummaryLineValidator).validateInventoryMatchStatus(mock(ReceivingSummaryLineRequest.class));
         doNothing().when(receiveSummaryLineValidator).validateReceiptLineNumber(Mockito.anyString());
-        when(mongoTemplate.findAndModify(Mockito.any(Query.class), Mockito.any(Update.class), refEq(FindAndModifyOptions.options().returnNew(true)),
+        when(receivingSummaryDao.updateReceiveSummary(Mockito.any(Query.class), Mockito.any(Update.class), refEq(FindAndModifyOptions.options().returnNew(true)),
                 eq(ReceiveSummary.class), Mockito.any())).thenReturn(mock(ReceiveSummary.class));
         when(mongoTemplate.findAndModify(Mockito.any(Query.class), Mockito.any(Update.class), refEq(FindAndModifyOptions.options().returnNew(true)),
                 eq(ReceivingLine.class), Mockito.any())).thenReturn(mock(ReceivingLine.class));
@@ -798,10 +802,10 @@ public class ReceiveSummaryServiceImplTest {
         doNothing().when(receiveSummaryValidator).validateBusinessStatUpdateSummary(Mockito.anyString());
         doNothing().when(receiveSummaryLineValidator).validateInventoryMatchStatus(mock(ReceivingSummaryLineRequest.class));
         doNothing().when(receiveSummaryLineValidator).validateReceiptLineNumber(Mockito.anyString());
-        when(mongoTemplate.findAndModify(Mockito.any(Query.class), Mockito.any(Update.class), refEq(FindAndModifyOptions.options().returnNew(true)), eq(ReceiveSummary.class), Mockito.any())).thenReturn(mock(ReceiveSummary.class));
+        when(receivingSummaryDao.updateReceiveSummary(Mockito.any(Query.class), Mockito.any(Update.class), refEq(FindAndModifyOptions.options().returnNew(true)), eq(ReceiveSummary.class), Mockito.any())).thenReturn(mock(ReceiveSummary.class));
         UpdateResult updateResult = mock(UpdateResult.class);
         when(updateResult.getModifiedCount()).thenReturn(new Long(1));
-        when(mongoTemplate.updateMulti(Mockito.any(Query.class), Mockito.any(Update.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(updateResult);
+        when(receivingSummaryDao.updateReceiveSummaryAndLines(Mockito.any(Query.class), Mockito.any(Update.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(updateResult);
         ArrayList list = new ArrayList<ReceivingLine>();
         list.add(mock(ReceivingLine.class));
         when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(list);
