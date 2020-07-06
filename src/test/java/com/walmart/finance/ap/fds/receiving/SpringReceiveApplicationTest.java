@@ -13,6 +13,7 @@ public class SpringReceiveApplicationTest {
     public static void setSystemProperty() {
         Properties properties = System.getProperties();
         properties.setProperty("spring.profiles.active", "dev-us");
+        properties.setProperty("APPLICATION_INSIGHTS_KEY","c3a39937-8fe2-4300-928b-a0bb7c5b205e");
     }
 
     @AfterClass
