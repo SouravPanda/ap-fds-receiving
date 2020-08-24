@@ -3,7 +3,11 @@ package com.walmart.finance.ap.fds.receiving.service;
 import com.mongodb.client.result.UpdateResult;
 import com.walmart.finance.ap.fds.receiving.config.DefaultValuesConfigProperties;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
-import com.walmart.finance.ap.fds.receiving.dao.ReceivingSummaryDao;
+import com.walmart.finance.ap.fds.receiving.dao.*;
+import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
+import com.walmart.finance.ap.fds.receiving.exception.ContentNotFoundException;
+import com.walmart.finance.ap.fds.receiving.exception.InvalidValueException;
+import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.exception.*;
 import com.walmart.finance.ap.fds.receiving.integrations.FreightResponse;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveLineRequestParams;
@@ -59,6 +63,9 @@ public class ReceiveSummaryServiceImplTest {
     MongoTemplate mongoTemplate;
 
     @Mock
+    ReceivingSummaryDaoImpl receivingSummaryDao;
+
+    @Mock
     private ApplicationEventPublisher publisher;
 
     @Mock
@@ -69,9 +76,6 @@ public class ReceiveSummaryServiceImplTest {
 
     @Mock
     ReceiveSummaryLineValidator receiveSummaryLineValidator;
-
-    @Mock
-    ReceivingSummaryDao receivingSummaryDao;
 
     @Mock
     DefaultValuesConfigProperties defaultValuesConfigProperties;
@@ -155,7 +159,7 @@ public class ReceiveSummaryServiceImplTest {
         when(mongoTemplate.count(query, ReceiveSummary.class)).thenReturn(2L);
         Query mockQuery = Mockito.mock(Query.class);
         when(mockQuery.limit(Mockito.anyInt())).thenReturn(mockQuery);
-        when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.any())).thenReturn(listOfContent, listOfReceiveLines, listOfFreight);
+        when(receivingSummaryDao.executeQueryForReceiveSummary(Mockito.any(Query.class))).thenReturn(listOfContent);
         ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setData(content);
         successMessage.setSuccess(true);
@@ -241,7 +245,7 @@ public class ReceiveSummaryServiceImplTest {
         when(mongoTemplate.count(dynamicQuery, ReceiveSummary.class)).thenReturn(2L);
         Query mockQuery = Mockito.mock(Query.class);
         when(mockQuery.limit(Mockito.anyInt())).thenReturn(mockQuery);
-        when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.any())).thenReturn(listOfContent, listOfReceiveLines, listOfFreight);
+        when(receivingSummaryDao.executeQueryForReceiveSummary(Mockito.any(Query.class))).thenReturn(listOfContent);
         ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setData(content);
         successMessage.setSuccess(true);
@@ -402,7 +406,7 @@ public class ReceiveSummaryServiceImplTest {
         when(mongoTemplate.count(dynamicQuery, ReceiveSummary.class)).thenReturn(2L);
         Query mockQuery = Mockito.mock(Query.class);
         when(mockQuery.limit(Mockito.anyInt())).thenReturn(mockQuery);
-        when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.any())).thenReturn(listOfContent, listOfReceiveLines, listOfFreight);
+        when(receivingSummaryDao.executeQueryForReceiveSummary(Mockito.any(Query.class))).thenReturn(listOfContent);
         ReceivingResponse successMessage = new ReceivingResponse();
         successMessage.setData(content);
         successMessage.setSuccess(true);
@@ -959,8 +963,7 @@ public class ReceiveSummaryServiceImplTest {
                 , 'K', "IIL", null, null, null, null, null, LocalDateTime.now(), null, null);
         ArrayList<ReceiveSummary> receiveSummaries = new ArrayList<>();
         receiveSummaries.add(receiveSummary);
-        when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceiveSummary.class), Mockito.any())).thenReturn(receiveSummaries);
-        when(mongoTemplate.find(Mockito.any(Query.class), eq(ReceivingLine.class), Mockito.any())).thenReturn(new ArrayList<>());
+        when(receivingSummaryDao.executeQueryForReceiveSummary(Mockito.any(Query.class))).thenReturn(receiveSummaries);
         when(receivingSummaryResponseConverter.convert(Mockito.any(ReceiveSummary.class))).thenReturn(mock(ReceivingSummaryResponse.class));
         Map mockMap = Mockito.mock(Map.class);
         receiveSummaryServiceImpl.getReceiveSummary(mockMap);

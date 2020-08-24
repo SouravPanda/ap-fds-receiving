@@ -38,7 +38,7 @@ public class ReceivingSummaryDaoImplTest {
     ReceivingSummaryDaoImpl receivingSummaryDaoImpl;
 
     @Mock
-    MongoTemplate mongoTemplate;
+    MongoTemplateWithRetry mongoTemplate;
 
     @Before
     public void setup() {

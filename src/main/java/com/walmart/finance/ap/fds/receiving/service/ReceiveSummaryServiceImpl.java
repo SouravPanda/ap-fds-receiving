@@ -6,6 +6,7 @@ import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingUtils;
 import com.walmart.finance.ap.fds.receiving.config.DefaultValuesConfigProperties;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingSummaryResponseConverter;
+import com.walmart.finance.ap.fds.receiving.dao.queryCriteria.ReceivingSummaryCriteria;
 import com.walmart.finance.ap.fds.receiving.dao.ReceivingSummaryDao;
 import com.walmart.finance.ap.fds.receiving.exception.*;
 import com.walmart.finance.ap.fds.receiving.model.*;
@@ -15,7 +16,6 @@ import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingSummaryResponse;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryLineValidator;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryValidator;
-import com.walmart.finance.ap.fds.receiving.validator.ReceivingInfoRequestQueryParameters;
 import lombok.Setter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -43,15 +42,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.walmart.finance.ap.fds.receiving.common.ReceivingConstants.LOCATION_TYPE_WAREHOUSE;
-
 @Service
 public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
 
     public static final Logger log = LoggerFactory.getLogger(ReceiveSummaryServiceImpl.class);
-
-    @Autowired
-    MongoTemplate mongoTemplate;
 
     @Autowired
     ReceivingSummaryResponseConverter receivingSummaryResponseConverter;
@@ -136,67 +130,18 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
         return receivingControlNumber + ReceivingConstants.PIPE_SEPARATOR + poReceiveId + ReceivingConstants.PIPE_SEPARATOR + locationNumber + ReceivingConstants.PIPE_SEPARATOR + MDSReceiveDate;
     }
 
-    /*******  Search Criteria methods  *********/
+    /*******  Search criteria methods  *********/
 
     private List<ReceiveSummary> getSearchCriteriaForGet(Map<String, String> paramMap) {
         log.info(ReceivingLogs.SEARCHCRITERIAFORGET.getParameterName());
-        Query query = searchCriteriaForGet(paramMap);
-        return executeQueryForReceiveSummary(query);
-    }
+        List<Criteria> criteriaList = ReceivingSummaryCriteria.getCriteriaForReceivingSummary(paramMap);
+        Query query = new Query();
 
+        criteriaList.forEach(criteria-> {
+            query.addCriteria(criteria);
+        });
 
-    private Query searchCriteriaForGet(Map<String, String> paramMap) {
-        Query dynamicQuery = new Query();
-
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.CONTROLNUMBER))) {
-            Criteria controlNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.CONTROLNUMBER));
-            dynamicQuery.addCriteria(controlNumberCriteria);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.PURCHASEORDERID))) {
-            Criteria purchaseOrderIdCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.PURCHASEORDERID.getParameterName()).is(Long.valueOf(paramMap.get(ReceivingConstants.PURCHASEORDERID)));
-            dynamicQuery.addCriteria(purchaseOrderIdCriteria);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.DIVISIONNUMBER))) {
-            Criteria baseDivisionNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.BASEDIVISIONNUMBER.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.DIVISIONNUMBER)));
-            dynamicQuery.addCriteria(baseDivisionNumberCriteria);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTDATESTART)) && StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTDATEEND))) {
-            LocalDateTime startDate = getDate(paramMap.get(ReceivingConstants.RECEIPTDATESTART) + " 00:00:00");
-            LocalDateTime endDate = getDate(paramMap.get(ReceivingConstants.RECEIPTDATEEND) + " 23:59:59");
-            String applicableDateField = ReceiveSummaryCosmosDBParameters.DATERECEIVED.getParameterName();
-            if (paramMap.containsKey(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam()) &&
-                    paramMap.get(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam()).equals(LOCATION_TYPE_WAREHOUSE)) {
-                applicableDateField = ReceiveSummaryCosmosDBParameters.RECEIVEPROCESSDATE.getParameterName();
-            }
-            Criteria mdsReceiveDateCriteria = Criteria.where(applicableDateField).gte(startDate).lte(endDate);
-            dynamicQuery.addCriteria(mdsReceiveDateCriteria);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.TRANSACTIONTYPE))) {
-            Criteria transactionTypeCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.TRANSACTIONTYPE.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.TRANSACTIONTYPE)));
-            dynamicQuery.addCriteria(transactionTypeCriteria);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.LOCATIONNUMBER))) {
-            ReceivingUtils.updateQueryForPartitionKey(null, paramMap,
-                    Integer.valueOf(paramMap.get(ReceivingConstants.LOCATIONNUMBER)), dynamicQuery, monthsPerShard, monthsToDisplay);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.PURCHASEORDERNUMBER))) {
-            Criteria purchaseOrderNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.PURCHASEORDERNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.PURCHASEORDERNUMBER));
-            dynamicQuery.addCriteria(purchaseOrderNumberCriteria);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTNUMBERS))) {
-            Criteria poReceiveIdCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.RECEIVEID.getParameterName()).in(paramMap.get(ReceivingConstants.RECEIPTNUMBERS).split(","));
-            dynamicQuery.addCriteria(poReceiveIdCriteria);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.DEPARTMENTNUMBER))) {
-            Criteria departmentNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.DEPARTMENTNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.DEPARTMENTNUMBER));
-            dynamicQuery.addCriteria(departmentNumberCriteria);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.VENDORNUMBER))) {
-            Criteria vendorNumberCriteria = Criteria.where(ReceiveSummaryCosmosDBParameters.VENDORNUMBER.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.VENDORNUMBER)));
-            dynamicQuery.addCriteria(vendorNumberCriteria);
-        }
-        log.info("query: " + dynamicQuery);
-        return dynamicQuery;
+        return receivingSummaryDao.executeQueryForReceiveSummary(query);
     }
 
     private LocalDateTime getDate(String date) {
@@ -208,23 +153,9 @@ public class ReceiveSummaryServiceImpl implements ReceiveSummaryService {
             throw new BadRequestException(ReceivingErrors.INVALIDDATATYPE.getParameterName(), ReceivingErrors.INVALIDQUERYPARAMS.getParameterName());
         }
     }
-    /*******  Search Criteria methods  *********/
+    /*******  Search criteria methods  *********/
 
     /******* receive -line data fetching   *********/
-
-    /******* Common Methods  *********/
-
-    private List<ReceiveSummary> executeQueryForReceiveSummary(Query query) {
-        List<ReceiveSummary> receiveSummaries = new ArrayList<>();
-        if (query != null) {
-            long startTime = System.currentTimeMillis();
-            receiveSummaries = mongoTemplate.find(query.limit(1000), ReceiveSummary.class, summaryCollection);
-            log.info("executeQueryForReceiveSummary :: queryTime :: " + (System.currentTimeMillis() - startTime));
-        }
-        return receiveSummaries;
-    }
-
-    /******* Common Methods  *********/
 
     @Override
     public ReceivingResponse updateReceiveSummary(ReceivingSummaryRequest receivingSummaryRequest, String countryCode) {

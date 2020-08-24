@@ -62,101 +62,6 @@ public class ReceivingInfoControllerTest {
     }
 
     @Test
-    public void getReceivingInfo() throws Exception {
-        ReceivingInfoLineResponse receivingInfoLineResponse = new ReceivingInfoLineResponse("30006", 1, 3777L,
-                2, 33.0,
-                33.84, 2.0, 0,
-                "N", "0000047875883980",
-                "NSW CRASH TRNF", "LL", "ww", 1, "1.9", null, 33.0, 33.65, 2);
-        List<ReceivingInfoLineResponse> lineResponses = new ArrayList<ReceivingInfoLineResponse>() {
-            {
-                add(receivingInfoLineResponse);
-            }
-        };
-        ReceivingInfoResponse response = new ReceivingInfoResponse("USER", LocalDate.of(2019, 03, 14), null,
-                "0", 1, 99, 1, new Long(1), 3669,
-                new Long(999403403), LocalDate.of(2019, 03, 14), "30006",
-                " ", 0.0, 0.0, null, 495742, "Memo",
-                0.0, 0, "USER", "1223",
-                "3669", null, "999403403", 411276735L,
-                "411276735", lineResponses);
-        List<ReceivingInfoResponse> list = new ArrayList<ReceivingInfoResponse>() {
-            {
-                add(response);
-            }
-        };
-        ReceivingResponse successMessage = new ReceivingResponse(true, LocalDateTime.of(2019, 05, 12, 15, 31, 16), list);
-        when(receivingInfoService.getInfoSeviceData(Mockito.anyMap())).thenReturn(successMessage);
-        RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get("/US/receiving/info")
-                .param("invoiceId", "411276735")
-                .param("lineNumberFlag", "Y")
-                .param(ReceivingInfoRequestQueryParameters.LOCATIONTYPE.getQueryParam(), ReceivingConstants.LOCATION_TYPE_STORE)
-                .accept(MediaType.APPLICATION_JSON);
-        mockMvc.perform(requestBuilder)
-                .andExpect(status().isOk())
-                .andExpect(content().json(
-                        " {" +
-                                "\"success\": true,\n" +
-                                "\"timestamp\": \"2019-05-12T15:31:16\",\n" +
-                                " \"data\": \n" +
-                                "[{" +
-                                "\"authorizedBy\": \"USER\",\n" +
-                                "\"authorizedDate\": \"2019-03-14\",\n" +
-                                "\"carrierCode\": null,\n" +
-                                "\"controlNumber\": \"0\",\n" +
-                                "\"departmentNumber\": 1,\n" +
-                                "\"transactionType\": 99,\n" +
-                                "\"divisionNumber\": 1,\n" +
-                                "\"lineCount\": 1,\n" +
-                                "\"locationNumber\": 3669,\n" +
-                                "\"purchaseOrderId\": 999403403,\n" +
-                                "\"receiptDate\": \"2019-03-14\",\n" +
-                                "\"receiptNumber\": \"30006\",\n" +
-                                "\"receiptStatus\": \" \",\n" +
-                                "\"totalCostAmount\": 0,\n" +
-                                "\"totalRetailAmount\": 0,\n" +
-                                "\"trailerNumber\": null,\n" +
-                                "\"vendorNumber\": 495742,\n" +
-                                "\"memo\": \"Memo\",\n" +
-                                "\"bottleDepositAmount\": 0,\n" +
-                                "\"controlSequenceNumber\": 0,\n" +
-                                "\"vendorName\": \"USER\",\n" +
-                                "\"parentReceivingNbr\": \"1223\",\n" +
-                                "\"parentReceivingStoreNbr\": \"3669\",\n" +
-                                "\"parentReceivingDate\": null,\n" +
-                                "\"parentPurchaseOrderId\": \"999403403\",\n" +
-                                "\"invoiceId\": 411276735,\n" +
-                                "\"invoiceNumber\": \"411276735\",\n" +
-                                "\"receivingLine\": [\n" +
-                                "{\n" +
-                                "\"receiptNumber\": \"30006\",\n" +
-                                "\"receiptLineNumber\": 1,\n" +
-                                "\"itemNumber\": 3777,\n" +
-                                "\"quantity\": 2,\n" +
-                                "\"eachCostAmount\": 33,\n" +
-                                "\"eachRetailAmount\": 33.84,\n" +
-                                "\"numberOfCasesReceived\": 2,\n" +
-                                "\"packQuantity\": 0,\n" +
-                                "\"bottleDepositFlag\": \"N\",\n" +
-                                "\"upc\": \"0000047875883980\",\n" +
-                                "\"itemDescription\": \"NSW CRASH TRNF\",\n" +
-                                "\"unitOfMeasure\": \"LL\",\n" +
-                                "\"variableWeightInd\": \"ww\",\n" +
-                                "\"costMultiple\": 1,\n" +
-                                "\"receivedWeightQuantity\": \"1.9\",\n" +
-                                "\"merchandises\": null,\n" +
-                                "\"eachVendorCostAmount\": 33,\n" +
-                                "\"eachVendorRetailAmount\": 33.65,\n" +
-                                "\"vendorPackQuantity\": 2\n" +
-                                "}\n" +
-                                "]" +
-                                "}]}"
-                ))
-                .andReturn();
-    }
-
-    @Test
     public void getReceivingInfoV1() throws Exception {
         List<ReceiveMDSResponse> merchandises = new ArrayList<ReceiveMDSResponse>() {
             {
@@ -211,7 +116,7 @@ public class ReceivingInfoControllerTest {
             }
         };
         ReceivingResponse successMessage = new ReceivingResponse(true, LocalDateTime.of(2019, 05, 12, 15, 31, 16), list);
-        when(receivingInfoService.getInfoSeviceDataV1(Mockito.anyMap())).thenReturn(successMessage);
+        when(receivingInfoService.getInfoServiceDataV1(Mockito.anyMap())).thenReturn(successMessage);
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/US/receiving/info/v1")
                 .param("invoiceId", "97166785")

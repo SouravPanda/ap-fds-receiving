@@ -1,6 +1,9 @@
 package com.walmart.finance.ap.fds.receiving.service;
 
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineResponseConverter;
+import com.walmart.finance.ap.fds.receiving.dao.MongoTemplateWithRetry;
+import com.walmart.finance.ap.fds.receiving.dao.ReceivingLineDao;
+import com.walmart.finance.ap.fds.receiving.dao.ReceivingLineDaoImpl;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.model.ReceiveLineRequestParams;
@@ -40,10 +43,13 @@ public class ReceiveLineServiceImplTest {
     ReceiveLineServiceImpl receiveLineServiceImpl;
 
     @Mock
+    ReceivingLineDao receivingLineDao;
+
+    @Mock
     ReceivingLineResponseConverter receivingLineResponseConverter;
 
     @Mock
-    MongoTemplate mongoTemplate;
+    MongoTemplateWithRetry mongoTemplate;
 
     @Before
     public void setup() {
@@ -85,7 +91,7 @@ public class ReceiveLineServiceImplTest {
         successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
         Query mockQuery = Mockito.mock(Query.class);
         when(mockQuery.limit(Mockito.anyInt())).thenReturn(mockQuery);
-        when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.any())).thenReturn(listOfContent);
+        when(receivingLineDao.executeQueryForReceiveLine(Mockito.any(Query.class))).thenReturn(listOfContent);
         when(receivingLineResponseConverter.convert(Mockito.any(ReceivingLine.class))).thenReturn(receivingLineResponse);
         Map mockMap = Mockito.mock(Map.class);
         Assert.assertEquals(receiveLineServiceImpl.getLineSummary(mockMap).isSuccess(), successMessage.isSuccess());
@@ -128,7 +134,7 @@ public class ReceiveLineServiceImplTest {
         successMessage.setTimestamp(LocalDateTime.of(2018, 10, 10, 0, 40, 0));
         Query mockQuery = Mockito.mock(Query.class);
         when(mockQuery.limit(Mockito.anyInt())).thenReturn(mockQuery);
-        when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.any())).thenReturn(listOfContent);
+        when(receivingLineDao.executeQueryForReceiveLine(Mockito.any(Query.class))).thenReturn(listOfContent);
         when(receivingLineResponseConverter.convert(Mockito.any(ReceivingLine.class))).thenReturn(receivingLineResponse);
         Map mockMap = new HashMap();
         mockMap.put(ReceiveLineRequestParams.PURCHASEORDERID.getParameterName(),"766");
@@ -151,7 +157,7 @@ public class ReceiveLineServiceImplTest {
 
     @Test(expected = NotFoundException.class)
     public void getLineSummaryNotFoundException() {
-        when(mongoTemplate.find(Mockito.any(Query.class), Mockito.any(Class.class), Mockito.any())).thenReturn(null);
+        when(receivingLineDao.executeQueryForReceiveLine(Mockito.any(Query.class))).thenReturn(null);
         Map mockMap = Mockito.mock(Map.class);
         receiveLineServiceImpl.getLineSummary(mockMap);
     }

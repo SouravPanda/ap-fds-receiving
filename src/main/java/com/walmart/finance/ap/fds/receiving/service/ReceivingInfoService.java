@@ -11,9 +11,7 @@ import java.util.Map;
  */
 public interface ReceivingInfoService {
 
-    ReceivingResponse getInfoSeviceData(Map<String, String> allRequestParams);
-
-    ReceivingResponse getInfoSeviceDataV1(Map<String, String> allRequestParams);
+    ReceivingResponse getInfoServiceDataV1(Map<String, String> allRequestParams);
 
     List<ReceivingInfoResponseV1> getReceivingInfoWoFinTxn(Map<String, String> allRequestParams);
 }

@@ -17,7 +17,7 @@ public class FreightDaoImplTest {
     FreightDaoImpl freightDao;
 
     @Mock
-    MongoTemplate mongoTemplate;
+    MongoTemplateWithRetry mongoTemplate;
 
     @Test
     public void getFrightById() {

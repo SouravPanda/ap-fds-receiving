@@ -4,14 +4,14 @@ package com.walmart.finance.ap.fds.receiving.service;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingConstants;
 import com.walmart.finance.ap.fds.receiving.common.ReceivingUtils;
 import com.walmart.finance.ap.fds.receiving.converter.ReceivingLineResponseConverter;
+import com.walmart.finance.ap.fds.receiving.dao.ReceivingLineDao;
+import com.walmart.finance.ap.fds.receiving.dao.queryCriteria.ReceivingLineCriteria;
 import com.walmart.finance.ap.fds.receiving.exception.BadRequestException;
 import com.walmart.finance.ap.fds.receiving.exception.NotFoundException;
 import com.walmart.finance.ap.fds.receiving.exception.ReceivingErrors;
 import com.walmart.finance.ap.fds.receiving.model.ReceivingLine;
-import com.walmart.finance.ap.fds.receiving.model.ReceivingLineParameters;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingLineResponse;
 import com.walmart.finance.ap.fds.receiving.response.ReceivingResponse;
-import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -38,14 +37,6 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
     @Autowired
     ReceivingLineResponseConverter receivingLineResponseConverter;
 
-    @Autowired
-    MongoTemplate mongoTemplate;
-
-    @Setter
-    @Getter
-    @Value("${azure.cosmosdb.collection.line}")
-    private String lineCollection;
-
     @Setter
     @Value("${months.per.shard}")
     private Integer monthsPerShard;
@@ -54,11 +45,25 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
     @Value("${months.to.display}")
     private Integer monthsToDisplay;
 
+    @Autowired
+    ReceivingLineDao receivingLineDao;
+
+
     public ReceivingResponse getLineSummary(Map<String, String> allRequestParams) {
         try {
-            Query query = searchCriteriaForGet(allRequestParams);
+            Criteria criteriaDefinition = ReceivingLineCriteria.getCriteriaForReceivingLine(allRequestParams);
+
+            Query dynamicQuery = new Query();
+            dynamicQuery.addCriteria(criteriaDefinition);
+
+            if (StringUtils.isNotEmpty(allRequestParams.get(ReceivingConstants.LOCATIONNUMBER))) {
+                ReceivingUtils.updateQueryForPartitionKey(null, allRequestParams,
+                        Integer.parseInt(allRequestParams.get(ReceivingConstants.LOCATIONNUMBER.trim())), dynamicQuery,
+                        monthsPerShard, monthsToDisplay);
+            }
+
             long startTime = System.currentTimeMillis();
-            List<ReceivingLine> receiveLines = mongoTemplate.find(query.limit(1000), ReceivingLine.class, lineCollection);
+            List<ReceivingLine> receiveLines = receivingLineDao.executeQueryForReceiveLine(dynamicQuery);
             log.info(" getLineSummary :: queryTime :: " + (System.currentTimeMillis() - startTime));
             List<ReceivingLineResponse> responseList;
             if (CollectionUtils.isEmpty(receiveLines)) {
@@ -77,39 +82,7 @@ public class ReceiveLineServiceImpl implements ReceiveLineService {
         }
     }
 
-    private Query searchCriteriaForGet(Map<String, String> paramMap) {
-        Query dynamicQuery = new Query();
-        Criteria criteriaDefinition = new Criteria();
 
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingLineParameters.PURCHASEORDERID.getParameterName()))) {
-            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.PURCHASEORDERID.getParameterName()).is(Integer.valueOf(paramMap.get(ReceivingConstants.PURCHASEORDERID.trim())));
-            dynamicQuery.addCriteria(criteriaDefinition);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIVINGCONTROLNUMBER))) {
-            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.RECEIVINGCONTROLNUMBER.getParameterName()).is(paramMap.get(ReceivingConstants.RECEIVINGCONTROLNUMBER));
-            dynamicQuery.addCriteria(criteriaDefinition);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.RECEIPTNUMBER))) {
-            criteriaDefinition = criteriaDefinition.where(ReceivingLineParameters.RECEIVEID.getParameterName()).in(paramMap.get(ReceivingConstants.RECEIPTNUMBER).split(","));
-            dynamicQuery.addCriteria(criteriaDefinition);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.TRANSACTIONTYPE))) {
-            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.TRANSACTIONTYPE.getParameterName()).is(Integer.parseInt(paramMap.get(ReceivingConstants.TRANSACTIONTYPE)));
-            dynamicQuery.addCriteria(criteriaDefinition);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.DIVISIONNUMBER))) {
-            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.BASEDIVISIONNUMBER.getParameterName()).is(Integer.parseInt(paramMap.get(ReceivingConstants.DIVISIONNUMBER.trim())));
-            dynamicQuery.addCriteria(criteriaDefinition);
-        }
-        if (StringUtils.isNotEmpty(paramMap.get(ReceivingConstants.LOCATIONNUMBER))) {
-            criteriaDefinition = criteriaDefinition.and(ReceivingLineParameters.STORENUMBER.getParameterName()).is(Integer.parseInt(paramMap.get(ReceivingConstants.LOCATIONNUMBER.trim())));
-            dynamicQuery.addCriteria(criteriaDefinition);
-            ReceivingUtils.updateQueryForPartitionKey(null, paramMap,
-                    Integer.parseInt(paramMap.get(ReceivingConstants.LOCATIONNUMBER.trim())), dynamicQuery,
-                    monthsPerShard, monthsToDisplay);
-        }
-        return dynamicQuery;
-    }
 }
 
 

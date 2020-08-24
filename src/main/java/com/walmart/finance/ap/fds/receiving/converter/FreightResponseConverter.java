@@ -18,7 +18,7 @@ public class FreightResponseConverter implements Converter<Freight, FreightRespo
         freightResponse.setCarrierCode(freight.getCarrierCode()!=null ? freight.getCarrierCode(): defaultValuesConfigProperties.getCarrierCode());
         freightResponse.setTrailerNbr(freight.getTrailerNbr()!=null ? freight.getTrailerNbr(): defaultValuesConfigProperties.getTrailerNbr());
         freightResponse.setVendorNbr(freight.getVendorNbr());
-        freightResponse.setBillNbr(freight.getBillNbr()!=null ? freight.getBillNbr(): defaultValuesConfigProperties.getBillNbr());
+        freightResponse.setBillNbr(freight.getBillNbr()!=null ? freight.getBillNbr().trim(): defaultValuesConfigProperties.getBillNbr());
         freightResponse.setBillCostAmt(freight.getBillCostAmt());
         freightResponse.setBillDate(freight.getBillDate());
         freightResponse.setBillQty(freight.getBillQty());
