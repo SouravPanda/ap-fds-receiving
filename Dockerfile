@@ -1,4 +1,4 @@
-FROM docker.prod.walmart.com/gbs-fds/servicemesh:1.36.8
+FROM docker.prod.walmart.com/gbs-fds/servicemesh:1.36.9
 
 #Adding certificates
 ADD certs certs
