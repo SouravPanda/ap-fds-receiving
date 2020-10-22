@@ -7,8 +7,10 @@ import com.walmart.finance.ap.fds.receiving.service.ReceiveSummaryService;
 import com.walmart.finance.ap.fds.receiving.validator.ReceiveSummaryValidator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +39,11 @@ public class ReceivingSummaryController {
     // itemNumbers and upcNumbers : implementation are pending
     @GetMapping
     @ApiOperation(value = "API to add new Stores based on the payload")
-    @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Error")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = ReceivingResponse.class))),
+            @ApiResponse(responseCode = "204"),
+            @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(implementation = ReceivingResponse.class))),
+            @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ReceivingResponse.class)))})
     public ReceivingResponse getReceiveSummary(@PathVariable("countryCode")
                                                        String countryCode,
                                                @RequestParam Map<String, String> allRequestParams) {
@@ -55,7 +61,11 @@ public class ReceivingSummaryController {
      */
     @PutMapping
     @ApiOperation(value = "API to update Stores based on the payload")
-    @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = ReceivingResponse.class))),
+            @ApiResponse(responseCode = "204"),
+            @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(implementation = ReceivingResponse.class))),
+            @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ReceivingResponse.class)))})
     public ResponseEntity<ReceivingResponse> updateSummary(@PathVariable("countryCode") String countryCode, @RequestBody @Valid ReceivingSummaryRequest receivingSummaryRequest) {
         ReceivingResponse receivingResponse = receiveSummaryService.updateReceiveSummary(receivingSummaryRequest, countryCode);
         return new ResponseEntity<>(receivingResponse, HttpStatus.ACCEPTED);
@@ -69,7 +79,11 @@ public class ReceivingSummaryController {
      */
     @PutMapping("/line")
     @ApiOperation(value = "API to update Stores based on the payload")
-    @ApiResponses(value = {@ApiResponse(code = 500, message = "Internal Server Exception")})
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = ReceivingResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "204"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", content = @Content(schema = @Schema(implementation = ReceivingResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = ReceivingResponse.class)))})
     public ResponseEntity<ReceivingResponse> updateSummaryAndLine(@PathVariable("countryCode") String countryCode, @RequestBody @Valid ReceivingSummaryLineRequest receiveSummaryLineRequest) {
         ReceivingResponse receivingResponse = receiveSummaryService.updateReceiveSummaryAndLine(receiveSummaryLineRequest, countryCode);
         return new ResponseEntity<>(receivingResponse, HttpStatus.ACCEPTED);

@@ -204,6 +204,16 @@
             <artifactId>ap-fds-audit-service</artifactId>
             <version>1.0.4</version>
         </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.4.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-webmvc-core</artifactId>
+            <version>1.4.8</version>
+        </dependency>
     </dependencies>
     <profiles>
         <profile>
